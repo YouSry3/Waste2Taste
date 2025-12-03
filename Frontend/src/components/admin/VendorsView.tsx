@@ -1,0 +1,1 @@
+export { VendorsView } from '../VendorsView';

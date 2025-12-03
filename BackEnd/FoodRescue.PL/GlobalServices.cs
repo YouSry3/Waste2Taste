@@ -1,11 +1,9 @@
 ﻿using FluentValidation.AspNetCore;
-using FoodRescue.BLL.Contract.Authentication;
 using FoodRescue.BLL.Contract.Authentication.Register;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Services.Authentication;
 using FoodRescue.BLL.Services.JWT;
 using FoodRescue.DAL.Context;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
@@ -15,8 +13,33 @@ namespace FoodRescue.PL
 {
     public static class GlobalServicesExtensions
     {
-        public static IServiceCollection AddProjectServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddProjectServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
+            // CORS Configuration
+            services.AddCors(options =>
+            {
+                options.AddPolicy("FoodRescueCors", builder =>
+                {
+                    if (environment.IsDevelopment())
+                    {
+                        builder.WithOrigins(
+                            "http://localhost:5173",   // Vite dev server
+                            "http://localhost:5000",   // Alternative port
+                            "http://localhost:3000"    // Another alternative
+                        );
+                    }
+                    else
+                    {
+                        // In production, specify exact frontend domain
+                        builder.WithOrigins(configuration["AllowedOrigins"] ?? "");
+                    }
+                    
+                    builder.AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials();
+                });
+            });
+
             // DbContext
             services.AddDbContext<CompanyDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
@@ -45,9 +68,6 @@ namespace FoodRescue.PL
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IJwtProvider, JwtProvider>();
-            services.AddScoped<IEmailService, EmailService>();
-
-
 
             return services;
         }

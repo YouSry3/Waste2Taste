@@ -1,7 +1,4 @@
 
-using FoodRescue.BLL.Extensions.Users;
-using FoodRescue.BLL.Services.UserServices;
-
 namespace FoodRescue.PL
 {
     public class Program
@@ -11,14 +8,11 @@ namespace FoodRescue.PL
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddProjectServices(builder.Configuration);
+            builder.Services.AddProjectServices(builder.Configuration, builder.Environment);
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IUserService, UserService>();
-
 
             var app = builder.Build();
 
@@ -30,9 +24,12 @@ namespace FoodRescue.PL
             }
 
             app.UseHttpsRedirection();
+            
+            // Use CORS policy
+            app.UseCors("FoodRescueCors");
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 
