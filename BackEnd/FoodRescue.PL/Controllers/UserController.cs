@@ -1,11 +1,12 @@
-﻿using FoodRescue.BLL.DTOs;
+﻿using FoodRescue.BLL.Abstractions;
+using FoodRescue.BLL.DTOs;
 using FoodRescue.BLL.Services.UserServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodRescue.PL.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -48,13 +49,13 @@ namespace FoodRescue.PL.Controllers
 
 
         // GET /users/{id}
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var user = await _service.GetByIdAsync(id);
-            if (user == null) return NotFound();
-
-            return Ok(user);
+            return user.IsSuccess
+                ? Ok(user.Value)
+                : NotFound(user.Error);
         }
     }
 }

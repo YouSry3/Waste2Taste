@@ -1,4 +1,5 @@
-﻿using FoodRescue.BLL.DTOs;
+﻿using FoodRescue.BLL.Abstractions;
+using FoodRescue.BLL.DTOs;
 using FoodRescue.DAL.Entities;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,9 @@ namespace FoodRescue.BLL.Services.UserServices
 {
     public interface IUserService
     {
-        Task<User?> GetByIdAsync(Guid id);
-        Task<User?> GetProfileAsync(string email);
+        Task<Result<User>> GetByIdAsync(Guid id);
+        Task<Result<User>> GetProfileAsync(string email);
         Task<IEnumerable<User>> GetVendorsAsync();
-        Task UpdateProfileAsync(string email, UpdateProfileDTO dto);
+        Task<Result> UpdateProfileAsync(string email, UpdateProfileDTO dto);
     }
 }
