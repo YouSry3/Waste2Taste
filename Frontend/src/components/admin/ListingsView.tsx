@@ -1,0 +1,1 @@
+export { ListingsView } from '../ListingsView';

@@ -38,6 +38,10 @@ Generated/
 ## Packages ##
 *.nupkg
 packages/
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 ## Other ##
 Thumbs.db

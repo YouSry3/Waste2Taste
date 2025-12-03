@@ -1,0 +1,1 @@
+export { ModerationView } from '../ModerationView';
