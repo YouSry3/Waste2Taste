@@ -1,11 +1,9 @@
-﻿using FoodRescue.BLL.DTOs;
+﻿using FoodRescue.BLL.Abstractions;
+using FoodRescue.BLL.Abstractions.TypeErrors;
+using FoodRescue.BLL.DTOs;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FoodRescue.BLL.Services.UserServices
 {
@@ -18,31 +16,46 @@ namespace FoodRescue.BLL.Services.UserServices
             _repo = repo;
         }
 
-        public async Task<User?> GetByIdAsync(Guid id)
+        public async Task<Result<User>> GetByIdAsync(Guid id)
         {
-            return await _repo.GetByIdAsync(id);
+            var IsExited = await _repo.GetByIdAsync(id);
+            // Handeling Error If User Not Existed
+            return IsExited == null
+                ? Result.Failure<User>(UserErrors.EmailUndefinded)
+                : Result.Success<User>(IsExited);
+
+        
         }
 
-        public async Task<User?> GetProfileAsync(string email)
+        public async Task<Result<User>> GetProfileAsync(string email)
         {
-            return await _repo.GetByEmailAsync(email);
+            var IsExited = await _repo.GetByEmailAsync(email);
+            // Handeling Error If User Not Existed
+            return IsExited == null
+                ? Result.Failure<User>(UserErrors.EmailUndefinded)
+                : Result.Success<User>(IsExited);
         }
         public async Task<IEnumerable<User>> GetVendorsAsync()
         {
             return await _repo.GetVendorsAsync();
         }
 
-        public async Task UpdateProfileAsync(string email, UpdateProfileDTO dto)
+        public async Task<Result> UpdateProfileAsync(string email, UpdateProfileDTO dto)
         {
             var user = await _repo.GetByEmailAsync(email);
-            if (user == null) return;
+
+            if (user == null)
+                return Result.Failure(UserErrors.EmailUndefinded);
 
             user.Name = dto.Name;
-            user.Email = dto.Email;
+            //=======Not Allowing Email Update=========//
+            //user.Email = dto.Email;
             user.Type = dto.Type;
 
             await _repo.UpdateAsync(user);
             await _repo.SaveChangesAsync();
+
+            return Result.Success();
         }
     }
 }
