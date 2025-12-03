@@ -1,0 +1,46 @@
+## Build Folders ##
+bin/
+obj/
+out/
+
+## User-Specific Files ##
+*.user
+*.rsuser
+*.suo
+*.userosscache
+
+## IDE Directories ##
+.vs/
+.vscode/
+
+## Logs ##
+*.log
+
+## Environment Files ##
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+*.env
+
+## Sensitive Keys ##
+secrets.json
+
+## Publish Artifacts ##
+/publish/
+/dist/
+
+## Auto Generated ##
+Generated/
+*.designer.cs
+*.g.cs
+*.generated.cs
+
+## Packages ##
+*.nupkg
+packages/
+
+## Other ##
+Thumbs.db
+*.db
+*.sqlite
+*.bak

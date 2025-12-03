@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="FoodRescue.BLL/FoodRescue.BLL.csproj" />
+  <Project Path="FoodRescue.DAL/FoodRescue.DAL.csproj" />
+  <Project Path="FoodRescue.PL/FoodRescue.PL.csproj" />
+</Solution>
