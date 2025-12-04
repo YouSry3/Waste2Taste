@@ -1,12 +1,15 @@
 ﻿using FluentValidation.AspNetCore;
+using FoodRescue.BLL.Contract.Authentication;
 using FoodRescue.BLL.Contract.Authentication.Register;
 using FoodRescue.BLL.Extensions.Users;
+using FoodRescue.BLL.Extensions.Vendors;
+using FoodRescue.BLL.Extensions.Vendors.MapsterConfiguration;
 using FoodRescue.BLL.Services.Authentication;
 using FoodRescue.BLL.Services.JWT;
+using FoodRescue.BLL.Services.Vendors;
 using FoodRescue.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Reflection;
 using System.Text; // Add this at the top with other using statements
 
 namespace FoodRescue.PL
@@ -33,7 +36,7 @@ namespace FoodRescue.PL
                         // In production, specify exact frontend domain
                         builder.WithOrigins(configuration["AllowedOrigins"] ?? "");
                     }
-                    
+
                     builder.AllowAnyMethod()
                            .AllowAnyHeader()
                            .AllowCredentials();
@@ -68,6 +71,10 @@ namespace FoodRescue.PL
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IJwtProvider, JwtProvider>();
+            services.AddScoped<IVendorRepository, VendorRepository>();
+            services.AddScoped<IVendorService, VendorService>();
+            services.AddScoped<IEmailService, EmailService>();
+            VendorMapsterConfig.RegisterVendorMappings();
 
             return services;
         }
