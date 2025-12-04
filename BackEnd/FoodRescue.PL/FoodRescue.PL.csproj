@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FoodRescue.BLL\FoodRescue.BLL.csproj" />
-    <ProjectReference Include="..\FoodRescue.DAL\FoodRescue.DAL.csproj" />
   </ItemGroup>
 
 </Project>

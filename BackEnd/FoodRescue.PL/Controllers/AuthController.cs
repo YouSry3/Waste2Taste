@@ -44,8 +44,16 @@ namespace FoodRescue.PL.Controllers
         }
 
         [HttpPost("Forget-Password")]
-        public async Task<IActionResult> SendPasswordResetCode([FromQuery] string email,
+        public async Task<IActionResult> SendPasswordResetCode([FromBody] string email,
             CancellationToken cancellationToken)
+        {
+            var result = await AuthService.SendPasswordResetCode(email, cancellationToken);
+            return result.IsSuccess ?
+                 Ok("Check Your Inbox Email") :
+                 BadRequest(result.Error);
+        }
+
+
         [HttpPost("refresh-token")]
         [Authorize]
         public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)

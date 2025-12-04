@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "FoodRescue.BLL": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "Executable"
+    }
+  }
+}

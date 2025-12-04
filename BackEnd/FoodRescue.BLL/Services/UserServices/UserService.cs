@@ -20,11 +20,11 @@ namespace FoodRescue.BLL.Services.UserServices
         {
             var IsExited = await _repo.GetByIdAsync(id);
             // Handeling Error If User Not Existed
-            return IsExited == null
+            return IsExited == null 
                 ? Result.Failure<User>(UserErrors.EmailUndefinded)
                 : Result.Success<User>(IsExited);
 
-        
+
         }
 
         public async Task<Result<User>> GetProfileAsync(string email)

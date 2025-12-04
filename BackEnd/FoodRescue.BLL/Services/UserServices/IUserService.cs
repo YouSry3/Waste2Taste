@@ -15,5 +15,6 @@ namespace FoodRescue.BLL.Services.UserServices
         Task<Result<User>> GetProfileAsync(string email);
         Task<IEnumerable<User>> GetVendorsAsync();
         Task<Result> UpdateProfileAsync(string email, UpdateProfileDTO dto);
+
     }
 }
