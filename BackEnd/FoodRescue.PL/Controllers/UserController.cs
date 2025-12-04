@@ -21,10 +21,10 @@ namespace FoodRescue.PL.Controllers
         public async Task<IActionResult> GetProfile([FromHeader] string email)
         {
 
-            var user = await _service.GetProfileAsync(email);
-            if (user == null) return NotFound();
+            var result = await _service.GetProfileAsync(email);
+            if (result.IsSuccess) return NotFound(result.Error);
 
-            return Ok(user);
+            return Ok(result.Value);
         }
      
 
@@ -34,7 +34,10 @@ namespace FoodRescue.PL.Controllers
             [FromHeader] string email,
             [FromBody] UpdateProfileDTO dto)
         {
-            await _service.UpdateProfileAsync(email, dto);
+             var result = await _service.UpdateProfileAsync(email, dto);
+            if (result.IsFailure) 
+                return NotFound(result.Error); 
+
             return Ok(new { message = "Profile updated successfully" });
         }
 
