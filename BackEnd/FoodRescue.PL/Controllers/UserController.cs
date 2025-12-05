@@ -1,6 +1,7 @@
 ﻿using FoodRescue.BLL.Abstractions;
 using FoodRescue.BLL.DTOs;
 using FoodRescue.BLL.Services.UserServices;
+using FoodRescue.BLL.Services.Vendors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +12,13 @@ namespace FoodRescue.PL.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _service;
+        private readonly IVendorService _vendorService;
 
-        public UserController(IUserService service)
+
+        public UserController(IUserService service, IVendorService vendorService)
         {
             _service = service;
+            _vendorService = vendorService;
         }
         // GET /users/profile
         [HttpGet("profile")]
@@ -44,9 +48,11 @@ namespace FoodRescue.PL.Controllers
 
         // GET /users/vendors
         [HttpGet("vendors")]
-        public async Task<IActionResult> GetVendors()
+        public async Task<IActionResult> GetVendors(
+            [FromQuery] string? name,
+            [FromQuery] string? status)
         {
-            var vendors = await _service.GetVendorsAsync();
+            var vendors = await _vendorService.GetVendorsAsync(name, status);
             return Ok(vendors);
         }
 

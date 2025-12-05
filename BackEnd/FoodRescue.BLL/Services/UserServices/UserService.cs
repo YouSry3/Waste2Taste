@@ -2,6 +2,7 @@
 using FoodRescue.BLL.Abstractions.TypeErrors;
 using FoodRescue.BLL.DTOs;
 using FoodRescue.BLL.Extensions.Users;
+using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.DAL.Entities;
 
 
@@ -10,11 +11,14 @@ namespace FoodRescue.BLL.Services.UserServices
     public class UserService : IUserService
     {
         private readonly IUserRepository _repo;
+       
 
         public UserService(IUserRepository repo)
         {
             _repo = repo;
+            
         }
+        
 
         public async Task<Result<User>> GetByIdAsync(Guid id)
         {
@@ -35,10 +39,7 @@ namespace FoodRescue.BLL.Services.UserServices
                 ? Result.Failure<User>(UserErrors.EmailUndefinded)
                 : Result.Success<User>(IsExited);
         }
-        public async Task<IEnumerable<User>> GetVendorsAsync()
-        {
-            return await _repo.GetVendorsAsync();
-        }
+        
 
         public async Task<Result> UpdateProfileAsync(string email, UpdateProfileDTO dto)
         {
