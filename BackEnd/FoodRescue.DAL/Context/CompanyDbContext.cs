@@ -15,7 +15,8 @@ namespace FoodRescue.DAL.Context
         // Configurations
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CompanyDbContext).Assembly);
+
             modelBuilder.ApplyConfiguration(new PasswordResetTokenConfiguration());
 
             base.OnModelCreating(modelBuilder);
