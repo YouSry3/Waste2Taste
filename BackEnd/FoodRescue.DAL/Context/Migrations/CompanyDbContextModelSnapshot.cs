@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FoodRescue.DAL.Migrations
+namespace FoodRescue.DAL.Context.Migrations
 {
     [DbContext(typeof(CompanyDbContext))]
     partial class CompanyDbContextModelSnapshot : ModelSnapshot
