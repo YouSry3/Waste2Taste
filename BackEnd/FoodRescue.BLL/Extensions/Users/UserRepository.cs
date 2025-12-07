@@ -9,10 +9,14 @@ using System.Threading.Tasks;
 
 namespace FoodRescue.BLL.Extensions.Users
 {
-    public class UserRepository(CompanyDbContext context) : IUserRepository
+    public class UserRepository : IUserRepository
     {
-        private readonly CompanyDbContext _context = context;
-        
+        private readonly CompanyDbContext _context;
+
+        public UserRepository(CompanyDbContext context)
+        {
+            _context = context;
+        }
 
         public async Task<User?> GetByEmailAsync(string email)
         {
@@ -21,8 +25,7 @@ namespace FoodRescue.BLL.Extensions.Users
 
         public async Task<User?> GetByIdAsync(Guid id)
         {
-            return await _context.Users
-                .FirstOrDefaultAsync(u => u.Id == id);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<IEnumerable<User>> GetVendorsAsync()
@@ -41,5 +44,12 @@ namespace FoodRescue.BLL.Extensions.Users
         {
             await _context.SaveChangesAsync();
         }
+
+        // تنفيذ الدالة
+        public bool CheckDuplication(User user, string newPassword)
+        {
+            return user.Password == newPassword;
+        }
     }
+
 }

@@ -1,4 +1,8 @@
 
+using FoodRescue.BLL.Settings;
+using System.Net;
+using System.Net.Mail;
+
 namespace FoodRescue.PL
 {
     public class Program
@@ -9,6 +13,10 @@ namespace FoodRescue.PL
 
             // Add services to the container.
             builder.Services.AddProjectServices(builder.Configuration, builder.Environment);
+
+
+          
+
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

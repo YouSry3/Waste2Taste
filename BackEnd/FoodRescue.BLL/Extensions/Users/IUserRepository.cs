@@ -14,6 +14,10 @@ namespace FoodRescue.BLL.Extensions.Users
         Task<IEnumerable<User>> GetVendorsAsync();
         Task UpdateAsync(User user);
         Task SaveChangesAsync();
-        
+
+        bool CheckDuplication(User user, string newPassword);
+
     }
+
+
 }
