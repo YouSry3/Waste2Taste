@@ -11,5 +11,8 @@ public class Vendor
 
     // Navigation
     public User Owner { get; set; } = null!;
+    public ICollection<Product> Products { get; set; }
+    public ICollection<Order> Orders { get; set; }
+    public ICollection<Donation> Donations { get; set; }
     //public List<Product> Products { get; set; } = new();
 }

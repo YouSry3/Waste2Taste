@@ -11,6 +11,12 @@ namespace FoodRescue.DAL.Context
         public DbSet<User> Users { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<Vendor> Vendors { get; set; }
+        public DbSet<Donation> Donations { get; set; }
+        public DbSet<Report> Reports { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
+
 
         // Configurations
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -19,9 +25,11 @@ namespace FoodRescue.DAL.Context
 
             modelBuilder.ApplyConfiguration(new PasswordResetTokenConfiguration());
 
+            
+    
+
             base.OnModelCreating(modelBuilder);
-
-
         }
+
     }
 }
