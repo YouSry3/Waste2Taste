@@ -3,7 +3,7 @@ namespace FoodRescue.BLL.Services.Authentication.Email_Service
 {
     
 
-    public class EmailService
+    public class EmailService 
     {
         private readonly IFluentEmail _email;
 

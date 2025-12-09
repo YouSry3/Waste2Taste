@@ -92,7 +92,7 @@ namespace FoodRescue.PL
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IVendorRepository, VendorRepository>();
             services.AddScoped<IVendorService, VendorService>();
-            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<EmailService>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductService, ProductService>();
             VendorMapsterConfig.RegisterVendorMappings();
