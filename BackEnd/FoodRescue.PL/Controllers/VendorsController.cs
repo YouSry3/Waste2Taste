@@ -1,5 +1,6 @@
 ﻿using FoodRescue.BLL.Contract.Vendors;
 using FoodRescue.BLL.Services.Vendors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodRescue.PL.Controllers;
@@ -38,7 +39,7 @@ public class VendorsController : ControllerBase
 
     // POST /vendors — Admin only
     [HttpPost]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> Create(CreateVendorRequest dto)
     {
         var id = await _vendorService.CreateVendorAsync(dto);
@@ -52,8 +53,10 @@ public class VendorsController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVendorRequest dto)
     {
-        var updated = await _vendorService.UpdateVendorAsync(id, dto);
-        if (!updated) return NotFound(new { message = "Vendor not found" });
+        var result = await _vendorService.UpdateVendorAsync(id, dto);
+
+        if (result.IsFailure)
+            return NotFound(new { code = result.Error!.code, message = result.Error.description });
 
         return Ok(new { message = "Vendor updated successfully" });
     }
@@ -64,8 +67,10 @@ public class VendorsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var deleted = await _vendorService.DeleteVendorAsync(id);
-        if (!deleted) return NotFound(new { message = "Vendor not found" });
+        var result = await _vendorService.DeleteVendorAsync(id);
+
+        if (result.IsFailure)
+            return NotFound(new { code = result.Error!.code, message = result.Error.description });
 
         return Ok(new { message = "Vendor deleted successfully" });
     }

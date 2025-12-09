@@ -1,11 +1,13 @@
 ﻿using FluentValidation.AspNetCore;
 using FoodRescue.BLL.Contract.Authentication;
 using FoodRescue.BLL.Contract.Authentication.Register;
+using FoodRescue.BLL.Extensions.Products;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.BLL.Extensions.Vendors.MapsterConfiguration;
 using FoodRescue.BLL.Services.Authentication;
 using FoodRescue.BLL.Services.JWT;
+using FoodRescue.BLL.Services.Products;
 using FoodRescue.BLL.Services.Vendors;
 using FoodRescue.DAL.Context;
 using Microsoft.EntityFrameworkCore;
@@ -74,6 +76,8 @@ namespace FoodRescue.PL
             services.AddScoped<IVendorRepository, VendorRepository>();
             services.AddScoped<IVendorService, VendorService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IProductService, ProductService>();
             VendorMapsterConfig.RegisterVendorMappings();
 
             return services;
