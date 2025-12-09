@@ -49,7 +49,7 @@ namespace FoodRescue.PL.Controllers
             return Ok(new { message = "Logged out successfully" });
         }
 
-        [HttpPost("SendPasswordResetCode")]
+        [HttpPost("password-reset-code")]
         public async Task<IActionResult> SendPasswordResetCode([FromBody] SendEmailRequest request, CancellationToken cancellationToken)
         {
             var result = await AuthService.SendPasswordResetCode(request.Email, cancellationToken);
