@@ -26,11 +26,11 @@ namespace FoodRescue.BLL.Services.Reports
         }
 
 
-        public async Task SubmitReportAsync(ReportRequest reportRequest)
+        public async Task SubmitReportAsync(ReportRequest reportRequest, Guid userId)
         {
             var report = new Report
             {
-                UserId = reportRequest.UserId,
+                UserId = userId,
                 VendorId = reportRequest.VendorId,
                 Type = reportRequest.Type,
                 Description = reportRequest.Description,

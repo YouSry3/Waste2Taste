@@ -1,5 +1,6 @@
 ﻿using FoodRescue.BLL.Contract.Reports.Create;
 using FoodRescue.BLL.Contract.Reports.Update;
+using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Services.Reports;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,14 +11,12 @@ namespace FoodRescue.PL.Controllers
     [Route("/[controller]")]
     [ApiController]
     [Authorize]
-    public class ReportsController : ControllerBase
+    public class ReportsController(IReportsService reportsService, IUserRepository UserRepository) : ControllerBase
     {
-        private readonly IReportsService _reportsService;
+        private readonly IReportsService _reportsService = reportsService;
+        private readonly IUserRepository _UserRepository = UserRepository;
 
-        public ReportsController(IReportsService reportsService)
-        {
-            _reportsService = reportsService;
-        }
+
 
         // GET /api/reports
         [HttpGet("")]
@@ -47,29 +46,32 @@ namespace FoodRescue.PL.Controllers
                 return Unauthorized();
             }
 
-            if (reportRequest.UserId != userId)
-            {
-                return Forbid("You cannot submit a report for another user.");
-            }
-
-            await _reportsService.SubmitReportAsync(reportRequest);
+            
+            await _reportsService.SubmitReportAsync(reportRequest, userId);
             return Ok(new { message = "Report submitted successfully" });
         }
 
-        // PUT /api/reports/{id}/status
-        [HttpPut("{id}/status")]
+        // PUT /api/reports/status
+        [HttpPut("Toggle-status")]
         [Authorize(Roles = "Admin")] 
         public async Task<IActionResult> UpdateReportStatus(Guid id, [FromBody] ReportStatusRequest statusRequest)
         {
-            try
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid userId))
             {
-                await _reportsService.UpdateReportStatusAsync(id, statusRequest);
-                return Ok(new { message = "Report status updated successfully" });
+                return Unauthorized();
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound(new { message = "Report not found" });
-            }
+            var user = await _UserRepository.GetByIdAsync(userId);
+
+            if (user == null) 
+                return NotFound(new { message = "Reporter not found" });
+            
+
+            if(user.Type != "Admin")
+                return Problem("No Access To Edited in this Status");
+
+            await _reportsService.UpdateReportStatusAsync(userId, statusRequest);
+            return Ok(new { message = "Report status updated successfully" });
         }
     }
 }

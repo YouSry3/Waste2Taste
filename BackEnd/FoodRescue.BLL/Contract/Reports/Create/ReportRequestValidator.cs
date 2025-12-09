@@ -11,9 +11,7 @@ namespace FoodRescue.BLL.Contract.Reports.Create
     {
         public ReportRequestValidator()
         {
-            RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("User ID is required.");
-
+            
             RuleFor(x => x.VendorId)
                 .NotEmpty().WithMessage("Vendor ID is required.");
 

@@ -7,7 +7,7 @@ namespace FoodRescue.BLL.Services.Reports
 {
     public interface IReportsService
     {
-        Task SubmitReportAsync(ReportRequest reportRequest);
+        Task SubmitReportAsync(ReportRequest reportRequest, Guid userId);
         Task<IEnumerable<Report>> ListReportsAsync(Guid userId, bool isAdmin);
         Task UpdateReportStatusAsync(Guid reportId, ReportStatusRequest statusRequest);
 
