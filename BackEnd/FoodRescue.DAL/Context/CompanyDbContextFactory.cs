@@ -9,7 +9,7 @@ namespace FoodRescue.DAL.Context
         {
             // EF Core at design-time cannot load appsettings.json
             var connectionString =
-                "Server=MOHAMEDYOUSRY;Database=FoodRescueAppDB;Trusted_Connection=True;TrustServerCertificate=True;";
+                "Server=.;Database=FoodRescueAppDB;Trusted_Connection=True;TrustServerCertificate=True;";
 
             var builder = new DbContextOptionsBuilder<CompanyDbContext>();
             builder.UseSqlServer(connectionString);
