@@ -7,6 +7,7 @@ using FoodRescue.BLL.Extensions.Vendors.MapsterConfiguration;
 using FoodRescue.BLL.Services.Authentication.AuthServices;
 using FoodRescue.BLL.Services.Authentication.Email_Service;
 using FoodRescue.BLL.Services.JWT;
+using FoodRescue.BLL.Services.Reports;
 using FoodRescue.BLL.Services.Vendors;
 using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
@@ -92,6 +93,9 @@ namespace FoodRescue.PL
             services.AddScoped<IVendorRepository, VendorRepository>();
             services.AddScoped<IVendorService, VendorService>();
             services.AddScoped<EmailService>();
+            services.AddScoped<IReportsService, ReportsService>();
+
+
 
             VendorMapsterConfig.RegisterVendorMappings();
 

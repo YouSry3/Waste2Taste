@@ -24,7 +24,7 @@ namespace FoodRescue.BLL.Contract.Authentication.Register
             RuleFor(x => x.Type)
                 .NotEmpty().WithMessage("Type is required.")
                 //admin, vendor, customer
-                .Must(type => type == "customer" || type == "admin" || type == "vendor")
+                .Must(type => type == "Customer" || type == "Admin" || type == "Vendor")
                 .WithMessage("Type must be either 'customer' or 'admin' or 'vendor' ");
 
 

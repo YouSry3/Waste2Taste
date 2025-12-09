@@ -1,11 +1,7 @@
 ﻿using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace FoodRescue.BLL.Extensions.Users
 {
@@ -45,7 +41,6 @@ namespace FoodRescue.BLL.Extensions.Users
             await _context.SaveChangesAsync();
         }
 
-        // تنفيذ الدالة
         public bool CheckDuplication(User user, string newPassword)
         {
             return user.Password == newPassword;
