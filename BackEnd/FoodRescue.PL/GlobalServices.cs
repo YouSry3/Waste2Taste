@@ -1,18 +1,21 @@
 ﻿using FluentValidation.AspNetCore;
-using FoodRescue.BLL.Contract.Authentication;
 using FoodRescue.BLL.Contract.Authentication.Register;
 using FoodRescue.BLL.Extensions.Products;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.BLL.Extensions.Vendors.MapsterConfiguration;
-using FoodRescue.BLL.Services.Authentication;
+using FoodRescue.BLL.Services.Authentication.AuthServices;
+using FoodRescue.BLL.Services.Authentication.Email_Service;
 using FoodRescue.BLL.Services.JWT;
 using FoodRescue.BLL.Services.Products;
 using FoodRescue.BLL.Services.Vendors;
+using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text; // Add this at the top with other using statements
+using System.Net;
+using System.Net.Mail;
+using System.Text;
 
 namespace FoodRescue.PL
 {
@@ -64,6 +67,20 @@ namespace FoodRescue.PL
                     // Automatically register validators from the assembly containing RegisterRequestValidator
                     fv.RegisterValidatorsFromAssembly(typeof(RegisterRequestValidator).Assembly);
                 });
+
+            var emailSettings = configuration.GetSection("EmailSettings").Get<EmailSettings>();
+
+            if (emailSettings != null)
+            {
+                services
+                    .AddFluentEmail(emailSettings.Username)
+                    .AddSmtpSender(new SmtpClient(emailSettings.Host)
+                    {
+                        Port = emailSettings.Port,
+                        Credentials = new NetworkCredential(emailSettings.Username, emailSettings.Password),
+                        EnableSsl = emailSettings.EnableSSL
+                    });
+            }
 
             return services;
         }

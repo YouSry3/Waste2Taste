@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FoodRescue.BLL.Contract.Authentication
+﻿namespace FoodRescue.BLL.Services.Authentication.Email_Service
 {
-    public interface IEmailService
+    internal interface IEmailService
     {
-        Task SendEmailAsync(string to, string subject, string body);
-
     }
 }

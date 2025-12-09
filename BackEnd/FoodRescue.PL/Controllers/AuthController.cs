@@ -1,6 +1,10 @@
-﻿using FoodRescue.BLL.Contract.Authentication.Login;
+﻿using FoodRescue.BLL.Contract.Authentication.ForgetPassword.CheckCode;
+using FoodRescue.BLL.Contract.Authentication.ForgetPassword.SendForgetEmail;
+using FoodRescue.BLL.Contract.Authentication.ForgetPassword.UpdatePassword;
+using FoodRescue.BLL.Contract.Authentication.Login;
 using FoodRescue.BLL.Contract.Authentication.Register;
-using FoodRescue.BLL.Services.Authentication;
+using FoodRescue.BLL.Services.Authentication.AuthServices;
+using FoodRescue.BLL.Services.Authentication.Email_Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +17,8 @@ namespace FoodRescue.PL.Controllers
     public class AuthController(IAuthService authService) : ControllerBase
     {
         private readonly IAuthService AuthService = authService;
+
+     
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request,
@@ -43,14 +49,31 @@ namespace FoodRescue.PL.Controllers
             return Ok(new { message = "Logged out successfully" });
         }
 
-        [HttpPost("Forget-Password")]
-        public async Task<IActionResult> SendPasswordResetCode([FromBody] string email,
-            CancellationToken cancellationToken)
+        [HttpPost("password-reset-code")]
+        public async Task<IActionResult> SendPasswordResetCode([FromBody] SendEmailRequest request, CancellationToken cancellationToken)
         {
-            var result = await AuthService.SendPasswordResetCode(email, cancellationToken);
+            var result = await AuthService.SendPasswordResetCode(request.Email, cancellationToken);
             return result.IsSuccess ?
-                 Ok("Check Your Inbox Email") :
-                 BadRequest(result.Error);
+                Ok() :
+                BadRequest(result.Error);
+        }
+        // Explain this code line by line. For each line infer what it wants to achieve and how it fits into the big picture.
+        [HttpPost("verify-reset-code")]
+        public async Task<IActionResult> VerifyResetCode([FromBody] VerifyResetCodeRequest request, CancellationToken cancellationToken)
+        {
+            var result = await AuthService.VerifyResetCode(request, cancellationToken);
+            return result.IsSuccess ?
+                Ok(new { message = "Code is valid." }) :
+                BadRequest(new { error = result.Error });
+        }
+        // Explain this code line by line. For each line infer what it wants to achieve and how it fits into the big picture.
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ForgetPasswordRequest request, CancellationToken cancellationToken)
+        {
+            var result = await AuthService.ResetPassword(request, cancellationToken);
+            return result.IsSuccess ?
+                Ok(new { message = "Password has been reset successfully." }) :
+                BadRequest(result.Error);
         }
 
 
@@ -74,30 +97,7 @@ namespace FoodRescue.PL.Controllers
             return StatusCode(501, new { code = "NotImplemented", description = "Token refresh not yet implemented" });
         }
 
-        [HttpGet("verify-token")]
-        [Authorize]
-        public IActionResult VerifyToken()
-        {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var email = User.FindFirst(ClaimTypes.Email)?.Value;
-            var name = User.FindFirst(ClaimTypes.GivenName)?.Value;
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized(new { isValid = false });
-            }
-
-            return Ok(new
-            {
-                isValid = true,
-                user = new
-                {
-                    id = userId,
-                    email = email,
-                    name = name
-                }
-            });
-        }
+        
     }
 }
 
