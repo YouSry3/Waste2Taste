@@ -1,6 +1,6 @@
-﻿namespace FoodRescue.BLL.Services.Authentication.Email_Service
+﻿namespace FoodRescue.BLL.Services.Authentication.Email_Service;
+
+public interface IEmailService
 {
-    internal interface IEmailService
-    {
-    }
+    Task<bool> SendEmailAsync(string to, string subject, string body);
 }

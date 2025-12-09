@@ -1,9 +1,9 @@
 ﻿using FluentEmail.Core;
 namespace FoodRescue.BLL.Services.Authentication.Email_Service
 {
-    
 
-    public class EmailService
+
+    public class EmailService : IEmailService
     {
         private readonly IFluentEmail _email;
 
