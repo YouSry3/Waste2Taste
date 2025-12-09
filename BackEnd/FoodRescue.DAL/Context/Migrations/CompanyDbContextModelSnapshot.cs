@@ -51,6 +51,43 @@ namespace FoodRescue.DAL.Context.Migrations
                     b.ToTable("PasswordResetTokens", (string)null);
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<bool>("Expired")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("products", (string)null);
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -121,6 +158,17 @@ namespace FoodRescue.DAL.Context.Migrations
                     b.ToTable("vendors", (string)null);
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Product", b =>
+                {
+                    b.HasOne("FoodRescue.DAL.Entities.Vendor", "Vendor")
+                        .WithMany("Products")
+                        .HasForeignKey("VendorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Vendor");
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.Vendor", b =>
                 {
                     b.HasOne("FoodRescue.DAL.Entities.User", "Owner")
@@ -130,6 +178,11 @@ namespace FoodRescue.DAL.Context.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Vendor", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

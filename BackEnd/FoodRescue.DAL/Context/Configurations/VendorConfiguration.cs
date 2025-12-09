@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FoodRescue.DAL.Context.Configurations;
 
-public class VendorConfigurations : IEntityTypeConfiguration<Vendor>
+public class VendorConfiguration : IEntityTypeConfiguration<Vendor>
 {
     public void Configure(EntityTypeBuilder<Vendor> builder)
     {

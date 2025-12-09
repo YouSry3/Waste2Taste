@@ -1,4 +1,6 @@
-﻿using FoodRescue.BLL.Contract.Vendors;
+﻿using FoodRescue.BLL.Abstractions;
+using FoodRescue.BLL.Abstractions.TypeErrors;
+using FoodRescue.BLL.Contract.Vendors;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.DAL.Entities;
 using Mapster;
@@ -14,54 +16,80 @@ public class VendorService : IVendorService
         _vendorRepository = vendorRepository;
     }
 
-    public async Task<List<VendorListResponse>> GetVendorsAsync(string? name, string? status)
+    public async Task<Result<List<VendorListResponse>>> GetVendorsAsync(string? name, string? status)
     {
         var vendors = await _vendorRepository.GetVendorsAsync(name, status);
-        return vendors.Adapt<List<VendorListResponse>>();
+        var response = vendors.Adapt<List<VendorListResponse>>();
+
+        return Result.Success(response);
     }
 
-    public async Task<VendorDetailsResponse?> GetVendorByIdAsync(Guid id)
+    public async Task<Result<VendorDetailsResponse>> GetVendorByIdAsync(Guid id)
     {
         var vendor = await _vendorRepository.GetVendorByIdAsync(id);
-        return vendor?.Adapt<VendorDetailsResponse>();
+
+        if (vendor is null)
+            return Result.Failure<VendorDetailsResponse>(VendorErrors.NotFound);
+
+        var response = vendor.Adapt<VendorDetailsResponse>();
+        return Result.Success(response);
     }
 
-    public async Task<Guid> CreateVendorAsync(CreateVendorRequest dto)
+    public async Task<Result<Guid>> CreateVendorAsync(CreateVendorRequest dto)
     {
+        if (string.IsNullOrWhiteSpace(dto.Name))
+            return Result.Failure<Guid>(VendorErrors.NameRequired);
+
         var vendor = dto.Adapt<Vendor>();
         vendor.Id = Guid.NewGuid();
         vendor.CreatedAt = DateTime.UtcNow;
 
         await _vendorRepository.AddAsync(vendor);
-        return vendor.Id;
+
+        return Result.Success(vendor.Id);
     }
 
-    public async Task<bool> UpdateVendorAsync(Guid id, UpdateVendorRequest dto)
+    public async Task<Result> UpdateVendorAsync(Guid id, UpdateVendorRequest dto)
     {
         var vendor = await _vendorRepository.GetByIdAsync(id);
-        if (vendor == null) return false;
 
-        if (dto.Name != null) vendor.Name = dto.Name;
-        if (dto.Address != null) vendor.Address = dto.Address;
-        if (dto.Status != null) vendor.Status = dto.Status;
+        if (vendor is null)
+            return Result.Failure(VendorErrors.NotFound);
+
+        if (dto.Name is not null)
+            vendor.Name = dto.Name;
+
+        if (dto.Address is not null)
+            vendor.Address = dto.Address;
+
+        if (dto.Status is not null)
+            vendor.Status = dto.Status;
 
         await _vendorRepository.UpdateAsync(vendor);
-        return true;
+
+        return Result.Success();
     }
 
-    public async Task<bool> DeleteVendorAsync(Guid id)
+    public async Task<Result> DeleteVendorAsync(Guid id)
     {
         var vendor = await _vendorRepository.GetByIdAsync(id);
-        if (vendor == null) return false;
+
+        if (vendor is null)
+            return Result.Failure(VendorErrors.NotFound);
 
         await _vendorRepository.DeleteAsync(vendor);
-        return true;
+
+        return Result.Success();
     }
 
-    public async Task<List<VendorProductResponse>> GetVendorProductsAsync(Guid vendorId)
+    public async Task<Result<List<VendorProductResponse>>> GetVendorProductsAsync(Guid vendorId)
     {
-        throw new NotImplementedException();
-        //var vendor = await _vendorRepository.GetVendorWithProductsAsync(vendorId);
-        //return vendor?.Products.Adapt<List<VendorProductResponse>>() ?? new();
+        var vendor = await _vendorRepository.GetVendorWithProductsAsync(vendorId);
+
+        if (vendor is null)
+            return Result.Failure<List<VendorProductResponse>>(VendorErrors.NotFound);
+
+        var response = vendor.Products.Adapt<List<VendorProductResponse>>();
+        return Result.Success(response);
     }
 }

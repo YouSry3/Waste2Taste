@@ -39,11 +39,9 @@ public class VendorRepository : IVendorRepository
 
     public async Task<Vendor?> GetVendorWithProductsAsync(Guid id)
     {
-
-        throw new NotImplementedException();
-        //return await _context.Vendors
-        //    .Include(v => v.Products)
-        //    .FirstOrDefaultAsync(v => v.Id == id);
+        return await _context.Vendors
+            .Include(v => v.Products)
+            .FirstOrDefaultAsync(v => v.Id == id);
     }
 
     public async Task AddAsync(Vendor vendor)

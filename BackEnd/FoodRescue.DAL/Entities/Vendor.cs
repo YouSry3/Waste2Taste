@@ -11,5 +11,5 @@ public class Vendor
 
     // Navigation
     public User Owner { get; set; } = null!;
-    //public List<Product> Products { get; set; } = new();
+    public List<Product> Products { get; set; } = new();
 }
