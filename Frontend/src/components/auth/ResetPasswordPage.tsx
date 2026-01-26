@@ -1,10 +1,10 @@
 // src/pages/ResetPasswordPage.tsx
-import { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
+import { useMutation } from "@tanstack/react-query";
 
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
@@ -14,32 +14,38 @@ import { Mail, Store } from "lucide-react";
 
 import { apiClient } from "../../services/api/apiClient";
 
+type ResetPasswordPayload = {
+  email: string;
+};
+
 export default function ResetPasswordPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const validationSchema = Yup.object({
     email: Yup.string().email("Invalid email").required("Email is required"),
   });
 
-  const handleSubmit = async (values: { email: string }) => {
-    console.log("Payload to send:", values); // ✅ Check payload
-    setIsSubmitting(true);
-    try {
-      const response = await apiClient.post(
-        "/Auth/password-reset-code",
-        values
+  const resetPasswordMutation = useMutation({
+    mutationFn: (payload: ResetPasswordPayload) =>
+      apiClient.post("/Auth/password-reset-code", payload),
+
+    onSuccess: (_data, variables) => {
+      // ✅ Redirect to EnterResetCodePage with email as state
+      toast.success(
+        "If this email is registered, a reset code has been sent to it.",
       );
-      console.log("Reset password response:", response.data);
-      toast.success("If this email is registered, a reset link has been sent.");
-      navigate("/login");
-    } catch (err: any) {
-      console.error("Reset password error:", err);
-      toast.error(err?.message || "Failed to send reset link.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+      navigate("/enter-reset-code", { state: { email: variables.email } });
+    },
+
+    onError: (error: any) => {
+      console.error("Reset password error:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to send reset code.",
+      );
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-6">
@@ -58,14 +64,16 @@ export default function ResetPasswordPage() {
             </div>
             <h1 className="mb-2 font-semibold text-2xl">Reset Your Password</h1>
             <p className="text-gray-600">
-              Enter your email and we’ll send a reset link
+              Enter your email and we’ll send a reset code
             </p>
           </div>
 
           <Formik
             initialValues={{ email: "" }}
             validationSchema={validationSchema}
-            onSubmit={handleSubmit}
+            onSubmit={(values) => {
+              resetPasswordMutation.mutate(values);
+            }}
           >
             {({ errors, touched }) => (
               <Form className="space-y-6">
@@ -80,13 +88,13 @@ export default function ResetPasswordPage() {
                       type="email"
                       placeholder="your.email@example.com"
                       className={`pl-10 border ${
-                        touched.email && errors?.email
+                        touched.email && errors.email
                           ? "border-red-500"
                           : "border-gray-300"
                       }`}
                     />
                   </div>
-                  {touched.email && errors?.email && (
+                  {touched.email && errors.email && (
                     <p className="text-red-500 text-xs mt-1">{errors.email}</p>
                   )}
                 </div>
@@ -99,9 +107,11 @@ export default function ResetPasswordPage() {
                   <Button
                     type="submit"
                     className="w-full bg-green-600 hover:bg-green-700"
-                    disabled={isSubmitting}
+                    disabled={resetPasswordMutation.isPending}
                   >
-                    {isSubmitting ? "Sending..." : "Send Reset Link"}
+                    {resetPasswordMutation.isPending
+                      ? "Sending..."
+                      : "Send Reset Code"}
                   </Button>
                 </motion.div>
 

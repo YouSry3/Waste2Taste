@@ -59,16 +59,20 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     },
   ];
 
+  // ✅ TanStack + Axios: use your working authService.login
   const loginMutation = useMutation({
-    mutationFn: async (values: LoginCredentials) => authService.login(values),
-    onError: () => toast.error("Wrong Email or Password"),
+    mutationFn: (values: LoginCredentials) => authService.login(values),
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Wrong Email or Password");
+    },
     onSuccess: (res: LoginResponse) => {
       if (res.user.panelType !== selectedPanel) {
         toast.error(
-          `Your account is registered as "${res.user.panelType}". Please select the correct panel.`
+          `Your account is registered as "${res.user.panelType}". Please select the correct panel.`,
         );
         return;
       }
+
       localStorage.setItem("user", JSON.stringify(res.user));
       localStorage.setItem("authToken", res.token);
       localStorage.setItem("panelType", selectedPanel);
@@ -109,7 +113,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       return;
     }
 
-    loginMutation.mutate(values);
+    loginMutation.mutate(values); // ✅ uses working authService.login
   };
 
   const isLoading = loginMutation.isLoading;
@@ -118,7 +122,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-6">
       <Toaster position="top-center" />
       <motion.div
-        className="w-full max-w-2xl" // ✅ add width constraints here
+        className="w-full max-w-2xl"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
@@ -186,7 +190,6 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   )}
                 </div>
 
-               
                 {/* Password */}
                 <div>
                   <Label htmlFor="password">Password</Label>
@@ -227,7 +230,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     </p>
                   )}
 
-                  {/* Forgot Password Link */}
+                  {/* Forgot Password */}
                   <div className="flex justify-end mt-2">
                     <button
                       type="button"
@@ -288,7 +291,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   </RadioGroup>
                 </div>
 
-                {/* Submit Button */}
+                {/* Submit */}
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}

@@ -19,9 +19,10 @@ import {
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 
 import { authService, RegisterPayload } from "../../services/auth/authService";
-import { Link, useNavigate } from "react-router-dom";
 
 export default function SignUpPage() {
   const [role, setRole] = useState<"admin" | "vendor" | "charity">("vendor");
@@ -55,6 +56,7 @@ export default function SignUpPage() {
     },
   ];
 
+  // Form validation
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
     email: Yup.string().email("Invalid email").required("Email required"),
@@ -63,7 +65,19 @@ export default function SignUpPage() {
       .required("Password required"),
   });
 
-  const handleSubmit = async (values: {
+  // Mutation using TanStack Query
+  const registerMutation = useMutation({
+    mutationFn: (payload: RegisterPayload) => authService.register(payload),
+    onSuccess: () => {
+      toast.success("Account created successfully!");
+      navigate("/login");
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Registration failed");
+    },
+  });
+
+  const handleSubmit = (values: {
     name: string;
     email: string;
     password: string;
@@ -74,27 +88,20 @@ export default function SignUpPage() {
       password: values.password,
       type: role,
     };
-
-    try {
-      await authService.register(payload);
-      toast.success("Account created successfully!");
-      navigate("/login");
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err.response?.data?.message || "Registration failed");
-    }
+    registerMutation.mutate(payload);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-6">
       <Toaster position="top-center" />
       <motion.div
-        className="w-full max-w-2xl" // ✅ add width constraints here
+        className="w-full max-w-2xl"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <Card className="w-full max-w-2xl p-8 shadow-xl">
+          {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex h-16 w-16 rounded-2xl bg-green-600 items-center justify-center mb-4">
               <User className="h-10 w-10 text-white" />
@@ -103,6 +110,7 @@ export default function SignUpPage() {
             <p className="text-gray-600">Join Food Rescue Platform</p>
           </div>
 
+          {/* Formik Form */}
           <Formik
             initialValues={{ name: "", email: "", password: "" }}
             validationSchema={validationSchema}
@@ -253,11 +261,15 @@ export default function SignUpPage() {
                   <Button
                     type="submit"
                     className="w-full bg-green-600 hover:bg-green-700"
+                    disabled={registerMutation.isLoading}
                   >
-                    Create Account
+                    {registerMutation.isLoading
+                      ? "Creating..."
+                      : "Create Account"}
                   </Button>
                 </motion.div>
 
+                {/* Login Link */}
                 <Link to="/login" className="w-full">
                   <Button className="w-full bg-white/90 border border-black text-black hover:bg-green-500 hover:text-white transition-colors duration-300">
                     Already Have an Account? Login

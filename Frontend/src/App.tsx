@@ -1,20 +1,22 @@
+// src/App.tsx
+import { useState } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import { SidebarProvider } from "./components/ui/sidebar";
 import { Button } from "./components/ui/button";
-import { Shield, Store, Heart, LogOut } from "lucide-react";
+import { Store, LogOut } from "lucide-react";
 
 import { AdminPanel } from "./components/admin/AdminPanel";
 import { VendorPanel } from "./components/vendor/VendorPanel";
 import { CharityPanel } from "./components/charity/CharityPanel";
 
 import { LoginPage } from "./components/auth/LoginPage";
-import SignupPage from "./components/auth/SignupPage"; // ✅ default import
-import ResetPasswordPage from "./components/auth/ResetPasswordPage"; // ✅ new page
+import SignupPage from "./components/auth/SignupPage";
+import ResetPasswordPage from "./components/auth/ResetPasswordPage";
+import EnterResetCodePage from "./components/auth/EnterResetCodePage";
 
 import { authService } from "./services/auth/authService";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-import { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
 
 type PanelType = "admin" | "vendor" | "charity";
 
@@ -22,11 +24,10 @@ const queryClient = new QueryClient();
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
-    !!authService.getCurrentUser()
+    !!authService.getCurrentUser(),
   );
-
   const [currentPanel, setCurrentPanel] = useState<PanelType | null>(
-    authService.getPanelType()
+    authService.getPanelType(),
   );
 
   const handleLogin = (panelType: PanelType) => {
@@ -40,6 +41,13 @@ export default function App() {
     setCurrentPanel(null);
   };
 
+  // ---------------- Protected Route ----------------
+  function ProtectedRoute({ children }: { children: JSX.Element }) {
+    if (!isAuthenticated || !currentPanel) return <Navigate to="/" replace />;
+    return children;
+  }
+
+  // ---------------- User Menu ----------------
   function UserMenu() {
     const [open, setOpen] = useState(false);
     const user = authService.getCurrentUser();
@@ -69,10 +77,7 @@ export default function App() {
               variant="ghost"
               size="sm"
               className="w-full justify-start px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-red-600"
-              onClick={async () => {
-                await authService.logout();
-                window.location.reload();
-              }}
+              onClick={handleLogout} // ✅ no reload needed
             >
               <LogOut className="h-4 w-4 mr-2" /> Logout
             </Button>
@@ -82,6 +87,7 @@ export default function App() {
     );
   }
 
+  // ---------------- App ----------------
   return (
     <QueryClientProvider client={queryClient}>
       <Routes>
@@ -97,7 +103,7 @@ export default function App() {
           }
         />
 
-        {/* SIGN UP PAGE */}
+        {/* SIGNUP PAGE */}
         <Route
           path="/signup"
           element={
@@ -117,14 +123,26 @@ export default function App() {
           }
         />
 
+        {/* ENTER RESET CODE PAGE */}
+        <Route
+          path="/enter-reset-code"
+          element={
+            !isAuthenticated ? (
+              <EnterResetCodePage />
+            ) : (
+              <Navigate to="/panel" replace />
+            )
+          }
+        />
+
         {/* PROTECTED PANEL */}
         <Route
           path="/panel"
           element={
-            isAuthenticated && currentPanel ? (
+            <ProtectedRoute>
               <div className="min-h-screen bg-gray-50">
                 {/* NAVBAR */}
-                <div className="bg-white border-b px-6 py-3">
+                <div className="bg-white border-b px-6 py-3 sticky top-0 z-50">
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
                       <div className="h-8 w-8 rounded-lg bg-green-600 flex items-center justify-center">
@@ -134,7 +152,6 @@ export default function App() {
                         Food Rescue Platform
                       </h2>
                     </div>
-
                     <div className="ml-auto flex items-center gap-4">
                       {authService.getCurrentUser() && <UserMenu />}
                     </div>
@@ -148,9 +165,7 @@ export default function App() {
                   {currentPanel === "charity" && <CharityPanel />}
                 </SidebarProvider>
               </div>
-            ) : (
-              <Navigate to="/" replace />
-            )
+            </ProtectedRoute>
           }
         />
 
