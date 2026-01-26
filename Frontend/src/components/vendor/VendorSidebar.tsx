@@ -31,7 +31,6 @@ const menuItems = [
   { id: 'create', label: 'Create Listings', icon: Plus },
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
   { id: 'reports', label: 'Reports', icon: FileWarning },
-  { id: 'corporate', label: 'Corporate Control', icon: Building2 },
 ];
 
 const branches = [
@@ -62,41 +61,7 @@ export function VendorSidebar({ currentView, onViewChange }: VendorSidebarProps)
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Branch Selection</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <div className="px-2 mb-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="w-full justify-between">
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span className="text-sm">
-                        {selectedBranches.length === branches.length
-                          ? 'All Branches'
-                          : selectedBranches.length === 1
-                          ? selectedBranches[0].split(' - ')[1]
-                          : `${selectedBranches.length} Branches`}
-                      </span>
-                    </div>
-                    <ChevronDown className="h-4 w-4 ml-2" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-64">
-                  {branches.map((branch) => (
-                    <DropdownMenuCheckboxItem
-                      key={branch}
-                      checked={selectedBranches.includes(branch)}
-                      onCheckedChange={() => toggleBranch(branch)}
-                    >
-                      {branch}
-                    </DropdownMenuCheckboxItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </SidebarGroupContent>
-        </SidebarGroup>
+      
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>

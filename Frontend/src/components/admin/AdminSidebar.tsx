@@ -1,4 +1,12 @@
-import { LayoutDashboard, Package, Users, Store, ShoppingBag, Map, Shield } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Package,
+  Users,
+  Store,
+  ShoppingBag,
+  Map,
+  Shield,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -9,21 +17,29 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarHeader,
-} from '../ui/sidebar';
+} from "../ui/sidebar";
 
 interface AdminSidebarProps {
   currentView: string;
-  onViewChange: (view: 'dashboard' | 'listings' | 'users' | 'vendors' | 'orders' | 'map' | 'moderation') => void;
+  onViewChange: (
+    view:
+      | "dashboard"
+      | "listings"
+      | "users"
+      | "vendors"
+      | "orders"
+      | "map"
+      | "moderation"
+  ) => void;
 }
 
 const menuItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'listings', label: 'Listings', icon: Package },
-  { id: 'orders', label: 'Orders', icon: ShoppingBag },
-  { id: 'vendors', label: 'Vendors', icon: Store },
-  { id: 'users', label: 'Users', icon: Users },
-  { id: 'map', label: 'Map', icon: Map },
-  { id: 'moderation', label: 'Moderation', icon: Shield },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "listings", label: "Listings", icon: Package },
+  { id: "orders", label: "Orders", icon: ShoppingBag },
+  { id: "vendors", label: "Vendors", icon: Store },
+  { id: "users", label: "Users", icon: Users },
+  { id: "moderation", label: "Moderation", icon: Shield },
 ];
 
 export function AdminSidebar({ currentView, onViewChange }: AdminSidebarProps) {

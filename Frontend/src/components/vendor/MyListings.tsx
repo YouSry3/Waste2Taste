@@ -1,61 +1,68 @@
-import { useState } from 'react';
-import { Card, CardContent } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { Clock, MapPin, Edit, Trash2, Eye } from 'lucide-react';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
-import { Switch } from '../ui/switch';
+import { useState } from "react";
+import { Card, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { Clock, Edit, Trash2, Eye } from "lucide-react";
+import { ImageWithFallback } from "../figma/ImageWithFallback";
+import { Switch } from "../ui/switch";
+
+type MyListingsProps = {
+  onCreate: () => void;
+};
 
 const listings = [
   {
     id: 1,
-    title: 'Bakery Surprise Bag',
-    category: 'Bakery',
-    originalPrice: '$15.00',
-    salePrice: '$4.99',
+    title: "Bakery Surprise Bag",
+    category: "Bakery",
+    originalPrice: "$15.00",
+    salePrice: "$4.99",
     quantity: 5,
-    pickupTime: '6:00 PM - 7:00 PM',
-    status: 'Active',
-    image: 'https://images.unsplash.com/photo-1696721497670-d57754966c1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYWtlcnklMjBmb29kJTIwcGFzdHJpZXN8ZW58MXx8fHwxNzYxODI3NTk4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    pickupTime: "6:00 PM - 7:00 PM",
+    status: "Active",
+    image: "https://images.unsplash.com/photo-1696721497670-d57754966c1e",
     sold: 3,
-    views: 45
+    views: 45,
   },
   {
     id: 2,
-    title: 'Fresh Pastries Box',
-    category: 'Bakery',
-    originalPrice: '$18.00',
-    salePrice: '$5.99',
+    title: "Fresh Pastries Box",
+    category: "Bakery",
+    originalPrice: "$18.00",
+    salePrice: "$5.99",
     quantity: 0,
-    pickupTime: '7:00 PM - 8:00 PM',
-    status: 'Sold Out',
-    image: 'https://images.unsplash.com/photo-1730660501229-145c09eb9b7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2ZmZWUlMjBwYXN0cnklMjBjYWZlfGVufDF8fHx8MTc2MTgyNzYwMHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    pickupTime: "7:00 PM - 8:00 PM",
+    status: "Sold Out",
+    image: "https://images.unsplash.com/photo-1730660501229-145c09eb9b7a",
     sold: 6,
-    views: 52
+    views: 52,
   },
   {
     id: 3,
-    title: 'Dessert Selection',
-    category: 'Bakery',
-    originalPrice: '$20.00',
-    salePrice: '$6.99',
+    title: "Dessert Selection",
+    category: "Bakery",
+    originalPrice: "$20.00",
+    salePrice: "$6.99",
     quantity: 4,
-    pickupTime: '8:00 PM - 9:00 PM',
-    status: 'Active',
-    image: 'https://images.unsplash.com/photo-1706463996554-6c6318946b3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNzZXJ0JTIwY2FrZSUyMGJha2VyeXxlbnwxfHx8fDE3NjE4Mjc2MDB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
+    pickupTime: "8:00 PM - 9:00 PM",
+    status: "Active",
+    image: "https://images.unsplash.com/photo-1706463996554-6c6318946b3f",
     sold: 2,
-    views: 38
+    views: 38,
   },
 ];
 
-export function MyListings() {
+export function MyListings({ onCreate }: MyListingsProps) {
   const [listingStates, setListingStates] = useState(
-    listings.map(l => ({ id: l.id, active: l.status === 'Active' }))
+    listings.map((l) => ({
+      id: l.id,
+      active: l.status === "Active",
+    }))
   );
 
   const toggleListing = (id: number) => {
-    setListingStates(prev =>
-      prev.map(state =>
+    setListingStates((prev) =>
+      prev.map((state) =>
         state.id === id ? { ...state, active: !state.active } : state
       )
     );
@@ -63,12 +70,16 @@ export function MyListings() {
 
   return (
     <div className="p-8">
+      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1>My Listings</h1>
           <p className="text-gray-500">Manage your surplus food listings</p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">Create New Listing</Button>
+
+        <Button className="bg-green-600 hover:bg-green-700" onClick={onCreate}>
+          Create New Listing
+        </Button>
       </div>
 
       {/* Stats */}
@@ -79,18 +90,21 @@ export function MyListings() {
             <h3>{listings.length}</h3>
           </CardContent>
         </Card>
+
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-gray-500 mb-1">Active</p>
-            <h3>{listings.filter(l => l.status === 'Active').length}</h3>
+            <h3>{listings.filter((l) => l.status === "Active").length}</h3>
           </CardContent>
         </Card>
+
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-gray-500 mb-1">Total Sold</p>
             <h3>{listings.reduce((sum, l) => sum + l.sold, 0)}</h3>
           </CardContent>
         </Card>
+
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-gray-500 mb-1">Total Views</p>
@@ -102,7 +116,10 @@ export function MyListings() {
       {/* Listings */}
       <div className="space-y-4">
         {listings.map((listing) => {
-          const isActive = listingStates.find(s => s.id === listing.id)?.active;
+          const isActive = listingStates.find(
+            (s) => s.id === listing.id
+          )?.active;
+
           return (
             <Card key={listing.id}>
               <CardContent className="p-6">
@@ -125,45 +142,21 @@ export function MyListings() {
                         <h4 className="mb-2">{listing.title}</h4>
                         <div className="flex items-center gap-2 mb-2">
                           <Badge>{listing.category}</Badge>
-                          {listing.status === 'Sold Out' ? (
+                          {listing.status === "Sold Out" ? (
                             <Badge variant="secondary">Sold Out</Badge>
                           ) : (
-                            <Badge variant={isActive ? 'default' : 'secondary'}>
-                              {isActive ? 'Active' : 'Paused'}
+                            <Badge variant={isActive ? "default" : "secondary"}>
+                              {isActive ? "Active" : "Paused"}
                             </Badge>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-500">Active</span>
-                        <Switch
-                          checked={isActive}
-                          onCheckedChange={() => toggleListing(listing.id)}
-                          disabled={listing.status === 'Sold Out'}
-                        />
-                      </div>
-                    </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                      <div>
-                        <p className="text-sm text-gray-500">Price</p>
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-600">{listing.salePrice}</span>
-                          <span className="text-xs text-gray-400 line-through">{listing.originalPrice}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Available</p>
-                        <p className="text-sm">{listing.quantity} bags</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Sold</p>
-                        <p className="text-sm">{listing.sold}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500">Views</p>
-                        <p className="text-sm">{listing.views}</p>
-                      </div>
+                      <Switch
+                        checked={isActive}
+                        onCheckedChange={() => toggleListing(listing.id)}
+                        disabled={listing.status === "Sold Out"}
+                      />
                     </div>
 
                     <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
@@ -176,11 +169,17 @@ export function MyListings() {
                         <Edit className="h-4 w-4 mr-2" />
                         Edit
                       </Button>
+
                       <Button variant="outline" size="sm">
                         <Eye className="h-4 w-4 mr-2" />
                         View
                       </Button>
-                      <Button variant="outline" size="sm" className="text-red-600 hover:text-red-700">
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700"
+                      >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete
                       </Button>
