@@ -73,85 +73,86 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
         }
 
 
-        public async Task<Result> SendPasswordResetCode(string email, CancellationToken cancellationToken = default)
+        public async Task<Result> SendPasswordResetCode(
+     string email,
+     CancellationToken cancellationToken = default)
         {
             // 1) Check if user exists
             var user = await _Context.Users
+                .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Email == email, cancellationToken);
 
             if (user == null)
                 return Result.Failure(UserErrors.EmailUndefinded);
 
-            // 2) Generate OTP
-            var code = new Random().Next(100000, 999999).ToString();
+            // 2) Generate secure OTP (6 digits)
+            var code = Random.Shared.Next(100000, 999999).ToString();
 
             // 3) Store OTP in DB
             var resetEntry = new PasswordResetToken
             {
                 Email = email,
                 Code = code,
-                ExpireAt = DateTime.Now.AddMinutes(10)
+                ExpireAt = DateTime.Now.AddMinutes(10),
+                IsUsed = false
             };
 
-            _Context.PasswordResetTokens.Add(resetEntry);
+            await _Context.PasswordResetTokens.AddAsync(resetEntry, cancellationToken);
             await _Context.SaveChangesAsync(cancellationToken);
 
-            // 4) Email content
+            // 4) Prepare email content
             var subject = "Your Password Reset Code";
+
             var body = $@"
-                                <!DOCTYPE html>
-                                <html lang='en'>
-                                <head>
-                                  <meta charset='UTF-8' />
-                                  <style>
-                                    body {{
-                                      font-family: Arial, sans-serif;
-                                      background-color: #f4f6f8;
-                                      margin: 0; padding: 0;
-                                    }}
-                                    .container {{
-                                      max-width: 600px;
-                                      margin: 40px auto;
-                                      background: #fff;
-                                      border-radius: 8px;
-                                      padding: 20px;
-                                      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-                                      color: #333;
-                                    }}
-                                    h2 {{
-                                      color: #007bff;
-                                    }}
-                                    .code {{
-                                      font-size: 36px;
-                                      font-weight: bold;
-                                      color: #007bff;
-                                      background: #e6f0ff;
-                                      padding: 15px;
-                                      border-radius: 8px;
-                                      text-align: center;
-                                      letter-spacing: 4px;
-                                      user-select: all;
-                                    }}
-                                  </style>
-                                </head>
-                                <body>
-                                  <div class='container'>
-                                    <h2>Your Reset Code</h2>
-                                    <p>Your password reset code is:</p>
-                                    <div class='code'>{code}</div>
-                                    <p>This code will expire in <strong>10 minutes</strong>.</p>
-                                    <p>If you didn't request this, please ignore this email.</p>
-                                  </div>
-                                </body>
-                                </html>
-                                ";
+                        <!DOCTYPE html>
+                        <html lang='en'>
+                        <head>
+                            <meta charset='UTF-8' />
+                            <style>
+                                body {{
+                                    font-family: Arial, sans-serif;
+                                    background-color: #f4f6f8;
+                                    margin: 0;
+                                    padding: 0;
+                                }}
+                                .container {{
+                                    max-width: 600px;
+                                    margin: 40px auto;
+                                    background: #ffffff;
+                                    border-radius: 8px;
+                                    padding: 20px;
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                                    color: #333333;
+                                }}
+                                h2 {{
+                                    color: #007bff;
+                                }}
+                                .code {{
+                                    font-size: 36px;
+                                    font-weight: bold;
+                                    color: #007bff;
+                                    background: #e6f0ff;
+                                    padding: 15px;
+                                    border-radius: 8px;
+                                    text-align: center;
+                                    letter-spacing: 4px;
+                                    user-select: all;
+                                }}
+                            </style>
+                        </head>
+                        <body>
+                            <div class='container'>
+                                <h2>Password Reset Code</h2>
+                                <p>Your password reset code is:</p>
+                                <div class='code'>{code}</div>
+                                <p>This code will expire in <strong>10 minutes</strong>.</p>
+                                <p>If you didn't request this, please ignore this email.</p>
+                            </div>
+                        </body>
+                        </html>";
 
-
-            // 5) Send Email using EmailService
-            var sent = await EmailService.SendEmailAsync(email, subject, body);
-
-            if (!sent)
-                return Result.Failure(UserErrors.InValidCode);
+            // 5) Send email
+            await EmailService.SendAsync(email, subject, body);
 
             return Result.Success();
         }

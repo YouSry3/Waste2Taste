@@ -1,4 +1,5 @@
 ﻿using FluentValidation.AspNetCore;
+using FoodRescue.BLL.Contract.Authentication.ForgetPassword.Settings;
 using FoodRescue.BLL.Contract.Authentication.Register;
 using FoodRescue.BLL.Extensions.Products;
 using FoodRescue.BLL.Extensions.Users;
@@ -12,6 +13,8 @@ using FoodRescue.BLL.Services.Vendors;
 using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Net.Mail;
@@ -58,6 +61,14 @@ namespace FoodRescue.PL
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
 
 
+                services.Configure<EmailSettings>(
+            configuration.GetSection("EmailSettings"));
+
+                services.AddScoped<EmailService>();
+
+
+
+
             services.AddJwtService(configuration);
 
             // Register FluentValidation 
@@ -95,6 +106,7 @@ namespace FoodRescue.PL
             services.AddScoped<EmailService>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductService, ProductService>();
+
             VendorMapsterConfig.RegisterVendorMappings();
 
             return services;

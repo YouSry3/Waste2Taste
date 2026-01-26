@@ -14,11 +14,13 @@ namespace FoodRescue.PL.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class AuthController(IAuthService authService) : ControllerBase
+    public class AuthController(IAuthService authService, EmailService email) : ControllerBase
     {
         private readonly IAuthService AuthService = authService;
 
-     
+        private readonly EmailService _emailService = email;
+
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request,

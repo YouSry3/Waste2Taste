@@ -3,6 +3,10 @@ using FoodRescue.BLL.Settings;
 using System.Net;
 using System.Net.Mail;
 
+using System.Net;
+using System.Net.Mail;
+
+
 namespace FoodRescue.PL
 {
     public class Program
@@ -21,6 +25,15 @@ namespace FoodRescue.PL
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            var emailSettings = builder.Configuration
+    .GetSection("EmailSettings")
+    .Get<EmailSettings>();
+
+          
+
+            System.Net.ServicePointManager.SecurityProtocol =
+    System.Net.SecurityProtocolType.Tls12;
 
             var app = builder.Build();
 
