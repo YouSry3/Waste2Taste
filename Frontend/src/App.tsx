@@ -17,7 +17,7 @@ import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 import EnterResetCodePage from "./components/auth/EnterResetCodePage";
 
 import { authService } from "./services/auth/authService";
-
+import "./styles/globals.css";
 type PanelType = "admin" | "vendor" | "charity";
 
 const queryClient = new QueryClient();

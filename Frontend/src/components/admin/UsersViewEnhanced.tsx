@@ -236,30 +236,153 @@ const initialUsers: User[] = [
 ];
 
 const initialOrders: Order[] = [
-  { id: 1, userId: 1, date: "2025-10-29", amount: "$45.50", status: "Delivered", items: 3 },
-  { id: 2, userId: 1, date: "2025-10-15", amount: "$32.00", status: "Delivered", items: 2 },
-  { id: 3, userId: 2, date: "2025-10-30", amount: "$67.80", status: "Delivered", items: 5 },
-  { id: 4, userId: 3, date: "2025-10-28", amount: "$89.20", status: "Pending", items: 4 },
-  { id: 5, userId: 4, date: "2025-10-27", amount: "$25.40", status: "Delivered", items: 1 },
-  { id: 6, userId: 5, date: "2025-10-30", amount: "$128.90", status: "Delivered", items: 8 },
-  { id: 7, userId: 6, date: "2025-09-15", amount: "$35.50", status: "Delivered", items: 2 },
-  { id: 8, userId: 7, date: "2025-10-29", amount: "$64.70", status: "Cancelled", items: 3 },
-  { id: 9, userId: 8, date: "2025-10-30", amount: "$98.30", status: "Delivered", items: 6 },
+  {
+    id: 1,
+    userId: 1,
+    date: "2025-10-29",
+    amount: "$45.50",
+    status: "Delivered",
+    items: 3,
+  },
+  {
+    id: 2,
+    userId: 1,
+    date: "2025-10-15",
+    amount: "$32.00",
+    status: "Delivered",
+    items: 2,
+  },
+  {
+    id: 3,
+    userId: 2,
+    date: "2025-10-30",
+    amount: "$67.80",
+    status: "Delivered",
+    items: 5,
+  },
+  {
+    id: 4,
+    userId: 3,
+    date: "2025-10-28",
+    amount: "$89.20",
+    status: "Pending",
+    items: 4,
+  },
+  {
+    id: 5,
+    userId: 4,
+    date: "2025-10-27",
+    amount: "$25.40",
+    status: "Delivered",
+    items: 1,
+  },
+  {
+    id: 6,
+    userId: 5,
+    date: "2025-10-30",
+    amount: "$128.90",
+    status: "Delivered",
+    items: 8,
+  },
+  {
+    id: 7,
+    userId: 6,
+    date: "2025-09-15",
+    amount: "$35.50",
+    status: "Delivered",
+    items: 2,
+  },
+  {
+    id: 8,
+    userId: 7,
+    date: "2025-10-29",
+    amount: "$64.70",
+    status: "Cancelled",
+    items: 3,
+  },
+  {
+    id: 9,
+    userId: 8,
+    date: "2025-10-30",
+    amount: "$98.30",
+    status: "Delivered",
+    items: 6,
+  },
 ];
 
 const timelineEvents: TimelineEvent[] = [
-  { id: 1, userId: 1, type: "registration", title: "Account Created", description: "Emma Wilson registered an account", date: "2024-03-15", timestamp: "10:30 AM" },
-  { id: 2, userId: 1, type: "order", title: "Order Placed", description: "Placed order #ORD-001 for $45.50", date: "2024-03-20", timestamp: "02:15 PM" },
-  { id: 3, userId: 1, type: "note", title: "Note Added", description: "Customer prefers eco-friendly products", date: "2024-04-05", timestamp: "11:00 AM" },
-  { id: 4, userId: 1, type: "order", title: "Order Placed", description: "Placed order #ORD-008 for $32.00", date: "2025-10-15", timestamp: "09:45 AM" },
-  { id: 5, userId: 2, type: "order", title: "Order Placed", description: "Placed order #ORD-012 for $67.80", date: "2025-10-30", timestamp: "03:20 PM" },
+  {
+    id: 1,
+    userId: 1,
+    type: "registration",
+    title: "Account Created",
+    description: "Emma Wilson registered an account",
+    date: "2024-03-15",
+    timestamp: "10:30 AM",
+  },
+  {
+    id: 2,
+    userId: 1,
+    type: "order",
+    title: "Order Placed",
+    description: "Placed order #ORD-001 for $45.50",
+    date: "2024-03-20",
+    timestamp: "02:15 PM",
+  },
+  {
+    id: 3,
+    userId: 1,
+    type: "note",
+    title: "Note Added",
+    description: "Customer prefers eco-friendly products",
+    date: "2024-04-05",
+    timestamp: "11:00 AM",
+  },
+  {
+    id: 4,
+    userId: 1,
+    type: "order",
+    title: "Order Placed",
+    description: "Placed order #ORD-008 for $32.00",
+    date: "2025-10-15",
+    timestamp: "09:45 AM",
+  },
+  {
+    id: 5,
+    userId: 2,
+    type: "order",
+    title: "Order Placed",
+    description: "Placed order #ORD-012 for $67.80",
+    date: "2025-10-30",
+    timestamp: "03:20 PM",
+  },
 ];
 
 const emailTemplates: EmailTemplate[] = [
-  { id: 1, name: "Welcome Email", subject: "Welcome to Our Store!", body: "Hi {{name}}, welcome to our store! Get 10% off your first order." },
-  { id: 2, name: "Abandoned Cart", subject: "Forgot something?", body: "Hi {{name}}, you left items in your cart. Complete your purchase now!" },
-  { id: 3, name: "VIP Promotion", subject: "Exclusive VIP Offer", body: "Hi {{name}}, as a valued VIP customer, here's an exclusive offer just for you!" },
-  { id: 4, name: "Win Back", subject: "We miss you!", body: "Hi {{name}}, it's been a while! Here's 15% off to welcome you back." },
+  {
+    id: 1,
+    name: "Welcome Email",
+    subject: "Welcome to Our Store!",
+    body: "Hi {{name}}, welcome to our store! Get 10% off your first order.",
+  },
+  {
+    id: 2,
+    name: "Abandoned Cart",
+    subject: "Forgot something?",
+    body: "Hi {{name}}, you left items in your cart. Complete your purchase now!",
+  },
+  {
+    id: 3,
+    name: "VIP Promotion",
+    subject: "Exclusive VIP Offer",
+    body: "Hi {{name}}, as a valued VIP customer, here's an exclusive offer just for you!",
+  },
+  {
+    id: 4,
+    name: "Win Back",
+    subject: "We miss you!",
+    body: "Hi {{name}}, it's been a while! Here's 15% off to welcome you back.",
+  },
 ];
 
 const userSegments = [
@@ -312,7 +435,8 @@ export function UsersView() {
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
   const [spendingTier, setSpendingTier] = useState("all");
   const [newNote, setNewNote] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<EmailTemplate | null>(null);
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
 
@@ -541,7 +665,9 @@ export function UsersView() {
     }
   };
 
-  const handleBulkAction = (action: "activate" | "deactivate" | "delete" | "export" | "tag") => {
+  const handleBulkAction = (
+    action: "activate" | "deactivate" | "delete" | "export" | "tag",
+  ) => {
     switch (action) {
       case "activate":
         setUsers((prev) =>
@@ -580,7 +706,10 @@ export function UsersView() {
 
     const updatedUser = {
       ...selectedUser,
-      notes: [...selectedUser.notes, `${new Date().toISOString().split("T")[0]}: ${newNote}`],
+      notes: [
+        ...selectedUser.notes,
+        `${new Date().toISOString().split("T")[0]}: ${newNote}`,
+      ],
     };
 
     setUsers((prev) =>
@@ -595,7 +724,9 @@ export function UsersView() {
   const loadTemplate = (template: EmailTemplate) => {
     setSelectedTemplate(template);
     setEmailSubject(template.subject);
-    setEmailBody(template.body.replace("{{name}}", selectedUser?.name || "Customer"));
+    setEmailBody(
+      template.body.replace("{{name}}", selectedUser?.name || "Customer"),
+    );
   };
 
   const sendEmail = () => {
@@ -628,16 +759,24 @@ export function UsersView() {
         user.email.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus =
         filterStatus === "all" || user.status.toLowerCase() === filterStatus;
-      
+
       // Date range filter
-      const matchesDateRange = !dateRange.start || !dateRange.end || 
+      const matchesDateRange =
+        !dateRange.start ||
+        !dateRange.end ||
         (user.joined >= dateRange.start && user.joined <= dateRange.end);
-      
+
       // Spending tier filter
-      const matchesSpendingTier = spendingTier === "all" || 
+      const matchesSpendingTier =
+        spendingTier === "all" ||
         getSpendingTier(user.totalSpent) === spendingTier;
 
-      return matchesSearch && matchesStatus && matchesDateRange && matchesSpendingTier;
+      return (
+        matchesSearch &&
+        matchesStatus &&
+        matchesDateRange &&
+        matchesSpendingTier
+      );
     })
     .sort((a, b) => {
       let aVal, bVal;
@@ -684,7 +823,9 @@ export function UsersView() {
     )
     .slice(0, 3);
 
-  const userOrders = selectedUser ? initialOrders.filter(order => order.userId === selectedUser.id) : [];
+  const userOrders = selectedUser
+    ? initialOrders.filter((order) => order.userId === selectedUser.id)
+    : [];
 
   return (
     <div className="p-8">
@@ -825,7 +966,9 @@ export function UsersView() {
           <CardContent className="p-6">
             <p className="text-sm text-gray-500 mb-1">Total Loyalty Points</p>
             <h3 className="text-3xl font-bold text-yellow-600">
-              {users.reduce((sum, u) => sum + u.loyaltyPoints, 0).toLocaleString()}
+              {users
+                .reduce((sum, u) => sum + u.loyaltyPoints, 0)
+                .toLocaleString()}
             </h3>
           </CardContent>
         </Card>
@@ -848,7 +991,12 @@ export function UsersView() {
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
-                  <Line type="monotone" dataKey="users" stroke="#10b981" strokeWidth={2} />
+                  <Line
+                    type="monotone"
+                    dataKey="users"
+                    stroke="#10b981"
+                    strokeWidth={2}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -871,13 +1019,18 @@ export function UsersView() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) =>
+                      `${name}: ${(percent * 100).toFixed(0)}%`
+                    }
                     outerRadius={80}
                     fill="#8884d8"
                     dataKey="users"
                   >
                     {spendingTierData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -916,7 +1069,9 @@ export function UsersView() {
                     </p>
                     <div className="flex items-center gap-1 mt-1">
                       <Award className="h-3 w-3 text-yellow-500" />
-                      <span className="text-xs text-gray-500">{user.loyaltyPoints} points</span>
+                      <span className="text-xs text-gray-500">
+                        {user.loyaltyPoints} points
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -934,7 +1089,8 @@ export function UsersView() {
             {selectedUsers.length > 0 && (
               <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
                 <span className="text-sm font-medium">
-                  {selectedUsers.length} user{selectedUsers.length !== 1 ? "s" : ""} selected
+                  {selectedUsers.length} user
+                  {selectedUsers.length !== 1 ? "s" : ""} selected
                 </span>
                 <div className="flex gap-2 ml-auto">
                   <Button
@@ -1036,29 +1192,40 @@ export function UsersView() {
             {/* Advanced Filters */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 bg-gray-50 rounded-lg">
               <div>
-                <Label className="text-xs font-medium mb-1 block">Joined Date Range</Label>
+                <Label className="text-xs font-medium mb-1 block">
+                  Joined Date Range
+                </Label>
                 <div className="flex gap-2">
                   <Input
                     type="date"
                     value={dateRange.start}
-                    onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                    onChange={(e) =>
+                      setDateRange((prev) => ({
+                        ...prev,
+                        start: e.target.value,
+                      }))
+                    }
                     className="text-sm"
                   />
                   <Input
                     type="date"
                     value={dateRange.end}
-                    onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                    onChange={(e) =>
+                      setDateRange((prev) => ({ ...prev, end: e.target.value }))
+                    }
                     className="text-sm"
                   />
                 </div>
               </div>
               <div>
-                <Label className="text-xs font-medium mb-1 block">Spending Tier</Label>
+                <Label className="text-xs font-medium mb-1 block">
+                  Spending Tier
+                </Label>
                 <Select value={spendingTier} onValueChange={setSpendingTier}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="All tiers" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
                     <SelectItem value="all">All Tiers</SelectItem>
                     <SelectItem value="$0-50">$0 - $50</SelectItem>
                     <SelectItem value="$50-100">$50 - $100</SelectItem>
@@ -1068,12 +1235,14 @@ export function UsersView() {
                 </Select>
               </div>
               <div>
-                <Label className="text-xs font-medium mb-1 block">User Segments</Label>
+                <Label className="text-xs font-medium mb-1 block">
+                  User Segments
+                </Label>
                 <Select>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select segment" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
                     {userSegments.map((segment) => (
                       <SelectItem key={segment.id} value={segment.name}>
                         {segment.name} ({segment.count})
@@ -1090,17 +1259,20 @@ export function UsersView() {
       {/* Sort Options and Pagination */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
         <p className="text-sm text-gray-500">
-          Showing {Math.min(filteredAndSortedUsers.length, itemsPerPage)} of {users.length} user
+          Showing {Math.min(filteredAndSortedUsers.length, itemsPerPage)} of{" "}
+          {users.length} user
           {users.length !== 1 ? "s" : ""}
         </p>
-        
+
         <div className="flex items-center gap-4">
           <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => toggleSort("name")}
-              className={sortBy === "name" ? "bg-green-50 border-green-600" : ""}
+              className={
+                sortBy === "name" ? "bg-green-50 border-green-600" : ""
+              }
             >
               Name <ArrowUpDown className="ml-2 h-3 w-3" />
             </Button>
@@ -1125,13 +1297,13 @@ export function UsersView() {
               Points <ArrowUpDown className="ml-2 h-3 w-3" />
             </Button>
           </div>
-          
+
           {/* Pagination */}
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             >
               <ChevronLeft className="h-4 w-4" />
@@ -1142,7 +1314,9 @@ export function UsersView() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
               disabled={currentPage === totalPages}
             >
               <ChevronRight className="h-4 w-4" />
@@ -1154,7 +1328,7 @@ export function UsersView() {
               <SelectTrigger className="w-24">
                 <SelectValue placeholder="5" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
                 <SelectItem value="5">5 per page</SelectItem>
                 <SelectItem value="10">10 per page</SelectItem>
                 <SelectItem value="20">20 per page</SelectItem>
@@ -1178,11 +1352,17 @@ export function UsersView() {
                 No users found
               </h3>
               <p className="text-gray-500 mb-6">
-                {searchTerm || filterStatus !== "all" || dateRange.start || spendingTier !== "all"
+                {searchTerm ||
+                filterStatus !== "all" ||
+                dateRange.start ||
+                spendingTier !== "all"
                   ? "Try adjusting your filters or search terms"
                   : "Get started by adding your first user"}
               </p>
-              {(searchTerm || filterStatus !== "all" || dateRange.start || spendingTier !== "all") && (
+              {(searchTerm ||
+                filterStatus !== "all" ||
+                dateRange.start ||
+                spendingTier !== "all") && (
                 <Button
                   variant="outline"
                   onClick={() => {
@@ -1204,7 +1384,11 @@ export function UsersView() {
                     <th className="text-left py-3 px-4 font-semibold w-8">
                       <input
                         type="checkbox"
-                        checked={selectedUsers.length === filteredAndSortedUsers.length && filteredAndSortedUsers.length > 0}
+                        checked={
+                          selectedUsers.length ===
+                            filteredAndSortedUsers.length &&
+                          filteredAndSortedUsers.length > 0
+                        }
                         onChange={selectAllUsers}
                         className="rounded"
                       />
@@ -1219,9 +1403,7 @@ export function UsersView() {
                     <th className="text-left py-3 px-4 font-semibold">
                       Loyalty Points
                     </th>
-                    <th className="text-left py-3 px-4 font-semibold">
-                      Tags
-                    </th>
+                    <th className="text-left py-3 px-4 font-semibold">Tags</th>
                     <th className="text-left py-3 px-4 font-semibold">
                       Status
                     </th>
@@ -1287,7 +1469,9 @@ export function UsersView() {
                           <ShoppingBag className="h-4 w-4 text-gray-400" />
                           <span className="font-medium">{user.orders}</span>
                         </div>
-                        <div className="text-xs text-gray-500">{user.totalSpent} total</div>
+                        <div className="text-xs text-gray-500">
+                          {user.totalSpent} total
+                        </div>
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-1">
@@ -1342,26 +1526,34 @@ export function UsersView() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => openEditDialog(user)}>
+                              <DropdownMenuItem
+                                onClick={() => openEditDialog(user)}
+                              >
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => {
-                                setSelectedUser(user);
-                                setIsEmailDialogOpen(true);
-                              }}>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setIsEmailDialogOpen(true);
+                                }}
+                              >
                                 <Send className="h-4 w-4 mr-2" />
                                 Send Email
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => {
-                                setSelectedUser(user);
-                                setIsNotesDialogOpen(true);
-                              }}>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setIsNotesDialogOpen(true);
+                                }}
+                              >
                                 <MessageSquare className="h-4 w-4 mr-2" />
                                 Add Note
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => handleToggleStatus(user)}>
+                              <DropdownMenuItem
+                                onClick={() => handleToggleStatus(user)}
+                              >
                                 {user.status === "Active" ? (
                                   <>
                                     <Ban className="h-4 w-4 mr-2" />
@@ -1397,11 +1589,15 @@ export function UsersView() {
             <Tabs defaultValue="profile" className="mt-4">
               <TabsList className="grid grid-cols-4">
                 <TabsTrigger value="profile">Profile</TabsTrigger>
-                <TabsTrigger value="orders">Orders ({userOrders.length})</TabsTrigger>
+                <TabsTrigger value="orders">
+                  Orders ({userOrders.length})
+                </TabsTrigger>
                 <TabsTrigger value="activity">Activity</TabsTrigger>
-                <TabsTrigger value="notes">Notes ({selectedUser.notes.length})</TabsTrigger>
+                <TabsTrigger value="notes">
+                  Notes ({selectedUser.notes.length})
+                </TabsTrigger>
               </TabsList>
-              
+
               {/* Profile Tab */}
               <TabsContent value="profile" className="space-y-4">
                 <div className="flex items-start justify-between">
@@ -1441,7 +1637,9 @@ export function UsersView() {
                     </Badge>
                     <div className="flex items-center gap-1 text-yellow-600">
                       <Award className="h-5 w-5" />
-                      <span className="font-semibold">{selectedUser.loyaltyPoints.toLocaleString()} points</span>
+                      <span className="font-semibold">
+                        {selectedUser.loyaltyPoints.toLocaleString()} points
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1480,7 +1678,9 @@ export function UsersView() {
                 <div className="grid grid-cols-3 gap-4">
                   <div className="bg-gray-50 p-3 rounded-lg">
                     <p className="text-xs text-gray-500">Total Orders</p>
-                    <p className="text-lg font-semibold">{selectedUser.orders}</p>
+                    <p className="text-lg font-semibold">
+                      {selectedUser.orders}
+                    </p>
                   </div>
                   <div className="bg-green-50 p-3 rounded-lg">
                     <p className="text-xs text-gray-500">Total Spent</p>
@@ -1491,14 +1691,21 @@ export function UsersView() {
                   <div className="bg-yellow-50 p-3 rounded-lg">
                     <p className="text-xs text-gray-500">Avg. Order Value</p>
                     <p className="text-lg font-semibold text-yellow-600">
-                      ${(parseFloat(selectedUser.totalSpent.replace(/[$,]/g, "")) / selectedUser.orders || 0).toFixed(2)}
+                      $
+                      {(
+                        parseFloat(
+                          selectedUser.totalSpent.replace(/[$,]/g, ""),
+                        ) / selectedUser.orders || 0
+                      ).toFixed(2)}
                     </p>
                   </div>
                 </div>
 
                 <div className="bg-gray-50 p-3 rounded-lg">
                   <p className="text-xs text-gray-500">Last Order</p>
-                  <p className="text-sm font-medium">{selectedUser.lastOrder}</p>
+                  <p className="text-sm font-medium">
+                    {selectedUser.lastOrder}
+                  </p>
                 </div>
 
                 <div className="flex gap-2 pt-4">
@@ -1544,7 +1751,7 @@ export function UsersView() {
                   </Button>
                 </div>
               </TabsContent>
-              
+
               {/* Orders Tab */}
               <TabsContent value="orders" className="space-y-4">
                 <h3 className="font-semibold">Order History</h3>
@@ -1556,7 +1763,10 @@ export function UsersView() {
                 ) : (
                   <div className="space-y-3">
                     {userOrders.map((order) => (
-                      <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div
+                        key={order.id}
+                        className="flex items-center justify-between p-3 border rounded-lg"
+                      >
                         <div>
                           <p className="font-medium">Order #{order.id}</p>
                           <p className="text-sm text-gray-500">{order.date}</p>
@@ -1568,8 +1778,8 @@ export function UsersView() {
                               order.status === "Delivered"
                                 ? "bg-green-100 text-green-700"
                                 : order.status === "Pending"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
+                                  ? "bg-yellow-100 text-yellow-700"
+                                  : "bg-red-100 text-red-700"
                             }
                           >
                             {order.status}
@@ -1580,35 +1790,45 @@ export function UsersView() {
                   </div>
                 )}
               </TabsContent>
-              
+
               {/* Activity Tab */}
               <TabsContent value="activity" className="space-y-4">
                 <h3 className="font-semibold">Activity Timeline</h3>
                 <div className="space-y-4">
                   {timelineEvents
-                    .filter(event => event.userId === selectedUser.id)
+                    .filter((event) => event.userId === selectedUser.id)
                     .map((event) => (
                       <div key={event.id} className="flex gap-3">
                         <div className="flex flex-col items-center">
-                          <div className={`w-2 h-2 rounded-full ${
-                            event.type === "order" ? "bg-green-500" :
-                            event.type === "registration" ? "bg-blue-500" :
-                            event.type === "note" ? "bg-yellow-500" : "bg-purple-500"
-                          }`} />
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              event.type === "order"
+                                ? "bg-green-500"
+                                : event.type === "registration"
+                                  ? "bg-blue-500"
+                                  : event.type === "note"
+                                    ? "bg-yellow-500"
+                                    : "bg-purple-500"
+                            }`}
+                          />
                           <div className="w-px h-full bg-gray-200" />
                         </div>
                         <div className="flex-1 pb-4">
                           <div className="flex justify-between">
                             <p className="font-medium">{event.title}</p>
-                            <p className="text-sm text-gray-500">{event.date} {event.timestamp}</p>
+                            <p className="text-sm text-gray-500">
+                              {event.date} {event.timestamp}
+                            </p>
                           </div>
-                          <p className="text-sm text-gray-600 mt-1">{event.description}</p>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {event.description}
+                          </p>
                         </div>
                       </div>
                     ))}
                 </div>
               </TabsContent>
-              
+
               {/* Notes Tab */}
               <TabsContent value="notes" className="space-y-4">
                 <div className="flex justify-between items-center">
@@ -1763,7 +1983,11 @@ export function UsersView() {
                     variant="outline"
                     size="sm"
                     onClick={() => loadTemplate(template)}
-                    className={selectedTemplate?.id === template.id ? "border-green-600 bg-green-50" : ""}
+                    className={
+                      selectedTemplate?.id === template.id
+                        ? "border-green-600 bg-green-50"
+                        : ""
+                    }
                   >
                     {template.name}
                   </Button>

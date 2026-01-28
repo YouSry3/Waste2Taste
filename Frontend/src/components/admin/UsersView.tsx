@@ -552,8 +552,7 @@ export function UsersView() {
 
         <div className="flex gap-3">
           <Button
-            variant="outline"
-            className="flex items-center gap-2 border-green-600 text-green-600 hover:bg-green-50"
+            className="flex items-center gap-2  hover:bg-green-50 !important border-green-600 border-1 text-green-600"
             onClick={handleExportCSV}
           >
             <Download className="h-4 w-4" /> Export CSV
@@ -567,7 +566,7 @@ export function UsersView() {
             }}
           >
             <DialogTrigger asChild>
-              <Button className="bg-green-600 hover:bg-green-700 flex items-center gap-2">
+              <Button className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2">
                 <UserPlus className="h-4 w-4" /> Add User
               </Button>
             </DialogTrigger>
@@ -710,7 +709,7 @@ export function UsersView() {
                 </div>
 
                 <Button
-                  className="w-full bg-green-600 hover:bg-green-700 mt-4"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white mt-4"
                   onClick={handleAddUser}
                 >
                   Add User
@@ -764,7 +763,7 @@ export function UsersView() {
       {/* Bulk Actions Bar */}
       {selectedUsers.length > 0 && (
         <div className="sticky top-4 z-50 mb-6">
-          <div className="bg-gradient-to-r from-gray-900 to-black rounded-lg shadow-xl p-4 border border-gray-800">
+          <div className="text-black rounded-lg shadow-xl p-4 border border-gray-300">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="bg-green-500/20 p-2 rounded-lg border border-green-500/30">
@@ -775,7 +774,7 @@ export function UsersView() {
                     {selectedUsers.length} user
                     {selectedUsers.length !== 1 ? "s" : ""} selected
                   </h3>
-                  <p className="text-gray-300 text-sm">
+                  <p className="text-black text-sm">
                     Perform actions on selected users
                   </p>
                 </div>
@@ -783,7 +782,7 @@ export function UsersView() {
 
               <div className="flex items-center gap-2" ref={actionsDropdownRef}>
                 <Button
-                  variant="destructive"
+                  className="bg-red-600 hover:bg-red-700 text-white"
                   size="sm"
                   onClick={() => {
                     setSelectedUsers([]);
@@ -807,21 +806,21 @@ export function UsersView() {
                   </Button>
 
                   {showActionsDropdown && (
-                    <div className="absolute right-0 top-full mt-2 w-56 bg-gray-900 rounded-lg shadow-xl border border-gray-800 z-20">
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-20">
                       <div className="py-2">
                         <button
                           onClick={() => handleBulkAction("activate")}
-                          className="w-full px-4 py-3 text-sm text-left hover:bg-gray-800 flex items-center gap-3 disabled:opacity-100 transition-colors border-b border-gray-800"
+                          className="w-full px-4 py-3 text-sm text-left hover:bg-green-100 flex items-center gap-3 disabled:opacity-50 transition-colors border-b border-gray-200"
                           disabled={isBulkActionLoading}
                         >
                           <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
                             <CheckCircle className="h-4 w-4 text-green-400" />
                           </div>
                           <div>
-                            <p className="font-medium text-black">
+                            <p className="font-medium text-green-600">
                               Activate Selected
                             </p>
-                            <p className="text-xs text-black">
+                            <p className="text-xs text-green-600">
                               Set users to active status
                             </p>
                           </div>
@@ -829,17 +828,17 @@ export function UsersView() {
 
                         <button
                           onClick={() => handleBulkAction("deactivate")}
-                          className="w-full px-4 py-3 text-sm text-left hover:bg-gray-800 flex items-center gap-3 disabled:opacity-50 transition-colors border-b border-gray-800"
+                          className="w-full px-4 py-3 text-sm text-left hover:bg-gray-100  flex items-center gap-3 disabled:opacity-50 transition-colors border-b border-gray-200"
                           disabled={isBulkActionLoading}
                         >
                           <div className="w-8 h-8 rounded-lg bg-gray-700/50 flex items-center justify-center">
-                            <Ban className="h-4 w-4 text-black" />
+                            <Ban className="h-4 w-4 text-gray-300" />
                           </div>
                           <div>
-                            <p className="font-medium text-black">
+                            <p className="font-medium text-gray-600">
                               Deactivate Selected
                             </p>
-                            <p className="text-xs text-black">
+                            <p className="text-xs text-gray-600">
                               Set users to inactive status
                             </p>
                           </div>
@@ -906,7 +905,7 @@ export function UsersView() {
         </Card>
       )}
 
-      {/* Search and Filter */}
+      {/* Search and Filter - UPDATED WITH NAV TABS */}
       <Card className="mb-6">
         <CardContent className="p-4">
           <div className="flex flex-col md:flex-row gap-4">
@@ -916,7 +915,7 @@ export function UsersView() {
                 placeholder="Search users by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 focus:border-0"
               />
               {searchTerm && (
                 <button
@@ -934,7 +933,7 @@ export function UsersView() {
                 onClick={() => setFilterStatus("all")}
                 className={
                   filterStatus === "all"
-                    ? "bg-green-600 hover:bg-green-700"
+                    ? "bg-green-600 hover:bg-green-700 text-white"
                     : ""
                 }
               >
@@ -946,7 +945,7 @@ export function UsersView() {
                 onClick={() => setFilterStatus("active")}
                 className={
                   filterStatus === "active"
-                    ? "bg-green-600 hover:bg-green-700"
+                    ? "bg-green-600 hover:bg-green-700 text-white"
                     : ""
                 }
               >
@@ -958,7 +957,7 @@ export function UsersView() {
                 onClick={() => setFilterStatus("inactive")}
                 className={
                   filterStatus === "inactive"
-                    ? "bg-green-600 hover:bg-green-700"
+                    ? "bg-green-600 hover:bg-green-700 text-white"
                     : ""
                 }
               >
@@ -966,10 +965,60 @@ export function UsersView() {
               </Button>
             </div>
           </div>
+
+          {/* New: Sort Tabs Navigation */}
+          <div className="mt-4 border-b border-gray-200">
+            <div className="flex space-x-1 justify-self-end">
+              <button
+                onClick={() => toggleSort("name")}
+                className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
+                  sortBy === "name"
+                    ? "bg-green-600 text-white border-b-2 border-green-600"
+                    : "text-gray-600 hover:text-green-600 hover:bg-green-50"
+                }`}
+              >
+                Sort by Name{" "}
+                {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+              </button>
+              <button
+                onClick={() => toggleSort("orders")}
+                className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
+                  sortBy === "orders"
+                    ? "bg-green-600 text-white border-b-2 border-green-600"
+                    : "text-gray-600 hover:text-green-600 hover:bg-green-50"
+                }`}
+              >
+                Sort by Orders{" "}
+                {sortBy === "orders" && (sortOrder === "asc" ? "↑" : "↓")}
+              </button>
+              <button
+                onClick={() => toggleSort("totalSpent")}
+                className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
+                  sortBy === "totalSpent"
+                    ? "bg-green-600 text-white border-b-2 border-green-600"
+                    : "text-gray-600 hover:text-green-600 hover:bg-green-50"
+                }`}
+              >
+                Sort by Spend{" "}
+                {sortBy === "totalSpent" && (sortOrder === "asc" ? "↑" : "↓")}
+              </button>
+              <button
+                onClick={() => toggleSort("lastOrder")}
+                className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
+                  sortBy === "lastOrder"
+                    ? "bg-green-600 text-white border-b-2 border-green-600"
+                    : "text-gray-600 hover:text-green-600 hover:bg-green-50"
+                }`}
+              >
+                Sort by Last Order{" "}
+                {sortBy === "lastOrder" && (sortOrder === "asc" ? "↑" : "↓")}
+              </button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Sort Options and Bulk Select */}
+      {/* Sort Options and Bulk Select - REMOVED SORT BUTTONS HERE */}
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm text-gray-500">
           Showing {filteredAndSortedUsers.length} of {users.length} user
@@ -992,34 +1041,6 @@ export function UsersView() {
               {isSelectAll && <Check className="h-3 w-3 text-white" />}
             </div>
             Select All
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleSort("name")}
-            className={sortBy === "name" ? "bg-green-50 border-green-600" : ""}
-          >
-            Name <ArrowUpDown className="ml-2 h-3 w-3" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleSort("orders")}
-            className={
-              sortBy === "orders" ? "bg-green-50 border-green-600" : ""
-            }
-          >
-            Orders <ArrowUpDown className="ml-2 h-3 w-3" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => toggleSort("totalSpent")}
-            className={
-              sortBy === "totalSpent" ? "bg-green-50 border-green-600" : ""
-            }
-          >
-            Spent <ArrowUpDown className="ml-2 h-3 w-3" />
           </Button>
         </div>
       </div>
@@ -1058,8 +1079,26 @@ export function UsersView() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-semibold w-12">
-                      {/* Empty for checkbox column */}
+                    <th className=" text-left py-3 pe-4 ps-1 font-semibold w-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={toggleSelectAll}
+                        className={`flex items-center justify-content-start gap-2 transition-all ${isSelectAll ? "bg-green-50 border-green-600 text-green-600" : ""}`}
+                      >
+                        <div
+                          className={`w-4 h-4 border rounded flex items-center justify-center transition-all ${
+                            isSelectAll
+                              ? "bg-green-600 border-green-600"
+                              : "border-gray-300"
+                          }`}
+                        >
+                          {isSelectAll && (
+                            <Check className="h-3 w-3 text-white" />
+                          )}
+                        </div>
+                        Select All
+                      </Button>
                     </th>
                     <th className="text-left py-3 px-4 font-semibold">User</th>
                     <th className="text-left py-3 px-4 font-semibold">
@@ -1461,7 +1500,7 @@ export function UsersView() {
                 Cancel
               </Button>
               <Button
-                className="flex-1 bg-green-600 hover:bg-green-700"
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                 onClick={handleEditUser}
               >
                 Save Changes

@@ -65,7 +65,7 @@ export function CreateListing() {
                     <SelectTrigger className="h-10">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
                       <SelectItem value="bakery">🥖 Bakery</SelectItem>
                       <SelectItem value="prepared">🍱 Prepared Food</SelectItem>
                       <SelectItem value="produce">🥗 Produce</SelectItem>

@@ -556,7 +556,7 @@ export function VendorsView() {
                     <SelectTrigger className="mt-1">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
                       <SelectItem value="Vendor">Vendor</SelectItem>
                       <SelectItem value="NGO Partner">NGO Partner</SelectItem>
                     </SelectContent>
@@ -576,7 +576,7 @@ export function VendorsView() {
                     >
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
                       <SelectItem value="Bakery">Bakery</SelectItem>
                       <SelectItem value="Restaurant">Restaurant</SelectItem>
                       <SelectItem value="Cafe">Cafe</SelectItem>
@@ -771,7 +771,7 @@ export function VendorsView() {
             <SelectTrigger className="w-48">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="Vendor">Vendors</SelectItem>
               <SelectItem value="NGO Partner">NGO Partners</SelectItem>
@@ -786,7 +786,7 @@ export function VendorsView() {
             <SelectTrigger className="w-48">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
               <SelectItem value="all">All Categories</SelectItem>
               {categories.map((cat) => (
                 <SelectItem key={cat} value={cat}>
@@ -799,7 +799,7 @@ export function VendorsView() {
             <SelectTrigger className="w-48">
               <SelectValue placeholder="All Statuses" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
               <SelectItem value="all">All Statuses</SelectItem>
               <SelectItem value="Active">Active</SelectItem>
               <SelectItem value="Inactive">Inactive</SelectItem>
@@ -1185,7 +1185,7 @@ export function VendorsView() {
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
                   <SelectItem value="Vendor">Vendor</SelectItem>
                   <SelectItem value="NGO Partner">NGO Partner</SelectItem>
                 </SelectContent>
@@ -1203,7 +1203,7 @@ export function VendorsView() {
                 >
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
                   <SelectItem value="Bakery">Bakery</SelectItem>
                   <SelectItem value="Restaurant">Restaurant</SelectItem>
                   <SelectItem value="Cafe">Cafe</SelectItem>

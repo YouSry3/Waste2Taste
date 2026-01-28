@@ -1,6 +1,3 @@
-//mark as picked up color bug
-
-
 import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
@@ -60,21 +57,6 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  PieChart as RechartsPieChart,
-  Pie,
-  Cell,
-} from "recharts";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import { cn } from "../../lib/utils";
@@ -297,52 +279,6 @@ const orderStatusColors = {
   "In Progress": "bg-purple-100 text-purple-700 hover:bg-purple-200",
 };
 
-const COLORS = ["#10b981", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
-
-// Enhanced chart data with actual order data
-const getChartData = (orders: Order[]) => {
-  // Daily revenue data
-  const revenueByDay: Record<string, number> = {};
-  orders.forEach((order) => {
-    if (order.status !== "Cancelled") {
-      const date = order.date;
-      const amount = parseFloat(order.amount.replace("$", ""));
-      revenueByDay[date] = (revenueByDay[date] || 0) + amount;
-    }
-  });
-
-  const dailyRevenueData = Object.entries(revenueByDay)
-    .slice(-7) // Last 7 days
-    .map(([day, revenue]) => ({
-      day: new Date(day).toLocaleDateString("en-US", { weekday: "short" }),
-      revenue,
-    }));
-
-  // Order status data
-  const statusCounts = orders.reduce(
-    (acc, order) => {
-      acc[order.status] = (acc[order.status] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>,
-  );
-
-  const orderStatusData = Object.entries(statusCounts).map(([name, value]) => ({
-    name,
-    value: (value / orders.length) * 100,
-  }));
-
-  return { dailyRevenueData, orderStatusData };
-};
-
-const topVendorsData = [
-  { name: "Green Valley Bakery", orders: 45, revenue: "$224.55" },
-  { name: "City Cafe", orders: 38, revenue: "$227.62" },
-  { name: "Fresh Market", orders: 32, revenue: "$255.68" },
-  { name: "Downtown Deli", orders: 28, revenue: "$182.00" },
-  { name: "Organic Bistro", orders: 25, revenue: "$499.50" },
-];
-
 // Custom Checkbox Component
 const CustomCheckbox = ({
   checked,
@@ -405,12 +341,6 @@ export function OrdersView() {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
-
-  // Get chart data from actual orders
-  const { dailyRevenueData, orderStatusData } = useMemo(
-    () => getChartData(orders),
-    [orders],
-  );
 
   // Filter orders
   const filteredOrders = useMemo(() => {
@@ -853,82 +783,6 @@ export function OrdersView() {
         </Card>
       </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5" />
-              Daily Revenue (Last 7 Days)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dailyRevenueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" />
-                  <YAxis />
-                  <Tooltip
-                    formatter={(value) => [`$${value}`, "Revenue"]}
-                    labelStyle={{ color: "#10b981", fontWeight: "bold" }}
-                  />
-                  <Bar
-                    dataKey="revenue"
-                    fill="#10b981"
-                    radius={[4, 4, 0, 0]}
-                    name="Revenue"
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <PieChart className="h-5 w-5" />
-              Order Status Distribution
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <RechartsPieChart>
-                  <Pie
-                    data={orderStatusData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) =>
-                      `${name}: ${(percent * 100).toFixed(0)}%`
-                    }
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {orderStatusData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value) => [
-                      `${parseFloat(value as string).toFixed(1)}%`,
-                      "Percentage",
-                    ]}
-                  />
-                  <Legend />
-                </RechartsPieChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Top Vendors */}
       <Card className="mb-6">
         <CardContent className="p-6">
@@ -937,30 +791,45 @@ export function OrdersView() {
             Top Performing Vendors
           </h3>
           <div className="space-y-3">
-            {topVendorsData.map((vendor, index) => (
-              <div
-                key={vendor.name}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-lg font-bold text-gray-400">
-                    #{index + 1}
-                  </div>
-                  <div>
-                    <p className="font-medium text-sm">{vendor.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {vendor.orders} orders
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-green-600 font-semibold">
-                    {vendor.revenue}
-                  </p>
-                  <p className="text-xs text-gray-500">Total Revenue</p>
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="text-lg font-bold text-gray-400">#1</div>
+                <div>
+                  <p className="font-medium text-sm">Green Valley Bakery</p>
+                  <p className="text-xs text-gray-500">45 orders</p>
                 </div>
               </div>
-            ))}
+              <div className="text-right">
+                <p className="text-green-600 font-semibold">$224.55</p>
+                <p className="text-xs text-gray-500">Total Revenue</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="text-lg font-bold text-gray-400">#2</div>
+                <div>
+                  <p className="font-medium text-sm">City Cafe</p>
+                  <p className="text-xs text-gray-500">38 orders</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-green-600 font-semibold">$227.62</p>
+                <p className="text-xs text-gray-500">Total Revenue</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+              <div className="flex items-center gap-3">
+                <div className="text-lg font-bold text-gray-400">#3</div>
+                <div>
+                  <p className="font-medium text-sm">Fresh Market</p>
+                  <p className="text-xs text-gray-500">32 orders</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-green-600 font-semibold">$255.68</p>
+                <p className="text-xs text-gray-500">Total Revenue</p>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -1040,7 +909,7 @@ export function OrdersView() {
               <SelectTrigger className="w-full md:w-48 h-10">
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
                 <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="Ready for Pickup">
                   Ready for Pickup
@@ -1103,7 +972,7 @@ export function OrdersView() {
               <SelectTrigger className="w-full md:w-48 h-10">
                 <SelectValue placeholder="Sort By" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
                 <SelectItem value="dateDesc">Newest First</SelectItem>
                 <SelectItem value="dateAsc">Oldest First</SelectItem>
                 <SelectItem value="amountDesc">Highest Price</SelectItem>
@@ -1154,7 +1023,7 @@ export function OrdersView() {
             <SelectTrigger className="w-28">
               <SelectValue placeholder="5 per page" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
               <SelectItem value="5">5 per page</SelectItem>
               <SelectItem value="10">10 per page</SelectItem>
               <SelectItem value="20">20 per page</SelectItem>
@@ -1311,7 +1180,7 @@ export function OrdersView() {
                     {order.status === "Ready for Pickup" && (
                       <Button
                         size="sm"
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-green-600 hover:bg-green-700 text-white"
                         onClick={() => markAsPickedUp(order.id)}
                       >
                         <CheckCircle className="h-4 w-4 mr-1" />
@@ -1321,7 +1190,7 @@ export function OrdersView() {
                     {order.status === "In Progress" && (
                       <Button
                         size="sm"
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
                         onClick={() => markAsReady(order.id)}
                       >
                         <Package className="h-4 w-4 mr-1" />
@@ -1414,7 +1283,7 @@ export function OrdersView() {
               Previous
             </Button>
 
-            <div className="flex gap-1">
+            <div className="flex gap-1 text-white">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 let pageNum;
                 if (totalPages <= 5) {

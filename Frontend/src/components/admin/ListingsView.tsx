@@ -147,7 +147,7 @@ export function ListingsView() {
         </div>
 
         <Button
-          className="bg-green-600 hover:bg-green-700 flex items-center gap-2"
+          className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 "
           onClick={openAddModal}
         >
           <Plus className="h-4 w-4" />
@@ -170,7 +170,7 @@ export function ListingsView() {
           <SelectTrigger className="w-full md:w-48">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
             <SelectItem value="all">All Categories</SelectItem>
             <SelectItem value="Bakery">Bakery</SelectItem>
             <SelectItem value="Restaurant">Restaurant</SelectItem>
@@ -182,7 +182,7 @@ export function ListingsView() {
           <SelectTrigger className="w-full md:w-48">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="Active">Active</SelectItem>
             <SelectItem value="Sold Out">Sold Out</SelectItem>
@@ -362,7 +362,7 @@ export function ListingsView() {
               ))}
 
               <Button
-                className="bg-green-600 hover:bg-green-700 mt-2"
+                className="bg-green-600 hover:bg-green-700 mt-2 text-white"
                 onClick={handleSubmit}
               >
                 {currentListing ? "Update Listing" : "Add Listing"}

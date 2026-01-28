@@ -5,8 +5,7 @@ import { ListingsView } from "./ListingsView";
 import { UsersView } from "./UsersView";
 import { VendorsView } from "./VendorsView";
 import { OrdersView } from "./OrdersView";
-import { MapView } from "./MapView";
-import { ModerationView } from "./ModerationView";
+import { ModerationView } from "./moderation/ModerationView";
 
 export function AdminPanel() {
   const [currentView, setCurrentView] = useState<
