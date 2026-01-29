@@ -26,6 +26,10 @@ export function ModerationView() {
   const [selectedVendors, setSelectedVendors] = useState<number[]>([]);
   const [selectedReports, setSelectedReports] = useState<number[]>([]);
 
+  // Activity Log specific filter (separate from listings filter)
+  const [activityStatusFilter, setActivityStatusFilter] =
+    useState<string>("all");
+
   // Dialog States
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [documentViewerOpen, setDocumentViewerOpen] = useState(false);
@@ -57,6 +61,35 @@ export function ModerationView() {
     data.addToActivityLog(newActivity);
   };
 
+  // Filter Activity Log based on status
+  const getFilteredActivityLog = () => {
+    if (activityStatusFilter === "all") {
+      return data.activityLog;
+    }
+
+    return data.activityLog.filter((activity) => {
+      // Map the filter value to activity types
+      switch (activityStatusFilter) {
+        case "approved":
+          return (
+            activity.type === "approval" ||
+            activity.type === "vendor_approval" ||
+            activity.type === "bulk_approval"
+          );
+        case "rejected":
+          return (
+            activity.type === "rejection" ||
+            activity.type === "vendor_rejection" ||
+            activity.type === "bulk_rejection"
+          );
+        case "changes_requested":
+          return activity.type === "changes_requested";
+        default:
+          return true;
+      }
+    });
+  };
+
   // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -81,6 +114,7 @@ export function ModerationView() {
   const filteredListings = filters.getFilteredListings(data.listings);
   const filteredVendors = filters.getFilteredVendors(data.vendorRequests);
   const filteredReports = filters.getFilteredReports(data.customerReports);
+  const filteredActivityLog = getFilteredActivityLog();
 
   const paginatedListings = filters.getPaginatedItems(
     filteredListings,
@@ -133,7 +167,6 @@ export function ModerationView() {
   // Listing Actions - Updated to be async and use the hook functions
   const handleApproveListing = async (id: number) => {
     try {
-      // Use the hook function which will remove the listing
       await data.handleApproveListing(id);
 
       const listing = data.listings.find((l) => l.id === id);
@@ -161,7 +194,6 @@ export function ModerationView() {
     notes: string,
   ) => {
     try {
-      // Use the hook function which will remove the listing
       await data.handleRejectListing(id, { reason, notes });
 
       const listing = data.listings.find((l) => l.id === id);
@@ -288,10 +320,8 @@ export function ModerationView() {
     try {
       actions.setLoading("bulk-approve-listings", true);
 
-      // Use the hook function which will remove the listings
       await data.handleBulkApproveListings(selectedListings);
 
-      // Add activity log entry for bulk action
       addToActivityLog({
         type: "bulk_approval",
         targetType: "listing",
@@ -321,14 +351,11 @@ export function ModerationView() {
     try {
       actions.setLoading("bulk-reject-listings", true);
 
-      // Use the hook function which will remove the listings
-      // Note: You might need to provide a reason for rejection
       await data.handleBulkRejectListings(selectedListings, {
         reason: "Bulk rejection",
         notes: "Multiple listings rejected in bulk action",
       });
 
-      // Add activity log entry for bulk action
       addToActivityLog({
         type: "bulk_rejection",
         targetType: "listing",
@@ -358,7 +385,6 @@ export function ModerationView() {
     try {
       await data.handleBulkApproveVendors(selectedVendorIds);
 
-      // Add activity log entry for bulk action
       addToActivityLog({
         type: "bulk_approval",
         targetType: "vendor",
@@ -389,7 +415,6 @@ export function ModerationView() {
         notes: "Multiple vendor applications rejected in bulk action",
       });
 
-      // Add activity log entry for bulk action
       addToActivityLog({
         type: "bulk_rejection",
         targetType: "vendor",
@@ -417,7 +442,6 @@ export function ModerationView() {
 
       await data.handleBulkResolveReports(selectedReports);
 
-      // Add activity log entry for bulk action
       addToActivityLog({
         type: "bulk_resolution",
         targetType: "report",
@@ -449,7 +473,6 @@ export function ModerationView() {
 
       await data.handleBulkDismissReports(selectedReports);
 
-      // Add activity log entry for bulk action
       addToActivityLog({
         type: "bulk_dismissal",
         targetType: "report",
@@ -587,7 +610,7 @@ export function ModerationView() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-green-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <ModerationHeader />
@@ -599,21 +622,23 @@ export function ModerationView() {
           customerReports={data.customerReports}
         />
 
-        {/* Search & Filters */}
-        <SearchFilters
-          activeTab={activeTab}
-          searchQuery={filters.searchQuery}
-          categoryFilter={filters.categoryFilter}
-          sortBy={filters.sortBy}
-          priorityFilter={filters.priorityFilter}
-          statusFilter={filters.statusFilter}
-          onSearchChange={filters.setSearchQuery}
-          onCategoryFilterChange={filters.setCategoryFilter}
-          onSortByChange={filters.setSortBy}
-          onPriorityFilterChange={filters.setPriorityFilter}
-          onStatusFilterChange={filters.setStatusFilter}
-          getSearchPlaceholder={filters.getSearchPlaceholder}
-        />
+        {/* Search & Filters - Only show for listings, vendors, and reports tabs */}
+        {activeTab !== "activity" && (
+          <SearchFilters
+            activeTab={activeTab}
+            searchQuery={filters.searchQuery}
+            categoryFilter={filters.categoryFilter}
+            sortBy={filters.sortBy}
+            priorityFilter={filters.priorityFilter}
+            statusFilter={filters.statusFilter}
+            onSearchChange={filters.setSearchQuery}
+            onCategoryFilterChange={filters.setCategoryFilter}
+            onSortByChange={filters.setSortBy}
+            onPriorityFilterChange={filters.setPriorityFilter}
+            onStatusFilterChange={filters.setStatusFilter}
+            getSearchPlaceholder={filters.getSearchPlaceholder}
+          />
+        )}
 
         {/* Tabs Navigation */}
         <TabNavigation
@@ -626,43 +651,34 @@ export function ModerationView() {
 
         {/* Listing Moderation Tab */}
         {activeTab === "listings" && (
-          // In ModerationView.tsx, update the ListingModeration component call:
           <ListingModeration
             listings={data.listings}
             filteredListings={filteredListings}
             paginatedListings={paginatedListings}
             selectedListings={selectedListings}
             loadingStates={actions.loadingStates}
-            statusFilter={filters.statusFilter}
             totalListingsPages={totalListingsPages}
             listingsPage={filters.listingsPage}
             onSelectListing={handleSelectListing}
             onApproveListing={handleApproveListing}
-            // In ModerationView.tsx, update the ListingModeration props:
-            onRejectListing={(
-              id, // id is passed from ListingCard
-            ) =>
+            onRejectListing={(id) =>
               actions.setRejectionDialog({
                 open: true,
-                id, // Use the actual ID
+                id,
                 type: "listing",
               })
             }
-            onRequestChanges={(
-              id, // id is passed from ListingCard
-            ) =>
+            onRequestChanges={(id) =>
               actions.setChangeRequestDialog({
                 open: true,
-                id, // Use the actual ID
+                id,
               })
             }
             onBulkApproveListings={handleBulkApproveListings}
             onBulkRejectListings={handleBulkRejectListings}
             onClearSelection={() => setSelectedListings([])}
-            onStatusFilterChange={filters.setStatusFilter}
             onPageChange={filters.setListingsPage}
             onZoomImage={setZoomedImage}
-            // REMOVED: onRemoveListing prop
           />
         )}
 
@@ -726,9 +742,11 @@ export function ModerationView() {
         {/* Activity Log Tab */}
         {activeTab === "activity" && (
           <ActivityLog
-            activityLog={data.activityLog}
+            activityLog={filteredActivityLog}
             sortBy={filters.sortBy}
+            statusFilter={activityStatusFilter}
             onSortByChange={filters.setSortBy}
+            onStatusFilterChange={setActivityStatusFilter}
             onClearActivityLog={handleClearActivityLog}
             onViewActivityDetails={handleViewActivityDetails}
           />
@@ -754,7 +772,6 @@ export function ModerationView() {
         }
         onOpenChange={(open) => {
           if (!open) {
-            // When dialog closes, reset the rejection state
             actions.setRejectionReason("");
             actions.setRejectionNotes("");
           }
@@ -769,7 +786,6 @@ export function ModerationView() {
             handleRejectVendor(actions.rejectionDialog.id, reason, notes);
           }
 
-          // Reset rejection state after confirming
           actions.setRejectionReason("");
           actions.setRejectionNotes("");
 

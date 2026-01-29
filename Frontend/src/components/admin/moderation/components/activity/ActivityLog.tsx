@@ -25,7 +25,9 @@ import { Filter, Clock, Trash2 } from "lucide-react";
 interface ActivityLogProps {
   activityLog: ModerationAction[];
   sortBy: string;
+  statusFilter: string; // NEW: Added status filter
   onSortByChange: (value: string) => void;
+  onStatusFilterChange: (value: string) => void; // NEW: Added status filter handler
   onClearActivityLog: () => void;
   onViewActivityDetails: (action: ModerationAction) => void;
 }
@@ -33,7 +35,9 @@ interface ActivityLogProps {
 export function ActivityLog({
   activityLog,
   sortBy,
+  statusFilter, // NEW
   onSortByChange,
+  onStatusFilterChange, // NEW
   onClearActivityLog,
   onViewActivityDetails,
 }: ActivityLogProps) {
@@ -42,18 +46,27 @@ export function ActivityLog({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Filter className="h-4 w-4 text-gray-500" />
-          <Select value={sortBy} onValueChange={onSortByChange}>
+
+          {/* Status Filter - Moved from ListingModeration */}
+          <Select value={statusFilter} onValueChange={onStatusFilterChange}>
             <SelectTrigger className="w-40">
-              <SelectValue placeholder="Sort by" />
+              <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
-              <SelectItem value="date">Newest First</SelectItem>
-              <SelectItem value="action">Action Type</SelectItem>
+              <SelectItem value="all">All Actions</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="changes_requested">
+                Changes Requested
+              </SelectItem>
             </SelectContent>
           </Select>
+
+          {/* Sort By */}
+
         </div>
 
-        {/* Destructive Action - Clear Log (Red with outline for permanent destructive) */}
+        {/* Destructive Action - Clear Log */}
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <button className="px-4 py-2 border border-red-300 bg-white text-red-600 hover:bg-red-50 font-medium rounded-lg flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200">

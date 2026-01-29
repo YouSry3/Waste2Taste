@@ -1,47 +1,15 @@
-import { useState } from "react";
+// src/components/admin/AdminPanel.tsx
+import { Outlet } from "react-router-dom";
 import { AdminSidebar } from "./AdminSidebar";
-import { Dashboard } from "./Dashboard";
-import { ListingsView } from "./ListingsView";
-import { UsersView } from "./UsersView";
-import { VendorsView } from "./VendorsView";
-import { OrdersView } from "./OrdersView";
-import { ModerationView } from "./moderation/ModerationView";
 
 export function AdminPanel() {
-  const [currentView, setCurrentView] = useState<
-    | "dashboard"
-    | "listings"
-    | "users"
-    | "vendors"
-    | "orders"
-    | "map"
-    | "moderation"
-  >("dashboard");
-
-  const renderView = () => {
-    switch (currentView) {
-      case "dashboard":
-        return <Dashboard />;
-      case "listings":
-        return <ListingsView />;
-      case "users":
-        return <UsersView />;
-      case "vendors":
-        return <VendorsView />;
-      case "orders":
-        return <OrdersView />;
-
-      case "moderation":
-        return <ModerationView />;
-      default:
-        return <Dashboard />;
-    }
-  };
-
   return (
-    <div className="flex min-h-[calc(100vh-57px)] w-full">
-      <AdminSidebar currentView={currentView} onViewChange={setCurrentView} />
-      <main className="flex-1 bg-gray-50">{renderView()}</main>
+    <div className="flex min-h-screen bg-gray-50">
+      <AdminSidebar />
+      
+      <main className="flex-1 p-6 overflow-auto">
+        <Outlet />
+      </main>
     </div>
   );
 }
