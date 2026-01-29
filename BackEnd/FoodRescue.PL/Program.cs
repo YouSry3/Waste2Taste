@@ -1,9 +1,12 @@
 
+using FoodRescue.BLL.Extensions.Orders;
+using FoodRescue.BLL.Services.Orders;
 using FoodRescue.BLL.Settings;
+using FoodRescue.DAL.Context;
+using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Net;
 using System.Net.Mail;
-
-using System.Net;
 using System.Net.Mail;
 
 
@@ -14,12 +17,19 @@ namespace FoodRescue.PL
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            /*builder.Services.AddDbContext<CompanyDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));*/
 
             // Add services to the container.
             builder.Services.AddProjectServices(builder.Configuration, builder.Environment);
 
+            // Orders
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
-          
+
+
+
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

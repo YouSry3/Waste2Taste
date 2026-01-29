@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FoodRescue.BLL.Services.Orders;
+using FoodRescue.DAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodRescue.PL.Controllers
@@ -7,42 +9,63 @@ namespace FoodRescue.PL.Controllers
     [Route("orders")]
     public class OrdersController : ControllerBase
     {
-        // POST /orders
+        private readonly IOrderService _service;
+
+        public OrdersController(IOrderService service)
+        {
+            _service = service;
+        }
+
         [HttpPost]
         [Authorize(Roles = "Customer")]
-        public IActionResult CreateOrder()
+        public async Task<IActionResult> CreateOrder([FromBody] Order order)
         {
-            return Ok("Order created");
+            var created = await _service.CreateOrderAsync(order);
+            return Ok(created);
         }
 
-        // GET /orders
         [HttpGet]
         [Authorize(Roles = "Customer")]
-        public IActionResult GetMyOrders()
+        public async Task<IActionResult> GetMyOrders()
         {
-            return Ok("My orders");
-        }
-        // GET /orders/{id}
-        [HttpGet("{id}")]
-        [Authorize]
-        public IActionResult GetOrderById(int id)
-        {
-            return Ok($"Order {id}");
+            var userId = User.Identity.Name;
+            var orders = await _service.GetOrdersByCustomerAsync(userId);
+            return Ok(orders);
         }
 
-        // PUT /orders/{id}/status
+        [HttpGet("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetOrderById(int id)
+        {
+            var userId = User.Identity.Name;
+            var role = User.IsInRole("Admin") ? "Admin" : null;
+
+            try
+            {
+                var order = await _service.GetOrderByIdAsync(id, userId, role);
+                return Ok(order);
+            }
+            catch
+            {
+                return Forbid();
+            }
+        }
+
         [HttpPut("{id}/status")]
         [Authorize(Roles = "Vendor,Admin")]
-        public IActionResult UpdateOrderStatus(int id)
+        public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] string status)
         {
-            return Ok($"Order {id} status updated");
+            var order = await _service.UpdateOrderStatusAsync(id, status);
+            return Ok(order);
         }
-        // GET /vendors/orders
+
         [HttpGet("/vendors/orders")]
         [Authorize(Roles = "Vendor")]
-        public IActionResult GetVendorOrders()
+        public async Task<IActionResult> GetVendorOrders()
         {
-            return Ok("Vendor orders");
+            var vendorId = User.Identity.Name;
+            var orders = await _service.GetOrdersByVendorAsync(vendorId);
+            return Ok(orders);
         }
     }
 }
