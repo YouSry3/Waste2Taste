@@ -1,23 +1,27 @@
-// src/App.tsx
 import { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-import { SidebarProvider } from "./components/ui/sidebar";
-import { Button } from "./components/ui/button";
-import { Store, LogOut } from "lucide-react";
-
-import { AdminPanel } from "./components/admin/AdminPanel";
-import { VendorPanel } from "./components/vendor/VendorPanel";
-import { CharityPanel } from "./components/charity/CharityPanel";
 
 import { LoginPage } from "./components/auth/LoginPage";
 import SignupPage from "./components/auth/SignupPage";
 import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 import EnterResetCodePage from "./components/auth/EnterResetCodePage";
 
+import { PanelLayout } from "./components/layout/PanelLayout";
+
+import { AdminPanel } from "./components/admin/AdminPanel";
+import { Dashboard } from "./components/admin/dashboard/DashboardView";
+import { ListingsView } from "./components/admin/listings/ListingsView";
+import { OrdersView } from "./components/admin/orders/OrdersView";
+import { UsersView } from "./components/admin/users/UsersView";
+import { VendorsView } from "./components/admin/vendors/pages/VendorsView";
+
+import { VendorPanel } from "./components/vendor/VendorPanel";
+import { CharityPanel } from "./components/charity/CharityPanel";
+
 import { authService } from "./services/auth/authService";
-import "./styles/globals.css";
+import { ModerationView } from "./components/admin/moderation/ModerationView";
+
 type PanelType = "admin" | "vendor" | "charity";
 
 const queryClient = new QueryClient();
@@ -41,135 +45,57 @@ export default function App() {
     setCurrentPanel(null);
   };
 
-  // ---------------- Protected Route ----------------
   function ProtectedRoute({ children }: { children: JSX.Element }) {
-    if (!isAuthenticated || !currentPanel) return <Navigate to="/" replace />;
+    if (!isAuthenticated || !currentPanel) {
+      return <Navigate to="/" replace />;
+    }
     return children;
   }
 
-  // ---------------- User Menu ----------------
-  function UserMenu() {
-    const [open, setOpen] = useState(false);
-    const user = authService.getCurrentUser();
-
-    if (!user) return null;
-
-    return (
-      <div className="relative">
-        <button
-          onClick={() => setOpen((prev) => !prev)}
-          className="flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-        >
-          <div className="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center text-white font-medium">
-            {user.name.charAt(0).toUpperCase()}
-          </div>
-          <div className="flex flex-col text-sm">
-            <span className="font-medium text-gray-800">{user.name}</span>
-            <span className="text-gray-500 capitalize text-xs">
-              {user.panelType}
-            </span>
-          </div>
-        </button>
-
-        {open && (
-          <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-10">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-start px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-red-600"
-              onClick={handleLogout} // ✅ no reload needed
-            >
-              <LogOut className="h-4 w-4 mr-2" /> Logout
-            </Button>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // ---------------- App ----------------
   return (
     <QueryClientProvider client={queryClient}>
       <Routes>
-        {/* LOGIN PAGE */}
+        {/* AUTH */}
         <Route
           path="/"
           element={
             !isAuthenticated ? (
               <LoginPage onLogin={handleLogin} />
             ) : (
-              <Navigate to="/panel" replace />
+              <Navigate to={`/panel/${currentPanel}`} replace />
             )
           }
         />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/enter-reset-code" element={<EnterResetCodePage />} />
 
-        {/* SIGNUP PAGE */}
-        <Route
-          path="/signup"
-          element={
-            !isAuthenticated ? <SignupPage /> : <Navigate to="/panel" replace />
-          }
-        />
-
-        {/* RESET PASSWORD PAGE */}
-        <Route
-          path="/reset-password"
-          element={
-            !isAuthenticated ? (
-              <ResetPasswordPage />
-            ) : (
-              <Navigate to="/panel" replace />
-            )
-          }
-        />
-
-        {/* ENTER RESET CODE PAGE */}
-        <Route
-          path="/enter-reset-code"
-          element={
-            !isAuthenticated ? (
-              <EnterResetCodePage />
-            ) : (
-              <Navigate to="/panel" replace />
-            )
-          }
-        />
-
-        {/* PROTECTED PANEL */}
+        {/* PANEL */}
         <Route
           path="/panel"
           element={
             <ProtectedRoute>
-              <div className="min-h-screen bg-gray-50">
-                {/* NAVBAR */}
-                <div className="bg-white border-b px-6 py-3 sticky top-0 z-50">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-lg bg-green-600 flex items-center justify-center">
-                        <Store className="h-5 w-5 text-white" />
-                      </div>
-                      <h2 className="font-semibold text-gray-800">
-                        Food Rescue Platform
-                      </h2>
-                    </div>
-                    <div className="ml-auto flex items-center gap-4">
-                      {authService.getCurrentUser() && <UserMenu />}
-                    </div>
-                  </div>
-                </div>
-
-                {/* PANEL CONTENT */}
-                <SidebarProvider>
-                  {currentPanel === "admin" && <AdminPanel />}
-                  {currentPanel === "vendor" && <VendorPanel />}
-                  {currentPanel === "charity" && <CharityPanel />}
-                </SidebarProvider>
-              </div>
+              <PanelLayout onLogout={handleLogout} />
             </ProtectedRoute>
           }
-        />
+        >
+          {/* Admin nested routes */}
+          <Route path="admin" element={<AdminPanel />}>
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="listings" element={<ListingsView />} />
+            <Route path="orders" element={<OrdersView />} />
+            <Route path="users" element={<UsersView />} />
+            <Route path="vendors" element={<VendorsView />} />
+            <Route path="moderation" element={<ModerationView />} />
+          </Route>
 
-        {/* ANY UNKNOWN ROUTE */}
+          {/* Vendor and charity */}
+          <Route path="vendor" element={<VendorPanel />} />
+          <Route path="charity" element={<CharityPanel />} />
+        </Route>
+
+        {/* fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </QueryClientProvider>

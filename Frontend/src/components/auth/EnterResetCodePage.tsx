@@ -143,10 +143,11 @@ export default function EnterResetCodePage() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   transition={{ type: "spring", stiffness: 300 }}
+                  className="mt-5"
                 >
                   <Button
                     type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white pt-[-5px]"
                     disabled={resetPasswordConfirmMutation.isPending}
                   >
                     {resetPasswordConfirmMutation.isPending
@@ -154,15 +155,20 @@ export default function EnterResetCodePage() {
                       : "Reset Password"}
                   </Button>
                 </motion.div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full mt-2"
-                  onClick={() => navigate("/login")}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="mt-5"
                 >
-                  Back to Login
-                </Button>
+                  <Button
+                    type="button"
+                    className="w-full border hover:text-white hover:bg-green-600"
+                    onClick={() => navigate("/login")}
+                  >
+                    Back to Login
+                  </Button>
+                </motion.div>
               </Form>
             )}
           </Formik>

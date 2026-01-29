@@ -260,7 +260,7 @@ export default function SignUpPage() {
                 >
                   <Button
                     type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
                     disabled={registerMutation.isLoading}
                   >
                     {registerMutation.isLoading
@@ -271,7 +271,7 @@ export default function SignUpPage() {
 
                 {/* Login Link */}
                 <Link to="/login" className="w-full">
-                  <Button className="w-full bg-white/90 border border-black text-black hover:bg-green-500 hover:text-white transition-colors duration-300">
+                  <Button className="w-full bg-white/90 border text-black hover:bg-green-600 hover:text-white transition-colors duration-300">
                     Already Have an Account? Login
                   </Button>
                 </Link>

@@ -4,14 +4,6 @@ import { ListingCard } from "./ListingCard";
 import { ListingBulkActions } from "./ListingBulkActions";
 import { Card, CardContent } from "../../../../ui/card";
 import { Package } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../../ui/select";
-import { Filter } from "lucide-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ListingModerationProps {
@@ -20,7 +12,6 @@ interface ListingModerationProps {
   paginatedListings: Listing[];
   selectedListings: number[];
   loadingStates: { [key: string]: boolean };
-  statusFilter: string;
   totalListingsPages: number;
   listingsPage: number;
   onSelectListing: (id: number, checked: boolean) => void;
@@ -30,10 +21,9 @@ interface ListingModerationProps {
   onBulkApproveListings: () => void;
   onBulkRejectListings: () => void;
   onClearSelection: () => void;
-  onStatusFilterChange: (value: string) => void;
   onPageChange: (page: number) => void;
   onZoomImage: (image: string) => void;
-  // REMOVED: onRemoveListing prop - not needed anymore
+  // REMOVED: statusFilter and onStatusFilterChange - moved to ActivityLog
 }
 
 export function ListingModeration({
@@ -42,7 +32,6 @@ export function ListingModeration({
   paginatedListings,
   selectedListings,
   loadingStates,
-  statusFilter,
   totalListingsPages,
   listingsPage,
   onSelectListing,
@@ -52,28 +41,12 @@ export function ListingModeration({
   onBulkApproveListings,
   onBulkRejectListings,
   onClearSelection,
-  onStatusFilterChange,
   onPageChange,
   onZoomImage,
-  // REMOVED: onRemoveListing prop
 }: ListingModerationProps) {
   return (
     <div className="space-y-4">
-      {/* Status Filter */}
-      <div className="flex items-center gap-3">
-        <Filter className="h-4 w-4 text-gray-500" />
-        <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="approved">Approved</SelectItem>
-            <SelectItem value="rejected">Rejected</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {/* REMOVED: Status Filter - moved to ActivityLog */}
 
       {/* Bulk Actions Bar */}
       {selectedListings.length > 0 && (
@@ -106,7 +79,6 @@ export function ListingModeration({
               onReject={onRejectListing}
               onRequestChanges={onRequestChanges}
               onZoomImage={onZoomImage}
-              // REMOVED: onRemove prop - not needed anymore
             />
           ))}
 

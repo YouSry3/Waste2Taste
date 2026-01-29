@@ -299,21 +299,25 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 >
                   <Button
                     type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
                     disabled={isLoading}
                   >
                     {isLoading ? "Signing In..." : "Sign In"}
                   </Button>
                 </motion.div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full mt-2"
-                  onClick={() => navigate("/signup")}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  Create a new account
-                </Button>
+                  <Button
+                    type="button"
+                    className="w-full  border hover:bg-green-700 hover:text-white"
+                    onClick={() => navigate("/signup")}
+                  >
+                    Create a new account
+                  </Button>
+                </motion.div>
               </Form>
             )}
           </Formik>

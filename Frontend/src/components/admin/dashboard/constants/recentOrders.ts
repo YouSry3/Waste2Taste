@@ -1,0 +1,55 @@
+// src/components/admin/dashboard/constants/recentOrders.ts
+import { RecentOrder } from "../types";
+
+export const recentOrders: RecentOrder[] = [
+  {
+    id: "#ORD-1247",
+    user: "Emma Wilson",
+    vendor: "Green Valley Bakery",
+    items: "Surprise Bag",
+    amount: "$4.99",
+    status: "completed",
+    time: "2 min ago",
+    avatarColor: "bg-green-100 text-green-700",
+  },
+  {
+    id: "#ORD-1246",
+    user: "John Smith",
+    vendor: "City Cafe",
+    items: "Coffee & Pastries",
+    amount: "$5.99",
+    status: "completed",
+    time: "15 min ago",
+    avatarColor: "bg-blue-100 text-blue-700",
+  },
+  {
+    id: "#ORD-1245",
+    user: "Sarah Johnson",
+    vendor: "Fresh Market",
+    items: "Produce Box",
+    amount: "$7.99",
+    status: "pending",
+    time: "32 min ago",
+    avatarColor: "bg-yellow-100 text-yellow-700",
+  },
+  {
+    id: "#ORD-1244",
+    user: "Mike Chen",
+    vendor: "Downtown Deli",
+    items: "Sandwich Pack",
+    amount: "$6.50",
+    status: "completed",
+    time: "1 hour ago",
+    avatarColor: "bg-purple-100 text-purple-700",
+  },
+  {
+    id: "#ORD-1243",
+    user: "Lisa Anderson",
+    vendor: "Bakery Corner",
+    items: "Bread Basket",
+    amount: "$8.25",
+    status: "completed",
+    time: "2 hours ago",
+    avatarColor: "bg-pink-100 text-pink-700",
+  },
+];
