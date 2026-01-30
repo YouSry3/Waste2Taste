@@ -51,6 +51,61 @@ namespace FoodRescue.DAL.Migrations
                     b.ToTable("Donations", (string)null);
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CustomerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("VendorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("OrderItems");
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.PasswordResetToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -237,6 +292,13 @@ namespace FoodRescue.DAL.Migrations
                     b.Navigation("Vendor");
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.OrderItem", b =>
+                {
+                    b.HasOne("FoodRescue.DAL.Entities.Order", null)
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId");
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.Product", b =>
                 {
                     b.HasOne("FoodRescue.DAL.Entities.Vendor", "Vendor")
@@ -276,6 +338,11 @@ namespace FoodRescue.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Order", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Vendor", b =>

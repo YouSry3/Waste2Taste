@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FoodRescue.DAL.Context.Migrations
+namespace FoodRescue.DAL.Migrations
 {
     /// <inheritdoc />
     public partial class CreateVendorsModule : Migration

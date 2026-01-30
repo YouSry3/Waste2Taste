@@ -52,10 +52,7 @@ namespace FoodRescue.PL
             });
 
             // DbContext
-            services.AddDbContext<CompanyDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
-                b => b.MigrationsAssembly("FoodRescue.DAL")));
-
+       
             services.AddServices();
 
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
@@ -64,9 +61,9 @@ namespace FoodRescue.PL
                 services.Configure<EmailSettings>(
             configuration.GetSection("EmailSettings"));
 
-                services.AddScoped<EmailService>();
+                
 
-
+                services.ConfigrationsDataBase(configuration);
 
 
             services.AddJwtService(configuration);
@@ -106,12 +103,21 @@ namespace FoodRescue.PL
             services.AddScoped<EmailService>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<EmailService>();
 
             VendorMapsterConfig.RegisterVendorMappings();
 
             return services;
         }
+        private static IServiceCollection ConfigrationsDataBase(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<CompanyDbContext>(options =>
+           options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"),
+           b => b.MigrationsAssembly("FoodRescue.DAL")));
 
+            return services;
+
+        }
         private static IServiceCollection AddJwtService(this IServiceCollection services,
             IConfiguration Configuration)
         {
