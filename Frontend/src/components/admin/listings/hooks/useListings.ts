@@ -1,22 +1,7 @@
 // src/components/admin/listings/hooks/useListings.ts
 import { useState, useMemo } from "react";
-import {
-  useListings as useListingsQuery,
-  useCategories,
-  useListingStats,
-} from "../api/listing.queries";
-import {
-  useCreateListing,
-  useUpdateListing,
-  useDeleteListing,
-} from "../api/listing.mutations";
-import { initialListings } from "../constants/listings.data"; // Import mock data
-
-/**
- * Custom hook that combines all listing-related logic
- * This hook serves as a facade for the listing functionality
- * TODO: Add error handling, loading states, and any additional business logic
- */
+import { initialListings } from "../constants/listings.data";
+import { Listing } from "../types/listing.types";
 
 export interface UseListingsOptions {
   initialFilters?: {
@@ -29,6 +14,7 @@ export interface UseListingsOptions {
 }
 
 export const useListings = (options: UseListingsOptions = {}) => {
+  /* -------------------- FILTER STATE -------------------- */
   const [searchTerm, setSearchTerm] = useState(
     options.initialFilters?.searchTerm || "",
   );
@@ -39,33 +25,43 @@ export const useListings = (options: UseListingsOptions = {}) => {
     options.initialFilters?.status || "all",
   );
 
-  // API Queries - Comment out for now since backend is not ready
-  // const listingsQuery = useListingsQuery({
-  //   page: options.page,
-  //   limit: options.limit,
-  // });
-  // const categoriesQuery = useCategories();
-  // const statsQuery = useListingStats();
+  /* -------------------- DATA STATE (SOURCE OF TRUTH) -------------------- */
+  const [listings, setListings] = useState<Listing[]>(initialListings);
 
-  // Use mock data for now
-  const mockListings = initialListings;
-  const mockCategories = ["Bakery", "Restaurant", "Cafe", "Grocery", "Other"];
+  const categories = ["Bakery", "Restaurant", "Cafe", "Grocery", "Other"];
 
-  // API Mutations - Comment out for now
-  // const createMutation = useCreateListing();
-  // const updateMutation = useUpdateListing();
-  // const deleteMutation = useDeleteListing();
+  /* -------------------- MUTATIONS (MOCK, BUT REAL) -------------------- */
 
-  // Use mock mutations for now
-  const mockCreateMutation = { isPending: false, mutate: () => {} };
-  const mockUpdateMutation = { isPending: false, mutate: () => {} };
-  const mockDeleteMutation = { isPending: false, mutate: () => {} };
+  const createListing = (data: Partial<Listing>) => {
+    const newListing: Listing = {
+      ...(data as Listing),
+      id: Date.now(), // temp ID
+    };
 
-  // Memoized filtered listings (using mock data for now)
+    setListings((prev) => [newListing, ...prev]);
+  };
+
+  const updateListing = ({
+    id,
+    data,
+  }: {
+    id: number | string;
+    data: Partial<Listing>;
+  }) => {
+    setListings((prev) =>
+      prev.map((listing) =>
+        listing.id === id ? { ...listing, ...data } : listing,
+      ),
+    );
+  };
+
+  const deleteListing = (id: number | string) => {
+    setListings((prev) => prev.filter((listing) => listing.id !== id));
+  };
+
+  /* -------------------- FILTERED VIEW -------------------- */
   const filteredListings = useMemo(() => {
-    if (!mockListings) return [];
-
-    return mockListings.filter((listing: any) => {
+    return listings.filter((listing) => {
       const matchesSearch =
         searchTerm === "" ||
         listing.vendor.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -73,31 +69,23 @@ export const useListings = (options: UseListingsOptions = {}) => {
 
       const matchesCategory =
         filterCategory === "all" || listing.category === filterCategory;
+
       const matchesStatus =
         filterStatus === "all" || listing.status === filterStatus;
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
-  }, [mockListings, searchTerm, filterCategory, filterStatus]);
+  }, [listings, searchTerm, filterCategory, filterStatus]);
 
-  // Comment out real API states for now
-  // const isLoading = listingsQuery.isLoading || categoriesQuery.isLoading || statsQuery.isLoading;
-  // const isCreating = createMutation.isPending;
-  // const isUpdating = updateMutation.isPending;
-  // const isDeleting = deleteMutation.isPending;
-  // const error = listingsQuery.error || categoriesQuery.error || statsQuery.error;
-  // const mutationError = createMutation.error || updateMutation.error || deleteMutation.error;
-
-  // Use mock states
+  /* -------------------- STATES (MOCKED FOR NOW) -------------------- */
   const isLoading = false;
   const isCreating = false;
   const isUpdating = false;
   const isDeleting = false;
   const error = null;
-  const mutationError = null;
 
   return {
-    // State
+    /* Filters */
     searchTerm,
     setSearchTerm,
     filterCategory,
@@ -105,36 +93,36 @@ export const useListings = (options: UseListingsOptions = {}) => {
     filterStatus,
     setFilterStatus,
 
-    // Data
+    /* Data */
     listings: filteredListings,
-    allListings: mockListings,
-    categories: mockCategories,
-    stats: null, // No stats for mock data
+    allListings: listings,
+    categories,
+    stats: null,
 
-    // Loading states
+    /* Loading */
     isLoading,
     isCreating,
     isUpdating,
     isDeleting,
     isRefetching: false,
 
-    // Error states
+    /* Errors */
     error,
-    mutationError,
+    mutationError: null,
 
-    // Mutations - using mock for now
-    createListing: mockCreateMutation.mutate,
-    updateListing: mockUpdateMutation.mutate,
-    deleteListing: mockDeleteMutation.mutate,
+    /* Mutations */
+    createListing,
+    updateListing,
+    deleteListing,
 
-    // Query utilities
-    refetch: () => console.log("Refetch called - backend not ready"),
+    /* Utilities */
+    refetch: () => {},
 
-    // Derived state
+    /* Derived */
     totalListings: filteredListings.length,
     hasData: filteredListings.length > 0,
 
-    // Status
+    /* Status */
     isSuccess: true,
     isError: false,
   };

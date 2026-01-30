@@ -17,6 +17,32 @@ export function StatsCards({
 }: StatsCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
+      <Card className="border-l-4 border-l-green-500 shadow-sm hover:shadow-md transition-shadow">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-gray-600">
+              Listings to Review
+            </p>
+            <Package className="h-5 w-5 text-green-600" />
+          </div>
+          <div className="flex items-center gap-3">
+            <h3 className="text-3xl font-bold text-gray-900">
+              {listings.filter((l) => l.status === "pending").length}
+            </h3>
+            {listings.filter((l) => l.flagged && l.status === "pending")
+              .length > 0 && (
+              <Badge variant="destructive" className="text-xs">
+                {
+                  listings.filter((l) => l.flagged && l.status === "pending")
+                    .length
+                }{" "}
+                flagged
+              </Badge>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 mt-1">Pending moderation</p>
+        </CardContent>
+      </Card>
       <Card className="border-l-4 border-l-orange-500 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-2">
@@ -44,33 +70,6 @@ export function StatsCards({
             {customerReports.filter((r) => r.status === "under_review").length}
           </h3>
           <p className="text-xs text-gray-500 mt-1">Requires attention</p>
-        </CardContent>
-      </Card>
-
-      <Card className="border-l-4 border-l-green-500 shadow-sm hover:shadow-md transition-shadow">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm font-medium text-gray-600">
-              Listings to Review
-            </p>
-            <Package className="h-5 w-5 text-green-600" />
-          </div>
-          <div className="flex items-center gap-3">
-            <h3 className="text-3xl font-bold text-gray-900">
-              {listings.filter((l) => l.status === "pending").length}
-            </h3>
-            {listings.filter((l) => l.flagged && l.status === "pending")
-              .length > 0 && (
-              <Badge variant="destructive" className="text-xs">
-                {
-                  listings.filter((l) => l.flagged && l.status === "pending")
-                    .length
-                }{" "}
-                flagged
-              </Badge>
-            )}
-          </div>
-          <p className="text-xs text-gray-500 mt-1">Pending moderation</p>
         </CardContent>
       </Card>
     </div>

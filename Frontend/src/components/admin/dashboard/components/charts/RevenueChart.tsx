@@ -48,7 +48,7 @@ export function RevenueChart({ data, isLoading }: RevenueChartProps) {
               <Filter className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-white">
             <DropdownMenuItem>Revenue</DropdownMenuItem>
             <DropdownMenuItem>Orders</DropdownMenuItem>
             <DropdownMenuItem>Users</DropdownMenuItem>

@@ -18,10 +18,10 @@ export function SortButtons({ sortBy, toggleSort }: SortButtonsProps) {
         Name <ArrowUpDown className="ml-2 h-3 w-3" />
       </Button>
       <Button
-        variant="outline"
+        variant=""
         size="sm"
         onClick={() => toggleSort("revenue")}
-        className={sortBy === "revenue" ? "bg-green-50 border-green-600" : ""}
+        className={sortBy === "revenue" ? "bg-green-50 border-green-600 " : ""}
       >
         Revenue <ArrowUpDown className="ml-2 h-3 w-3" />
       </Button>

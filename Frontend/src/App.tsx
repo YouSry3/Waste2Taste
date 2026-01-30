@@ -15,12 +15,20 @@ import { ListingsView } from "./components/admin/listings/ListingsView";
 import { OrdersView } from "./components/admin/orders/OrdersView";
 import { UsersView } from "./components/admin/users/UsersView";
 import { VendorsView } from "./components/admin/vendors/pages/VendorsView";
+import { ModerationView } from "./components/admin/moderation/ModerationView";
 
+// Import vendor components
 import { VendorPanel } from "./components/vendor/VendorPanel";
+import { VendorDashboard } from "./components/vendor/VendorDashboard";
+import { MyListings } from "./components/vendor/MyListings";
+import { CreateListing } from "./components/vendor/CreateListing";
+import { VendorOrders } from "./components/vendor/VendorOrders";
+import { VendorAnalytics } from "./components/vendor/VendorAnalytics";
+import { CustomerReports } from "./components/vendor/CustomerReports";
+
 import { CharityPanel } from "./components/charity/CharityPanel";
 
 import { authService } from "./services/auth/authService";
-import { ModerationView } from "./components/admin/moderation/ModerationView";
 
 type PanelType = "admin" | "vendor" | "charity";
 
@@ -45,10 +53,23 @@ export default function App() {
     setCurrentPanel(null);
   };
 
-  function ProtectedRoute({ children }: { children: JSX.Element }) {
+  function ProtectedRoute({
+    children,
+    allowedRoles,
+  }: {
+    children: JSX.Element;
+    allowedRoles: PanelType[];
+  }) {
     if (!isAuthenticated || !currentPanel) {
       return <Navigate to="/" replace />;
     }
+
+    // Check if current user role is allowed
+    if (!allowedRoles.includes(currentPanel)) {
+      // Redirect to their own panel or to login
+      return <Navigate to={`/panel/${currentPanel}`} replace />;
+    }
+
     return children;
   }
 
@@ -74,14 +95,21 @@ export default function App() {
         <Route
           path="/panel"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["admin", "vendor", "charity"]}>
               <PanelLayout onLogout={handleLogout} />
             </ProtectedRoute>
           }
         >
           {/* Admin nested routes */}
-          <Route path="admin" element={<AdminPanel />}>
-            <Route index element={<Dashboard />} />
+          <Route
+            path="admin"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdminPanel />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="listings" element={<ListingsView />} />
             <Route path="orders" element={<OrdersView />} />
@@ -89,10 +117,32 @@ export default function App() {
             <Route path="vendors" element={<VendorsView />} />
             <Route path="moderation" element={<ModerationView />} />
           </Route>
-
-          {/* Vendor and charity */}
-          <Route path="vendor" element={<VendorPanel />} />
-          <Route path="charity" element={<CharityPanel />} />
+          {/* Vendor nested routes */}
+          <Route
+            path="vendor"
+            element={
+              <ProtectedRoute allowedRoles={["vendor"]}>
+                <VendorPanel />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard" element={<VendorDashboard />} />
+            <Route path="orders" element={<VendorOrders />} />
+            <Route path="listings" element={<MyListings />} />
+            <Route path="create-listing" element={<CreateListing />} />
+            <Route path="analytics" element={<VendorAnalytics />} />
+            <Route path="reports" element={<CustomerReports />} />
+          </Route>
+          {/* Charity */}
+          <Route
+            path="charity"
+            element={
+              <ProtectedRoute allowedRoles={["charity"]}>
+                <CharityPanel />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         {/* fallback */}
