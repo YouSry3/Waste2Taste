@@ -85,7 +85,7 @@ export const OrderFiltersComponent: React.FC<OrderFiltersProps> = ({
               placeholder="Search orders by ID, customer, or vendor..."
               value={filters.searchTerm}
               onChange={(e) => onFilterChange({ searchTerm: e.target.value })}
-              className="pl-10 h-10"
+              className="pl-10 h-10 border "
             />
             {filters.searchTerm && (
               <button

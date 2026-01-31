@@ -25,82 +25,167 @@ export interface RegisterPayload {
   type: "admin" | "vendor" | "charity";
 }
 
-export interface RegisterResponse {
-  email: string;
-  name: string;
-  type: "admin" | "vendor" | "charity";
-}
+export class AuthService {
+  // Normalize API login response
+  private normalizeLoginResponse(data: any): LoginResponse {
+    // Debug: Log the raw response to see what structure we're getting
+    console.log("🔍 Raw API Response:", JSON.stringify(data, null, 2));
 
-export interface TokenVerificationResponse {
-  isValid: boolean;
-  user?: LoginResponse["user"];
-}
+    // ASP.NET Core typically returns flat structure or nested user object
+    const user = data.user || data;
+    const token = data.token || data.accessToken || "";
+    const expiration =
+      data.expiration || data.expiresAt || new Date().toISOString();
 
-class AuthService {
-  private convertLoginResponse(data: any): LoginResponse {
-    return {
-      token: data.token,
-      expiration: new Date(data.expireAt * 1000).toISOString(),
+    console.log("🔍 User object:", user);
+    console.log("🔍 Data keys:", Object.keys(data));
+
+    // The backend uses 'type' field based on the register endpoint
+    let panelType: "admin" | "vendor" | "charity" | undefined;
+
+    // Check for 'type' field (from your backend schema)
+    const typeValue = user.type || data.type || user.userType || data.userType;
+
+    console.log("🔍 Found type value:", typeValue);
+
+    if (typeValue) {
+      const normalized = typeValue.toString().toLowerCase();
+      if (
+        normalized === "admin" ||
+        normalized === "vendor" ||
+        normalized === "charity"
+      ) {
+        panelType = normalized as "admin" | "vendor" | "charity";
+      }
+    }
+
+    // Fallback: check roles array
+    if (!panelType && (user.roles || data.roles)) {
+      const roles = user.roles || data.roles;
+      const firstRole = Array.isArray(roles) ? roles[0] : roles;
+      if (firstRole) {
+        const normalized = firstRole.toString().toLowerCase();
+        if (
+          normalized === "admin" ||
+          normalized === "vendor" ||
+          normalized === "charity"
+        ) {
+          panelType = normalized as "admin" | "vendor" | "charity";
+        }
+      }
+    }
+
+    console.log("✅ Final panelType:", panelType);
+
+    // Extract roles array
+    let roles = user.roles || data.roles || [];
+    if (!Array.isArray(roles)) {
+      roles = [roles];
+    }
+    // Filter out null/undefined values
+    roles = roles.filter((r: any) => r != null && r !== "");
+
+    // If roles is empty but we have panelType, use it
+    if (roles.length === 0 && panelType) {
+      roles = [panelType];
+    }
+
+    console.log("✅ Final roles:", roles);
+
+    const normalized = {
+      token,
+      expiration,
       user: {
-        id: data.id || data.email,
-        email: data.email,
-        name: data.name,
-        panelType: data.type,
-        roles: [data.type],
+        id:
+          user.id ||
+          user.userId ||
+          data.id ||
+          data.userId ||
+          user.email ||
+          data.email ||
+          "",
+        email: user.email || data.email || "",
+        name:
+          user.name ||
+          user.fullName ||
+          user.userName ||
+          data.name ||
+          user.email?.split("@")[0] ||
+          "",
+        panelType: panelType!,
+        roles: roles,
       },
     };
-  }
 
-  // Get the panel type of the current user
-  getPanelType(): "admin" | "vendor" | "charity" | null {
-    const userJson = localStorage.getItem("user");
-    if (!userJson) return null;
-    try {
-      const user = JSON.parse(userJson);
-      return user.panelType || null;
-    } catch {
-      return null;
-    }
+    console.log("📦 Normalized Response:", normalized);
+
+    return normalized;
   }
 
   // LOGIN
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const response = await apiClient.post("/Auth/login", credentials);
+    console.log("📡 Login Response Status:", response.status);
+    console.log("📡 Full Response:", response);
 
-    const normalized = this.convertLoginResponse(response.data);
+    const normalized = this.normalizeLoginResponse(response.data);
 
+    // Validate panelType exists
+    if (!normalized.user.panelType) {
+      console.error("❌ panelType is missing from response!");
+      console.error("❌ Backend response:", response.data);
+
+      // Show helpful error to user
+      throw new Error(
+        "Unable to determine user role. Please ensure your account has a valid user type (admin/vendor/charity) assigned.",
+      );
+    }
+
+    // Validate panelType is valid
+    if (!["admin", "vendor", "charity"].includes(normalized.user.panelType)) {
+      console.error("❌ Invalid panelType:", normalized.user.panelType);
+      throw new Error(`Invalid user role: ${normalized.user.panelType}`);
+    }
+
+    // Save token, user, and panel type
     setAuthToken(normalized.token);
     localStorage.setItem("authToken", normalized.token);
     localStorage.setItem("user", JSON.stringify(normalized.user));
+    localStorage.setItem("panelType", normalized.user.panelType);
+
+    console.log("💾 Saved to localStorage successfully");
 
     return normalized;
   }
 
-  // REGISTER — now accepts a single payload object
-  // REGISTER — now accepts a single payload object
-  async register(payload: RegisterPayload): Promise<RegisterResponse> {
-    const response = await apiClient.post("/Auth/register", {
-      email: payload.email,
-      password: payload.password,
-      name: payload.name,
-      type: payload.type, // ✅ send "type", not "panelType"
-    });
-
-    return {
-      email: response.data.email,
-      name: response.data.name,
-      type: response.data.type, // ✅ matches RegisterResponse interface
-    };
+  // REGISTER
+  async register(payload: RegisterPayload): Promise<any> {
+    const response = await apiClient.post("/Auth/register", payload);
+    console.log("📡 Register Response:", response.data);
+    return response.data;
   }
 
-  // LOGOUT
-  async logout(): Promise<void> {
-    try {
-      await apiClient.post("/Auth/logout");
-    } catch {}
+  // CLIENT-SIDE ONLY LOGOUT (no API call)
+  clearLocalAuth(): void {
     clearAuthToken();
     localStorage.removeItem("authToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("panelType");
+    console.log("🧹 Cleared local auth data");
+  }
+
+  // LOGOUT (with API call)
+  async logout(): Promise<void> {
+    try {
+      await apiClient.post("/Auth/logout");
+    } catch (error) {
+      console.warn(
+        "Logout API call failed (this is normal if endpoint doesn't exist):",
+        error,
+      );
+    }
+    this.clearLocalAuth();
+    console.log("🚪 Logged out successfully");
   }
 
   // GET CURRENT USER
@@ -108,26 +193,36 @@ class AuthService {
     const userJson = localStorage.getItem("user");
     if (!userJson) return null;
     try {
-      return JSON.parse(userJson);
-    } catch {
+      const user = JSON.parse(userJson);
+      return user;
+    } catch (error) {
+      console.error("Failed to parse user from localStorage:", error);
       return null;
     }
   }
 
-  // CHECK IF AUTHENTICATED
-  isAuthenticated(): boolean {
-    return !!localStorage.getItem("authToken") && !!this.getCurrentUser();
+  // GET CURRENT PANEL TYPE
+  getPanelType(): "admin" | "vendor" | "charity" | null {
+    const panelType = localStorage.getItem("panelType");
+    if (!panelType || panelType === "undefined" || panelType === "null") {
+      return null;
+    }
+    if (
+      panelType === "admin" ||
+      panelType === "vendor" ||
+      panelType === "charity"
+    ) {
+      return panelType;
+    }
+    console.warn("Invalid panelType in localStorage:", panelType);
+    return null;
   }
 
-  // VERIFY TOKEN
-  async verifyToken(): Promise<TokenVerificationResponse> {
-    try {
-      const response = await apiClient.get("/Auth/verify-token");
-      const user = this.getCurrentUser();
-      return { isValid: !!response.data, user: user || undefined };
-    } catch {
-      return { isValid: false };
-    }
+  // CHECK AUTH
+  isAuthenticated(): boolean {
+    const hasToken = !!localStorage.getItem("authToken");
+    const hasUser = !!this.getCurrentUser();
+    return hasToken && hasUser;
   }
 }
 

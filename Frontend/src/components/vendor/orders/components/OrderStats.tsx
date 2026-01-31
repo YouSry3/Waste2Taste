@@ -74,56 +74,7 @@ export const OrderStatsComponent: React.FC<OrderStatsProps> = ({ stats }) => {
         </Card>
       </div>
 
-      {/* Top Vendors */}
-      <Card className="mb-6">
-        <CardContent className="p-6">
-          <h3 className="font-semibold mb-4 flex items-center gap-2">
-            <Store className="h-5 w-5" />
-            Top Performing Vendors
-          </h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="text-lg font-bold text-gray-400">#1</div>
-                <div>
-                  <p className="font-medium text-sm">Green Valley Bakery</p>
-                  <p className="text-xs text-gray-500">45 orders</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-green-600 font-semibold">$224.55</p>
-                <p className="text-xs text-gray-500">Total Revenue</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="text-lg font-bold text-gray-400">#2</div>
-                <div>
-                  <p className="font-medium text-sm">City Cafe</p>
-                  <p className="text-xs text-gray-500">38 orders</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-green-600 font-semibold">$227.62</p>
-                <p className="text-xs text-gray-500">Total Revenue</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="text-lg font-bold text-gray-400">#3</div>
-                <div>
-                  <p className="font-medium text-sm">Fresh Market</p>
-                  <p className="text-xs text-gray-500">32 orders</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-green-600 font-semibold">$255.68</p>
-                <p className="text-xs text-gray-500">Total Revenue</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    
     </>
   );
 };

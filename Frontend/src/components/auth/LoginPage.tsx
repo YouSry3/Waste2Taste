@@ -1,4 +1,4 @@
-// src/pages/LoginPage.tsx
+// src/components/auth/LoginPage.tsx
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Formik, Form, Field } from "formik";
@@ -59,28 +59,66 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     },
   ];
 
-  // ✅ TanStack + Axios: use your working authService.login
+  // ✅ React Query Mutation for real backend login
   const loginMutation = useMutation({
-    mutationFn: (values: LoginCredentials) => authService.login(values),
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Wrong Email or Password");
-    },
-    onSuccess: (res: LoginResponse) => {
-      if (res.user.panelType !== selectedPanel) {
-        toast.error(
-          `Your account is registered as "${res.user.panelType}". Please select the correct panel.`,
+    mutationFn: async (payload: {
+      credentials: LoginCredentials;
+      panelType: PanelType;
+    }) => {
+      // IMPORTANT: Clear any existing auth data before new login attempt (client-side only)
+      authService.clearLocalAuth();
+
+      // Call the backend login
+      const response = await authService.login(payload.credentials);
+
+      // Validate the panel type matches what user selected
+      if (response.user.panelType !== payload.panelType) {
+        // Clean up the data that was just saved
+        authService.clearLocalAuth();
+
+        // Throw error to trigger onError handler
+        throw new Error(
+          `Your account is registered as "${response.user.panelType}". Please select the correct panel.`,
         );
-        return;
       }
 
-      localStorage.setItem("user", JSON.stringify(res.user));
-      localStorage.setItem("authToken", res.token);
-      localStorage.setItem("panelType", selectedPanel);
+      return response;
+    },
+    onError: (error: any) => {
+      console.error("Login error:", error);
+
+      // Handle different error types
+      let errorMessage = "Login failed. Please try again.";
+
+      if (error?.statusCode === 400) {
+        errorMessage =
+          "Invalid email or password. Please check your credentials.";
+      } else if (error?.statusCode === 401) {
+        errorMessage =
+          "Invalid email or password. Please check your credentials.";
+      } else if (error?.statusCode === 404) {
+        errorMessage = "Account not found. Please check your email.";
+      } else if (error?.statusCode === 403) {
+        errorMessage = "Account access denied. Please contact support.";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      toast.error(errorMessage);
+    },
+    onSuccess: async (res: LoginResponse) => {
+      // Show success toast
       toast.success("Login successful!");
-      onLogin(selectedPanel);
+
+      // Wait 500ms to let user see the toast before navigation
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Then trigger navigation
+      onLogin(res.user.panelType);
     },
   });
 
+  // ✅ Validation schema
   const validationSchema = Yup.object({
     email: Yup.string()
       .email("Invalid email")
@@ -96,8 +134,12 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       }),
   });
 
-  const handleSubmit = (values: { email: string; password: string }) => {
+  // ✅ Handle form submit
+  const handleSubmit = async (values: { email: string; password: string }) => {
     if (useDemo) {
+      // Clear any existing auth first (client-side only)
+      authService.clearLocalAuth();
+
       const mockUser = {
         id: `demo-${Date.now()}`,
         email: values.email || "demo@example.com",
@@ -105,18 +147,30 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         panelType: selectedPanel,
         roles: [selectedPanel],
       };
+      // Save demo user
       localStorage.setItem("user", JSON.stringify(mockUser));
       localStorage.setItem("authToken", "demo-token-" + Date.now());
       localStorage.setItem("panelType", selectedPanel);
+
+      // Show toast
       toast.success("Demo login successful!");
+
+      // Wait before navigation
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       onLogin(selectedPanel);
       return;
     }
 
-    loginMutation.mutate(values); // ✅ uses working authService.login
+    // Reset mutation state and submit with panel type
+    loginMutation.reset();
+    loginMutation.mutate({
+      credentials: values,
+      panelType: selectedPanel,
+    });
   };
 
-  const isLoading = loginMutation.isLoading;
+  const isLoading = loginMutation.isPending || loginMutation.isLoading;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-6">
@@ -178,11 +232,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       name="email"
                       type="email"
                       placeholder="your.email@example.com"
-                      className={`pl-10 border ${
-                        touched.email && errors?.email
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className={`pl-10 border ${touched.email && errors?.email ? "border-red-500" : "border-gray-300"}`}
                     />
                   </div>
                   {touched.email && errors?.email && (
@@ -201,11 +251,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder={useDemo ? "Any password" : "Enter password"}
-                      className={`pl-10 pr-10 border ${
-                        touched.password && errors?.password
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
+                      className={`pl-10 pr-10 border ${touched.password && errors?.password ? "border-red-500" : "border-gray-300"}`}
                     />
                     <motion.button
                       type="button"
@@ -215,7 +261,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                       whileHover={{ scale: 1.2 }}
                       transition={{ type: "spring", stiffness: 300 }}
                     >
-                      <AnimatePresence exitBeforeEnter>
+                      <AnimatePresence mode="wait">
                         {showPassword ? (
                           <EyeOff key="off" className="h-4 w-4" />
                         ) : (
@@ -260,11 +306,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                             className="w-full"
                           >
                             <motion.div
-                              className={`flex items-center space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-all w-full ${
-                                active
-                                  ? "border-green-600 bg-green-50 shadow-sm scale-[1.01]"
-                                  : "border-gray-200 hover:border-gray-300"
-                              }`}
+                              className={`flex items-center space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-all w-full ${active ? "border-green-600 bg-green-50 shadow-sm scale-[1.01]" : "border-gray-200 hover:border-gray-300"}`}
                               whileHover={{ scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}
                             >
@@ -312,7 +354,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 >
                   <Button
                     type="button"
-                    className="w-full  border hover:bg-green-700 hover:text-white"
+                    className="w-full border hover:bg-green-700 hover:text-white"
                     onClick={() => navigate("/signup")}
                   >
                     Create a new account

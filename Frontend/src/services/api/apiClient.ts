@@ -3,7 +3,7 @@ import axios from "axios";
 import { API_CONFIG } from "./apiConfig";
 
 const BASE_URL = API_CONFIG.BASE_URL;
-console.log("API Base URL:", BASE_URL);
+
 export const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -12,7 +12,7 @@ export const apiClient = axios.create({
   withCredentials: API_CONFIG.WITH_CREDENTIALS,
 });
 
-// Token helper functions
+// Automatically attach token
 export const setAuthToken = (token: string) => {
   apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 };
@@ -21,7 +21,7 @@ export const clearAuthToken = () => {
   delete apiClient.defaults.headers.common["Authorization"];
 };
 
-// Attach token from localStorage automatically on requests
+// Attach token from localStorage on every request
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("authToken");
   if (token) {
@@ -30,7 +30,7 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Optional: global response error handling
+// Global response error handling
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -42,5 +42,5 @@ apiClient.interceptors.response.use(
       });
     }
     return Promise.reject(error);
-  }
+  },
 );

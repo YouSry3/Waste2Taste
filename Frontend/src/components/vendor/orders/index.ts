@@ -3,7 +3,7 @@
  */
 
 // Main component
-export { OrdersView } from "./OrdersView";
+export { VendorOrders } from "./VendorOrders";
 
 // Types
 export type {
