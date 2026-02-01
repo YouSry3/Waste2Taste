@@ -14,7 +14,6 @@ import {
 import { StatsCard } from "./components/cards/StatsCard";
 import { RevenueChart } from "./components/charts/RevenueChart";
 import { CategoryChart } from "./components/charts/CategoryChart";
-import { RecentOrders } from "./components/tables/RecentOrders";
 
 // Import data
 import { statsData } from "./constants/statsData";
@@ -84,8 +83,6 @@ export function DashboardView() {
         <CategoryChart data={categoryData} />
       </div>
 
-      {/* Recent Orders */}
-      <RecentOrders orders={recentOrders} />
     </div>
   );
 }

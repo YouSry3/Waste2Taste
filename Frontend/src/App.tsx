@@ -1,4 +1,3 @@
-// App.tsx
 import { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
@@ -11,14 +10,13 @@ import { PanelLayout } from "./components/layout/PanelLayout";
 
 import { AdminPanel } from "./components/admin/AdminPanel";
 import { Dashboard } from "./components/admin/dashboard/DashboardView";
-import { ListingsView } from "./components/admin/listings/ListingsView";
 import { UsersView } from "./components/admin/users/UsersView";
 import { VendorsView } from "./components/admin/vendors/pages/VendorsView";
 import { ModerationView } from "./components/admin/moderation/ModerationView";
 
 import { VendorPanel } from "./components/vendor/VendorPanel";
 import { VendorDashboard } from "./components/vendor/VendorDashboard";
-import { MyListings } from "./components/vendor/MyListings";
+import { MyListings } from "./components/vendor/listings/ListingsView";
 import { CreateListing } from "./components/vendor/CreateListing";
 import { VendorOrders } from "./components/vendor/orders/VendorOrders";
 import { VendorAnalytics } from "./components/vendor/VendorAnalytics";
@@ -28,10 +26,12 @@ import { CharityPanel } from "./components/charity/CharityPanel";
 
 import { authService } from "./services/auth/authService";
 
+// Import the VendorListingsProvider instead
+import { VendorListingsProvider } from "./components/vendor/listings/context/ListingsContext";
+
 type PanelType = "admin" | "vendor" | "charity";
 
 export default function App() {
-  // Initialize state from localStorage once
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return authService.isAuthenticated();
   });
@@ -51,7 +51,6 @@ export default function App() {
     setCurrentPanel(null);
   };
 
-  // Protected Route Component
   function ProtectedRoute({
     children,
     allowedRoles,
@@ -59,12 +58,10 @@ export default function App() {
     children: JSX.Element;
     allowedRoles: PanelType[];
   }) {
-    // If not authenticated, redirect to login
     if (!isAuthenticated || !currentPanel) {
       return <Navigate to="/" replace />;
     }
 
-    // If authenticated but wrong role, redirect to their correct panel
     if (!allowedRoles.includes(currentPanel)) {
       return <Navigate to={`/panel/${currentPanel}/dashboard`} replace />;
     }
@@ -109,18 +106,19 @@ export default function App() {
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="listings" element={<ListingsView />} />
           <Route path="users" element={<UsersView />} />
           <Route path="vendors" element={<VendorsView />} />
           <Route path="moderation" element={<ModerationView />} />
         </Route>
 
-        {/* Vendor Routes */}
+        {/* Vendor Routes - WRAPPED WITH VendorListingsProvider */}
         <Route
           path="vendor"
           element={
             <ProtectedRoute allowedRoles={["vendor"]}>
-              <VendorPanel />
+              <VendorListingsProvider>
+                <VendorPanel />
+              </VendorListingsProvider>
             </ProtectedRoute>
           }
         >
@@ -144,7 +142,7 @@ export default function App() {
         />
       </Route>
 
-      {/* Fallback - redirect to home */}
+      {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

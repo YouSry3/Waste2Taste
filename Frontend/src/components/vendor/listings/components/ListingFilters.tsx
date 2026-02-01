@@ -16,6 +16,8 @@ interface ListingFiltersProps {
   onCategoryChange: (value: string) => void;
   filterStatus: string;
   onStatusChange: (value: string) => void;
+  categories?: string[];
+  isLoading?: boolean;
 }
 
 export function ListingFilters({
@@ -25,6 +27,8 @@ export function ListingFilters({
   onCategoryChange,
   filterStatus,
   onStatusChange,
+  categories = ["Bakery", "Restaurant", "Cafe", "Grocery", "Other"],
+  isLoading = false,
 }: ListingFiltersProps) {
   return (
     <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -35,21 +39,31 @@ export function ListingFilters({
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
           className="pl-10"
+          disabled={isLoading}
         />
       </div>
-      <Select value={filterCategory} onValueChange={onCategoryChange}>
+      <Select
+        value={filterCategory}
+        onValueChange={onCategoryChange}
+        disabled={isLoading}
+      >
         <SelectTrigger className="w-full md:w-48">
           <SelectValue placeholder="All Categories" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All Categories</SelectItem>
-          <SelectItem value="Bakery">Bakery</SelectItem>
-          <SelectItem value="Restaurant">Restaurant</SelectItem>
-          <SelectItem value="Cafe">Cafe</SelectItem>
-          <SelectItem value="Grocery">Grocery</SelectItem>
+          {categories.map((category) => (
+            <SelectItem key={category} value={category}>
+              {category}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
-      <Select value={filterStatus} onValueChange={onStatusChange}>
+      <Select
+        value={filterStatus}
+        onValueChange={onStatusChange}
+        disabled={isLoading}
+      >
         <SelectTrigger className="w-full md:w-48">
           <SelectValue placeholder="All Status" />
         </SelectTrigger>

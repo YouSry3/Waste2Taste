@@ -11,7 +11,6 @@ import {
 
 const menuItems = [
   { label: "Dashboard", icon: LayoutDashboard, to: "/panel/admin" },
-  { label: "Listings", icon: Package, to: "/panel/admin/listings" },
   { label: "Vendors", icon: Store, to: "/panel/admin/vendors" },
   { label: "Users", icon: Users, to: "/panel/admin/users" },
   { label: "Moderation", icon: Shield, to: "/panel/admin/moderation" },

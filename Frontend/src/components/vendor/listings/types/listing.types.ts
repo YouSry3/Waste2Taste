@@ -1,4 +1,3 @@
-// src/components/admin/listings/types/listing.types.ts
 export interface Listing {
   id: number;
   vendor: string;
@@ -12,6 +11,7 @@ export interface Listing {
   location: string;
   rating: number;
   description: string;
+  photos: string[]; // Changed from optional to required
 }
 
 // DTOs (Data Transfer Objects) for API requests
@@ -27,6 +27,7 @@ export interface CreateListingDto {
   description: string;
   status?: "Active" | "Sold Out";
   rating?: number;
+  photos: string[]; // Added photos
 }
 
 export interface UpdateListingDto extends Partial<CreateListingDto> {

@@ -11,7 +11,8 @@ export function ListingForm({
   formFields,
   onSubmit,
   submitLabel,
-}: ListingFormProps) {
+  isLoading = false,
+}: ListingFormProps & { isLoading?: boolean }) {
   return (
     <div className="flex flex-col gap-4 mt-2">
       {formFields.map((field) => (
@@ -28,6 +29,7 @@ export function ListingForm({
               onChange={(e) =>
                 setFormState({ ...formState, [field.key]: e.target.value })
               }
+              disabled={isLoading}
             />
           ) : (
             <Input
@@ -45,12 +47,17 @@ export function ListingForm({
                       : e.target.value,
                 })
               }
+              disabled={isLoading}
             />
           )}
         </div>
       ))}
-      <Button className="bg-green-600 mt-2 text-white" onClick={onSubmit}>
-        {submitLabel}
+      <Button
+        className="bg-green-600 mt-2 text-white hover:bg-green-700"
+        onClick={onSubmit}
+        disabled={isLoading}
+      >
+        {isLoading ? "Saving..." : submitLabel}
       </Button>
     </div>
   );
