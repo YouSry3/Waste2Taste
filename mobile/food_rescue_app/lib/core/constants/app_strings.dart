@@ -1,4 +1,4 @@
-class AppStrings {
+abstract class AppStrings {
   // Common
   static const String appName = "Food Rescue";
   static const String loading = "Loading...";
