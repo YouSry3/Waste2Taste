@@ -40,6 +40,7 @@ public class VendorsController : ControllerBase
     // POST /vendors — Admin only
     [HttpPost]
     [Authorize(Roles = "admin")]
+    //[Authorize]
     public async Task<IActionResult> Create(CreateVendorRequest dto)
     {
         var id = await _vendorService.CreateVendorAsync(dto);

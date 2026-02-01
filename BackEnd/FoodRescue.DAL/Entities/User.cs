@@ -19,6 +19,10 @@ namespace FoodRescue.DAL.Entities
         // admin, vendor, customer
         public string Type { get; set; } = string.Empty;
 
-        public DateTime CreatedAt { get; set; } 
+        public DateTime CreatedAt { get; set; }
+
+        public ICollection<Review> Reviews { get; set; }
+
+
     }
 }

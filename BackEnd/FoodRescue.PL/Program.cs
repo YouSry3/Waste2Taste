@@ -23,9 +23,8 @@ namespace FoodRescue.PL
             // Add services to the container.
             builder.Services.AddProjectServices(builder.Configuration, builder.Environment);
 
-            // Orders
-            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-            builder.Services.AddScoped<IOrderService, OrderService>();
+       
+           
 
 
 
@@ -37,8 +36,8 @@ namespace FoodRescue.PL
             builder.Services.AddSwaggerGen();
 
             var emailSettings = builder.Configuration
-    .GetSection("EmailSettings")
-    .Get<EmailSettings>();
+                .GetSection("EmailSettings")
+                .Get<EmailSettings>();
 
           
 

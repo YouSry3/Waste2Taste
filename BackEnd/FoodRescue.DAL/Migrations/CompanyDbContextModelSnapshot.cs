@@ -211,6 +211,41 @@ namespace FoodRescue.DAL.Migrations
                     b.ToTable("reports", (string)null);
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Review", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Rating")
+                        .HasPrecision(2, 1)
+                        .HasColumnType("decimal(2,1)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reviews", (string)null);
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -329,6 +364,25 @@ namespace FoodRescue.DAL.Migrations
                     b.Navigation("Vendor");
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Review", b =>
+                {
+                    b.HasOne("FoodRescue.DAL.Entities.Product", "Product")
+                        .WithMany("Reviews")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FoodRescue.DAL.Entities.User", "User")
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.Vendor", b =>
                 {
                     b.HasOne("FoodRescue.DAL.Entities.User", "Owner")
@@ -343,6 +397,16 @@ namespace FoodRescue.DAL.Migrations
             modelBuilder.Entity("FoodRescue.DAL.Entities.Order", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Product", b =>
+                {
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.User", b =>
+                {
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Vendor", b =>

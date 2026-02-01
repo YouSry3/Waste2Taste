@@ -13,4 +13,6 @@ public class Product
     // Navigation
     public Vendor Vendor { get; set; } = null!;
     //public List<OrderItem> OrderItems { get; set; } = new();
+    public ICollection<Review> Reviews { get; set; }
+
 }
