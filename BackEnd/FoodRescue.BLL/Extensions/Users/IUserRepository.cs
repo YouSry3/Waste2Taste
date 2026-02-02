@@ -10,6 +10,9 @@ namespace FoodRescue.BLL.Extensions.Users
     public interface IUserRepository
     {
         Task<User?> GetByIdAsync(Guid id);
+        Task<bool> IsAdmin(Guid id);
+        Task<bool> IsVendor(Guid id);
+        Task<bool> IsCustomer(Guid id);
         Task<User?> GetByEmailAsync(string email);
         Task<IEnumerable<User>> GetVendorsAsync();
         Task UpdateAsync(User user);

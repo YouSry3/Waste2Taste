@@ -2,6 +2,7 @@
 using FoodRescue.BLL.Abstractions;
 using FoodRescue.BLL.Abstractions.TypeErrors;
 using FoodRescue.BLL.Contract.Reviews;
+using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Mapster;
@@ -16,9 +17,10 @@ using System.Threading.Tasks;
 
 namespace FoodRescue.BLL.Services.Reviews
 {
-    public class ReviewService(CompanyDbContext context) : IReviewService
+    public class ReviewService(CompanyDbContext context, IUserRepository userRepository) : IReviewService
     {
         private readonly CompanyDbContext _context = context;
+        private readonly IUserRepository _userRepository = userRepository;
 
         // 1️⃣ Get all reviews for one product
         public async Task<Result<List<ReviewResponse>>> GetReviewsByProductId(Guid productId)
@@ -39,6 +41,9 @@ namespace FoodRescue.BLL.Services.Reviews
 
         public async Task<Result> AddReviewAsync(Guid userId, ReviewRequest request)
         {
+            var isCustomer = await _userRepository.IsCustomer(userId);
+            if (!isCustomer)
+                return Result.Failure(ReviewErrors.OnlyCustomersCanAddReviews(userId));
 
             var review = new Review
             {
@@ -57,6 +62,10 @@ namespace FoodRescue.BLL.Services.Reviews
 
         public async Task<Result> DeleteReviewAsync(int reviewId, Guid userId)
         {
+            var isCustomer = await _userRepository.IsCustomer(userId);
+            if (!isCustomer)
+                return Result.Failure(ReviewErrors.OnlyCustomersCanAddReviews(userId));
+
             var review = await _context.Reviews
              .FirstOrDefaultAsync(r => r.Id == reviewId && r.UserId == userId);
 

@@ -1,4 +1,5 @@
-﻿using FoodRescue.DAL.Context;
+﻿using FluentEmail.Core;
+using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -49,6 +50,39 @@ namespace FoodRescue.BLL.Extensions.Users
         public bool CheckDuplication(User user, string newPassword)
         {
             return user.Password == newPassword;
+        }
+
+        public async Task<bool> IsAdmin(Guid id)
+        {
+            var Result = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (Result != null && Result.Type.ToLower() == "admin")
+            
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> IsVendor(Guid id)
+        {
+            var Result = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (Result != null && Result.Type.ToLower() == "vendor")
+
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> IsCustomer(Guid id)
+        {
+            var Result = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (Result is not null && Result.Type.ToLower() == "customer")
+
+                return true;
+
+            return false;
         }
     }
 
