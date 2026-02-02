@@ -488,7 +488,7 @@ export function CreateListing({
                           >
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white">
                             <SelectItem value="Bakery">🥖 Bakery</SelectItem>
                             <SelectItem value="Restaurant">
                               🍱 Restaurant

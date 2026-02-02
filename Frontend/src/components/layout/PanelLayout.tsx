@@ -1,17 +1,18 @@
-// src/components/layout/PanelLayout.tsx
 import { Outlet } from "react-router-dom";
-import { LogOut } from "lucide-react";
-import { Button } from "../ui/button";
+import { UserDropdown } from "./UserDropdown";
 
 export function PanelLayout({ onLogout }: { onLogout: () => void }) {
   return (
-    <>
-      <div className="absolute top-4 right-6 z-10">
-        <Button variant="ghost" onClick={onLogout}>
-          <LogOut className="h-4 w-4 mr-2" /> Logout
-        </Button>
+    <div className="min-h-screen">
+      {/* Simple absolute positioning */}
+      <div className="absolute top-4 right-6 z-[100]">
+        <UserDropdown onLogout={onLogout} />
       </div>
-      <Outlet />
-    </>
+
+      {/* Main content */}
+      <div>
+        <Outlet />
+      </div>
+    </div>
   );
 }

@@ -39,13 +39,13 @@ const listings = [
 
 export function FreeListings() {
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-8 mt-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1>Product Listings</h1>
           <p className="text-gray-500">Post free food available for verified assisted customers</p>
         </div>
-        <Button className="bg-green-600 hover:bg-green-700">
+        <Button className="bg-green-600 hover:bg-green-700 text-white">
           <Plus className="h-4 w-4 mr-2" />
           Create Listing
         </Button>

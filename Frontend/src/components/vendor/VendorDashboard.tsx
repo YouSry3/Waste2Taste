@@ -50,6 +50,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { VendorOrder } from "./types";
+import { profileService } from "../../services/profile/profileService";
+import { UserProfile } from "../../types/profile";
 
 const initialStatsData = [
   {
@@ -112,77 +114,38 @@ const weeklyData = [
   { day: "Sun", sales: 71, items: 14, pickups: 20 },
 ];
 
-const revenueBreakdown = [
-  { name: "Bakery Items", value: 450, color: "#3b82f6" },
-  { name: "Pastries", value: 280, color: "#8b5cf6" },
-  { name: "Sandwiches", value: 112, color: "#10b981" },
-];
-
 const topCustomers = [
   { name: "Emma Wilson", orders: 24, spent: "$119.76", rating: 5 },
   { name: "John Smith", orders: 18, spent: "$89.82", rating: 5 },
   { name: "Sarah Johnson", orders: 15, spent: "$74.85", rating: 4.8 },
   { name: "Mike Chen", orders: 12, spent: "$59.88", rating: 4.9 },
   { name: "Alex Turner", orders: 10, spent: "$69.90", rating: 5 },
+  { name: "Lisa Rodriguez", orders: 9, spent: "$59.91", rating: 4.8 },
+  { name: "David Kim", orders: 8, spent: "$55.92", rating: 4.9 },
 ];
 
-// SIMPLIFIED FIX: Hardcode the status for demonstration
-// Since "Today, 6:00 PM" is always urgent, mark it as critical
-const calculateExpiryStatus = (expiryText: string) => {
-  // Always return "critical" for "Today, 6:00 PM" for testing
-  if (expiryText.includes("Today, 6:00 PM")) {
-    return "critical";
-  }
-
-  // For other items, use a simple calculation
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-  if (expiryText.includes("Tomorrow")) {
-    // Tomorrow's items have more time
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    if (expiryText.includes("12:00 PM")) {
-      return "medium"; // Tomorrow at noon
-    } else if (expiryText.includes("8:00 PM")) {
-      return "good"; // Tomorrow evening - plenty of time
-    }
-  }
-
-  // Default fallback
-  return "good";
-};
-
-// Alternative: Even simpler - hardcode all statuses directly
 const inventoryItems = [
   {
     id: 1,
     name: "Bakery Surprise Bag",
     stock: 2,
     expiry: "Today, 6:00 PM",
-    status: "critical", // HARDCODED AS CRITICAL
+    status: "critical" as const,
   },
   {
     id: 2,
     name: "Pastry Assortment",
     stock: 5,
     expiry: "Tomorrow, 12:00 PM",
-    status: "medium", // HARDCODED AS MEDIUM
+    status: "medium" as const,
   },
   {
     id: 3,
     name: "Sandwich Bundle",
     stock: 8,
     expiry: "Tomorrow, 8:00 PM",
-    status: "good", // HARDCODED AS GOOD
+    status: "good" as const,
   },
-];
-
-const monthlyGoals = [
-  { name: "Food Saved", current: 1240, target: 1500, percentage: 83 },
-  { name: "Revenue", current: 842.5, target: 750, percentage: 112 },
-  { name: "Customer Rating", current: 4.7, target: 4.5, percentage: 104 },
 ];
 
 const initialRecentOrders: VendorOrder[] = [
@@ -293,11 +256,48 @@ const initialRecentOrders: VendorOrder[] = [
 
 export function VendorDashboard() {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [statsData, setStatsData] = useState(initialStatsData);
   const [recentOrders, setRecentOrders] =
     useState<VendorOrder[]>(initialRecentOrders);
   const [selectedOrder, setSelectedOrder] = useState<VendorOrder | null>(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
+
+  // Load profile on mount
+  useEffect(() => {
+    const currentProfile = profileService.getCurrentProfile();
+    setProfile(currentProfile);
+  }, []);
+
+  // Calculate monthly goals based on profile - NOW INSIDE COMPONENT
+  const monthlyGoals = profile?.monthlyGoals
+    ? [
+        {
+          name: "Food Saved",
+          current: 1240,
+          target: profile.monthlyGoals.foodSaved,
+          percentage: Math.round((1240 / profile.monthlyGoals.foodSaved) * 100),
+        },
+        {
+          name: "Revenue",
+          current: 842.5,
+          target: profile.monthlyGoals.revenue,
+          percentage: Math.round((842.5 / profile.monthlyGoals.revenue) * 100),
+        },
+        {
+          name: "Customer Rating",
+          current: 4.7,
+          target: profile.monthlyGoals.customerRating,
+          percentage: Math.round(
+            (4.7 / profile.monthlyGoals.customerRating) * 100,
+          ),
+        },
+      ]
+    : [
+        { name: "Food Saved", current: 1240, target: 1500, percentage: 83 },
+        { name: "Revenue", current: 842.5, target: 750, percentage: 112 },
+        { name: "Customer Rating", current: 4.7, target: 4.5, percentage: 104 },
+      ];
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -351,16 +351,13 @@ export function VendorDashboard() {
   };
 
   const navigateToCreateWithPrefilled = (item: any) => {
-    console.log("Navigating with item:", item); // Debug log
-    console.log("Item status:", item.status); // Debug log
-
     navigate("/panel/vendor/create-listing", {
       state: {
         prefilledData: {
           name: item.name,
           stock: item.stock,
           expiry: item.expiry,
-          status: item.status, // This should be "critical" for the first item
+          status: item.status,
           category: "bakery",
           price: getSuggestedPrice(item.name),
         },
@@ -455,9 +452,20 @@ export function VendorDashboard() {
       {/* Monthly Goals */}
       <Card className="border-emerald-200 bg-emerald-50/30">
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-emerald-600" />
-            <CardTitle className="text-emerald-900">Monthly Goals</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-emerald-600" />
+              <CardTitle className="text-emerald-900">Monthly Goals</CardTitle>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/panel/vendor/profile")}
+              className="border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+            >
+              <Target className="h-4 w-4 mr-2" />
+              Set Monthly Goal
+            </Button>
           </div>
           <p className="text-sm text-emerald-600">Track your progress</p>
         </CardHeader>
@@ -628,13 +636,7 @@ export function VendorDashboard() {
                         size="sm"
                         variant="outline"
                         className="w-full mt-2 text-xs border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400"
-                        onClick={() => {
-                          console.log(
-                            "Creating listing for critical item:",
-                            item,
-                          ); // Debug
-                          navigateToCreateWithPrefilled(item);
-                        }}
+                        onClick={() => navigateToCreateWithPrefilled(item)}
                       >
                         <Plus className="h-3 w-3 mr-1" />
                         Create Listing Now
@@ -659,10 +661,10 @@ export function VendorDashboard() {
         </Card>
       </div>
 
-      {/* Customer Insights & Revenue Breakdown Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Customer Insights */}
-        <Card>
+      {/* Customer Insights, Environmental Impact, and Quick Actions Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Customer Insights - Full Height */}
+        <Card className="lg:col-span-2">
           <CardHeader>
             <div className="flex items-center gap-2">
               <Users className="h-5 w-5 text-purple-600" />
@@ -702,59 +704,157 @@ export function VendorDashboard() {
           </CardContent>
         </Card>
 
-        {/* Revenue Breakdown */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
-              <CardTitle>Revenue Breakdown</CardTitle>
-            </div>
-            <p className="text-sm text-gray-500">By item category</p>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center">
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={revenueBreakdown}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {revenueBreakdown.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="space-y-2 mt-4">
-              {revenueBreakdown.map((item) => (
-                <div
-                  key={item.name}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-sm">{item.name}</span>
+        {/* Environmental Impact + Quick Actions in one column */}
+        <div className="lg:col-span-1 flex flex-col gap-6">
+          {/* Environmental Impact - Half Height */}
+          <Card className="border-emerald-200 bg-emerald-50/30 flex-1">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                <CardTitle className="text-emerald-900">
+                  Environmental Impact
+                </CardTitle>
+              </div>
+              <p className="text-sm text-emerald-600">
+                This month's contribution
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 h-full">
+                <div className="p-3 bg-white rounded-lg border border-emerald-200">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-emerald-700">Food saved</span>
+                    <span className="font-bold text-emerald-800 text-lg">
+                      1,240 lbs
+                    </span>
                   </div>
-                  <span className="font-semibold">${item.value}</span>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                <div className="p-3 bg-white rounded-lg border border-emerald-200">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-emerald-700">
+                      CO₂ prevented
+                    </span>
+                    <span className="font-bold text-emerald-800 text-lg">
+                      620 kg
+                    </span>
+                  </div>
+                </div>
+                <div className="p-3 bg-white rounded-lg border border-emerald-200">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-emerald-700">
+                      Meals provided
+                    </span>
+                    <span className="font-bold text-emerald-800 text-lg">
+                      1,032
+                    </span>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-emerald-200">
+                  <p className="text-xs text-emerald-600 text-center">
+                    You're making a real difference! 🌱
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions Card - Fills remaining space */}
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <p className="text-sm text-gray-500">Frequently used tasks</p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 h-full">
+                <Button
+                  className="h-auto py-4 justify-start hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                  variant="outline"
+                  onClick={handleCreateListing}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <Plus className="h-5 w-5 text-blue-600" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">Create New Listing</p>
+                        <p className="text-sm text-gray-500">
+                          Add surplus items
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-gray-400" />
+                  </div>
+                </Button>
+
+                <Button
+                  className="h-auto py-4 justify-start hover:bg-purple-50 hover:border-purple-200 transition-colors"
+                  variant="outline"
+                  onClick={handleViewAllOrders}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-purple-100 rounded-lg">
+                        <ShoppingBag className="h-5 w-5 text-purple-600" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">Manage Orders</p>
+                        <p className="text-sm text-gray-500">View all orders</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-gray-400" />
+                  </div>
+                </Button>
+
+                <Button
+                  className="h-auto py-4 justify-start hover:bg-green-50 hover:border-green-200 transition-colors"
+                  variant="outline"
+                  onClick={handleViewAnalytics}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <TrendingUp className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">View Analytics</p>
+                        <p className="text-sm text-gray-500">
+                          Performance insights
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-gray-400" />
+                  </div>
+                </Button>
+
+                <Button
+                  className="h-auto py-4 justify-start hover:bg-gray-100 hover:border-gray-300 transition-colors"
+                  variant="outline"
+                  onClick={handlePrintPickupList}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-gray-100 rounded-lg">
+                        <Printer className="h-5 w-5 text-gray-600" />
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">Print Pickup List</p>
+                        <p className="text-sm text-gray-500">
+                          Today's schedule
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-gray-400" />
+                  </div>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      {/* Recent Orders Table */}
-      <Card>
+      {/* Recent Orders Table - Full Width */}
+      <Card className="w-full">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle>Recent Orders</CardTitle>
@@ -860,150 +960,6 @@ export function VendorDashboard() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Quick Actions & Environmental Impact */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Quick Actions Card */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <p className="text-sm text-gray-500">Frequently used tasks</p>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <Button
-                className="h-auto py-4 justify-start hover:bg-blue-50 hover:border-blue-200 transition-colors"
-                variant="outline"
-                onClick={handleCreateListing}
-              >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                      <Plus className="h-5 w-5 text-blue-600" />
-                    </div>
-                    <div className="text-left">
-                      <p className="font-medium">Create New Listing</p>
-                      <p className="text-sm text-gray-500">Add surplus items</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-gray-400" />
-                </div>
-              </Button>
-
-              <Button
-                className="h-auto py-4 justify-start hover:bg-purple-50 hover:border-purple-200 transition-colors"
-                variant="outline"
-                onClick={handleViewAllOrders}
-              >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <ShoppingBag className="h-5 w-5 text-purple-600" />
-                    </div>
-                    <div className="text-left">
-                      <p className="font-medium">Manage Orders</p>
-                      <p className="text-sm text-gray-500">View all orders</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-gray-400" />
-                </div>
-              </Button>
-
-              <Button
-                className="h-auto py-4 justify-start hover:bg-green-50 hover:border-green-200 transition-colors"
-                variant="outline"
-                onClick={handleViewAnalytics}
-              >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 rounded-lg">
-                      <TrendingUp className="h-5 w-5 text-green-600" />
-                    </div>
-                    <div className="text-left">
-                      <p className="font-medium">View Analytics</p>
-                      <p className="text-sm text-gray-500">
-                        Performance insights
-                      </p>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-gray-400" />
-                </div>
-              </Button>
-
-              <Button
-                className="h-auto py-4 justify-start hover:bg-gray-100 hover:border-gray-300 transition-colors"
-                variant="outline"
-                onClick={handlePrintPickupList}
-              >
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gray-100 rounded-lg">
-                      <Printer className="h-5 w-5 text-gray-600" />
-                    </div>
-                    <div className="text-left">
-                      <p className="font-medium">Print Pickup List</p>
-                      <p className="text-sm text-gray-500">Today's schedule</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-gray-400" />
-                </div>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Environmental Impact */}
-        <Card className="border-emerald-200 bg-emerald-50/30">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-emerald-600" />
-              <CardTitle className="text-emerald-900">
-                Environmental Impact
-              </CardTitle>
-            </div>
-            <p className="text-sm text-emerald-600">
-              This month's contribution
-            </p>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="p-3 bg-white rounded-lg border border-emerald-200">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-emerald-700">Food saved</span>
-                  <span className="font-bold text-emerald-800 text-lg">
-                    1,240 lbs
-                  </span>
-                </div>
-              </div>
-              <div className="p-3 bg-white rounded-lg border border-emerald-200">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-emerald-700">
-                    CO₂ prevented
-                  </span>
-                  <span className="font-bold text-emerald-800 text-lg">
-                    620 kg
-                  </span>
-                </div>
-              </div>
-              <div className="p-3 bg-white rounded-lg border border-emerald-200">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-emerald-700">
-                    Meals provided
-                  </span>
-                  <span className="font-bold text-emerald-800 text-lg">
-                    1,032
-                  </span>
-                </div>
-              </div>
-              <div className="pt-2 border-t border-emerald-200">
-                <p className="text-xs text-emerald-600 text-center">
-                  You're making a real difference! 🌱
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Order Details Modal */}
       <Dialog open={showOrderDetails} onOpenChange={setShowOrderDetails}>

@@ -132,10 +132,10 @@ export function MyListings() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-8 mt-6">
       <Toaster position="top-center" />
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8 ">
         <div>
           <h1 className="text-2xl font-semibold">Food Listings</h1>
           <p className="text-gray-500">
