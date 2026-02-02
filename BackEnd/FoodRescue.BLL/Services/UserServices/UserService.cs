@@ -1,6 +1,6 @@
 ﻿using FoodRescue.BLL.Abstractions;
 using FoodRescue.BLL.Abstractions.TypeErrors;
-using FoodRescue.BLL.DTOs;
+using FoodRescue.BLL.Contract.DTOs;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.DAL.Entities;

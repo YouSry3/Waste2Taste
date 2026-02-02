@@ -1,5 +1,5 @@
 ﻿using FoodRescue.BLL.Abstractions;
-using FoodRescue.BLL.DTOs;
+using FoodRescue.BLL.Contract.DTOs;
 using FoodRescue.BLL.Services.UserServices;
 using FoodRescue.BLL.Services.Vendors;
 using Microsoft.AspNetCore.Http;

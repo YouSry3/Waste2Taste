@@ -1,5 +1,5 @@
 ﻿using FoodRescue.BLL.Abstractions;
-using FoodRescue.BLL.DTOs;
+using FoodRescue.BLL.Contract.DTOs;
 using FoodRescue.DAL.Entities;
 using System;
 using System.Collections.Generic;

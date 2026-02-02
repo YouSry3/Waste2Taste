@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FoodRescue.BLL.DTOs
+namespace FoodRescue.BLL.Contract.DTOs
 {
     public class UpdateProfileDTO
     {

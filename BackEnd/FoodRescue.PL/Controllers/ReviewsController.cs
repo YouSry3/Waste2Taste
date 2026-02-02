@@ -1,7 +1,6 @@
 ﻿using FoodRescue.BLL.Contract.Reviews;
 using FoodRescue.BLL.Services.Reviews;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -18,18 +17,13 @@ namespace FoodRescue.PL.Controllers
         [HttpGet("product")]
         public async Task<IActionResult> GetReviews([FromHeader]Guid productId)
         {
-            var reviews = await _reviewService.GetReviewsByProductId(productId);
+            var result = await _reviewService.GetReviewsByProductId(productId);
 
-            var result = reviews.Select(r => new ReviewResponse
-            {
-                Id = r.Id,
-                Rating = r.Rating,
-                Comment = r.Comment,
-                UserName = r.User.Name,
-                CreatedAt = r.CreatedAt
-            });
+         
 
-            return Ok(result);
+            return result.IsSuccess? 
+                Ok(result.Value):
+                NotFound(result.Error);
         }
         // Add review
         [HttpPost("Add")]
@@ -37,24 +31,29 @@ namespace FoodRescue.PL.Controllers
         {
             // temporary (later JWT)
             Guid userId = Guid.Parse(
-                User.FindFirst(ClaimTypes.NameIdentifier).Value
+                User.FindFirst(ClaimTypes.NameIdentifier)!.Value
             ); 
 
-            await _reviewService.AddReviewAsync(userId, request);
+            var result = await _reviewService.AddReviewAsync(userId, request);
 
-            return Ok(new { message = "Review added successfully" });
+            return result.IsSuccess?
+                Ok(new { message = "Review added successfully" })
+                :NotFound(result.Error);
         }
 
         // Delete review
         [HttpDelete("{reviewId}")]
         public async Task<IActionResult> DeleteReview([FromRoute]int reviewId)
         {
-            Guid userId = Guid.Parse(User.FindFirstValue
-                (ClaimTypes.NameIdentifier));
+            Guid userId = Guid.Parse(
+                User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            await _reviewService.DeleteReviewAsync(reviewId, userId);
+            var result = await _reviewService.DeleteReviewAsync(reviewId, userId);
 
-            return NoContent();
+            return result.IsSuccess?
+                NoContent()
+               :NotFound(result.Error);
+                
         }
 
     }

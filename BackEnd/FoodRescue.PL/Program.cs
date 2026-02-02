@@ -5,8 +5,6 @@ using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
-using System.Net;
-using System.Net.Mail;
 using System.Net.Mail;
 
 
