@@ -60,6 +60,27 @@ namespace FoodRescue.BLL.Services.UserServices
             return Result.Success();
         }
 
+
+        public async Task<Result<UserStats>> GetUserStatsAsync(string email)
+        {
+            var userResult = await GetProfileAsync(email);
+            if (userResult.IsFailure)
+                return Result.Failure<UserStats>(userResult.Error);
+
+            var userId = userResult.Value.Id;
+
+            var orders = await _repo.GetUserOrdersAsync(userId);
+
+            var stats = new UserStats
+            {
+                Orders = orders?.Count ?? 0,
+                MoneySpent = orders?.Sum(o => o.TotalPrice) ?? 0,
+                MoneySaved = orders?.Sum(o => o.Discount) ?? 0
+            };
+
+            return Result.Success(stats);
+        }
+
     }
 }
 

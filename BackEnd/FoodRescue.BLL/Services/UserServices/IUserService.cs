@@ -13,7 +13,7 @@ namespace FoodRescue.BLL.Services.UserServices
     {
         Task<Result<User>> GetByIdAsync(Guid id);
         Task<Result<User>> GetProfileAsync(string email);
-        
+        Task GetUserStatsAsync(string email);
         Task<Result> UpdateProfileAsync(string email, UpdateProfileDTO dto);
 
     }

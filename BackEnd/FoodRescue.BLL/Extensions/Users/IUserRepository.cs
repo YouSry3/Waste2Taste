@@ -19,6 +19,8 @@ namespace FoodRescue.BLL.Extensions.Users
         Task SaveChangesAsync();
 
         bool CheckDuplication(User user, string newPassword);
+        Task<List<Order>> GetUserOrdersAsync(Guid userId);
+
 
     }
 

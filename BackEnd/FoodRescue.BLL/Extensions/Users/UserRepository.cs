@@ -46,7 +46,6 @@ namespace FoodRescue.BLL.Extensions.Users
             await _context.SaveChangesAsync();
         }
 
-        // تنفيذ الدالة
         public bool CheckDuplication(User user, string newPassword)
         {
             return user.Password == newPassword;
@@ -84,6 +83,15 @@ namespace FoodRescue.BLL.Extensions.Users
 
             return false;
         }
+        public async Task<List<Order>> GetUserOrdersAsync(Guid userId)
+        {
+            return await _context.Orders
+                .Where(o => o.UserId == userId)
+                .ToListAsync();
+        }
+
+
+
     }
 
 }

@@ -106,5 +106,20 @@ namespace FoodRescue.PL.Controllers
                 ? Ok(user.Value)
                 : NotFound(user.Error);
         }
+
+        [HttpGet("profile/stats")]
+        public async Task<IActionResult> GetUserStats([FromHeader] string email)
+        {
+            var result = await _service.GetUserStatsAsync(email);
+
+            if (result.IsFailure)
+                return NotFound(result.Error);
+
+            return Ok(new { message = "User stats retrieved successfully", stats = result.Value });
+        }
+
+
+
+
     }
 }
