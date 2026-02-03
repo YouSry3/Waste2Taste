@@ -1,5 +1,6 @@
-import { Button } from "../../../../ui/button";
+// FilterTabs.tsx
 import { X } from "lucide-react";
+import { Button } from "../../../../ui/button";
 
 interface FilterTab {
   id: string;
@@ -12,45 +13,41 @@ interface FilterTab {
 
 interface FilterTabsProps {
   tabs: FilterTab[];
-  onClearAll: () => void;
+  onClearAll?: () => void;
 }
 
 export function FilterTabs({ tabs, onClearAll }: FilterTabsProps) {
-  const activeTabs = tabs.filter((tab) => tab.isActive);
-  const activeCount = activeTabs.length;
-
-  if (activeCount === 0) return null;
-
   return (
-    <div className="pt-2">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-sm font-medium text-gray-700">
-          Active Filters ({activeCount}):
-        </span>
+    <div className="flex items-center gap-2 flex-wrap">
+      <span className="text-sm text-gray-500">Active filters:</span>
+
+      {tabs.map((tab) => (
+        <div
+          key={tab.id}
+          className={`flex items-center gap-2 px-3 py-1 rounded-full border text-sm ${tab.colorClass}`}
+        >
+          <span className="font-medium">{tab.label}:</span>
+          <span>{tab.value}</span>
+          <button
+            onClick={tab.clearAction}
+            className="ml-1 hover:opacity-70 transition-opacity"
+            aria-label={`Clear ${tab.label} filter`}
+          >
+            <X className="h-3 w-3" />
+          </button>
+        </div>
+      ))}
+
+      {onClearAll && tabs.length > 1 && (
         <Button
           variant="ghost"
           size="sm"
           onClick={onClearAll}
-          className="text-xs text-gray-500 hover:text-red-600"
+          className="text-red-600 hover:text-red-700 hover:bg-red-50"
         >
           Clear All
         </Button>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {activeTabs.map((tab) => (
-          <div
-            key={tab.id}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-full border ${tab.colorClass}`}
-          >
-            <span className="text-xs font-medium">
-              {tab.label}: {tab.value}
-            </span>
-            <button onClick={tab.clearAction} className="ml-1 hover:opacity-70">
-              <X className="h-3 w-3" />
-            </button>
-          </div>
-        ))}
-      </div>
+      )}
     </div>
   );
 }

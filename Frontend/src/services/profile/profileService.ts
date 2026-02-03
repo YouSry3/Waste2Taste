@@ -1,111 +1,239 @@
-import {
-  UserProfile,
-  UpdateProfilePayload,
-  ChangePasswordPayload,
-} from "../../types/profile";
+// src/services/profile/profileService.ts
+import { apiClient } from "../api/apiClient";
 import { authService } from "../auth/authService";
 
-class ProfileService {
-  private readonly PROFILE_KEY = "userProfile";
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  businessName?: string;
+  registrationNumber?: string;
+  description?: string;
+  panelType: "admin" | "vendor" | "charity";
+  monthlyGoals?: MonthlyGoals;
+}
 
-  // Get current user profile
+export interface MonthlyGoals {
+  foodSaved: number;
+  revenue: number;
+  customerRating: number;
+}
+
+export class ProfileService {
+  // Normalize API response to match our UserProfile interface
+  private normalizeProfileResponse(data: any): UserProfile {
+    const user = authService.getCurrentUser();
+
+    return {
+      id: data.id || data.userId || user?.id || "",
+      name: data.name || data.fullName || data.userName || user?.name || "",
+      email: data.email || data.emailAddress || user?.email || "",
+      phone: data.phone || data.phoneNumber || undefined,
+      address: data.address || data.businessAddress || undefined,
+      businessName:
+        data.businessName ||
+        data.companyName ||
+        data.organizationName ||
+        undefined,
+      registrationNumber:
+        data.registrationNumber || data.regNumber || undefined,
+      description:
+        data.description || data.bio || data.missionStatement || undefined,
+      panelType:
+        data.panelType ||
+        data.type ||
+        data.userType ||
+        user?.panelType ||
+        "vendor",
+      monthlyGoals: data.monthlyGoals || undefined,
+    };
+  }
+
+  // Get current user profile from localStorage (immediate, no API call)
   getCurrentProfile(): UserProfile | null {
-    try {
-      const user = authService.getCurrentUser();
-      if (!user) return null;
+    const user = authService.getCurrentUser();
+    if (!user) return null;
 
-      // Try to get extended profile from localStorage
-      const storedProfile = localStorage.getItem(this.PROFILE_KEY);
-      if (storedProfile) {
-        return JSON.parse(storedProfile);
+    // Return basic data from localStorage immediately
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: undefined,
+      address: undefined,
+      businessName: undefined,
+      registrationNumber: undefined,
+      description: undefined,
+      panelType: user.panelType,
+      monthlyGoals: undefined,
+    };
+  }
+
+  // Fetch full profile from API (with all details)
+  async fetchProfile(): Promise<UserProfile> {
+    try {
+      // Try different possible endpoints
+      let response;
+
+      try {
+        // Primary endpoint
+        response = await apiClient.get("/Profile/me");
+      } catch (error: any) {
+        if (error.response?.status === 404) {
+          // Try alternative endpoint
+          try {
+            response = await apiClient.get("/api/Profile/me");
+          } catch (altError: any) {
+            if (altError.response?.status === 404) {
+              // Try another alternative
+              response = await apiClient.get("/Auth/me");
+            } else {
+              throw altError;
+            }
+          }
+        } else {
+          throw error;
+        }
       }
 
-      // Return basic user data as profile
+      console.log("✅ Profile API Response:", response.data);
+      return this.normalizeProfileResponse(response.data);
+    } catch (error: any) {
+      console.error("❌ Failed to fetch profile from API:", error);
+
+      // Fallback to localStorage user data
+      const user = authService.getCurrentUser();
+      if (!user) {
+        throw new Error("Not authenticated");
+      }
+
+      console.log("⚠️ Using fallback data from localStorage");
       return {
         id: user.id,
         name: user.name,
         email: user.email,
         panelType: user.panelType,
-        monthlyGoals: user.monthlyGoals,
       };
-    } catch (error) {
-      console.error("Error getting profile:", error);
-      return null;
     }
   }
 
   // Update profile
-  async updateProfile(updates: UpdateProfilePayload): Promise<UserProfile> {
+  async updateProfile(updates: Partial<UserProfile>): Promise<UserProfile> {
     try {
-      const currentProfile = this.getCurrentProfile();
-      if (!currentProfile) {
-        throw new Error("No profile found");
+      let response;
+
+      // Try different possible endpoints
+      try {
+        response = await apiClient.put("/Profile/me", updates);
+      } catch (error: any) {
+        if (error.response?.status === 404) {
+          response = await apiClient.put("/api/Profile/me", updates);
+        } else {
+          throw error;
+        }
       }
 
-      // Merge updates
-      const updatedProfile: UserProfile = {
-        ...currentProfile,
-        ...updates,
-      };
+      console.log("✅ Profile updated:", response.data);
 
-      // Save to localStorage
-      localStorage.setItem(this.PROFILE_KEY, JSON.stringify(updatedProfile));
-
-      // Also update the user object in auth
-      const user = authService.getCurrentUser();
-      if (user) {
+      // Update localStorage user data with the new name/email
+      const currentUser = authService.getCurrentUser();
+      if (currentUser) {
         const updatedUser = {
-          ...user,
-          name: updates.name || user.name,
-          email: updates.email || user.email,
-          monthlyGoals: updates.monthlyGoals || user.monthlyGoals,
+          ...currentUser,
+          name: updates.name || currentUser.name,
+          email: updates.email || currentUser.email,
         };
         localStorage.setItem("user", JSON.stringify(updatedUser));
+        console.log("💾 Updated localStorage user data");
       }
 
-      return updatedProfile;
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      throw error;
-    }
-  }
-
-  // Change password
-  async changePassword(payload: ChangePasswordPayload): Promise<void> {
-    try {
-      if (payload.newPassword !== payload.confirmPassword) {
-        throw new Error("Passwords do not match");
-      }
-
-      if (payload.newPassword.length < 6) {
-        throw new Error("Password must be at least 6 characters");
-      }
-
-      // In a real app, this would call the backend
-      // For demo, we'll just simulate success
-      console.log("Password changed successfully");
-    } catch (error) {
-      console.error("Error changing password:", error);
-      throw error;
+      return this.normalizeProfileResponse(response.data);
+    } catch (error: any) {
+      console.error("❌ Failed to update profile:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.title ||
+        error.message ||
+        "Failed to update profile";
+      throw new Error(errorMessage);
     }
   }
 
   // Update monthly goals (vendor only)
   async updateMonthlyGoals(goals: MonthlyGoals): Promise<void> {
     try {
-      const currentProfile = this.getCurrentProfile();
-      if (!currentProfile) {
-        throw new Error("No profile found");
+      let response;
+
+      // Try different possible endpoints
+      try {
+        response = await apiClient.put("/Profile/goals", goals);
+      } catch (error: any) {
+        if (error.response?.status === 404) {
+          response = await apiClient.put("/api/Profile/goals", goals);
+        } else {
+          throw error;
+        }
       }
 
-      if (currentProfile.panelType !== "vendor") {
-        throw new Error("Only vendors can set monthly goals");
+      console.log("✅ Monthly goals updated:", response.data);
+    } catch (error: any) {
+      console.error("❌ Failed to update goals:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.title ||
+        error.message ||
+        "Failed to update goals";
+      throw new Error(errorMessage);
+    }
+  }
+
+  // Change password
+  async changePassword(data: {
+    currentPassword: string;
+    newPassword: string;
+  }): Promise<void> {
+    try {
+      let response;
+
+      // Try different possible endpoints
+      try {
+        response = await apiClient.post("/Profile/change-password", data);
+      } catch (error: any) {
+        if (error.response?.status === 404) {
+          try {
+            response = await apiClient.post(
+              "/api/Profile/change-password",
+              data,
+            );
+          } catch (altError: any) {
+            if (altError.response?.status === 404) {
+              response = await apiClient.post("/Auth/change-password", data);
+            } else {
+              throw altError;
+            }
+          }
+        } else {
+          throw error;
+        }
       }
 
-      await this.updateProfile({ monthlyGoals: goals });
-    } catch (error) {
-      console.error("Error updating monthly goals:", error);
-      throw error;
+      console.log("✅ Password changed successfully");
+    } catch (error: any) {
+      console.error("❌ Failed to change password:", error);
+
+      // Handle specific error cases
+      if (error.response?.status === 400 || error.response?.status === 401) {
+        throw new Error("Current password is incorrect");
+      }
+
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.title ||
+        error.message ||
+        "Failed to change password";
+      throw new Error(errorMessage);
     }
   }
 }

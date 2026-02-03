@@ -10,11 +10,11 @@ export interface UserProfile {
   email: string;
   phone?: string;
   address?: string;
+   monthlyGoals?: MonthlyGoals; // For vendors
+  registrationNumber?: string; // For charity
   businessName?: string; // For vendor/charity
   description?: string;
   panelType: "admin" | "vendor" | "charity";
-  monthlyGoals?: MonthlyGoals; // For vendors
-  registrationNumber?: string; // For charity
   avatarColor?: string;
   createdAt?: Date;
 }

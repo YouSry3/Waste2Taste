@@ -28,6 +28,23 @@ food-rescue-platform/
 │   │   ├── VendorOrders.tsx
 │   │   ├── MyListings.tsx
 │   │   ├── CreateListing.tsx
+│   │   ├── create-listing/
+│   │   │   ├── index.tsx
+│   │   │   ├── types.ts
+│   │   │   ├── hooks/
+│   │   │   │   └── useImagePreviews.ts
+│   │   │   ├── utils/
+│   │   │   │   ├── listingSuggestions.ts
+│   │   │   │   └── validation.ts
+│   │   │   └── components/
+│   │   │       ├── ActionsPanel.tsx
+│   │   │       ├── BasicInformationSection.tsx
+│   │   │       ├── ImageUploadSection.tsx
+│   │   │       ├── PageHeader.tsx
+│   │   │       ├── PickupDetailsSection.tsx
+│   │   │       ├── PrefilledInfoCard.tsx
+│   │   │       ├── PricingAvailabilitySection.tsx
+│   │   │       └── TipsCard.tsx
 │   │   ├── VendorAnalytics.tsx
 │   │   ├── CustomerReports.tsx
 │   │   └── CorporateControl.tsx

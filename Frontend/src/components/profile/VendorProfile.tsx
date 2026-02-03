@@ -40,14 +40,26 @@ export function VendorProfile() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isEditingGoals, setIsEditingGoals] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadProfile();
   }, []);
 
-  const loadProfile = () => {
-    const currentProfile = profileService.getCurrentProfile();
-    setProfile(currentProfile);
+  const loadProfile = async () => {
+    try {
+      setIsLoading(true);
+      // Try to fetch full profile from API
+      const fullProfile = await profileService.fetchProfile();
+      setProfile(fullProfile);
+    } catch (error) {
+      console.error("Failed to load profile:", error);
+      // Fallback to localStorage data
+      const localProfile = profileService.getCurrentProfile();
+      setProfile(localProfile);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const profileValidationSchema = Yup.object({
@@ -96,7 +108,7 @@ export function VendorProfile() {
   const handleGoalsSubmit = async (values: MonthlyGoals) => {
     try {
       await profileService.updateMonthlyGoals(values);
-      loadProfile();
+      await loadProfile(); // Reload to get updated data
       setIsEditingGoals(false);
       toast.success("Monthly goals updated successfully!");
     } catch (error: any) {
@@ -115,7 +127,7 @@ export function VendorProfile() {
     }
   };
 
-  if (!profile) {
+  if (isLoading || !profile) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-gray-500">Loading profile...</p>

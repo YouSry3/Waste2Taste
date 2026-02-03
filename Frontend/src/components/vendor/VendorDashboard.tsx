@@ -24,6 +24,8 @@ import {
   MapPin,
   CreditCard,
   Target,
+  MoreVertical,
+  CheckCircle,
 } from "lucide-react";
 import {
   BarChart,
@@ -47,6 +49,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { VendorOrder } from "./types";
@@ -217,7 +227,7 @@ const initialRecentOrders: VendorOrder[] = [
     customer: "Mike Chen",
     item: "Bakery Surprise Bag",
     amount: "$4.99",
-    status: "Ready for Pickup",
+    status: "In Progress",
     time: "1 hour ago",
     timeSlot: "4:00 PM - 5:00 PM",
     orderPlacedTime: new Date(Date.now() - 2.5 * 60 * 60 * 1000),
@@ -377,6 +387,37 @@ export function VendorDashboard() {
     setShowOrderDetails(true);
   };
 
+  const handleMarkAsReady = (orderId: string) => {
+    setRecentOrders(
+      recentOrders.map((order) =>
+        order.id === orderId ? { ...order, status: "Ready for Pickup" } : order,
+      ),
+    );
+    toast.success("Order marked as ready for pickup");
+  };
+
+  const handleMarkAsPickedUp = (orderId: string) => {
+    setRecentOrders(
+      recentOrders.map((order) =>
+        order.id === orderId ? { ...order, status: "Picked Up" } : order,
+      ),
+    );
+    toast.success("Order marked as picked up");
+  };
+
+  const handleCancelOrder = (orderId: string) => {
+    setRecentOrders(
+      recentOrders.map((order) =>
+        order.id === orderId ? { ...order, status: "Cancelled" } : order,
+      ),
+    );
+    toast.error("Order cancelled");
+  };
+
+  const handlePrintOrder = (order: VendorOrder) => {
+    toast.success(`Printing receipt for ${order.id}...`);
+  };
+
   const getInitials = (name: string) =>
     name
       .split(" ")
@@ -391,6 +432,10 @@ export function VendorDashboard() {
       case "Ready for Pickup":
         return "bg-blue-100 text-blue-800 border-blue-200";
       case "Pending Pickup":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "In Progress":
+        return "bg-orange-100 text-orange-800 border-orange-200";
+      case "Cancelled":
         return "bg-red-100 text-red-800 border-red-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
@@ -853,7 +898,7 @@ export function VendorDashboard() {
         </div>
       </div>
 
-      {/* Recent Orders Table - Full Width */}
+      {/* Recent Orders Table - Full Width with Action Controls */}
       <Card className="w-full">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -871,7 +916,7 @@ export function VendorDashboard() {
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto rounded-lg border">
-            <table className="w-full">
+            <table className="w-full min-w-[900px]">
               <thead>
                 <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b">
                   <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
@@ -892,11 +937,12 @@ export function VendorDashboard() {
                   <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
                     Status
                   </th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">
+                  <th className="text-right py-3 px-4 font-semibold text-gray-700 text-sm w-[300px]">
                     Actions
                   </th>
                 </tr>
               </thead>
+
               <tbody>
                 {recentOrders.length === 0 ? (
                   <tr>
@@ -910,30 +956,39 @@ export function VendorDashboard() {
                       key={order.id}
                       className="border-b hover:bg-gray-50 transition-colors"
                     >
-                      <td className="py-3 px-4 font-medium text-sm">
+                      <td className="py-3 px-4 font-medium text-sm whitespace-nowrap">
                         {order.id}
                       </td>
+
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2">
                           <div
                             className={`w-8 h-8 flex items-center justify-center rounded-full ${
-                              order.avatarColor ||
+                              order.avatarColor ??
                               "bg-gradient-to-br from-purple-400 to-blue-500"
                             } text-white font-bold text-xs`}
                           >
                             {getInitials(order.customer)}
                           </div>
-                          <span className="text-sm">{order.customer}</span>
+                          <span className="text-sm whitespace-nowrap">
+                            {order.customer}
+                          </span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-sm">{order.item}</td>
-                      <td className="py-3 px-4 font-medium text-sm">
+
+                      <td className="py-3 px-4 text-sm whitespace-nowrap">
+                        {order.item}
+                      </td>
+
+                      <td className="py-3 px-4 font-medium text-sm whitespace-nowrap">
                         {order.amount}
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-600">
+
+                      <td className="py-3 px-4 text-sm text-gray-600 whitespace-nowrap">
                         {order.timeSlot}
                       </td>
-                      <td className="py-3 px-4">
+
+                      <td className="py-3 px-4 whitespace-nowrap">
                         <Badge
                           variant="outline"
                           className={getStatusColor(order.status)}
@@ -941,16 +996,92 @@ export function VendorDashboard() {
                           {order.status}
                         </Badge>
                       </td>
+
+                      {/* ✅ ACTIONS – FIXED & FAR RIGHT */}
                       <td className="py-3 px-4">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleViewOrderDetails(order)}
-                          className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:border-blue-400"
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          View
-                        </Button>
+                        <div className="flex justify-end items-center gap-2 whitespace-nowrap">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleViewOrderDetails(order)}
+                            className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+
+                          {order.status === "Ready for Pickup" && (
+                            <Button
+                              size="sm"
+                              className="w-[120px] justify-center bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => handleMarkAsPickedUp(order.id)}
+                            >
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              Picked Up
+                            </Button>
+                          )}
+
+                          {(order.status === "In Progress" ||
+                            order.status === "Pending Pickup") && (
+                            <Button
+                              size="sm"
+                              className="w-[120px] justify-center bg-blue-600 hover:bg-blue-700 text-white"
+                              onClick={() => handleMarkAsReady(order.id)}
+                            >
+                              <Package className="h-4 w-4 mr-1" />
+                              Mark Ready
+                            </Button>
+                          )}
+
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="sm" variant="outline">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuContent
+                              align="end"
+                              className="w-48 bg-white"
+                            >
+                              <DropdownMenuLabel>
+                                Order Actions
+                              </DropdownMenuLabel>
+
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  navigator.clipboard.writeText(order.id);
+                                  toast.success("Order ID copied");
+                                }}
+                              >
+                                Copy Order ID
+                              </DropdownMenuItem>
+
+                              <DropdownMenuItem
+                                onClick={() => handlePrintOrder(order)}
+                              >
+                                <Printer className="h-4 w-4 mr-2" />
+                                Print Receipt
+                              </DropdownMenuItem>
+
+                              {order.status !== "Picked Up" &&
+                                order.status !== "Cancelled" && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                      onClick={() =>
+                                        handleCancelOrder(order.id)
+                                      }
+                                      className="text-red-600"
+                                    >
+                                      <X className="h-4 w-4 mr-2" />
+                                      Cancel Order
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -989,7 +1120,10 @@ export function VendorDashboard() {
                         {selectedOrder.customerPhone}
                       </p>
                     </div>
-                    <Badge className="bg-green-100 text-green-800 border-green-200">
+                    <Badge
+                      variant="outline"
+                      className={getStatusColor(selectedOrder.status)}
+                    >
                       {selectedOrder.status}
                     </Badge>
                   </div>

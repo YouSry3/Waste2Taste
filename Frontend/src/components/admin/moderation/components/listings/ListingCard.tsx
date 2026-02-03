@@ -3,7 +3,7 @@ import { Listing } from "../../types";
 import { Card, CardContent } from "../../../../ui/card";
 import { Badge } from "../../../../ui/badge";
 import { Checkbox } from "../../../../ui/checkbox";
-import { ImageWithFallback } from "../../../../figma/ImageWithFallback";
+import { ImageWithFallback } from "../../../../ImageFallback/ImageWithFallback";
 import {
   Store,
   Clock,
