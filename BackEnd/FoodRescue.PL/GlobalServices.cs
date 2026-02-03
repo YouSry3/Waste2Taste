@@ -12,6 +12,7 @@ using FoodRescue.BLL.Services.JWT;
 using FoodRescue.BLL.Services.Orders;
 using FoodRescue.BLL.Services.Products;
 using FoodRescue.BLL.Services.Reviews;
+using FoodRescue.BLL.Services.UserServices;
 using FoodRescue.BLL.Services.Vendors;
 using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
@@ -110,6 +111,7 @@ namespace FoodRescue.PL
             services.AddScoped<EmailService>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IUserService, UserService>();
 
 
             VendorMapsterConfig.RegisterVendorMappings();

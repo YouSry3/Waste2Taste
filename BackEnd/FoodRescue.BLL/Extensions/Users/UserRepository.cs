@@ -90,8 +90,23 @@ namespace FoodRescue.BLL.Extensions.Users
                 .ToListAsync();
         }
 
+        public async Task DeleteAsync(User user)
+        {
+             _context.Users.Remove(user);
+             await _context.SaveChangesAsync();
 
+        }
 
+        public async Task<int> CountOrders(Guid userId)
+        {
+          return  _context.Orders
+            .Count(o => o.UserId == userId);
+        }
+
+        Task IUserRepository.CountOrders(Guid userId)
+        {
+            return CountOrders(userId);
+        }
     }
 
 }

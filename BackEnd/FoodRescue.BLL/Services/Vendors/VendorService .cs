@@ -35,6 +35,7 @@ public class VendorService(IVendorRepository vendorRepository, IUserRepository u
 
     public async Task<Result<Guid>> CreateVendorAsync(CreateVendorRequest dto)
     {
+        
         //can you check Authorization here? Vendor must be created by a Vendor user
         var isVendor = await _userRepository.IsVendor(dto.OwnerId);
 

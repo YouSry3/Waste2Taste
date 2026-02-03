@@ -1,19 +1,22 @@
 ﻿using FoodRescue.BLL.Abstractions;
 using FoodRescue.BLL.Contract.DTOs;
+using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Services.UserServices;
 using FoodRescue.BLL.Services.Vendors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FoodRescue.PL.Controllers
 {
     [Route("/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _service;
         private readonly IVendorService _vendorService;
-
 
         public UserController(IUserService service, IVendorService vendorService)
         {
@@ -22,11 +25,15 @@ namespace FoodRescue.PL.Controllers
         }
         // GET /users/profile
         [HttpGet("profile")]
-        public async Task<IActionResult> GetProfile([FromHeader] string email)
+        public async Task<IActionResult> GetProfile()
         {
 
-            var result = await _service.GetProfileAsync(email);
-            if (result.IsSuccess) return NotFound(result.Error);
+            var result = await _service.GetProfileAsync(Guid.Parse(
+                User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+            ));
+
+            if (result.IsFailure)
+                return NotFound(result.Error);
 
             return Ok(result.Value);
         }
@@ -107,26 +114,44 @@ namespace FoodRescue.PL.Controllers
                 : NotFound(user.Error);
         }
 
-        [HttpGet("profile/stats")]
-        public async Task<IActionResult> GetUserStats([FromHeader] string email)
-        {
-            var result = await _service.GetUserStatsAsync(email);
+        //[HttpGet("profile/stats")]
+        //public async Task<IActionResult> GetUserStats([FromHeader] string email)
+        //{
+        //    var result = await _service.GetUserStatsAsync(email);
 
-            if (result.IsFailure)
-                return NotFound(result.Error);
+        //    if (result.IsFailure)
+        //        return NotFound(result.Error);
 
-            return Ok(new { message = "User stats retrieved successfully", stats = result.Value });
-        }
+        //    return Ok(new { message = "User stats retrieved successfully", stats = result.Value });
+        //}
 
         [HttpPut("profile/change-password")]
-        public async Task<IActionResult> ChangePassword([FromHeader] string email, [FromBody] ChangePasswordDTO dto)
+        public async Task<IActionResult> ChangePassword( [FromBody] ChangePassword dto)
         {
-            var result = await _service.ChangePasswordAsync(email, dto);
+            // temporary (later JWT)
+            
 
-            if (result.IsFailure)
-                return BadRequest(new { message = result.Error?.description });
 
-            return Ok(new { message = "Password changed successfully" });
+            var result = await _service.ChangePasswordAsync(Guid.Parse(
+                User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+            ), dto);
+            return result.IsSuccess ?
+                 Ok(new { message = "Password changed successfully" })
+                : BadRequest(new { message = result.Error?.description });
+          
+        }
+
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete()
+        {
+            // temporary (later JWT)
+            Guid userId = Guid.Parse(
+                User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+            );
+            var result = await _service.DeleteUserAsync(userId);
+            return result.IsSuccess ?
+                 NoContent()
+                : BadRequest(new { message = result.Error?.description });
         }
 
 

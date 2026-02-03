@@ -8,9 +8,9 @@ namespace FoodRescue.BLL.Contract.Authentication.ForgetPassword.Settings
 {
     public class SendGridSettings
     {
-        public string ApiKey { get; set; }
-        public string FromEmail { get; set; }
-        public string FromName { get; set; }
+        public string ApiKey { get; set; } = null!;
+        public string FromEmail { get; set; } = null!;
+        public string FromName { get; set; } = null!;
     }
 
 }

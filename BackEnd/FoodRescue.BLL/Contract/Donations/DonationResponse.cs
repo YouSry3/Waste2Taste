@@ -10,7 +10,7 @@ namespace FoodRescue.BLL.Contract.Donations
     {
         public Guid Id { get; set; }
         public int Quantity { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
     }
 }
