@@ -22,6 +22,7 @@ namespace FoodRescue.DAL.Entities
         public DateTime CreatedAt { get; set; }
 
         public ICollection<Review> Reviews { get; set; }
+        public ICollection<Order> Orders { get; set; }
 
 
     }

@@ -15,5 +15,7 @@ namespace FoodRescue.DAL.Entities
         public decimal TotalPrice { get; set; }
         public string Status { get; set; } = "Pending";
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public Guid UserId { get; set; }
+        public User User { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace FoodRescue.DAL.Context
 {
     public class CompanyDbContext(DbContextOptions<CompanyDbContext> options) : DbContext(options)
     {
-
+      
         public DbSet<User> Users { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<Vendor> Vendors { get; set; }
@@ -18,7 +18,7 @@ namespace FoodRescue.DAL.Context
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Review> Reviews { get; set; }
-
+       
         // Configurations
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +27,10 @@ namespace FoodRescue.DAL.Context
             modelBuilder.ApplyConfiguration(new PasswordResetTokenConfiguration());
             modelBuilder.ApplyConfiguration(new VendorConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            modelBuilder.Entity<Order>()
+            .HasOne(o => o.User)
+            .WithMany(u => u.Orders)
+            .HasForeignKey(o => o.UserId);
             base.OnModelCreating(modelBuilder);
 
 
