@@ -39,7 +39,7 @@ namespace FoodRescue.BLL.Services.UserServices
                 ? Result.Failure<User>(UserErrors.EmailUndefinded)
                 : Result.Success<User>(IsExited);
         }
-        
+
 
         public async Task<Result> UpdateProfileAsync(string email, UpdateProfileDTO dto)
         {
@@ -49,15 +49,17 @@ namespace FoodRescue.BLL.Services.UserServices
                 return Result.Failure(UserErrors.EmailUndefinded);
 
             user.Name = dto.Name;
-            //=======Not Allowing Email Update=========//
-            //user.Email = dto.Email;
             user.Type = dto.Type;
+
+            if (!string.IsNullOrEmpty(dto.ProfileImage))
+                user.ProfileImage = dto.ProfileImage;  
 
             await _repo.UpdateAsync(user);
             await _repo.SaveChangesAsync();
 
             return Result.Success();
         }
+
     }
 }
 

@@ -30,21 +30,61 @@ namespace FoodRescue.PL.Controllers
 
             return Ok(result.Value);
         }
-     
 
+
+        ////in case of image upload ( img from front => URL or Base64)
         // PUT /users/profile
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateProfile(
-            [FromHeader] string email,
-            [FromBody] UpdateProfileDTO dto)
+    [FromHeader] string email,
+    [FromBody] UpdateProfileDTO dto)
         {
-             var result = await _service.UpdateProfileAsync(email, dto);
-            if (result.IsFailure) 
-                return NotFound(result.Error); 
+            var result = await _service.UpdateProfileAsync(email, dto);
+
+            if (result.IsFailure)
+                return NotFound(result.Error);
+
+            return Ok(new { message = "Profile updated successfully" });
+        }
+        /*  //in case of image upload (real img => IFormFile)
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile(
+    [FromHeader] string email,
+    [FromForm] IFormFile? image,
+    [FromForm] string name,
+    [FromForm] string type)
+        {
+            string? imagePath = null;
+
+            if (image != null)
+            {
+                var fileName = $"{Guid.NewGuid()}_{image.FileName}";
+                var path = Path.Combine("wwwroot/images/users", fileName);
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                imagePath = $"/images/users/{fileName}";
+            }
+
+            var dto = new UpdateProfileDTO
+            {
+                Name = name,
+                Type = type,
+                ProfileImage = imagePath
+            };
+
+            var result = await _service.UpdateProfileAsync(email, dto);
+
+            if (result.IsFailure)
+                return NotFound(result.Error);
 
             return Ok(new { message = "Profile updated successfully" });
         }
 
+        */
 
         // GET /users/vendors
         [HttpGet("vendors")]

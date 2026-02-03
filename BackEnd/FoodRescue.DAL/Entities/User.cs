@@ -23,7 +23,7 @@ namespace FoodRescue.DAL.Entities
 
         public ICollection<Review> Reviews { get; set; }
         public ICollection<Order> Orders { get; set; }
-
+        public string? ProfileImage { get; set; }// URL or path to profile image
 
     }
 }
