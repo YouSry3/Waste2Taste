@@ -118,6 +118,16 @@ namespace FoodRescue.PL.Controllers
             return Ok(new { message = "User stats retrieved successfully", stats = result.Value });
         }
 
+        [HttpPut("profile/change-password")]
+        public async Task<IActionResult> ChangePassword([FromHeader] string email, [FromBody] ChangePasswordDTO dto)
+        {
+            var result = await _service.ChangePasswordAsync(email, dto);
+
+            if (result.IsFailure)
+                return BadRequest(new { message = result.Error?.description });
+
+            return Ok(new { message = "Password changed successfully" });
+        }
 
 
 

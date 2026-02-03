@@ -80,7 +80,22 @@ namespace FoodRescue.BLL.Services.UserServices
 
             return Result.Success(stats);
         }
+        public async Task<Result> ChangePasswordAsync(string email, ChangePassword dto)
+        {
+            var user = await _repo.GetByEmailAsync(email);
+            if (user == null)
+                return Result.Failure(new Error("UserNotFound", "User not found"));
 
+            if (!_repo.CheckDuplication(user, dto.OldPassword))
+                return Result.Failure(new Error("WrongOldPassword", "Old password is incorrect"));
+
+            user.Password = dto.NewPassword;
+
+            await _repo.UpdateAsync(user);
+            await _repo.SaveChangesAsync();
+
+            return Result.Success();
+        }
     }
 }
 
