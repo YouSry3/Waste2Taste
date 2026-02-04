@@ -14,6 +14,7 @@ import {
 import { StatsCard } from "./components/cards/StatsCard";
 import { RevenueChart } from "./components/charts/RevenueChart";
 import { CategoryChart } from "./components/charts/CategoryChart";
+import { QuickActions } from "./components/quick-actions/QuickActions";
 
 // Import data
 import { statsData } from "./constants/statsData";
@@ -83,6 +84,10 @@ export function DashboardView() {
         <CategoryChart data={categoryData} />
       </div>
 
+      {/* Quick Actions */}
+      <div className="mb-2">
+        <QuickActions />
+      </div>
     </div>
   );
 }

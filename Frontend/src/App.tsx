@@ -15,12 +15,12 @@ import { VendorsView } from "./components/admin/vendors/pages/VendorsView";
 import { ModerationView } from "./components/admin/moderation/ModerationView";
 
 import { VendorPanel } from "./components/vendor/VendorPanel";
-import { VendorDashboard } from "./components/vendor/VendorDashboard";
+import { VendorDashboard } from "./components/vendor/dashboard";
 import { MyListings } from "./components/vendor/listings/ListingsView";
-import { CreateListing } from "./components/vendor/CreateListing";
+import { CreateListing } from "./components/vendor/create-listing";
 import { VendorOrders } from "./components/vendor/orders/VendorOrders";
-import { VendorAnalytics } from "./components/vendor/VendorAnalytics";
-import { Reports} from "./components/vendor/reports";
+import { VendorAnalytics } from "./components/vendor/analytics";
+import { Reports } from "./components/vendor/reports";
 
 import { CharityPanel } from "./components/charity/CharityPanel";
 // Import charity components from your file structure
