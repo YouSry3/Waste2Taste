@@ -22,6 +22,26 @@ export interface MonthlyGoals {
 }
 
 export class ProfileService {
+  private isDemoMode(): boolean {
+    const token = localStorage.getItem("authToken");
+    return !!token && token.startsWith("demo-token-");
+  }
+
+  private getDemoProfile(): UserProfile | null {
+    const raw = localStorage.getItem("demoProfile");
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as UserProfile;
+    } catch (error) {
+      console.warn("Failed to parse demo profile from localStorage:", error);
+      return null;
+    }
+  }
+
+  private saveDemoProfile(profile: UserProfile): void {
+    localStorage.setItem("demoProfile", JSON.stringify(profile));
+  }
+
   // Normalize API response to match our UserProfile interface
   private normalizeProfileResponse(data: any): UserProfile {
     const user = authService.getCurrentUser();
@@ -56,6 +76,17 @@ export class ProfileService {
     const user = authService.getCurrentUser();
     if (!user) return null;
 
+    const demoProfile = this.getDemoProfile();
+    if (this.isDemoMode() && demoProfile) {
+      return {
+        ...demoProfile,
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        panelType: user.panelType,
+      };
+    }
+
     // Return basic data from localStorage immediately
     return {
       id: user.id,
@@ -73,6 +104,19 @@ export class ProfileService {
 
   // Fetch full profile from API (with all details)
   async fetchProfile(): Promise<UserProfile> {
+    if (this.isDemoMode()) {
+      const demoProfile = this.getDemoProfile();
+      if (demoProfile) {
+        return demoProfile;
+      }
+
+      const fallbackProfile = this.getCurrentProfile();
+      if (!fallbackProfile) {
+        throw new Error("Not authenticated");
+      }
+      return fallbackProfile;
+    }
+
     try {
       // Try different possible endpoints
       let response;
@@ -121,6 +165,41 @@ export class ProfileService {
 
   // Update profile
   async updateProfile(updates: Partial<UserProfile>): Promise<UserProfile> {
+    if (this.isDemoMode()) {
+      const user = authService.getCurrentUser();
+      if (!user) {
+        throw new Error("Not authenticated");
+      }
+
+      const currentProfile =
+        this.getDemoProfile() ??
+        ({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          panelType: user.panelType,
+        } as UserProfile);
+
+      const updatedProfile = {
+        ...currentProfile,
+        ...updates,
+        id: user.id,
+        panelType: user.panelType,
+      };
+
+      this.saveDemoProfile(updatedProfile);
+
+      // Keep localStorage user data in sync for name/email updates
+      const updatedUser = {
+        ...user,
+        name: updates.name || user.name,
+        email: updates.email || user.email,
+      };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      return updatedProfile;
+    }
+
     try {
       let response;
 
@@ -163,6 +242,30 @@ export class ProfileService {
 
   // Update monthly goals (vendor only)
   async updateMonthlyGoals(goals: MonthlyGoals): Promise<void> {
+    if (this.isDemoMode()) {
+      const user = authService.getCurrentUser();
+      if (!user) {
+        throw new Error("Not authenticated");
+      }
+
+      const currentProfile =
+        this.getDemoProfile() ??
+        ({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          panelType: user.panelType,
+        } as UserProfile);
+
+      const updatedProfile = {
+        ...currentProfile,
+        monthlyGoals: goals,
+      };
+
+      this.saveDemoProfile(updatedProfile);
+      return;
+    }
+
     try {
       let response;
 
