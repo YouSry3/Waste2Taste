@@ -4,22 +4,19 @@ using FoodRescue.BLL.Contract.DTOs;
 using FoodRescue.BLL.Contract.Users;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Extensions.Vendors;
+using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace FoodRescue.BLL.Services.UserServices
 {
-    public class UserService : IUserService
+    public class UserService(IUserRepository repository, CompanyDbContext context, IWebHostEnvironment environment) : IUserService
     {
-        private readonly IUserRepository _repo;
-       
-
-        public UserService(IUserRepository repo)
-        {
-            _repo = repo;
-            
-        }
-        
+        private readonly IUserRepository _repo = repository;
+        private readonly CompanyDbContext _context = context;
+        private readonly IWebHostEnvironment _environment = environment;
 
         public async Task<Result<User>> GetByIdAsync(Guid id)
         {
@@ -43,7 +40,7 @@ namespace FoodRescue.BLL.Services.UserServices
             {
                 Name = IsExited.Name,
                 Email = IsExited.Email,
-                //ProfileImage = IsExited.ProfileImage,
+                ProfileImage = IsExited.ImageUrl,
                 Type = IsExited.Type,
                 OrderCount = (await _repo.GetUserOrdersAsync(userId))?.Count ?? 1,
                 MoneySpent = (await _repo.GetUserOrdersAsync(userId))?.Sum(o => o.TotalPrice) ?? 1,
@@ -60,43 +57,36 @@ namespace FoodRescue.BLL.Services.UserServices
 
         public async Task<Result> UpdateProfileAsync(string email, UpdateProfileDTO dto)
         {
-            var user = await _repo.GetByEmailAsync(email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
                 return Result.Failure(UserErrors.EmailUndefinded);
 
-            user.Name = dto.Name;
-            user.Type = dto.Type;
+            // Update Full Name
+            if (!string.IsNullOrWhiteSpace(dto.FullName))
+                user.Name = dto.FullName;
 
-            if (!string.IsNullOrEmpty(dto.ProfileImage))
-                user.ProfileImage = dto.ProfileImage;  
+            // Update Image
+            if (dto.Image != null && dto.Image.Length > 0)
+            {
+                var fileName = Guid.NewGuid() + Path.GetExtension(dto.Image.FileName);
 
-            await _repo.UpdateAsync(user);
-            await _repo.SaveChangesAsync();
+                var filePath = Path.Combine(_environment.WebRootPath, "images", fileName);
+
+                using var stream = new FileStream(filePath, FileMode.Create);
+                await dto.Image.CopyToAsync(stream);
+
+                user.ImageUrl = "/images/" + fileName;
+            }
+
+            await _context.SaveChangesAsync();
 
             return Result.Success();
         }
 
 
-        //public async Task<Result<UserStats>> GetUserStatsAsync(string email)
-        //{
-        //    var userResult = await GetProfileAsync(email);
-        //    if (userResult.IsFailure)
-        //        return Result.Failure<UserStats>(UserErrors.EmailUndefinded);
 
-        //    var userId = userResult.Value.Id;
-
-        //    var orders = await _repo.GetUserOrdersAsync(userId);
-
-        //    var stats = new UserStats
-        //    {
-        //        Orders = orders?.Count ?? 0,
-        //        MoneySpent = orders?.Sum(o => o.TotalPrice) ?? 0,
-        //        MoneySaved = orders?.Sum(o => o.Discount) ?? 0
-        //    };
-
-        //    return Result.Success(stats);
-        //}
+       
         public async Task<Result> ChangePasswordAsync(Guid userId, ChangePassword dto)
         {
             if(!await _repo.IsCustomer(userId))

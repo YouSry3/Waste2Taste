@@ -50,7 +50,9 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                              user.Email!,
                              user.Type,
                             Token,
-                            ExpiresIn
+                            ExpiresIn,
+                            user.ImageUrl
+                            
                         );
 
 

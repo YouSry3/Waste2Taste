@@ -43,8 +43,8 @@ namespace FoodRescue.PL.Controllers
         // PUT /users/profile
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateProfile(
-    [FromHeader] string email,
-    [FromBody] UpdateProfileDTO dto)
+        [FromHeader] string email,
+        [FromForm] UpdateProfileDTO dto)
         {
             var result = await _service.UpdateProfileAsync(email, dto);
 
@@ -53,6 +53,7 @@ namespace FoodRescue.PL.Controllers
 
             return Ok(new { message = "Profile updated successfully" });
         }
+
         /*  //in case of image upload (real img => IFormFile)
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateProfile(

@@ -58,6 +58,7 @@ namespace FoodRescue.PL
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseStaticFiles();
 
             app.MapControllers();
 
