@@ -43,6 +43,12 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
+## If you want to keep the folder but ignore image files only
+wwwroot/images/*.jpg
+wwwroot/images/*.png
+wwwroot/images/*.jpeg
+
+
 ## Other ##
 Thumbs.db
 *.db
