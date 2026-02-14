@@ -23,7 +23,7 @@ namespace FoodRescue.PL.Controllers
             _service = service;
             _vendorService = vendorService;
         }
-        // GET /users/profile
+        // GET /user/profile
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()
         {

@@ -9,14 +9,14 @@ namespace FoodRescue.DAL.Entities
     public class Order
     {
         public int Id { get; set; }
-        public string CustomerId { get; set; }
-        public string VendorId { get; set; }
-        public List<OrderItem> Items { get; set; } = new List<OrderItem>();
+        
+        public Guid CustomerId { get; set; }
         public decimal TotalPrice { get; set; }
-        public decimal Discount { get; set; }
         public string Status { get; set; } = "Pending";
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public Guid UserId { get; set; }
-        public User User { get; set; }
+        public Guid ProuductId { get; set; }
+
+        public User Customer { get; set; }
+        public Product Product { get; set; }
     }
 }

@@ -10,9 +10,9 @@ namespace FoodRescue.BLL.Services.Orders
     public interface IOrderService
     {
         Task<Order> CreateOrderAsync(Order order);
-        Task<List<Order>> GetOrdersByCustomerAsync(string customerId);
-        Task<List<Order>> GetOrdersByVendorAsync(string vendorId);
-        Task<Order> GetOrderByIdAsync(int id, string userId, string role);
+        Task<List<Order>> GetOrdersByCustomerAsync(Guid customerId);
+        Task<List<Order>> GetOrdersByVendorAsync(Guid vendorId);
+        Task<Order> GetOrderByIdAsync(int id);
         Task<Order> UpdateOrderStatusAsync(int id, string status);
     }
 }

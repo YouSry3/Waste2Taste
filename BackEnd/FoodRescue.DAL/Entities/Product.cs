@@ -6,13 +6,16 @@ public class Product
     public Guid VendorId { get; set; }
     public string Name { get; set; } = null!;
     public decimal Price { get; set; }
+    public decimal Discount { get; set; }
+
     public int Quantity { get; set; }
     public bool Expired { get; set; }
     public DateTime CreatedAt { get; set; }
 
     // Navigation
     public Vendor Vendor { get; set; } = null!;
-    //public List<OrderItem> OrderItems { get; set; } = new();
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
+
     public ICollection<Review> Reviews { get; set; }
 
 }

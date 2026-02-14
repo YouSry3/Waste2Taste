@@ -83,12 +83,12 @@ namespace FoodRescue.BLL.Extensions.Users
 
             return false;
         }
-        public async Task<List<Order>> GetUserOrdersAsync(Guid userId)
-        {
-            return await _context.Orders
-                .Where(o => o.UserId == userId)
-                .ToListAsync();
-        }
+        //public async Task<List<Order>> GetUserOrdersAsync(Guid userId)
+        //{
+        //    return await _context.Orders
+        //        .Where(o => o.UserId == userId)
+        //        .ToListAsync();
+        //}
 
         public async Task DeleteAsync(User user)
         {
@@ -97,16 +97,17 @@ namespace FoodRescue.BLL.Extensions.Users
 
         }
 
-        public async Task<int> CountOrders(Guid userId)
-        {
-          return  _context.Orders
-            .Count(o => o.UserId == userId);
-        }
 
-        Task IUserRepository.CountOrders(Guid userId)
-        {
-            return CountOrders(userId);
-        }
+        //public async Task<int> CountOrders(Guid userId)
+        //{
+        //  return  _context.Orders
+        //    .Count(o => o.UserId == userId);
+        //}
+
+        //Task IUserRepository.CountOrders(Guid userId)
+        //{
+        //    return CountOrders(userId);
+        //}
     }
 
 }

@@ -16,7 +16,6 @@ namespace FoodRescue.DAL.Context
         public DbSet<Report> Reports { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Review> Reviews { get; set; }
        
         // Configurations
@@ -28,9 +27,9 @@ namespace FoodRescue.DAL.Context
             modelBuilder.ApplyConfiguration(new VendorConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.Entity<Order>()
-            .HasOne(o => o.User)
+            .HasOne(o => o.Customer)
             .WithMany(u => u.Orders)
-            .HasForeignKey(o => o.UserId);
+            .HasForeignKey(o => o.CustomerId);
             base.OnModelCreating(modelBuilder);
 
 
