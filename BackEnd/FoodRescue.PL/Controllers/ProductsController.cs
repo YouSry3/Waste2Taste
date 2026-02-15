@@ -2,11 +2,13 @@
 using FoodRescue.BLL.Services.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FoodRescue.PL.Controllers;
 
 [ApiController]
 [Route("products")]
+[Authorize]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _service;
@@ -38,10 +40,12 @@ public class ProductsController : ControllerBase
 
     // POST /products
     [HttpPost] // POST /products
-    [Authorize(Roles = "vendor")]
     public async Task<IActionResult> Create(CreateProductRequest request)
     {
-        var result = await _service.CreateAsync(request);
+
+        var result = await _service.CreateAsync(request, Guid.Parse(
+        User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+    ));
 
         if (result.IsFailure)
             return BadRequest(result.Error);

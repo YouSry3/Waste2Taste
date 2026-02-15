@@ -1,4 +1,6 @@
-﻿using FoodRescue.DAL.Entities;
+﻿using FoodRescue.BLL.Abstractions;
+using FoodRescue.BLL.Contract.Orders.Create;
+using FoodRescue.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ namespace FoodRescue.BLL.Services.Orders
 {
     public interface IOrderService
     {
-        Task<Order> CreateOrderAsync(Order order);
+        Task<Result<OrderResponse>> CreateOrderAsync(OrderRequest request, Guid userId);
         Task<List<Order>> GetOrdersByCustomerAsync(Guid customerId);
         Task<List<Order>> GetOrdersByVendorAsync(Guid vendorId);
         Task<Order> GetOrderByIdAsync(int id);

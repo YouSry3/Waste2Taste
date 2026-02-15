@@ -48,9 +48,7 @@ public class VendorService(IVendorRepository vendorRepository, IUserRepository u
         if (!isVendor)
             return Result.Failure<Guid>(VendorErrors.OwnerMustBeVendor(dto.OwnerId));
 
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            return Result.Failure<Guid>(VendorErrors.NameRequired);
-
+        
         var vendor = dto.Adapt<Vendor>();
         vendor.Id = Guid.NewGuid();
         vendor.CreatedAt = DateTime.UtcNow;

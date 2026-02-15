@@ -82,7 +82,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("ProuductId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.PasswordResetToken", b =>

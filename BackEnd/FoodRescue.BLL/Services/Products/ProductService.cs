@@ -2,6 +2,7 @@
 using FoodRescue.BLL.Abstractions.TypeErrors;
 using FoodRescue.BLL.Contract.Products;
 using FoodRescue.BLL.Extensions.Products;
+using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.DAL.Entities;
 using Mapster;
 
@@ -13,10 +14,12 @@ namespace FoodRescue.BLL.Services.Products;
 public class ProductService : IProductService
 {
     private readonly IProductRepository _repo;
+    private readonly IUserRepository _userRepository;
 
-    public ProductService(IProductRepository repo)
+    public ProductService(IProductRepository repo,IUserRepository userRepository)
     {
         _repo = repo;
+        _userRepository = userRepository;
     }
 
     public async Task<Result<IEnumerable<ProductResponse>>> GetAllAsync(string? name, Guid? vendorId, bool? expired)
@@ -36,14 +39,21 @@ public class ProductService : IProductService
         return Result.Success(response);
     }
 
-    public async Task<Result<Guid>> CreateAsync(CreateProductRequest request)
+    public async Task<Result<Guid>> CreateAsync(CreateProductRequest request, Guid userId)
     {
-        bool vendorExists = await _repo.VendorExistsAsync(request.VendorId);
-        if (!vendorExists)
+        var isVendorAccount = await _userRepository.IsVendor(userId);
+        if(!isVendorAccount)
+            return Result.Failure<Guid>(UserErrors.InValidCredentials);
+
+        bool vendorExists = await _repo.VendorExistsAsync(userId);
+        if (vendorExists)
             return Result.Failure<Guid>(ProductErrors.VendorNotFound);
 
         var product = request.Adapt<Product>();
-        product.Id = Guid.NewGuid();
+        
+        product.VendorId = request.VendorId;
+        product.Expired = true;
+        
         product.CreatedAt = DateTime.UtcNow;
 
         await _repo.AddAsync(product);

@@ -1,5 +1,9 @@
-﻿using FoodRescue.BLL.Extensions.Orders;
+﻿using FoodRescue.BLL.Abstractions;
+using FoodRescue.BLL.Abstractions.TypeErrors;
+using FoodRescue.BLL.Contract.Orders.Create;
+using FoodRescue.BLL.Extensions.Orders;
 using FoodRescue.BLL.Extensions.Products;
+using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.DAL.Entities;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -14,59 +18,59 @@ namespace FoodRescue.BLL.Services.Orders
     {
         private readonly IOrderRepository _orderRepo;
         private readonly IProductRepository _productRepo;
+        private readonly IUserRepository _userRepository;
 
-        public OrderService(IOrderRepository repo, IProductRepository productRepo)
+        public OrderService(IOrderRepository repo, IProductRepository productRepo,IUserRepository userRepository)
         {
             _orderRepo = repo;
             _productRepo = productRepo;
+            _userRepository = userRepository;
         }
 
 
-        public async Task<Order> CreateOrderAsync(Order order)
+        public async Task<Result<OrderResponse>> CreateOrderAsync(OrderRequest request, Guid userId)
         {
-            // Validation
-            if (order.ProuductId == Guid.Empty)
-                throw new Exception("Order must have a valid product.");
-            var product = await _productRepo.GetByIdAsync(order.ProuductId);
 
-            if (product!.Quantity <= 0)
-                throw new Exception("Quantity must be greater than zero.");
+            bool isCustomer = await _userRepository.IsCustomer(userId);
+            if (!isCustomer)
+                return Result.Failure<OrderResponse>(UserErrors.OnlyCustomerAccess);
 
-            if (order.CustomerId == Guid.Empty)
-                throw new Exception("Customer ID is required.");
-
-            // Get product to calculate price
-            
-
+            var product = await _productRepo.GetByIdAsync(request.ProductId);
             if (product == null)
-                throw new Exception("Product not found.");
+                return Result.Failure<OrderResponse>(error: ProductErrors.NotFound);
 
-          
-            // Calculate total price
-            decimal productPrice = product.Price ;
-            decimal discountAmount = 0;
+            if (product.Quantity <= 0)
+                return Result.Failure<OrderResponse>(ProductErrors.InvalidQuantity);
 
-            if (product.Discount > 0)
+            if (product.Discount > 100)
+                return Result.Failure<OrderResponse>(ProductErrors.InvalidDiscount);
+
+            decimal discountAmount = product.Price * (product.Discount / 100);
+            
+            var order = new Order
             {
-                if (product.Discount > 100)
-                    throw new Exception("Discount cannot exceed 100%.");
+                CustomerId = userId,
+                ProuductId = request.ProductId,
+                TotalPrice = product.Price - discountAmount,
+                Status = "Pending",
+                CreatedAt = DateTime.UtcNow
+            };
+            var response = new OrderResponse
+            {
+                Id = userId,
+                TotalPrice = product.Price - discountAmount,
+                Status = "Pending",
+                CreatedAt = DateTime.UtcNow,
+               
+                ProductName = product.Name
+            };
 
-                discountAmount = productPrice * (product.Discount / 100);
-            }
-
-            order.TotalPrice = productPrice - discountAmount;
-
-            if (string.IsNullOrEmpty(order.Status))
-                order.Status = "Pending";
-
-            order.CreatedAt = DateTime.UtcNow;
-
-            // Update product quantity
             product.Quantity--;
 
             await _productRepo.UpdateAsync(product);
+            await _orderRepo.AddOrderAsync(order);
 
-            return await _orderRepo.AddOrderAsync(order);
+            return Result.Success(response);
         }
 
         public async Task<Order> GetOrderByIdAsync(int id)

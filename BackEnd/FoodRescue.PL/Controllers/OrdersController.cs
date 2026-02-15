@@ -1,4 +1,6 @@
-﻿using FoodRescue.BLL.Extensions.Users;
+﻿using FoodRescue.BLL.Abstractions;
+using FoodRescue.BLL.Contract.Orders.Create;
+using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Services.Orders;
 using FoodRescue.DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +10,7 @@ using System.Security.Claims;
 namespace FoodRescue.PL.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [Authorize]
     public class OrdersController : ControllerBase
     {
@@ -22,30 +24,19 @@ namespace FoodRescue.PL.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> CreateOrder([FromBody] Order order)
+       public async Task<IActionResult> CreateOrder([FromBody] OrderRequest order)
         {
+            var userId = Guid.Parse(
+        User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+    );
+
+            var isCustomer = await _userRepository.IsCustomer(userId);
            
-                // Get CustomerId from JWT token
-               var userIdClaim = Guid.Parse(
-               User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-           );
-            var isCustomer = await _userRepository.IsCustomer(userIdClaim);
+            var result = await _orderservice.CreateOrderAsync(order, userId);
 
-                if (!isCustomer)
-                {
-                    return Unauthorized("Invalid user ID Must be You Custmoter .");
-                }
-
-                // Set CustomerId from authenticated user
-                order.CustomerId = userIdClaim;
-
-                var created = await _orderservice.CreateOrderAsync(order);
-                return CreatedAtAction(nameof(GetOrderById), new { id = created.Id }, created);
-
-
-            // If you want to return Error useing Result Pattern 
-
+            return result.IsSuccess?
+                Ok(result.Value)
+                :NotFound(result.Error);
         }
 
         [HttpGet("my-orders")]

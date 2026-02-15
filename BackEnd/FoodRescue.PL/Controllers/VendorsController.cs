@@ -26,25 +26,28 @@ public class VendorsController : ControllerBase
 
 
     // GET /vendors/{id}
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id)
+    [HttpGet("vendor")]
+    public async Task<IActionResult> GetById([FromHeader]Guid id)
     {
-        var vendor = await _vendorService.GetVendorByIdAsync(id);
-        if (vendor == null) return NotFound(new { message = "Vendor not found" });
-
-        return Ok(vendor);
+        var result = await _vendorService.GetVendorByIdAsync(id);
+         return
+            result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+            
     }
 
 
 
     // POST /vendors — Admin only
-    [HttpPost]
-    [Authorize(Roles = "admin")]
-    //[Authorize]
-    public async Task<IActionResult> Create(CreateVendorRequest dto)
+    [HttpPost("create")]
+    //[Authorize(Roles = "admin")]
+    [Authorize]
+    public async Task<IActionResult> Create([FromBody]CreateVendorRequest dto)
     {
-        var id = await _vendorService.CreateVendorAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id }, new { id });
+        var result = await _vendorService.CreateVendorAsync(dto);
+
+        return result.IsSuccess? 
+              Ok(new { Id = result.Value })
+            : Unauthorized(result.Error);
     }
 
 
@@ -65,8 +68,8 @@ public class VendorsController : ControllerBase
 
 
     // DELETE /vendors/{id}
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    [HttpDelete()]
+    public async Task<IActionResult> Delete([FromHeader]Guid id)
     {
         var result = await _vendorService.DeleteVendorAsync(id);
 
