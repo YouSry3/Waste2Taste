@@ -1,29 +1,29 @@
-
-using FoodRescue.BLL.Extensions.Orders;
-using FoodRescue.BLL.Services.Orders;
 using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
-using System.Net.Mail;
 
 
 namespace FoodRescue.PL
 {
     public class Program
     {
+
+        //NEWWWWWWWWWWWWWWW
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            /*builder.Services.AddDbContext<CompanyDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));*/
+            builder.Services.AddDbContext<CompanyDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add services to the container.
             builder.Services.AddProjectServices(builder.Configuration, builder.Environment);
 
-       
-           
 
+
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.Limits.MaxRequestBodySize = 30 * 1024 * 1024;
+            });
 
 
 
@@ -37,7 +37,7 @@ namespace FoodRescue.PL
                 .GetSection("EmailSettings")
                 .Get<EmailSettings>();
 
-          
+
 
             System.Net.ServicePointManager.SecurityProtocol =
     System.Net.SecurityProtocolType.Tls12;
@@ -52,14 +52,20 @@ namespace FoodRescue.PL
             }
 
             app.UseHttpsRedirection();
-            
             // Use CORS policy
             app.UseCors("FoodRescueCors");
 
+
+            // Create wwwroot if not exists
+            var webRootPath = app.Environment.WebRootPath ?? Path.Combine(app.Environment.ContentRootPath, "wwwroot");
+            if (!Directory.Exists(webRootPath))
+            {
+                Directory.CreateDirectory(webRootPath);
+            }
+
+            app.UseStaticFiles(); // Serve images from wwwroot
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseStaticFiles();
-
             app.MapControllers();
 
             app.Run();

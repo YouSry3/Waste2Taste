@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FoodRescue.DAL.Entities
+﻿namespace FoodRescue.DAL.Entities
 {
     public class Order
     {
-        public int Id { get; set; }
-        
+        public Guid Id { get; set; }              //  FIXED: Guid instead of int
+
         public Guid CustomerId { get; set; }
         public decimal TotalPrice { get; set; }
         public string Status { get; set; } = "Pending";
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public Guid ProuductId { get; set; }
 
-        public User Customer { get; set; }
-        public Product Product { get; set; }
+        public Guid ProductId { get; set; }       //  FIXED: Typo "ProuductId" → "ProductId"
+
+        public User Customer { get; set; } = null!;
+        public Product Product { get; set; } = null!;
     }
 }

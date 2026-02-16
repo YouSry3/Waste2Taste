@@ -14,8 +14,7 @@ namespace FoodRescue.BLL.Extensions.Orders
         }
 
         public async Task<Order> AddOrderAsync(Order order)
-        { 
-
+        {
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
@@ -26,6 +25,7 @@ namespace FoodRescue.BLL.Extensions.Orders
         public async Task<List<Order>> GetOrdersByCustomerAsync(Guid customerId)
         {
             return await _context.Orders
+                .AsNoTracking()
                 .Include(o => o.Product)
                 .Include(o => o.Customer)
                 .Where(o => o.CustomerId == customerId)
@@ -36,6 +36,7 @@ namespace FoodRescue.BLL.Extensions.Orders
         public async Task<List<Order>> GetOrdersByVendorAsync(Guid vendorId)
         {
             return await _context.Orders
+                .AsNoTracking()
                 .Include(o => o.Product)
                     .ThenInclude(p => p.Vendor)
                 .Include(o => o.Customer)
@@ -44,25 +45,28 @@ namespace FoodRescue.BLL.Extensions.Orders
                 .ToListAsync();
         }
 
-        public async Task<Order> GetOrderByIdAsync(int id)
+        //  FIXED: Guid instead of int
+        public async Task<Order?> GetOrderByIdAsync(Guid id)
         {
             return await _context.Orders
+                .AsNoTracking()
                 .Include(o => o.Product)
                     .ThenInclude(p => p.Vendor)
                 .Include(o => o.Customer)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        public async Task<Order> UpdateOrderStatusAsync(int id, string status)
+        //  FIXED: Guid instead of int, use tracking for update
+        public async Task<Order?> UpdateOrderStatusAsync(Guid id, string status)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Orders
+                .AsTracking()
+                .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
                 return null;
 
             order.Status = status;
-
-            _context.Orders.Update(order);
             await _context.SaveChangesAsync();
 
             // Return the updated order with related entities

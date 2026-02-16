@@ -20,12 +20,12 @@ namespace FoodRescue.DAL.Context.Configurations
                    .OnDelete(DeleteBehavior.Restrict);
 
             // Product Relationship
-            builder.Property(o => o.ProuductId)
+            builder.Property(o => o.ProductId)
                    .IsRequired();
 
             builder.HasOne(o => o.Product)
                    .WithMany(p => p.Orders)
-                   .HasForeignKey(o => o.ProuductId)
+                   .HasForeignKey(o => o.ProductId)
                    .OnDelete(DeleteBehavior.Restrict);
 
             builder.Property(o => o.Status)
@@ -36,7 +36,7 @@ namespace FoodRescue.DAL.Context.Configurations
                    .HasColumnType("decimal(18,2)")
                    .IsRequired();
 
-            
+
 
             builder.Property(o => o.CreatedAt)
                    .IsRequired();

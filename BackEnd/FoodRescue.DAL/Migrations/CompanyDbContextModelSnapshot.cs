@@ -53,11 +53,9 @@ namespace FoodRescue.DAL.Migrations
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Order", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -65,7 +63,7 @@ namespace FoodRescue.DAL.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProuductId")
+                    b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
@@ -80,9 +78,9 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("ProuductId");
+                    b.HasIndex("ProductId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.PasswordResetToken", b =>
@@ -125,18 +123,31 @@ namespace FoodRescue.DAL.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
-                    b.Property<decimal>("Discount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<bool>("Expired")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("OriginalPrice")
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
@@ -151,7 +162,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("VendorId");
 
-                    b.ToTable("products", (string)null);
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Report", b =>
@@ -325,7 +336,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasOne("FoodRescue.DAL.Entities.Product", "Product")
                         .WithMany("Orders")
-                        .HasForeignKey("ProuductId")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

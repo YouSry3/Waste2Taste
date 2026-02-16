@@ -1,8 +1,6 @@
-﻿using FoodRescue.BLL.Abstractions;
-using FoodRescue.BLL.Contract.Orders.Create;
+﻿using FoodRescue.BLL.Contract.Orders.Create;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Services.Orders;
-using FoodRescue.DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -24,46 +22,47 @@ namespace FoodRescue.PL.Controllers
         }
 
         [HttpPost]
-       public async Task<IActionResult> CreateOrder([FromBody] OrderRequest order)
+        public async Task<IActionResult> CreateOrder([FromBody] OrderRequest order)
         {
             var userId = Guid.Parse(
         User.FindFirst(ClaimTypes.NameIdentifier)!.Value
     );
 
             var isCustomer = await _userRepository.IsCustomer(userId);
-           
+
             var result = await _orderservice.CreateOrderAsync(order, userId);
 
-            return result.IsSuccess?
+            return result.IsSuccess ?
                 Ok(result.Value)
-                :NotFound(result.Error);
+                : NotFound(result.Error);
         }
 
         [HttpGet("my-orders")]
         [Authorize(Roles = "Customer")]
         public async Task<IActionResult> GetMyOrders()
         {
-                        Guid userId = Guid.Parse(
-                       User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-                   );
-                    var isCustomer = await _userRepository.IsCustomer(userId);
+            Guid userId = Guid.Parse(
+           User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+       );
+            var isCustomer = await _userRepository.IsCustomer(userId);
 
             if (!isCustomer)
-                {
-                    return Unauthorized("Invalid user ID.");
-                }
+            {
+                return Unauthorized("Invalid user ID.");
+            }
 
-                var orders = await _orderservice.GetOrdersByCustomerAsync(userId);
-                return Ok(orders);
-         }
-           
-               
-            
-        
+            var orders = await _orderservice.GetOrdersByCustomerAsync(userId);
+            return Ok(orders);
+        }
 
-        [HttpGet("{id}")]
+
+
+
+
+        // FIXED: Changed int to Guid, added :guid constraint
+        [HttpGet("{id:guid}")]
         [Authorize]
-        public async Task<IActionResult> GetOrderById(int id)
+        public async Task<IActionResult> GetOrderById(Guid id)
         {
             try
             {
@@ -100,9 +99,10 @@ namespace FoodRescue.PL.Controllers
             }
         }
 
-        [HttpPut("{id}/status")]
+        // FIXED: Changed int to Guid, added :guid constraint
+        [HttpPut("{id:guid}/status")]
         [Authorize(Roles = "Vendor,Admin")]
-        public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] UpdateStatusRequest request)
+        public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] UpdateStatusRequest request)
         {
             try
             {

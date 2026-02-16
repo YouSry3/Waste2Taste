@@ -5,12 +5,6 @@ using FoodRescue.BLL.Extensions.Orders;
 using FoodRescue.BLL.Extensions.Products;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.DAL.Entities;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoodRescue.BLL.Services.Orders
 {
@@ -20,48 +14,50 @@ namespace FoodRescue.BLL.Services.Orders
         private readonly IProductRepository _productRepo;
         private readonly IUserRepository _userRepository;
 
-        public OrderService(IOrderRepository repo, IProductRepository productRepo,IUserRepository userRepository)
+        public OrderService(IOrderRepository repo, IProductRepository productRepo, IUserRepository userRepository)
         {
             _orderRepo = repo;
             _productRepo = productRepo;
             _userRepository = userRepository;
         }
 
-
         public async Task<Result<OrderResponse>> CreateOrderAsync(OrderRequest request, Guid userId)
         {
-
             bool isCustomer = await _userRepository.IsCustomer(userId);
             if (!isCustomer)
                 return Result.Failure<OrderResponse>(UserErrors.OnlyCustomerAccess);
 
             var product = await _productRepo.GetByIdAsync(request.ProductId);
             if (product == null)
-                return Result.Failure<OrderResponse>(error: ProductErrors.NotFound);
+                return Result.Failure<OrderResponse>(ProductErrors.NotFound);
 
             if (product.Quantity <= 0)
                 return Result.Failure<OrderResponse>(ProductErrors.InvalidQuantity);
 
-            if (product.Discount > 100)
+            // FIXED: Calculate discount from OriginalPrice vs Price
+            decimal discountPercentage = product.OriginalPrice > 0
+                ? (product.OriginalPrice - product.Price) / product.OriginalPrice * 100
+                : 0;
+
+            if (discountPercentage > 100)
                 return Result.Failure<OrderResponse>(ProductErrors.InvalidDiscount);
 
-            decimal discountAmount = product.Price * (product.Discount / 100);
-            
             var order = new Order
             {
+                Id = Guid.NewGuid(),  //  ADDED: Generate Guid
                 CustomerId = userId,
-                ProuductId = request.ProductId,
-                TotalPrice = product.Price - discountAmount,
+                ProductId = request.ProductId,  //  FIXED: Typo "ProuductId" -> "ProductId"
+                TotalPrice = product.Price,  //  FIXED: Use Price directly (already discounted)
                 Status = "Pending",
                 CreatedAt = DateTime.UtcNow
             };
+
             var response = new OrderResponse
             {
-                Id = userId,
-                TotalPrice = product.Price - discountAmount,
+                Id = order.Id,  //  FIXED: Use order.Id, not userId
+                TotalPrice = product.Price,
                 Status = "Pending",
                 CreatedAt = DateTime.UtcNow,
-               
                 ProductName = product.Name
             };
 
@@ -73,13 +69,10 @@ namespace FoodRescue.BLL.Services.Orders
             return Result.Success(response);
         }
 
-        public async Task<Order> GetOrderByIdAsync(int id)
+        // FIXED: Change int to Guid
+        public async Task<Order?> GetOrderByIdAsync(Guid id)
         {
             var order = await _orderRepo.GetOrderByIdAsync(id);
-
-            if (order == null)
-                throw new ArgumentException("Invalid Order Undefinded."); ;
-
             return order;
         }
 
@@ -99,7 +92,8 @@ namespace FoodRescue.BLL.Services.Orders
             return await _orderRepo.GetOrdersByVendorAsync(vendorId);
         }
 
-        public async Task<Order> UpdateOrderStatusAsync(int id, string status)
+        // FIXED: Change int to Guid
+        public async Task<Order?> UpdateOrderStatusAsync(Guid id, string status)
         {
             if (string.IsNullOrEmpty(status))
                 throw new ArgumentException("Status cannot be empty.");

@@ -8,7 +8,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
-        builder.ToTable("products");
+        builder.ToTable("Products");
 
         builder.HasKey(x => x.Id);
 
@@ -16,12 +16,17 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMaxLength(200)
             .IsRequired();
 
+        builder.Property(x => x.Description)
+            .HasMaxLength(2000)
+            .IsRequired();
+
         builder.Property(x => x.Price)
             .HasColumnType("decimal(10,2)")
             .IsRequired();
 
-        builder.Property(o => o.Discount)
-                   .HasColumnType("decimal(18,2)");
+        builder.Property(x => x.OriginalPrice)
+            .HasColumnType("decimal(10,2)")
+            .IsRequired();
 
         builder.Property(x => x.Quantity)
             .IsRequired();
@@ -29,11 +34,25 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(x => x.Expired)
             .HasDefaultValue(false);
 
+        builder.Property(x => x.ExpiryDate)
+            .IsRequired();
+
         builder.Property(x => x.CreatedAt)
             .HasDefaultValueSql("GETDATE()");
 
+        builder.Property(x => x.ImageUrl)
+            .HasMaxLength(500)
+            .IsRequired();
+
+        // Vendor relationship
         builder.HasOne(x => x.Vendor)
             .WithMany(v => v.Products)
             .HasForeignKey(x => x.VendorId);
+
+        //  NEW: Orders relationship (One Product → Many Orders)
+        builder.HasMany(x => x.Orders)
+            .WithOne(o => o.Product)
+            .HasForeignKey(o => o.ProductId)
+            .OnDelete(DeleteBehavior.Restrict); // Prevent deleting product if orders exist
     }
 }
