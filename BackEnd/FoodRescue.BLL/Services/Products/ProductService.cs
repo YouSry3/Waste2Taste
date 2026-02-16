@@ -22,9 +22,9 @@ public class ProductService : IProductService
         _userRepository = userRepository;
     }
 
-    public async Task<Result<IEnumerable<ProductResponse>>> GetAllAsync(string? name, Guid? vendorId, bool? expired)
+    public async Task<Result<IEnumerable<ProductResponse>>> GetAllAsync(Guid? vendorId, bool? expired)
     {
-        var products = await _repo.GetAllAsync(name, vendorId, expired);
+        var products = await _repo.GetAllAsync( vendorId, expired);
         var response = products.Adapt<IEnumerable<ProductResponse>>();
         return Result.Success(response);
     }
@@ -39,14 +39,10 @@ public class ProductService : IProductService
         return Result.Success(response);
     }
 
-    public async Task<Result<Guid>> CreateAsync(CreateProductRequest request, Guid userId)
+    public async Task<Result<Guid>> CreateAsync(CreateProductRequest request)
     {
-        var isVendorAccount = await _userRepository.IsVendor(userId);
-        if(!isVendorAccount)
-            return Result.Failure<Guid>(UserErrors.InValidCredentials);
-
-        bool vendorExists = await _repo.VendorExistsAsync(userId);
-        if (vendorExists)
+        bool vendorExists = await _repo.VendorExistsAsync(request.VendorId);
+        if (!vendorExists)
             return Result.Failure<Guid>(ProductErrors.VendorNotFound);
 
         var product = request.Adapt<Product>();

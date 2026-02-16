@@ -8,7 +8,7 @@ namespace FoodRescue.PL.Controllers;
 
 [ApiController]
 [Route("products")]
-[Authorize]
+
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _service;
@@ -20,9 +20,10 @@ public class ProductsController : ControllerBase
 
     // GET /products
     [HttpGet] // GET /products
-    public async Task<IActionResult> GetAll([FromQuery] string? name, [FromQuery] Guid? vendorId, [FromQuery] bool? expired)
+    [Authorize(Roles = "vendor")]
+    public async Task<IActionResult> GetAll(ProductRequest request)
     {
-        var result = await _service.GetAllAsync(name, vendorId, expired);
+        var result = await _service.GetAllAsync(request.vendorId, request.expired);
         return Ok(result.Value);
     }
 
@@ -39,18 +40,17 @@ public class ProductsController : ControllerBase
     }
 
     // POST /products
-    [HttpPost] // POST /products
+    [HttpPost("Create")] // POST /products
+    [Authorize(Roles = "vendor")]
     public async Task<IActionResult> Create(CreateProductRequest request)
     {
 
-        var result = await _service.CreateAsync(request, Guid.Parse(
-        User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-    ));
+        var result = await _service.CreateAsync(request);
 
         if (result.IsFailure)
             return BadRequest(result.Error);
 
-        return CreatedAtAction(nameof(GetById), new { id = result.Value }, null);
+        return CreatedAtAction(nameof(GetById), new { id = result.Value }, result.Value);
     }
 
     // PUT /products/{id}
@@ -67,16 +67,16 @@ public class ProductsController : ControllerBase
     }
 
     // DELETE /products/{id}
-    [HttpDelete("{id:guid}")] // DELETE /products/{id}
+    [HttpDelete()] // DELETE /products/
     [Authorize(Roles = "vendor")]
-    public async Task<IActionResult> Delete(Guid id)
+    public async Task<IActionResult> Delete([FromHeader]Guid id)
     {
         var result = await _service.DeleteAsync(id);
 
         if (result.IsFailure)
             return NotFound(result.Error);
 
-        return Ok();
+        return Ok(new { message = "Delete is Succcessfully!"});
     }
 
     // PATCH /products/{id}/stock

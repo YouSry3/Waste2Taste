@@ -4,7 +4,7 @@ namespace FoodRescue.BLL.Extensions.Products;
 
 public interface IProductRepository
 {
-    Task<IEnumerable<Product>> GetAllAsync(string? name, Guid? vendorId, bool? expired);
+    Task<IEnumerable<Product>> GetAllAsync( Guid? vendorId, bool? expired);
     Task<Product?> GetByIdAsync(Guid id);
     Task AddAsync(Product product);
     Task UpdateAsync(Product product);

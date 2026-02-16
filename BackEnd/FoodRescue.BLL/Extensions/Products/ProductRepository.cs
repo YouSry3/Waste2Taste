@@ -12,12 +12,9 @@ public class ProductRepository : IProductRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync(string? name, Guid? vendorId, bool? expired)
+    public async Task<IEnumerable<Product>> GetAllAsync( Guid? vendorId, bool? expired)
     {
         var query = _context.Products.AsQueryable();
-
-        if (!string.IsNullOrEmpty(name))
-            query = query.Where(x => x.Name.Contains(name));
 
         if (vendorId.HasValue)
             query = query.Where(x => x.VendorId == vendorId);
