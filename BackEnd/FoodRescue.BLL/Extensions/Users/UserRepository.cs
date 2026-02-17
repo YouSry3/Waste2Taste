@@ -32,7 +32,7 @@ namespace FoodRescue.BLL.Extensions.Users
         public async Task<IEnumerable<User>> GetVendorsAsync()
         {
             return await _context.Users
-                .Where(u => u.Type.ToLower() == "vendor")
+                .Where(u => u.Role.ToLower() == "vendor")
                 .ToListAsync();
         }
 
@@ -55,7 +55,7 @@ namespace FoodRescue.BLL.Extensions.Users
         {
             var Result = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
-            if (Result != null && Result.Type.ToLower() == "admin")
+            if (Result != null && Result.Role.ToLower() == "admin")
             
                 return true;
 
@@ -66,7 +66,7 @@ namespace FoodRescue.BLL.Extensions.Users
         {
             var Result = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
-            if (Result != null && Result.Type.ToLower() == "vendor")
+            if (Result != null && Result.Role.ToLower() == "vendor")
 
                 return true;
 
@@ -77,7 +77,7 @@ namespace FoodRescue.BLL.Extensions.Users
         {
             var Result = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
-            if (Result is not null && Result.Type.ToLower() == "customer")
+            if (Result is not null && Result.Role.ToLower() == "customer")
 
                 return true;
 

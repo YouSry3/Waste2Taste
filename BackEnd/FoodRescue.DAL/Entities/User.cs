@@ -17,7 +17,7 @@ namespace FoodRescue.DAL.Entities
 
         public string Name { get; set; } = string.Empty;
         // admin, vendor, customer
-        public string Type { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
         public string? ImageUrl { get; set; }
 
         public DateTime CreatedAt { get; set; }

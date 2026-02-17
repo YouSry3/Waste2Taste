@@ -271,7 +271,7 @@ namespace FoodRescue.DAL.Migrations
                     b.Property<string>("ProfileImage")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Type")
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");

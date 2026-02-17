@@ -48,7 +48,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                             // Replace these property names with the actual property names in LoginResponse.
                              user.Name,
                              user.Email!,
-                             user.Type,
+                             user.Role,
                             Token,
                             ExpiresIn,
                             user.ImageUrl

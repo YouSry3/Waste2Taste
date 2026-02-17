@@ -41,7 +41,7 @@ namespace FoodRescue.BLL.Services.UserServices
                 Name = IsExited.Name,
                 Email = IsExited.Email,
                 ProfileImage = IsExited.ImageUrl,
-                Type = IsExited.Type,
+                Type = IsExited.Role,
                 OrderCount = 0,//(await _repo.GetUserOrdersAsync(userId))?.Count ?? 1,
                 MoneySpent =0, //(await _repo.GetUserOrdersAsync(userId))?.Sum(o => o.TotalPrice) ?? 1,
                 moneySaved = 0,//(await _repo.GetUserOrdersAsync(userId))?.Sum(o => o.Discount) ?? 1 // To Test because there is no orders yet

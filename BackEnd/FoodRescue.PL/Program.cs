@@ -33,14 +33,11 @@ namespace FoodRescue.PL
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var emailSettings = builder.Configuration
-                .GetSection("EmailSettings")
-                .Get<EmailSettings>();
+            
 
 
 
-            System.Net.ServicePointManager.SecurityProtocol =
-    System.Net.SecurityProtocolType.Tls12;
+           
 
             var app = builder.Build();
 
