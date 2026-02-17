@@ -1,4 +1,10 @@
+<<<<<<< Updated upstream
 ﻿using FoodRescue.BLL.Contract.Orders.Create;
+=======
+﻿using FoodRescue.BLL.Abstractions;
+using FoodRescue.BLL.Contract.Orders.Create;
+using FoodRescue.BLL.Contract.Orders.Update;
+>>>>>>> Stashed changes
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Services.Orders;
 using Microsoft.AspNetCore.Authorization;
@@ -13,15 +19,14 @@ namespace FoodRescue.PL.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderservice;
-        private readonly IUserRepository _userRepository;
 
         public OrdersController(IOrderService service, IUserRepository userRepository)
         {
             _orderservice = service;
-            _userRepository = userRepository;
         }
 
         [HttpPost]
+<<<<<<< Updated upstream
         public async Task<IActionResult> CreateOrder([FromBody] OrderRequest order)
         {
             var userId = Guid.Parse(
@@ -31,6 +36,15 @@ namespace FoodRescue.PL.Controllers
             var isCustomer = await _userRepository.IsCustomer(userId);
 
             var result = await _orderservice.CreateOrderAsync(order, userId);
+=======
+        [Authorize(Roles = "customer")]
+       public async Task<IActionResult> CreateOrder([FromBody] OrderRequest order)
+        {
+           
+            var result = await _orderservice.CreateOrderAsync(order, Guid.Parse(
+        User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+    ));
+>>>>>>> Stashed changes
 
             return result.IsSuccess ?
                 Ok(result.Value)
@@ -38,9 +52,10 @@ namespace FoodRescue.PL.Controllers
         }
 
         [HttpGet("my-orders")]
-        [Authorize(Roles = "Customer")]
+        [Authorize(Roles = "customer")]
         public async Task<IActionResult> GetMyOrders()
         {
+<<<<<<< Updated upstream
             Guid userId = Guid.Parse(
            User.FindFirst(ClaimTypes.NameIdentifier)!.Value
        );
@@ -54,6 +69,15 @@ namespace FoodRescue.PL.Controllers
             var orders = await _orderservice.GetOrdersByCustomerAsync(userId);
             return Ok(orders);
         }
+=======
+                var orders = await _orderservice.GetOrdersByCustomerAsync(Guid.Parse(
+                    User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+                ));
+                return Ok(orders);
+         }
+           
+ 
+>>>>>>> Stashed changes
 
 
 
@@ -189,8 +213,13 @@ namespace FoodRescue.PL.Controllers
     }
 
     // DTO for UpdateStatus
+<<<<<<< Updated upstream
     public class UpdateStatusRequest
     {
         public string Status { get; set; }
     }
 }
+=======
+   
+}
+>>>>>>> Stashed changes
