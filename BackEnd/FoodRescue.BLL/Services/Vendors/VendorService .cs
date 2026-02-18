@@ -1,20 +1,18 @@
 ﻿using FoodRescue.BLL.Abstractions;
 using FoodRescue.BLL.Abstractions.TypeErrors;
 using FoodRescue.BLL.Contract.Vendors;
+using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.DAL.Entities;
 using Mapster;
+using System.Security.Claims;
 
 namespace FoodRescue.BLL.Services.Vendors;
 
-public class VendorService : IVendorService
+public class VendorService(IVendorRepository vendorRepository, IUserRepository userRepository) : IVendorService
 {
-    private readonly IVendorRepository _vendorRepository;
-
-    public VendorService(IVendorRepository vendorRepository)
-    {
-        _vendorRepository = vendorRepository;
-    }
+    private readonly IVendorRepository _vendorRepository = vendorRepository;
+    private readonly IUserRepository _userRepository = userRepository;
 
     public async Task<Result<List<VendorListResponse>>> GetVendorsAsync(string? name, string? status)
     {
@@ -37,9 +35,20 @@ public class VendorService : IVendorService
 
     public async Task<Result<Guid>> CreateVendorAsync(CreateVendorRequest dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.Name))
-            return Result.Failure<Guid>(VendorErrors.NameRequired);
+        
+        //can you check Authorization here? Vendor must be created by a Vendor user
+        var isVendor = await _userRepository.IsVendor(dto.OwnerId);
 
+        // or check By JWT in Controller Sent By Request in Authorization Bearer
+        //      like this in VenderController to get userId: from token"JWT"
+        //Guid userId = Guid.Parse(
+        //       User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+        //   );
+
+        if (!isVendor)
+            return Result.Failure<Guid>(VendorErrors.OwnerMustBeVendor(dto.OwnerId));
+
+        
         var vendor = dto.Adapt<Vendor>();
         vendor.Id = Guid.NewGuid();
         vendor.CreatedAt = DateTime.UtcNow;

@@ -1,1 +1,54 @@
-"BackEnd/FoodRescue.PL/appsettings.json" 
+## Build Folders ##
+bin/
+obj/
+out/
+
+## User-Specific Files ##
+*.user
+*.rsuser
+*.suo
+*.userosscache
+
+## IDE Directories ##
+.vs/
+.vscode/
+
+## Logs ##
+*.log
+
+## Environment Files ##
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.json
+*.env
+
+## Sensitive Keys ##
+secrets.json
+
+## Publish Artifacts ##
+/publish/
+/dist/
+## If you want to keep the folder but ignore image files only
+wwwroot/images/*.jpg
+wwwroot/images/*.png
+wwwroot/images/*.jpeg
+
+## Auto Generated ##
+Generated/
+*.designer.cs
+*.g.cs
+*.generated.cs
+
+## Packages ##
+*.nupkg
+packages/
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+## Other ##
+Thumbs.db
+*.db
+*.sqlite
+*.bak

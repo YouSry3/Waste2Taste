@@ -34,7 +34,7 @@ namespace FoodRescue.DAL.Context.Configurations
                 .HasMaxLength(255);
 
             // Type (admin, vendor, customer)
-            builder.Property(x => x.Type)
+            builder.Property(x => x.Role)
                 .IsRequired()
                 .HasMaxLength(50);
 

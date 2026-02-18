@@ -13,5 +13,12 @@ namespace FoodRescue.BLL.Abstractions.TypeErrors
         public static Error DuplicationPassword => new("User.DuplicationPassword", "The new password cannot be the same as the old password.");
         public static Error InValidIdentifier => new("User.InValidIdentifier", "The user identifier is invalid.");
 
+        public static Error OnlyCustomerAccess => new("User.OnlyCustomerAccess", "Only customers can Access this Service.");
+
+        public static Error OnlyCustomersCanChangePassword(Guid userId) =>
+            new("User.OnlyCustomersCanChangePassword", $"Only customers can change their password. UserId: {userId}");
+        public static Error OnlyCustomersCanAccessProfile(Guid userId)=>
+            new("User.OnlyCustomersCanAccessProfile", $"Only customers can access their profile. UserId: {userId}");
+
     }
 }

@@ -1,11 +1,6 @@
 ﻿using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoodRescue.BLL.Extensions.Orders
 {
@@ -20,42 +15,62 @@ namespace FoodRescue.BLL.Extensions.Orders
 
         public async Task<Order> AddOrderAsync(Order order)
         {
-            _context.Orders.Add(order);
+            await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
-            return order;
+
+            // Reload the order with related entities
+            return await GetOrderByIdAsync(order.Id);
         }
 
-        public async Task<List<Order>> GetOrdersByCustomerAsync(string customerId)
+        public async Task<List<Order>> GetOrdersByCustomerAsync(Guid customerId)
         {
             return await _context.Orders
-                .Include(o => o.Items)
+                .AsNoTracking()
+                .Include(o => o.Product)
+                .Include(o => o.Customer)
                 .Where(o => o.CustomerId == customerId)
+                .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
         }
 
-        public async Task<List<Order>> GetOrdersByVendorAsync(string vendorId)
+        public async Task<List<Order>> GetOrdersByVendorAsync(Guid vendorId)
         {
             return await _context.Orders
-                .Include(o => o.Items)
-                .Where(o => o.VendorId == vendorId)
+                .AsNoTracking()
+                .Include(o => o.Product)
+                    .ThenInclude(p => p.Vendor)
+                .Include(o => o.Customer)
+                .Where(o => o.Product.VendorId == vendorId)
+                .OrderByDescending(o => o.CreatedAt)
                 .ToListAsync();
         }
 
-        public async Task<Order> GetOrderByIdAsync(int id)
+        //  FIXED: Guid instead of int
+        public async Task<Order?> GetOrderByIdAsync(Guid id)
         {
             return await _context.Orders
-                .Include(o => o.Items)
+                .AsNoTracking()
+                .Include(o => o.Product)
+                    .ThenInclude(p => p.Vendor)
+                .Include(o => o.Customer)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        public async Task<Order> UpdateOrderStatusAsync(int id, string status)
+        //  FIXED: Guid instead of int, use tracking for update
+        public async Task<Order?> UpdateOrderStatusAsync(Guid id, string status)
         {
-            var order = await _context.Orders.FindAsync(id);
-            if (order == null) return null;
+            var order = await _context.Orders
+                .AsTracking()
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null)
+                return null;
 
             order.Status = status;
             await _context.SaveChangesAsync();
-            return order;
+
+            // Return the updated order with related entities
+            return await GetOrderByIdAsync(id);
         }
     }
 }

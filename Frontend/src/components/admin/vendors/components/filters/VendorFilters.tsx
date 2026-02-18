@@ -43,6 +43,25 @@ export function VendorFilters({
   hasActiveFilters,
   categories,
 }: VendorFiltersProps) {
+  const formatSortValue = (field: string, order: string) => {
+    const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+    const orderText = order === "asc" ? "↑" : "↓";
+    return `${fieldName} ${orderText}`;
+  };
+
+  // Function to reset sort to default (name, ascending)
+  const resetSort = () => {
+    if (sortBy !== "name") {
+      toggleSort("name");
+      // If name is descending, toggle again to make it ascending
+      if (sortOrder === "desc") {
+        setTimeout(() => toggleSort("name"), 0);
+      }
+    } else if (sortOrder === "desc") {
+      toggleSort("name");
+    }
+  };
+
   const filterTabs = [
     {
       id: "search",
@@ -76,7 +95,18 @@ export function VendorFilters({
       clearAction: () => setFilterStatus("all"),
       value: filterStatus,
     },
+    {
+      id: "sort",
+      label: "Sort",
+      isActive: sortBy !== "name" || sortOrder !== "asc", // Only show if not default
+      colorClass: "bg-indigo-100 text-indigo-700 border-indigo-300",
+      clearAction: resetSort,
+      value: formatSortValue(sortBy, sortOrder),
+    },
   ];
+
+  // Filter to only show active tabs
+  const activeTabs = filterTabs.filter((tab) => tab.isActive);
 
   return (
     <div className="mb-6 space-y-4">
@@ -123,11 +153,16 @@ export function VendorFilters({
           </SelectContent>
         </Select>
 
-        <SortButtons sortBy={sortBy} toggleSort={toggleSort} />
+        <SortButtons
+          sortBy={sortBy}
+          sortOrder={sortOrder}
+          toggleSort={toggleSort}
+        />
       </div>
 
-      {hasActiveFilters && (
-        <FilterTabs tabs={filterTabs} onClearAll={resetFilters} />
+      {/* Show filter tabs when there are active filters */}
+      {activeTabs.length > 0 && (
+        <FilterTabs tabs={activeTabs} onClearAll={resetFilters} />
       )}
     </div>
   );

@@ -1,6 +1,8 @@
-﻿using FluentValidation.AspNetCore;
-using FoodRescue.BLL.Contract.Authentication.ForgetPassword.Settings;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
 using FoodRescue.BLL.Contract.Authentication.Register;
+using FoodRescue.BLL.Contract.Products;
+using FoodRescue.BLL.Extensions.Orders;
 using FoodRescue.BLL.Extensions.Products;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Extensions.Vendors;
@@ -8,13 +10,14 @@ using FoodRescue.BLL.Extensions.Vendors.MapsterConfiguration;
 using FoodRescue.BLL.Services.Authentication.AuthServices;
 using FoodRescue.BLL.Services.Authentication.Email_Service;
 using FoodRescue.BLL.Services.JWT;
+using FoodRescue.BLL.Services.Orders;
 using FoodRescue.BLL.Services.Products;
+using FoodRescue.BLL.Services.Reviews;
+using FoodRescue.BLL.Services.UserServices;
 using FoodRescue.BLL.Services.Vendors;
 using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Net.Mail;
@@ -52,18 +55,18 @@ namespace FoodRescue.PL
             });
 
             // DbContext
-       
+
             services.AddServices();
 
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
 
 
-                services.Configure<EmailSettings>(
-            configuration.GetSection("EmailSettings"));
+            services.Configure<EmailSettings>(
+        configuration.GetSection("EmailSettings"));
 
-                
 
-                services.ConfigrationsDataBase(configuration);
+
+            services.ConfigrationsDataBase(configuration);
 
 
             services.AddJwtService(configuration);
@@ -103,7 +106,13 @@ namespace FoodRescue.PL
             services.AddScoped<EmailService>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<EmailService>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddValidatorsFromAssemblyContaining<CreateProductRequestValidator>();
+
 
             VendorMapsterConfig.RegisterVendorMappings();
 

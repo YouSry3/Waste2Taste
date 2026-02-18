@@ -1,71 +1,189 @@
-﻿using FoodRescue.BLL.Services.Orders;
-using FoodRescue.DAL.Entities;
+
+﻿using FoodRescue.BLL.Abstractions;
+using FoodRescue.BLL.Contract.Orders.Create;
+using FoodRescue.BLL.Contract.Orders.Update;
+
+using FoodRescue.BLL.Extensions.Users;
+using FoodRescue.BLL.Services.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FoodRescue.PL.Controllers
 {
     [ApiController]
-    [Route("orders")]
+    [Route("[controller]")]
+    [Authorize]
     public class OrdersController : ControllerBase
     {
-        private readonly IOrderService _service;
+        private readonly IOrderService _orderservice;
 
-        public OrdersController(IOrderService service)
+        public OrdersController(IOrderService service, IUserRepository userRepository)
         {
-            _service = service;
+            _orderservice = service;
         }
 
         [HttpPost]
-        [Authorize(Roles = "Customer")]
-        public async Task<IActionResult> CreateOrder([FromBody] Order order)
+
+        [Authorize(Roles = "customer")]
+       public async Task<IActionResult> CreateOrder([FromBody] OrderRequest order)
         {
-            var created = await _service.CreateOrderAsync(order);
-            return Ok(created);
+           
+            var result = await _orderservice.CreateOrderAsync(order, Guid.Parse(
+        User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+    ));
+
+
+            return result.IsSuccess ?
+                Ok(result.Value)
+                : NotFound(result.Error);
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Customer")]
+        [HttpGet("my-orders")]
+        [Authorize(Roles = "customer")]
         public async Task<IActionResult> GetMyOrders()
         {
-            var userId = User.Identity.Name;
-            var orders = await _service.GetOrdersByCustomerAsync(userId);
-            return Ok(orders);
-        }
 
-        [HttpGet("{id}")]
+                var orders = await _orderservice.GetOrdersByCustomerAsync(Guid.Parse(
+                    User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+                ));
+                return Ok(orders);
+         }
+           
+ 
+
+
+
+
+
+        // FIXED: Changed int to Guid, added :guid constraint
+        [HttpGet("{id:guid}")]
         [Authorize]
-        public async Task<IActionResult> GetOrderById(int id)
+        public async Task<IActionResult> GetOrderById(Guid id)
         {
-            var userId = User.Identity.Name;
-            var role = User.IsInRole("Admin") ? "Admin" : null;
-
             try
             {
-                var order = await _service.GetOrderByIdAsync(id, userId, role);
+                var order = await _orderservice.GetOrderByIdAsync(id);
+
+                if (order == null)
+                {
+                    return NotFound(new { message = "Order not found." });
+                }
+
+                // Authorization check
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var isAdmin = User.IsInRole("Admin");
+
+                if (!Guid.TryParse(userIdClaim, out Guid userId))
+                {
+                    return Unauthorized("Invalid user ID.");
+                }
+
+                bool isAuthorized = isAdmin ||
+                                  order.CustomerId == userId ||
+                                  order.Product?.VendorId == userId;
+
+                if (!isAuthorized)
+                {
+                    return Forbid();
+                }
+
                 return Ok(order);
             }
-            catch
+            catch (Exception ex)
             {
-                return Forbid();
+                return BadRequest(new { message = ex.Message });
             }
         }
 
-        [HttpPut("{id}/status")]
+        // FIXED: Changed int to Guid, added :guid constraint
+        [HttpPut("{id:guid}/status")]
         [Authorize(Roles = "Vendor,Admin")]
-        public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] string status)
+        public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] UpdateStatusRequest request)
         {
-            var order = await _service.UpdateOrderStatusAsync(id, status);
-            return Ok(order);
+            try
+            {
+                if (string.IsNullOrEmpty(request?.Status))
+                {
+                    return BadRequest(new { message = "Status is required." });
+                }
+
+                // Optional: Check if vendor owns the product in the order
+                if (User.IsInRole("Vendor") && !User.IsInRole("Admin"))
+                {
+                    var order = await _orderservice.GetOrderByIdAsync(id);
+
+                    if (order == null)
+                    {
+                        return NotFound(new { message = "Order not found." });
+                    }
+
+                    var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                    if (!Guid.TryParse(userIdClaim, out Guid vendorId))
+                    {
+                        return Unauthorized("Invalid user ID.");
+                    }
+
+                    if (order.Product?.VendorId != vendorId)
+                    {
+                        return Forbid();
+                    }
+                }
+
+                var updatedOrder = await _orderservice.UpdateOrderStatusAsync(id, request.Status);
+
+                if (updatedOrder == null)
+                {
+                    return NotFound(new { message = "Order not found." });
+                }
+
+                return Ok(updatedOrder);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        [HttpGet("/vendors/orders")]
+        [HttpGet("vendor/orders")]
         [Authorize(Roles = "Vendor")]
         public async Task<IActionResult> GetVendorOrders()
         {
-            var vendorId = User.Identity.Name;
-            var orders = await _service.GetOrdersByVendorAsync(vendorId);
-            return Ok(orders);
+            try
+            {
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrEmpty(userIdClaim) || !Guid.TryParse(userIdClaim, out Guid vendorId))
+                {
+                    return Unauthorized("Invalid user ID.");
+                }
+
+                var orders = await _orderservice.GetOrdersByVendorAsync(vendorId);
+                return Ok(orders);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("admin/all")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            try
+            {
+                // يمكنك إضافة method جديدة في Service للـ Admin
+                // var orders = await _service.GetAllOrdersAsync();
+                return Ok(new { message = "This endpoint needs implementation in service layer." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
+
+
 }

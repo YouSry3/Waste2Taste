@@ -3,6 +3,7 @@
 /* Import Tailwind CSS */
 @import "tailwindcss";
 
+
 /* Your custom CSS variables */
 :root {
   --background: #ffffff;

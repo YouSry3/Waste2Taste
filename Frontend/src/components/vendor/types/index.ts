@@ -4,7 +4,12 @@ export interface VendorOrder {
   customer: string;
   item: string;
   amount: string;
-  status: "Picked Up" | "Ready for Pickup" | "Pending Pickup";
+  status:
+    | "Picked Up"
+    | "Ready for Pickup"
+    | "Pending Pickup"
+    | "In Progress"
+    | "Cancelled";
   time: string;
   timeSlot: string;
   orderPlacedTime: Date;

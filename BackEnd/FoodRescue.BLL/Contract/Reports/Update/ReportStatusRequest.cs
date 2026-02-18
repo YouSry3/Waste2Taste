@@ -8,6 +8,6 @@ namespace FoodRescue.BLL.Contract.Reports.Update
 {
     public class ReportStatusRequest
     {
-        public string NewStatus { get; set; }
+        public string NewStatus { get; set; } = null!;
     }
 }

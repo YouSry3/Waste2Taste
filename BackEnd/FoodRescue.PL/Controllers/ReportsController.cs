@@ -67,7 +67,7 @@ namespace FoodRescue.PL.Controllers
                 return NotFound(new { message = "Reporter not found" });
             
 
-            if(user.Type != "Admin")
+            if(user.Role != "Admin")
                 return Problem("No Access To Edited in this Status");
 
             await _reportsService.UpdateReportStatusAsync(userId, statusRequest);

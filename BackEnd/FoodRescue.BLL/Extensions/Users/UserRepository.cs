@@ -1,4 +1,5 @@
-﻿using FoodRescue.DAL.Context;
+﻿using FluentEmail.Core;
+using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -31,7 +32,7 @@ namespace FoodRescue.BLL.Extensions.Users
         public async Task<IEnumerable<User>> GetVendorsAsync()
         {
             return await _context.Users
-                .Where(u => u.Type.ToLower() == "vendor")
+                .Where(u => u.Role.ToLower() == "vendor")
                 .ToListAsync();
         }
 
@@ -45,11 +46,68 @@ namespace FoodRescue.BLL.Extensions.Users
             await _context.SaveChangesAsync();
         }
 
-        // تنفيذ الدالة
         public bool CheckDuplication(User user, string newPassword)
         {
             return user.Password == newPassword;
         }
+
+        public async Task<bool> IsAdmin(Guid id)
+        {
+            var Result = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (Result != null && Result.Role.ToLower() == "admin")
+            
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> IsVendor(Guid id)
+        {
+            var Result = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (Result != null && Result.Role.ToLower() == "vendor")
+
+                return true;
+
+            return false;
+        }
+
+        public async Task<bool> IsCustomer(Guid id)
+        {
+            var Result = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+            if (Result is not null && Result.Role.ToLower() == "customer")
+
+                return true;
+
+            return false;
+        }
+        //public async Task<List<Order>> GetUserOrdersAsync(Guid userId)
+        //{
+        //    return await _context.Orders
+        //        .Where(o => o.UserId == userId)
+        //        .ToListAsync();
+        //}
+
+        public async Task DeleteAsync(User user)
+        {
+             _context.Users.Remove(user);
+             await _context.SaveChangesAsync();
+
+        }
+
+
+        //public async Task<int> CountOrders(Guid userId)
+        //{
+        //  return  _context.Orders
+        //    .Count(o => o.UserId == userId);
+        //}
+
+        //Task IUserRepository.CountOrders(Guid userId)
+        //{
+        //    return CountOrders(userId);
+        //}
     }
 
 }

@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace FoodRescue.PL.Controllers;
 
 [ApiController]
-[Route("products")]
+[Route("api/products")]
+[Authorize]  // ADD: Require authentication for all endpoints
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _service;
@@ -16,75 +17,75 @@ public class ProductsController : ControllerBase
         _service = service;
     }
 
-    // GET /products
-    [HttpGet] // GET /products
-    public async Task<IActionResult> GetAll([FromQuery] string? name, [FromQuery] Guid? vendorId, [FromQuery] bool? expired)
+    [HttpGet]
+    [AllowAnonymous]  // ADD: Public can view products
+    public async Task<IActionResult> GetAll([FromQuery] string? name)
     {
-        var result = await _service.GetAllAsync(name, vendorId, expired);
+        var result = await _service.GetAllAsync(name);
+        if (result.IsFailure) return BadRequest(result.Error);
         return Ok(result.Value);
     }
 
-    // GET /products/{id}
-    [HttpGet("{id:guid}")] // GET /products/{id}
+    [HttpGet("{id:guid}")]
+    [AllowAnonymous]  // ADD: Public can view details
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _service.GetByIdAsync(id);
-
-        if (result.IsFailure)
-            return NotFound(result.Error);
-
+        if (result.IsFailure) return NotFound(result.Error);
         return Ok(result.Value);
     }
 
-    // POST /products
-    [HttpPost] // POST /products
-    [Authorize(Roles = "vendor")]
-    public async Task<IActionResult> Create(CreateProductRequest request)
+    [HttpGet("vendor/{vendorId:guid}")]
+    [AllowAnonymous]  // ADD: Public can view vendor products
+    public async Task<IActionResult> GetByVendor(Guid vendorId)
+    {
+        var result = await _service.GetByVendorAsync(vendorId);
+        if (result.IsFailure) return BadRequest(result.Error);
+        return Ok(result.Value);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "vendor")]  // ADD: Only vendors
+    public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
     {
         var result = await _service.CreateAsync(request);
-
-        if (result.IsFailure)
-            return BadRequest(result.Error);
-
-        return CreatedAtAction(nameof(GetById), new { id = result.Value }, null);
+        if (result.IsFailure) return BadRequest(result.Error);
+        return CreatedAtAction(nameof(GetById), new { id = result.Value }, new { id = result.Value });
     }
 
-    // PUT /products/{id}
-    [HttpPut("{id:guid}")] // PUT /products/{id}
-    [Authorize(Roles = "vendor")]
-    public async Task<IActionResult> Update(Guid id, UpdateProductRequest request)
+    [HttpPut("{id:guid}")]
+    [Authorize(Roles = "vendor")]  // ADD: Only vendors
+    public async Task<IActionResult> Update(Guid id, [FromForm] UpdateProductRequest request)
     {
         var result = await _service.UpdateAsync(id, request);
-
-        if (result.IsFailure)
-            return NotFound(result.Error);
-
-        return Ok();
+        if (result.IsFailure) return NotFound(result.Error);
+        return Ok(new { message = "Product updated successfully" });
     }
 
-    // DELETE /products/{id}
-    [HttpDelete("{id:guid}")] // DELETE /products/{id}
-    [Authorize(Roles = "vendor")]
+    [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "vendor")]  // ADD: Only vendors
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _service.DeleteAsync(id);
-
-        if (result.IsFailure)
-            return NotFound(result.Error);
-
-        return Ok();
+        if (result.IsFailure) return NotFound(result.Error);
+        return Ok(new { message = "Product deleted successfully" });
     }
 
-    // PATCH /products/{id}/stock
-    [HttpPatch("{id:guid}/stock")] // PATCH /products/{id}/stock?quantity=10
+    [HttpPatch("{id:guid}/stock")]
     [Authorize(Roles = "vendor")]
     public async Task<IActionResult> UpdateStock(Guid id, [FromQuery] int quantity)
     {
         var result = await _service.UpdateStockAsync(id, quantity);
+        if (result.IsFailure) return BadRequest(result.Error);
+        return Ok(new { message = "Stock updated successfully" });
+    }
 
-        if (result.IsFailure)
-            return BadRequest(result.Error);
-
-        return Ok();
+    [HttpPatch("{id:guid}/expire")]
+    [Authorize(Roles = "vendor")]
+    public async Task<IActionResult> MarkAsExpired(Guid id)
+    {
+        var result = await _service.MarkAsExpiredAsync(id);
+        if (result.IsFailure) return NotFound(result.Error);
+        return Ok(new { message = "Product marked as expired" });
     }
 }

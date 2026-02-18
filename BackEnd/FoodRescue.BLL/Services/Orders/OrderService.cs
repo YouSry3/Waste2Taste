@@ -1,54 +1,104 @@
-﻿using FoodRescue.BLL.Extensions.Orders;
+﻿using FoodRescue.BLL.Abstractions;
+using FoodRescue.BLL.Abstractions.TypeErrors;
+using FoodRescue.BLL.Contract.Orders.Create;
+using FoodRescue.BLL.Extensions.Orders;
+using FoodRescue.BLL.Extensions.Products;
+using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.DAL.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoodRescue.BLL.Services.Orders
 {
     public class OrderService : IOrderService
     {
-        private readonly IOrderRepository _repo;
+        private readonly IOrderRepository _orderRepo;
+        private readonly IProductRepository _productRepo;
+        private readonly IUserRepository _userRepository;
 
-        public OrderService(IOrderRepository repo)
+        public OrderService(IOrderRepository repo, IProductRepository productRepo, IUserRepository userRepository)
         {
-            _repo = repo;
+            _orderRepo = repo;
+            _productRepo = productRepo;
+            _userRepository = userRepository;
         }
 
-        public async Task<Order> CreateOrderAsync(Order order)
+        public async Task<Result<OrderResponse>> CreateOrderAsync(OrderRequest request, Guid userId)
         {
-            if (order.Items == null || order.Items.Count == 0)
-                throw new Exception("Order must have at least one item.");
+            bool isCustomer = await _userRepository.IsCustomer(userId);
+            if (!isCustomer)
+                return Result.Failure<OrderResponse>(UserErrors.OnlyCustomerAccess);
 
-            decimal total = 0;
-            foreach (var item in order.Items)
-                total += item.Quantity * 10; // سعر وهمي لأي حساب Total
+            var product = await _productRepo.GetByIdAsync(request.ProductId);
+            if (product == null)
+                return Result.Failure<OrderResponse>(ProductErrors.NotFound);
 
-            order.TotalPrice = total;
+            if (product.Quantity <= 0)
+                return Result.Failure<OrderResponse>(ProductErrors.InvalidQuantity);
 
-            return await _repo.AddOrderAsync(order);
+            // FIXED: Calculate discount from OriginalPrice vs Price
+            decimal discountPercentage = product.OriginalPrice > 0
+                ? (product.OriginalPrice - product.Price) / product.OriginalPrice * 100
+                : 0;
+
+            if (discountPercentage > 100)
+                return Result.Failure<OrderResponse>(ProductErrors.InvalidDiscount);
+
+            var order = new Order
+            {
+                Id = Guid.NewGuid(),  //  ADDED: Generate Guid
+                CustomerId = userId,
+                ProductId = request.ProductId,  //  FIXED: Typo "ProuductId" -> "ProductId"
+                TotalPrice = product.Price,  //  FIXED: Use Price directly (already discounted)
+                Status = "Pending",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var response = new OrderResponse
+            {
+                Id = order.Id,  //  FIXED: Use order.Id, not userId
+                TotalPrice = product.Price,
+                Status = "Pending",
+                CreatedAt = DateTime.UtcNow,
+                ProductName = product.Name
+            };
+
+            product.Quantity--;
+
+            await _productRepo.UpdateAsync(product);
+            await _orderRepo.AddOrderAsync(order);
+
+            return Result.Success(response);
         }
 
-        public Task<List<Order>> GetOrdersByCustomerAsync(string customerId) =>
-            _repo.GetOrdersByCustomerAsync(customerId);
-
-        public Task<List<Order>> GetOrdersByVendorAsync(string vendorId) =>
-            _repo.GetOrdersByVendorAsync(vendorId);
-
-        public async Task<Order> GetOrderByIdAsync(int id, string userId, string role)
+        // FIXED: Change int to Guid
+        public async Task<Order?> GetOrderByIdAsync(Guid id)
         {
-            var order = await _repo.GetOrderByIdAsync(id);
-            if (order == null) return null;
-
-            if (order.CustomerId != userId && order.VendorId != userId && role != "Admin")
-                throw new UnauthorizedAccessException();
-
+            var order = await _orderRepo.GetOrderByIdAsync(id);
             return order;
         }
 
-        public Task<Order> UpdateOrderStatusAsync(int id, string status) =>
-            _repo.UpdateOrderStatusAsync(id, status);
+        public async Task<List<Order>> GetOrdersByCustomerAsync(Guid customerId)
+        {
+            if (customerId == Guid.Empty)
+                throw new ArgumentException("Invalid customer ID.");
+
+            return await _orderRepo.GetOrdersByCustomerAsync(customerId);
+        }
+
+        public async Task<List<Order>> GetOrdersByVendorAsync(Guid vendorId)
+        {
+            if (vendorId == Guid.Empty)
+                throw new ArgumentException("Invalid vendor ID.");
+
+            return await _orderRepo.GetOrdersByVendorAsync(vendorId);
+        }
+
+        // FIXED: Change int to Guid
+        public async Task<Order?> UpdateOrderStatusAsync(Guid id, string status)
+        {
+            if (string.IsNullOrEmpty(status))
+                throw new ArgumentException("Status cannot be empty.");
+
+            return await _orderRepo.UpdateOrderStatusAsync(id, status);
+        }
     }
 }

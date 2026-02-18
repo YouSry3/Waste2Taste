@@ -34,7 +34,7 @@ export const OrderActions: React.FC<OrderActionsProps> = ({
   return (
     <>
       {/* Header Actions */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 my-7">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
           <p className="text-gray-500">

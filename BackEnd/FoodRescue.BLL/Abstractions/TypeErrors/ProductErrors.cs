@@ -2,12 +2,12 @@
 
 public static class ProductErrors
 {
-    //public static Error NotFound => new("Product.NotFound", "The product was not found.");
-    //public static Error InvalidId => new("Product.InvalidId", "The product ID is invalid.");
-    //public static Error NameRequired => new("Product.NameRequired", "Product name is required.");
-
-
     public static Error NotFound => new("Product.NotFound", "Product not found.");
-    public static Error VendorNotFound => new("Product.VendorNotFound", "Vendor does not exist.");
+    public static Error VendorNotFound => new("Product.VendorNotFound", "Vendor not found or not approved.");
     public static Error InvalidQuantity => new("Product.InvalidQuantity", "Quantity cannot be negative.");
+    public static Error InvalidPrice => new("Product.InvalidPrice", "Price must be greater than 0.");
+    public static Error InvalidExpiryDate => new("Product.InvalidExpiryDate", "Expiry date must be in the future.");
+    public static Error InvalidImage => new("Product.InvalidImage", "Invalid image file.");
+    // 🔴 ADD THIS:
+    public static Error InvalidDiscount => new("Product.InvalidDiscount", "Discount percentage cannot exceed 100%.");
 }
