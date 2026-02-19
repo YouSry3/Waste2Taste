@@ -83,12 +83,12 @@ namespace FoodRescue.BLL.Extensions.Users
 
             return false;
         }
-        //public async Task<List<Order>> GetUserOrdersAsync(Guid userId)
-        //{
-        //    return await _context.Orders
-        //        .Where(o => o.UserId == userId)
-        //        .ToListAsync();
-        //}
+        public async Task<List<Order>> GetUserOrdersAsync(Guid userId)
+        {
+            return await _context.Orders
+                .Where(o => o.CustomerId == userId)
+                .ToListAsync();
+        }
 
         public async Task DeleteAsync(User user)
         {
@@ -96,6 +96,8 @@ namespace FoodRescue.BLL.Extensions.Users
              await _context.SaveChangesAsync();
 
         }
+
+     
 
 
         //public async Task<int> CountOrders(Guid userId)

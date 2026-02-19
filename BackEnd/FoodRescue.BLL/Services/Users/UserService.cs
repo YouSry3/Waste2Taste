@@ -14,13 +14,13 @@ namespace FoodRescue.BLL.Services.UserServices
 {
     public class UserService(IUserRepository repository, CompanyDbContext context, IWebHostEnvironment environment) : IUserService
     {
-        private readonly IUserRepository _repo = repository;
+        private readonly IUserRepository _userRepo = repository;
         private readonly CompanyDbContext _context = context;
         private readonly IWebHostEnvironment _environment = environment;
 
         public async Task<Result<User>> GetByIdAsync(Guid id)
         {
-            var IsExited = await _repo.GetByIdAsync(id);
+            var IsExited = await _userRepo.GetByIdAsync(id);
             // Handeling Error If User Not Existed
             return IsExited == null 
                 ? Result.Failure<User>(UserErrors.EmailUndefinded)
@@ -31,10 +31,16 @@ namespace FoodRescue.BLL.Services.UserServices
 
         public async Task<Result<UserInfoResponse>> GetProfileAsync(Guid userId)
         {
-            if(!await _repo.IsCustomer(userId))
+            if(!await _userRepo.IsCustomer(userId))
                 return Result.Failure<UserInfoResponse>(UserErrors.OnlyCustomersCanAccessProfile(userId));
 
-            var IsExited = await _repo.GetByIdAsync(userId);
+            var IsExited = await _userRepo.GetByIdAsync(userId);
+            if (IsExited == null)
+                return Result.Failure<UserInfoResponse>(UserErrors.EmailUndefinded);
+                
+            var orders = await _userRepo.GetUserOrdersAsync(userId);
+            Decimal totalPaid = orders.Sum(o => o.TotalPrice);
+            Decimal totalOriginal = orders.Sum(o => o.Product.OriginalPrice);
 
             var response = new UserInfoResponse
             {
@@ -42,22 +48,20 @@ namespace FoodRescue.BLL.Services.UserServices
                 Email = IsExited.Email,
                 ProfileImage = IsExited.ImageUrl,
                 Type = IsExited.Role,
-                OrderCount = 0,//(await _repo.GetUserOrdersAsync(userId))?.Count ?? 1,
-                MoneySpent =0, //(await _repo.GetUserOrdersAsync(userId))?.Sum(o => o.TotalPrice) ?? 1,
-                moneySaved = 0,//(await _repo.GetUserOrdersAsync(userId))?.Sum(o => o.Discount) ?? 1 // To Test because there is no orders yet
+                OrderCount = orders?.Count ?? 0,
+                MoneySpent = totalPaid > 0 ? totalPaid : 1,//write "1" to show the money saved if the user didn't buy any thing
+                moneySaved = (totalOriginal - totalPaid)> 0 ? (totalOriginal - totalPaid) : 1//write "1" to show the money saved if the user didn't buy any thing
             };
 
 
             // Handeling Error If User Not Existed
-            return IsExited == null
-                ? Result.Failure<UserInfoResponse>(UserErrors.EmailUndefinded)
-                : Result.Success(response);
+            return Result.Success(response);
         }
 
 
-        public async Task<Result> UpdateProfileAsync(string email, UpdateProfileDTO dto)
+        public async Task<Result> UpdateProfileAsync(Guid userId, UpdateProfileDTO dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _userRepo.GetByIdAsync(userId);
 
             if (user == null)
                 return Result.Failure(UserErrors.EmailUndefinded);
@@ -89,19 +93,19 @@ namespace FoodRescue.BLL.Services.UserServices
        
         public async Task<Result> ChangePasswordAsync(Guid userId, ChangePassword dto)
         {
-            if(!await _repo.IsCustomer(userId))
+            if(!await _userRepo.IsCustomer(userId))
                 return Result.Failure(UserErrors.OnlyCustomersCanChangePassword(userId));
-            var user = await _repo.GetByIdAsync(userId);
+            var user = await _userRepo.GetByIdAsync(userId);
             if (user == null)
                 return Result.Failure(UserErrors.EmailUndefinded);
 
-            if (!_repo.CheckDuplication(user, dto.OldPassword))
+            if (!_userRepo.CheckDuplication(user, dto.OldPassword))
                 return Result.Failure(UserErrors.DuplicationPassword);
 
             user.Password = dto.NewPassword;
 
-            await _repo.UpdateAsync(user);
-            await _repo.SaveChangesAsync();
+            await _userRepo.UpdateAsync(user);
+            await _userRepo.SaveChangesAsync();
 
             return Result.Success();
         }
@@ -113,13 +117,13 @@ namespace FoodRescue.BLL.Services.UserServices
 
         public async Task<Result> DeleteUserAsync(Guid userId)
         {
-            if (!await _repo.IsCustomer(userId))
+            if (!await _userRepo.IsCustomer(userId))
                 return Result.Failure(UserErrors.OnlyCustomersCanChangePassword(userId));
-            var user = await _repo.GetByIdAsync(userId);
+            var user = await _userRepo.GetByIdAsync(userId);
             if (user == null)
                 return Result.Failure(UserErrors.EmailUndefinded);
             
-            await _repo.DeleteAsync(user);
+            await _userRepo.DeleteAsync(user);
 
 
             return Result.Success();

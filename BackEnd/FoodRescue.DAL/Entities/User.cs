@@ -16,7 +16,7 @@ namespace FoodRescue.DAL.Entities
         public string Password { get; set; } = string.Empty;
 
         public string Name { get; set; } = string.Empty;
-        // admin, vendor, customer
+        // admin, vendor, customer, some other types in the future
         public string Role { get; set; } = string.Empty;
         public string? ImageUrl { get; set; }
 
@@ -24,7 +24,6 @@ namespace FoodRescue.DAL.Entities
 
         public ICollection<Review> Reviews { get; set; }
         public ICollection<Order> Orders { get; set; }
-        public string? ProfileImage { get; set; }// URL or path to profile image
 
     }
 }

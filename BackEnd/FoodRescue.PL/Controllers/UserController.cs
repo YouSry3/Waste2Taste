@@ -25,6 +25,7 @@ namespace FoodRescue.PL.Controllers
         }
         // GET /user/profile
         [HttpGet("profile")]
+        [Authorize(Roles ="customer")]
         public async Task<IActionResult> GetProfile()
         {
 
@@ -42,11 +43,12 @@ namespace FoodRescue.PL.Controllers
         ////in case of image upload ( img from front => URL or Base64)
         // PUT /users/profile
         [HttpPut("profile")]
-        public async Task<IActionResult> UpdateProfile(
-        [FromHeader] string email,
-        [FromForm] UpdateProfileDTO dto)
+        
+        public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileDTO request)
         {
-            var result = await _service.UpdateProfileAsync(email, dto);
+            var result = await _service.UpdateProfileAsync(Guid.Parse(
+                User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+            ), request);
 
             if (result.IsFailure)
                 return NotFound(result.Error);
@@ -138,7 +140,7 @@ namespace FoodRescue.PL.Controllers
             ), dto);
             return result.IsSuccess ?
                  Ok(new { message = "Password changed successfully" })
-                : BadRequest(new { message = result.Error?.description });
+                : BadRequest(new { Errors = result.Error });
           
         }
 

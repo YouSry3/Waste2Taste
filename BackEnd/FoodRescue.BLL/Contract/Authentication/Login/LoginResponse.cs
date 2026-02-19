@@ -9,7 +9,7 @@ namespace FoodRescue.BLL.Contract.Authentication.Login
     public record LoginResponse(
         string Name,
         string Email,
-        string Type,
+        string Role,
         string Token,
         int ExpireAt,
         string? ImageUrl);
