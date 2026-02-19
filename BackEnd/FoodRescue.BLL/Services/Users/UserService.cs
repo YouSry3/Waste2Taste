@@ -6,6 +6,7 @@ using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,16 +43,13 @@ namespace FoodRescue.BLL.Services.UserServices
             Decimal totalPaid = orders.Sum(o => o.TotalPrice);
             Decimal totalOriginal = orders.Sum(o => o.Product.OriginalPrice);
 
-            var response = new UserInfoResponse
-            {
-                Name = IsExited.Name,
-                Email = IsExited.Email,
-                ProfileImage = IsExited.ImageUrl,
-                Type = IsExited.Role,
-                OrderCount = orders?.Count ?? 0,
-                MoneySpent = totalPaid > 0 ? totalPaid : 1,//write "1" to show the money saved if the user didn't buy any thing
-                moneySaved = (totalOriginal - totalPaid)> 0 ? (totalOriginal - totalPaid) : 1//write "1" to show the money saved if the user didn't buy any thing
-            };
+            var response = IsExited.Adapt<UserInfoResponse>();
+
+
+            response.OrderCount = orders?.Count ?? 0;
+            response.MoneySpent = totalPaid > 0 ? totalPaid : 1;//write "1" to show the money saved if the user didn't buy any thing
+            response.moneySaved = (totalOriginal - totalPaid) > 0 ? (totalOriginal - totalPaid) : 1;//write "1" to show the money saved if the user didn't buy any thing
+          
 
 
             // Handeling Error If User Not Existed

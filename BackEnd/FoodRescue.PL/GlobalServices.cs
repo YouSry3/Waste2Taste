@@ -2,6 +2,7 @@
 using FluentValidation.AspNetCore;
 using FoodRescue.BLL.Contract.Authentication.Register;
 using FoodRescue.BLL.Contract.Products;
+using FoodRescue.BLL.Extensions.Dashboard;
 using FoodRescue.BLL.Extensions.Orders;
 using FoodRescue.BLL.Extensions.Products;
 using FoodRescue.BLL.Extensions.Users;
@@ -15,6 +16,7 @@ using FoodRescue.BLL.Services.Products;
 using FoodRescue.BLL.Services.Reviews;
 using FoodRescue.BLL.Services.UserServices;
 using FoodRescue.BLL.Services.Vendors;
+using FoodRescue.BLL.ServicesWeb.Admin;
 using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
 using Microsoft.EntityFrameworkCore;
@@ -112,6 +114,8 @@ namespace FoodRescue.PL
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IUserService, UserService>();
             services.AddValidatorsFromAssemblyContaining<CreateProductRequestValidator>();
+            services.AddScoped<IDashboardServices, DashboardService>();
+            services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 
             VendorMapsterConfig.RegisterVendorMappings();
