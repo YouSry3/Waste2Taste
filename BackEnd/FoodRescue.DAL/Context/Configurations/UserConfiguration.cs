@@ -38,6 +38,11 @@ namespace FoodRescue.DAL.Context.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
+            // 🔴 ADDED: PhoneNumber configuration
+            builder.Property(x => x.PhoneNumber)
+                .HasMaxLength(11)
+                .IsRequired(false);
+
             // CreatedAt default in Data Base 
             builder.Property(x => x.CreatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");

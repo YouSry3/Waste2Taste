@@ -34,7 +34,7 @@ namespace FoodRescue.BLL.Services.Orders
             if (product.Quantity <= 0)
                 return Result.Failure<OrderResponse>(ProductErrors.InvalidQuantity);
 
-            // FIXED: Calculate discount from OriginalPrice vs Price
+            // Calculate discount from OriginalPrice vs Price
             decimal discountPercentage = product.OriginalPrice > 0
                 ? (product.OriginalPrice - product.Price) / product.OriginalPrice * 100
                 : 0;
@@ -42,22 +42,28 @@ namespace FoodRescue.BLL.Services.Orders
             if (discountPercentage > 100)
                 return Result.Failure<OrderResponse>(ProductErrors.InvalidDiscount);
 
+            // 🔴 ADDED: Validate PickupTime is in the future
+            if (request.PickupTime <= DateTime.Now)
+                return Result.Failure<OrderResponse>(new Error("InvalidPickupTime", "Pickup time must be in the future"));
+
             var order = new Order
             {
-                Id = Guid.NewGuid(),  //  ADDED: Generate Guid
+                Id = Guid.NewGuid(),
                 CustomerId = userId,
-                ProductId = request.ProductId,  //  FIXED: Typo "ProuductId" -> "ProductId"
-                TotalPrice = product.Price,  //  FIXED: Use Price directly (already discounted)
+                ProductId = request.ProductId,
+                TotalPrice = product.Price,
                 Status = "Pending",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                PickupTime = request.PickupTime  // 🔴 ADDED: Set pickup time from request
             };
 
             var response = new OrderResponse
             {
-                Id = order.Id,  //  FIXED: Use order.Id, not userId
+                Id = order.Id,
                 TotalPrice = product.Price,
                 Status = "Pending",
                 CreatedAt = DateTime.UtcNow,
+                PickupTime = order.PickupTime,  // 🔴 ADDED: Include in response
                 ProductName = product.Name
             };
 
@@ -69,7 +75,6 @@ namespace FoodRescue.BLL.Services.Orders
             return Result.Success(response);
         }
 
-        // FIXED: Change int to Guid
         public async Task<Order?> GetOrderByIdAsync(Guid id)
         {
             var order = await _orderRepo.GetOrderByIdAsync(id);
@@ -92,7 +97,6 @@ namespace FoodRescue.BLL.Services.Orders
             return await _orderRepo.GetOrdersByVendorAsync(vendorId);
         }
 
-        // FIXED: Change int to Guid
         public async Task<Order?> UpdateOrderStatusAsync(Guid id, string status)
         {
             if (string.IsNullOrEmpty(status))

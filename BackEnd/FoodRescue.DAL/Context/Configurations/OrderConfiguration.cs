@@ -36,7 +36,9 @@ namespace FoodRescue.DAL.Context.Configurations
                    .HasColumnType("decimal(18,2)")
                    .IsRequired();
 
-
+            // ADDED: PickupTime configuration
+            builder.Property(o => o.PickupTime)
+                   .IsRequired(true);
 
             builder.Property(o => o.CreatedAt)
                    .IsRequired();

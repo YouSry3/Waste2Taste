@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FoodRescue.DAL.Entities
+﻿namespace FoodRescue.DAL.Entities
 {
     // USERS (All Types - Admin, Vendor, Customer)
     public class User
@@ -14,6 +8,7 @@ namespace FoodRescue.DAL.Entities
         public string Email { get; set; } = string.Empty;
 
         public string Password { get; set; } = string.Empty;
+        public string? PhoneNumber { get; set; } // added for dashboard
 
         public string Name { get; set; } = string.Empty;
         // admin, vendor, customer, some other types in the future

@@ -18,7 +18,6 @@ namespace FoodRescue.BLL.Extensions.Orders
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
-            // Reload the order with related entities
             return await GetOrderByIdAsync(order.Id);
         }
 
@@ -45,7 +44,7 @@ namespace FoodRescue.BLL.Extensions.Orders
                 .ToListAsync();
         }
 
-        //  FIXED: Guid instead of int
+        // 🔴 UPDATED: Include Vendor with PhoneNumber
         public async Task<Order?> GetOrderByIdAsync(Guid id)
         {
             return await _context.Orders
@@ -56,7 +55,6 @@ namespace FoodRescue.BLL.Extensions.Orders
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        //  FIXED: Guid instead of int, use tracking for update
         public async Task<Order?> UpdateOrderStatusAsync(Guid id, string status)
         {
             var order = await _context.Orders
@@ -69,7 +67,6 @@ namespace FoodRescue.BLL.Extensions.Orders
             order.Status = status;
             await _context.SaveChangesAsync();
 
-            // Return the updated order with related entities
             return await GetOrderByIdAsync(id);
         }
     }

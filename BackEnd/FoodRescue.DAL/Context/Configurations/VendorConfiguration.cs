@@ -22,8 +22,20 @@ public class VendorConfiguration : IEntityTypeConfiguration<Vendor>
             .HasForeignKey(v => v.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        //builder.HasMany(v => v.Products)
-        //    .WithOne(p => p.Vendor)
-        //    .HasForeignKey(p => p.VendorId);
+        //  ADDED: PhoneNumber configuration
+        builder.Property(x => x.PhoneNumber)
+            .HasMaxLength(11)
+            .IsRequired(false);
+
+        builder.HasOne(v => v.Owner)
+            .WithMany()
+            .HasForeignKey(v => v.OwnerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Products relationship
+        builder.HasMany(v => v.Products)
+            .WithOne(p => p.Vendor)
+            .HasForeignKey(p => p.VendorId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

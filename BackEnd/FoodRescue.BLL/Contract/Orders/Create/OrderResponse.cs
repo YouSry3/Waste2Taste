@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FoodRescue.BLL.Contract.Orders.Create
+﻿namespace FoodRescue.BLL.Contract.Orders.Create
 {
     public class OrderResponse
     {
@@ -12,6 +6,9 @@ namespace FoodRescue.BLL.Contract.Orders.Create
         public decimal TotalPrice { get; set; }
         public string Status { get; set; }
         public DateTime CreatedAt { get; set; }
+
+
+        public DateTime PickupTime { get; set; } //  ADDED: Pickup time in response
 
         public string ProductName { get; set; }
     }

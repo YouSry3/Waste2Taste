@@ -9,6 +9,12 @@
         public string Status { get; set; } = "Pending";
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+
+        // For Dashboard
+        public DateTime PickupTime { get; set; }
+
+
+
         public Guid ProductId { get; set; }       //  FIXED: Typo "ProuductId" → "ProductId"
 
         public User Customer { get; set; } = null!;
