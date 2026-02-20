@@ -6,6 +6,6 @@ namespace FoodRescue.BLL.Contract.Authentication.Register
         string Email,
         string Password,
         string Name,
-        string Type);
+        string Role);
    
 }

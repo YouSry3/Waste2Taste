@@ -21,7 +21,7 @@ namespace FoodRescue.BLL.Contract.Authentication.Register
                 .NotEmpty().WithMessage("Password is required.")
                 .Length(8, 100).WithMessage("Password must be between 8 and 100 characters.");
 
-            RuleFor(x => x.Type)
+            RuleFor(x => x.Role)
                 .NotEmpty().WithMessage("Type is required.")
                 //admin, vendor, customer
                 .Must(type => type == "customer" || type == "admin" || type == "vendor")

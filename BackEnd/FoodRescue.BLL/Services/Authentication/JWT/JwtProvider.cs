@@ -25,7 +25,7 @@ namespace FoodRescue.BLL.Services.JWT
                 new Claim(JwtRegisteredClaimNames.Email, user.Email!),
                 new Claim(JwtRegisteredClaimNames.GivenName, user.Name),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, user.Type.ToString())          
+                new Claim(ClaimTypes.Role, user.Role.ToString())          
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtOptions.Key));

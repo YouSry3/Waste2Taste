@@ -15,7 +15,7 @@ namespace FoodRescue.BLL.Services.UserServices
         Task<Result<User>> GetByIdAsync(Guid id);
         Task<Result<UserInfoResponse>> GetProfileAsync(Guid userId);
         //Task GetUserStatsAsync(string email);
-        Task<Result> UpdateProfileAsync(string email, UpdateProfileDTO dto);
+        Task<Result> UpdateProfileAsync(Guid userId, UpdateProfileDTO dto);
         Task<Result> ChangePasswordAsync(Guid userId, ChangePassword dto);
         Task<Result> DeleteUserAsync(Guid userId);
 

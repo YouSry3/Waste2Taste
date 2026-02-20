@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FoodRescue.PL.Controllers;
 
 [ApiController]
-[Route("api/products")]
+[Route("products")]
 [Authorize]  // ADD: Require authentication for all endpoints
 public class ProductsController : ControllerBase
 {

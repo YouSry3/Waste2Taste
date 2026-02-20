@@ -39,12 +39,7 @@ public class VendorService(IVendorRepository vendorRepository, IUserRepository u
         //can you check Authorization here? Vendor must be created by a Vendor user
         var isVendor = await _userRepository.IsVendor(dto.OwnerId);
 
-        // or check By JWT in Controller Sent By Request in Authorization Bearer
-        //      like this in VenderController to get userId: from token"JWT"
-        //Guid userId = Guid.Parse(
-        //       User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-        //   );
-
+       
         if (!isVendor)
             return Result.Failure<Guid>(VendorErrors.OwnerMustBeVendor(dto.OwnerId));
 

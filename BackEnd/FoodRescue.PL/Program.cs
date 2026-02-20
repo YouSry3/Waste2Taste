@@ -12,18 +12,14 @@ namespace FoodRescue.PL
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Services.AddDbContext<CompanyDbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            //builder.Services.AddDbContext<CompanyDbContext>(options =>
+            //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add services to the container.
             builder.Services.AddProjectServices(builder.Configuration, builder.Environment);
 
 
 
-            builder.WebHost.ConfigureKestrel(options =>
-            {
-                options.Limits.MaxRequestBodySize = 30 * 1024 * 1024;
-            });
 
 
 
@@ -33,15 +29,15 @@ namespace FoodRescue.PL
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+
+
             var emailSettings = builder.Configuration
                 .GetSection("EmailSettings")
                 .Get<EmailSettings>();
 
-
-
             System.Net.ServicePointManager.SecurityProtocol =
-    System.Net.SecurityProtocolType.Tls12;
-
+         System.Net.SecurityProtocolType.Tls12;
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

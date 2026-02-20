@@ -27,4 +27,9 @@
     <ProjectReference Include="..\FoodRescue.DAL\FoodRescue.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Contract\AdminDashbord\Moderation\" />
+    <Folder Include="Contract\AdminDashbord\Users\" />
+  </ItemGroup>
+
 </Project>

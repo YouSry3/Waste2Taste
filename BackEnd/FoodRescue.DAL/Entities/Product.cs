@@ -6,6 +6,7 @@ public class Product
     public Guid VendorId { get; set; }
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
+    public string? Category { get; set; }
     public string ImageUrl { get; set; } = null!;
     public decimal Price { get; set; }
     public decimal OriginalPrice { get; set; }

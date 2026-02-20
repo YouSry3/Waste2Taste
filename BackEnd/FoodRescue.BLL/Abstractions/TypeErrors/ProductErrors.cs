@@ -1,4 +1,6 @@
-﻿namespace FoodRescue.BLL.Abstractions.TypeErrors;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace FoodRescue.BLL.Abstractions.TypeErrors;
 
 public static class ProductErrors
 {
@@ -10,4 +12,5 @@ public static class ProductErrors
     public static Error InvalidImage => new("Product.InvalidImage", "Invalid image file.");
     // 🔴 ADD THIS:
     public static Error InvalidDiscount => new("Product.InvalidDiscount", "Discount percentage cannot exceed 100%.");
+    public static Error UnvalidStatus => new("Product.UnvalidStatus", "this status must be 'approved'");
 }

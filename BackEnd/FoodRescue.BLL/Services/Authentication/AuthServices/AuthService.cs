@@ -42,22 +42,19 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
             var (Token, ExpiresIn) = _JwtProvider.GenerateToken(user);
        
          
-            var response = new LoginResponse
+
+            return Result.Success(new LoginResponse
                         (
-                            // Assuming LoginResponse has settable properties for these fields.
-                            // Replace these property names with the actual property names in LoginResponse.
+                             // Assuming LoginResponse has settable properties for these fields.
+                             // Replace these property names with the actual property names in LoginResponse.
                              user.Name,
                              user.Email!,
-                             user.Type,
+                             user.Role,
                             Token,
                             ExpiresIn,
                             user.ImageUrl
-                            
-                        );
 
-
-
-            return Result.Success(response);
+                        ));
         }
 
         public async Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)

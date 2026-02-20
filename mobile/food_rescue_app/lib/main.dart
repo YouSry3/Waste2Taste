@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_rescue_app/core/utils/app_router.dart';
 
 void main() {
   runApp(const FoodRescueApp());
@@ -9,7 +10,9 @@ class FoodRescueApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: null);
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      routerConfig: AppRouter.routerConfig,
+    );
   }
 }
-
