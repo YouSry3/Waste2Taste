@@ -30,7 +30,6 @@
   <ItemGroup>
     <Folder Include="Contract\AdminDashbord\Moderation\" />
     <Folder Include="Contract\AdminDashbord\Users\" />
-    <Folder Include="Contract\AdminDashbord\Vendors\" />
   </ItemGroup>
 
 </Project>

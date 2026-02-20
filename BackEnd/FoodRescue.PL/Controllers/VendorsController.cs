@@ -39,8 +39,8 @@ public class VendorsController : ControllerBase
 
     // POST /vendors — Admin only
     [HttpPost("create")]
-    //[Authorize(Roles = "admin")]
-    [Authorize]
+    [Authorize(Roles = "admin")]
+    //[Authorize]
     public async Task<IActionResult> Create([FromBody]CreateVendorRequest dto)
     {
         var result = await _vendorService.CreateVendorAsync(dto);

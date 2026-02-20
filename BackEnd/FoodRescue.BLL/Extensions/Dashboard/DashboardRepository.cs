@@ -1,5 +1,6 @@
 ﻿using FoodRescue.BLL.Abstractions;
 using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
+using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
 using FoodRescue.BLL.Extensions.Dashboard;
 using FoodRescue.DAL.Context;
 using Microsoft.EntityFrameworkCore;
@@ -85,6 +86,76 @@ namespace FoodRescue.BLL.ServicesWeb.Admin
                 })
                 .ToList();
         }
-    }
+        public async Task<int> GetTotalVendorsAsync()
+       => await _context.Vendors.CountAsync();
+
+        public async Task<int> GetNgoPartnersAsync()
+            => await _context.Vendors
+                .CountAsync(v => v.Status == "NGO");
+
+        public async Task<int> GetActiveListingsAsync()
+            => await _context.Products
+                .CountAsync(p => p.Expired == false);
+
+        public async Task<decimal> GetTotalRevenueAsync()
+            => await _context.Orders
+                .Where(o => o.Status == "completed")
+                .SumAsync(o => o.TotalPrice);
+
+        public async Task<List<TopVendorDto>> GetTopPerformersAsync(int count)
+        {
+            return await _context.Orders
+                .Where(o => o.Status == "Completed")
+                .GroupBy(o => o.Product.Vendor)
+                .Select(g => new TopVendorDto
+                {
+                    Id = g.Key.Id,
+                    Name = g.Key.Name,
+                    Revenue = g.Sum(o => o.TotalPrice)
+                })
+                .OrderByDescending(x => x.Revenue)
+                .Take(count)
+                .ToListAsync();
+        }
+
+        public async Task<PagedResultDto<VendorListItemDto>> GetVendorsAsync(
+            int page,
+            int limit,
+            string search,
+            string sortBy,
+            string order)
+        {
+            var query = _context.Vendors.AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(v => v.Name.Contains(search));
+
+            var total = await query.CountAsync();
+
+            var items = await query
+                .Skip((page - 1) * limit)
+                .Take(limit)
+                .Select(v => new VendorListItemDto
+                {
+                    Id = v.Id,
+                    Name = v.Name,
+                    Revenue = _context.Orders
+                        .Where(o => o.Product.VendorId == v.Id)
+                        .Sum(o => (decimal?)o.TotalPrice) ?? 0,
+                    ListingsCount = _context.Products
+                        .Count(p => p.VendorId == v.Id),
+                    Rating = _context.Reviews
+                        .Where(r => r.Product.VendorId == v.Id)
+                        .Average(r => (double?)r.Rating) ?? 0
+                })
+                .ToListAsync();
+
+            return new PagedResultDto<VendorListItemDto>
+            {
+                Items = items,
+                TotalCount = total
+            };
+        }
+        }
 }
 

@@ -1,5 +1,6 @@
 ﻿using FoodRescue.BLL.Abstractions;
 using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
+using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
 using FoodRescue.BLL.Extensions.Dashboard;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,27 @@ namespace FoodRescue.BLL.ServicesWeb.Admin
             response.Categories = await GetCategoriesAsync();
 
             return Result.Success<DashboardResponse>(response);
+        }
+
+        public async Task<Result<VendorOverviewDto>> GetOverviewAsync()
+        {
+            var overview = new VendorOverviewDto
+            {
+                TotalVendors = await _dashboardRepo.GetTotalVendorsAsync(),
+                NgoPartners = await _dashboardRepo.GetNgoPartnersAsync(),
+                ActiveListings = await _dashboardRepo.GetActiveListingsAsync(),
+                TotalRevenue = await _dashboardRepo.GetTotalRevenueAsync(),
+                TopPerformers = await _dashboardRepo.GetTopPerformersAsync(3)
+            };
+
+            return Result<VendorOverviewDto>.Success(overview);
+        }
+
+        public async Task<Result<PagedResultDto<VendorListItemDto>>> GetVendorsAsync(
+         int page, int limit, string search, string sortBy, string order)
+        {
+            var data = await _dashboardRepo.GetVendorsAsync(page, limit, search, sortBy, order);
+            return Result<PagedResultDto<VendorListItemDto>>.Success(data);
         }
 
 
@@ -53,5 +75,7 @@ namespace FoodRescue.BLL.ServicesWeb.Admin
         {
             return await _dashboardRepo.GetCategoryDistributionAsync();
         }
+
+
     }
 }

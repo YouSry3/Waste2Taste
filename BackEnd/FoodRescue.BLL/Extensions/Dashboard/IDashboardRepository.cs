@@ -1,5 +1,6 @@
 ﻿using FoodRescue.BLL.Abstractions;
 using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
+using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,5 +17,17 @@ namespace FoodRescue.BLL.Extensions.Dashboard
         Task<Result<int>> GetOrdersCountAsync(int days);
         Task<List<MonthlyTrendDto>> GetMonthlyTrendsAsync(int days);
         Task<List<CategoryDistributionDto>> GetCategoryDistributionAsync();
+        Task<int> GetTotalVendorsAsync();
+        Task<int> GetNgoPartnersAsync();
+        Task<int> GetActiveListingsAsync();
+        Task<decimal> GetTotalRevenueAsync();
+        Task<List<TopVendorDto>> GetTopPerformersAsync(int count);
+
+        Task<PagedResultDto<VendorListItemDto>> GetVendorsAsync(
+            int page,
+            int limit,
+            string search,
+            string sortBy,
+            string order);
     }
 }

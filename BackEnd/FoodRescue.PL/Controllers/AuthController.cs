@@ -21,11 +21,6 @@ namespace FoodRescue.PL.Controllers
         private readonly EmailService _emailService = email;
 
 
-        [HttpGet]
-        public IActionResult Get()
-        {
-            return Ok("Auth controller is working!");
-        }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request,
