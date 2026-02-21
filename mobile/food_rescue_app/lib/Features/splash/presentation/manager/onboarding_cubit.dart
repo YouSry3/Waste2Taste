@@ -36,11 +36,22 @@ class OnboardingCubit extends Cubit<int> {
   ];
 
   void next() {
-    if (state < _onBoardingList.length - 1) {
+    if (state < getLastPage) {
       emit(state + 1);
       pageController.nextPage(
         duration: const Duration(milliseconds: 200),
         curve: Curves.bounceInOut,
+      );
+    }
+  }
+
+  void jumpToPage() {
+    if (state < getLastPage) {
+      emit(getLastPage);
+      pageController.animateToPage(
+        getLastPage,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
       );
     }
   }
@@ -60,6 +71,7 @@ class OnboardingCubit extends Cubit<int> {
   }
 
   int get listLength => _onBoardingList.length;
+  int get getLastPage => _onBoardingList.length - 1;
   bool get isLastPage => _onBoardingList.length - 1 == state;
   bool get notFirstPage => state > 1;
   int get currentIndex => state;

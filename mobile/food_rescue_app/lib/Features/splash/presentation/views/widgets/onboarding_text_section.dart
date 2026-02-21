@@ -14,18 +14,19 @@ class OnboardingTextSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(title, textAlign: TextAlign.center, style: AppTextStyles.title),
-
-        const SizedBox(height: 16),
-
-        Text(
-          description,
-          textAlign: TextAlign.center,
-          style: AppTextStyles.subtitle.copyWith(height: 1.5),
-        ).animate().fadeIn(delay: 200.ms).moveY(begin: 20, end: 0),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Text(title, textAlign: TextAlign.center, style: AppTextStyles.title),
+          const SizedBox(height: 16),
+          Text(
+            description,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.subtitle.copyWith(height: 1.5),
+          ).animate().fadeIn(delay: 200.ms).moveY(begin: 20, end: 0),
+        ],
+      ),
     );
   }
 }
