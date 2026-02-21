@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'page_view_onboarding_builder.dart';
 import 'skip_text_button.dart';
 
 class OnboardingViewBody extends StatelessWidget {
@@ -7,6 +7,11 @@ class OnboardingViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [const SkipTextButton()]);
+    return Column(
+      children: [
+        const SkipTextButton(),
+        const Expanded(child: PageViewOnboardingBuilder()),
+      ],
+    );
   }
 }
