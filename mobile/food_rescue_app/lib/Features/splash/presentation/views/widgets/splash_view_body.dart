@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:food_rescue_app/core/utils/app_routes.dart';
+import 'package:go_router/go_router.dart';
 import 'animated_leaf_loader.dart';
 import 'leaves_background.dart';
 import 'splash_logo.dart';
@@ -13,7 +15,16 @@ class SplashViewBody extends StatefulWidget {
 class _SplashViewBodyState extends State<SplashViewBody> {
   @override
   void initState() {
+    _waiteAndNavigate();
     super.initState();
+  }
+
+  Future<Object?> _waiteAndNavigate() {
+    return Future.delayed(const Duration(seconds: 4), () {
+      if (mounted) {
+        return GoRouter.of(context).pushReplacement(AppRoutes.onboarding);
+      }
+    });
   }
 
   @override
