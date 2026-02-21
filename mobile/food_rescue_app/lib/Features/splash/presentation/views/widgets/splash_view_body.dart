@@ -19,7 +19,7 @@ class _SplashViewBodyState extends State<SplashViewBody> {
     super.initState();
   }
 
-  Future<Object?> _waitAndNavigate() {
+  Future _waitAndNavigate() {
     return Future.delayed(const Duration(seconds: 4), () {
       if (mounted) {
         return GoRouter.of(context).pushReplacement(AppRoutes.onboarding);
