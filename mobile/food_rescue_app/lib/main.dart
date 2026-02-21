@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:food_rescue_app/core/functions/setup_service_locator.dart';
 import 'package:food_rescue_app/core/utils/app_router.dart';
 
 void main() {
+  setupLocator();
   runApp(const FoodRescueApp());
 }
 

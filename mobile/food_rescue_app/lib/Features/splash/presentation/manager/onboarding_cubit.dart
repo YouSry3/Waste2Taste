@@ -1,40 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../models/onboarding_model.dart';
+import '../../domain/entities/onboarding_entity.dart';
+import '../../domain/repos/onboarding_repo.dart';
 
 class OnboardingCubit extends Cubit<int> {
-  OnboardingCubit() : super(0) {
+  OnboardingCubit({required this.onboardingRepo})
+    : _onBoardingList = onboardingRepo.getPages(),
+      super(0) {
     pageController = PageController();
   }
 
-  late final PageController pageController;
+  late PageController pageController;
+  final OnboardingRepo onboardingRepo;
 
-  final List<OnboardingModel> _onBoardingList = [
-    OnboardingModel(
-      icon: LucideIcons.utensils,
-      title: "Rescue Great Food",
-      description:
-          "Find quality meals at up to 70% off while helping protect the planet.",
-      color: AppColors.primary,
-    ),
-    OnboardingModel(
-      icon: LucideIcons.shoppingBag,
-      title: "Premium Meals. Better Prices.",
-      description:
-          "Enjoy fresh, high-quality food at amazing discounts. Reserve in seconds.",
-      color: AppColors.secondary,
-    ),
-    OnboardingModel(
-      icon: LucideIcons.heart,
-      title: "Join the Food Rescue Movement",
-      description:
-          "Save money, reduce waste, and turn everyday meals into real impact.",
-      color: AppColors.accent,
-    ),
-  ];
-
+  final List<OnboardingEntity> _onBoardingList;
   void next() {
     if (state < getLastPage) {
       emit(state + 1);
@@ -76,7 +55,7 @@ class OnboardingCubit extends Cubit<int> {
   bool get notFirstPage => state > 1;
   int get currentIndex => state;
 
-  List<OnboardingModel> get getList => _onBoardingList;
+  List<OnboardingEntity> get getList => _onBoardingList;
 
   @override
   Future<void> close() {

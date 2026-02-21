@@ -1,9 +1,11 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_rescue_app/Features/splash/presentation/manager/onboarding_cubit.dart';
-import 'package:food_rescue_app/Features/splash/presentation/views/onboarding_view.dart';
-import 'package:food_rescue_app/Features/splash/presentation/views/splash_view.dart';
 import 'package:go_router/go_router.dart';
+import '../../Features/splash/domain/repos/onboarding_repo.dart';
+import '../../Features/splash/presentation/manager/onboarding_cubit.dart';
+import '../../Features/splash/presentation/views/onboarding_view.dart';
+import '../../Features/splash/presentation/views/splash_view.dart';
+import '../functions/setup_service_locator.dart';
 import 'app_routes.dart';
 
 abstract class AppRouter {
@@ -16,7 +18,8 @@ abstract class AppRouter {
       GoRoute(
         path: AppRoutes.onboarding,
         builder: (context, state) => BlocProvider(
-          create: (BuildContext context) => OnboardingCubit(),
+          create: (BuildContext context) =>
+              OnboardingCubit(onboardingRepo: getIt.get<OnboardingRepo>()),
           child: const OnboardingView(),
         ),
       ),
