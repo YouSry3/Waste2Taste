@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'widgets/onboarding_view_body.dart';
 
 class OnboardingView extends StatelessWidget {
   const OnboardingView({super.key});
@@ -6,14 +7,5 @@ class OnboardingView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(body: OnboardingViewBody());
-  }
-}
-
-class OnboardingViewBody extends StatelessWidget {
-  const OnboardingViewBody({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }

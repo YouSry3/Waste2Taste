@@ -15,11 +15,11 @@ class SplashViewBody extends StatefulWidget {
 class _SplashViewBodyState extends State<SplashViewBody> {
   @override
   void initState() {
-    _waiteAndNavigate();
+    _waitAndNavigate();
     super.initState();
   }
 
-  Future<Object?> _waiteAndNavigate() {
+  Future<Object?> _waitAndNavigate() {
     return Future.delayed(const Duration(seconds: 4), () {
       if (mounted) {
         return GoRouter.of(context).pushReplacement(AppRoutes.onboarding);
