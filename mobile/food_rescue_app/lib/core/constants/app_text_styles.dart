@@ -5,6 +5,10 @@ import 'app_colors.dart';
 abstract class AppTextStyles {
   static final TextStyle _base = GoogleFonts.outfit(color: AppColors.textDark);
 
+  static TextStyle get logo => GoogleFonts.fredoka(
+    textStyle: TextStyle(fontSize: 56, fontWeight: FontWeight.bold, height: .9),
+  );
+
   static TextStyle get title => _base.copyWith(
     fontSize: 28,
     wordSpacing: 0,
