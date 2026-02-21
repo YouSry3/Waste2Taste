@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/utils/app_routes.dart';
 import '../../manager/onboarding_cubit.dart';
 
 class CustomNextButton extends StatelessWidget {
@@ -15,7 +17,9 @@ class CustomNextButton extends StatelessWidget {
       child: BlocBuilder<OnboardingCubit, int>(
         builder: (context, state) {
           return ElevatedButton(
-            onPressed: cubit.next,
+            onPressed: cubit.isLastPage
+                ? () => GoRouter.of(context).pushReplacement(AppRoutes.login)
+                : cubit.next,
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.all(16),
               backgroundColor: cubit.currentIndex == cubit.getLastPage

@@ -27,6 +27,5 @@ class UiMappers {
       default:
         return AppColors.primary;
     }
-    ;
   }
 }
