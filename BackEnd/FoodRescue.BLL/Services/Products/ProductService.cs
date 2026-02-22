@@ -4,6 +4,7 @@ using FoodRescue.BLL.Contract.Products;
 using FoodRescue.BLL.Extensions.Products;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
+using Mapster;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -172,29 +173,18 @@ public class ProductService : IProductService
     {
         var vendor = await _productRepository.GetVendorByIdAsync(request.VendorId);
 
-        if (vendor == null)
+        if (vendor is null)
             return Result.Failure<Guid>(ProductErrors.VendorNotFound);
 
         if (vendor.Status?.ToLower() != "approved")
             return Result.Failure<Guid>(ProductErrors.UnvalidStatus);
 
-        var imageUrl = await SaveImageAsync(request.ImageFile);
+        var product = request.Adapt<Product>();
+        product.ImageUrl = await SaveImageAsync(request.ImageFile);
+        product.Expired = false;
+        product.CreatedAt = DateTime.UtcNow;
 
-        var product = new Product
-        {
-            Id = Guid.NewGuid(),
-            VendorId = request.VendorId,
-            Name = request.Name,
-            Description = request.Description,
-            ImageUrl = imageUrl,
-            Price = request.Price,
-            OriginalPrice = request.OriginalPrice,
-            Quantity = request.Quantity,
-            ExpiryDate = request.ExpiryDate,
-            Expired = false,
-            CreatedAt = DateTime.UtcNow
-        };
-
+     
         await _productRepository.AddAsync(product);
         return Result.Success(product.Id);
     }

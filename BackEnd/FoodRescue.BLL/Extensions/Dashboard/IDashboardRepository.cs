@@ -1,5 +1,7 @@
 ﻿using FoodRescue.BLL.Abstractions;
 using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
+using FoodRescue.BLL.Contract.AdminDashbord.Users;
+using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
 using System;
 using System.Collections.Generic;
@@ -29,5 +31,13 @@ namespace FoodRescue.BLL.Extensions.Dashboard
             string search,
             string sortBy,
             string order);
+
+        Task<int> GetTotalUsersAsync();
+        Task<int> GetActiveUsersAsync();
+        Task<int> GetTotalOrdersAsync();
+
+        Task<List<UserSummaryDto>> GetTopSpendersAsync(int top);
+
+        Task<PagedResult<UserListDto>> GetUsersAsync(UserFilter filter);
     }
 }

@@ -13,6 +13,8 @@
         public string Name { get; set; } = string.Empty;
         // admin, vendor, customer, some other types in the future
         public string Role { get; set; } = string.Empty;
+
+        public bool IsActive { get; set; } = true;
         public string? ImageUrl { get; set; }
 
         public DateTime CreatedAt { get; set; }

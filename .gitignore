@@ -44,6 +44,8 @@ yarn.lock
 pnpm-lock.yaml
 
 ## If you want to keep the folder but ignore image files only
+wwwroot/**/
+wwwroot/images/
 wwwroot/images/*.jpg
 wwwroot/images/*.png
 wwwroot/images/*.jpeg

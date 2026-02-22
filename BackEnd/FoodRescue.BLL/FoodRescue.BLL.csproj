@@ -29,7 +29,6 @@
 
   <ItemGroup>
     <Folder Include="Contract\AdminDashbord\Moderation\" />
-    <Folder Include="Contract\AdminDashbord\Users\" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,7 @@
 ﻿using FoodRescue.BLL.Abstractions;
 using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
+using FoodRescue.BLL.Contract.AdminDashbord.Users;
+using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
 using FoodRescue.BLL.Extensions.Dashboard;
 using FoodRescue.DAL.Context;
@@ -156,6 +158,138 @@ namespace FoodRescue.BLL.ServicesWeb.Admin
                 TotalCount = total
             };
         }
+
+        // ==============================
+        // 1️⃣ Total Users
+        // ==============================
+        public async Task<int> GetTotalUsersAsync()
+        {
+            return await _context.Users.CountAsync();
         }
+
+        // ==============================
+        // 2️⃣ Active Users
+        // ==============================
+        public async Task<int> GetActiveUsersAsync()
+        {
+            return await _context.Users
+                .Where(u => u.IsActive)
+                .CountAsync();
+        }
+
+        // ==============================
+        // 3️⃣ Total Orders
+        // ==============================
+        public async Task<int> GetTotalOrdersAsync()
+        {
+            return await _context.Orders.CountAsync();
+        }
+        // ==============================
+        // 4️⃣ Top Spenders
+        // ==============================
+        public async Task<List<UserSummaryDto>> GetTopSpendersAsync(int top)
+        {
+            var users = await _context.Users
+                .Select(u => new UserSummaryDto
+                {
+                    Id = u.Id,
+                    FullName = u.Name,
+                    Initials = (u.Name.Substring(0, 1)).ToUpper(),
+                    TotalSpent = u.Orders.Sum(o => o.TotalPrice)
+                })
+                .OrderByDescending(u => u.TotalSpent)
+                .Take(top)
+                .ToListAsync();
+
+            // Assign Rank
+            for (int i = 0; i < users.Count; i++)
+            {
+                users[i].Rank = i + 1;
+            }
+
+            return users;
+        }
+
+
+        // ==============================
+        // 5️⃣ Users List with Filter + Paging
+        // ==============================
+        public async Task<PagedResult<UserListDto>> GetUsersAsync(UserFilter filter)
+        {
+            var query = _context.Users.AsQueryable();
+
+            // 🔍 Search
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+            {
+                query = query.Where(u =>
+                    (u.Name)
+                    .Contains(filter.Search));
+            }
+
+            // 📌 Status Filter
+            if (!string.IsNullOrWhiteSpace(filter.Status))
+            {
+                if (filter.Status == "Active")
+                    query = query.Where(u => u.IsActive);
+                else if (filter.Status == "Inactive")
+                    query = query.Where(u => !u.IsActive);
+            }
+
+            // 📊 Sorting
+            query = filter.SortBy switch
+            {
+                "Name" => filter.Ascending
+                    ? query.OrderBy(u => u.Name)
+                    : query.OrderByDescending(u => u.Name),
+
+                "Orders" => filter.Ascending
+                    ? query.OrderBy(u => u.Orders.Count)
+                    : query.OrderByDescending(u => u.Orders.Count),
+
+                "Spend" => filter.Ascending
+                    ? query.OrderBy(u => u.Orders.Sum(o => o.TotalPrice))
+                    : query.OrderByDescending(u => u.Orders.Sum(o => o.TotalPrice)),
+
+                "LastOrder" => filter.Ascending
+                    ? query.OrderBy(u => u.Orders.Max(o => o.CreatedAt))
+                    : query.OrderByDescending(u => u.Orders.Max(o => o.CreatedAt)),
+
+                _ => query.OrderByDescending(u => u.CreatedAt)
+            };
+
+            var totalCount = await query.CountAsync();
+
+            var users = await query
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .Select(u => new UserListDto
+                {
+                    Id = u.Id,
+                    FullName = u.Name,
+                    Email = u.Email,
+                    PhoneNumber = u.PhoneNumber!,
+                    OrdersCount = u.Orders.Count,
+                    TotalSpent = u.Orders.Sum(o => o.TotalPrice),
+                    LastOrderDate = u.Orders
+                        .OrderByDescending(o => o.CreatedAt)
+                        .Select(o => o.CreatedAt)
+                        .FirstOrDefault(),
+                    IsActive = u.IsActive,
+                    JoinedAt = u.CreatedAt
+                })
+                .ToListAsync();
+
+            return new PagedResult<UserListDto>
+            {
+                Items = users,
+                TotalCount = totalCount,
+                Page = filter.Page,
+                PageSize = filter.PageSize
+            };
+
+
+
+        }
+    }
 }
 
