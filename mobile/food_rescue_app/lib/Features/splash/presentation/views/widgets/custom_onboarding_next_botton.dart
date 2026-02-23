@@ -6,8 +6,8 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/app_routes.dart';
 import '../../manager/onboarding_cubit.dart';
 
-class CustomNextButton extends StatelessWidget {
-  const CustomNextButton({super.key});
+class CustomOnboardingNextButton extends StatelessWidget {
+  const CustomOnboardingNextButton({super.key});
 
   @override
   Widget build(BuildContext context) {

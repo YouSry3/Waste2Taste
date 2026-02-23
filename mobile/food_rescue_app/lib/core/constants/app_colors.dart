@@ -8,6 +8,7 @@ abstract class AppColors {
   static const Color background = Color(0xFFFAFAFA);
   static const Color textDark = Color(0xFF1F2937);
   static const Color textGray = Color(0xFF6B7280);
+  static const Color fieldGray = Color(0x7DE6E7E6);
   static const Color textPrimary = Color(0xFF1F2937);
   static const Color surface = Colors.white;
 }

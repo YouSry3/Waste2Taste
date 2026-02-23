@@ -9,7 +9,7 @@ abstract class AppStrings {
   // Auth
   static const String login = "Login";
   static const String signup = "Sign Up";
-  static const String welcomeBack = "Welcome Back";
+  static const String welcome = "Welcome";
   static const String loginSubtitle = "Login to continue fighting food waste";
   static const String createAccount = "Create Account";
   static const String createAccountSubtitle = "Join the movement to save food";

@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:food_rescue_app/core/functions/setup_service_locator.dart';
-import 'package:food_rescue_app/core/utils/app_router.dart';
+import 'core/constants/app_colors.dart';
+import 'core/functions/setup_service_locator.dart';
+import 'core/utils/app_router.dart';
 
 void main() {
   setupLocator();
-  runApp(const FoodRescueApp());
+  runApp(const Waste2TasteApp());
 }
 
-class FoodRescueApp extends StatelessWidget {
-  const FoodRescueApp({super.key});
+class Waste2TasteApp extends StatelessWidget {
+  const Waste2TasteApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      theme: ThemeData(scaffoldBackgroundColor: AppColors.background),
       debugShowCheckedModeBanner: false,
       routerConfig: AppRouter.routerConfig,
     );

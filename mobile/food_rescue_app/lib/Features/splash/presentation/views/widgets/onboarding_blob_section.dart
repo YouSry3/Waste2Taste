@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/enums/particle_animation_type.dart';
 import 'animated_particle.dart';
-import 'custom_animated_icon.dart';
+import '../../../../../core/widgets/custom_animated_icon.dart';
 import 'inner_blob.dart';
 import 'outer_blob.dart';
 
