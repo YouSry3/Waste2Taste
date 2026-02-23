@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:food_rescue_app/core/widgets/circle_widget.dart';
 import '../../../../../core/enums/particle_animation_type.dart';
 
 class AnimatedParticle extends StatelessWidget {
@@ -24,11 +25,7 @@ class AnimatedParticle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget particle = Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-    );
+    Widget particle = CircleWidget(size: size, color: color);
 
     switch (animationType) {
       case ParticleAnimationType.scaleAndMoveY:

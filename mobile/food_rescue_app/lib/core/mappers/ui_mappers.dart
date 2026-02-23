@@ -1,31 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../constants/app_colors.dart';
+import '../enums/color_name.dart';
+import '../enums/icon_name.dart';
 
 class UiMappers {
-  static IconData toIcon(String iconName) {
+  static IconData toIcon(IconName iconName) {
     switch (iconName) {
-      case 'utensils':
+      case IconName.utensils:
         return LucideIcons.utensils;
-      case 'shoppingBag':
+      case IconName.shoppingBag:
         return LucideIcons.shoppingBag;
-      case 'heart':
+      case IconName.heart:
         return LucideIcons.heart;
-      default:
-        return LucideIcons.circle;
     }
   }
 
-  static Color toColor(String colorName) {
+  static Color toColor(ColorName colorName) {
     switch (colorName) {
-      case 'primary':
+      case ColorName.primary:
         return AppColors.primary;
-      case 'secondary':
+      case ColorName.secondary:
         return AppColors.secondary;
-      case 'accent':
+      case ColorName.accent:
         return AppColors.accent;
-      default:
-        return AppColors.primary;
     }
   }
 }

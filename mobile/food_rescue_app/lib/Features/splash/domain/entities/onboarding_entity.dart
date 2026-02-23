@@ -1,8 +1,11 @@
+import '../../../../core/enums/color_name.dart';
+import '../../../../core/enums/icon_name.dart';
+
 class OnboardingEntity {
-  final String iconName;
+  final IconName iconName;
   final String title;
   final String description;
-  final String colorName;
+  final ColorName colorName;
 
   OnboardingEntity({
     required this.iconName,
