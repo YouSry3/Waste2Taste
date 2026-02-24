@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FoodRescue.BLL.ResultPattern;
+using Microsoft.AspNetCore.Http;
 
-namespace FoodRescue.BLL.Abstractions.TypeErrors;
+namespace FoodRescue.BLL.ResultPattern.TypeErrors;
 
 public static class ProductErrors
 {

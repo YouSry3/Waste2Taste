@@ -1,12 +1,12 @@
 ﻿using FluentEmail.Core;
-using FoodRescue.BLL.Abstractions;
-using FoodRescue.BLL.Abstractions.TypeErrors;
+using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Contract.Authentication;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.CheckCode;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.UpdatePassword;
 using FoodRescue.BLL.Contract.Authentication.Login;
 using FoodRescue.BLL.Contract.Authentication.Register;
 using FoodRescue.BLL.Extensions.Users;
+using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.BLL.Services.Authentication.Email_Service;
 using FoodRescue.BLL.Services.JWT;
 using FoodRescue.DAL.Context;
@@ -73,7 +73,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
 
 
         public async Task<Result> SendPasswordResetCode(
-     string email,
+                             string email,
      CancellationToken cancellationToken = default)
         {
             // 1) Check if user exists

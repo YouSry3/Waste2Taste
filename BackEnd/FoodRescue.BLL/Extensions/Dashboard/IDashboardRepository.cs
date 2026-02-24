@@ -1,4 +1,5 @@
-﻿using FoodRescue.BLL.Abstractions;
+﻿using FoodRescue.BLL;
+using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Users;
 using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FoodRescue.BLL.Extensions.Dashboard
+namespace FoodRescue.DAL.Extensions.Dashboard
 {
     public interface IDashboardRepository
     {

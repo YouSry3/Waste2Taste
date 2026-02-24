@@ -1,6 +1,6 @@
-﻿
+﻿using FoodRescue.BLL.ResultPattern;
 
-namespace FoodRescue.BLL.Abstractions.TypeErrors
+namespace FoodRescue.BLL.ResultPattern.TypeErrors
 {
     public class UserErrors
     {

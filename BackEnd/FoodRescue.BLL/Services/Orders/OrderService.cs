@@ -1,9 +1,11 @@
-﻿using FoodRescue.BLL.Abstractions;
-using FoodRescue.BLL.Abstractions.TypeErrors;
+﻿
+
+global using FoodRescue.BLL.Extensions.Orders;
+global using FoodRescue.BLL.Extensions.Products;
+global using FoodRescue.BLL.Extensions.Users;
+global using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Contract.Orders.Create;
-using FoodRescue.BLL.Extensions.Orders;
-using FoodRescue.BLL.Extensions.Products;
-using FoodRescue.BLL.Extensions.Users;
+using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.DAL.Entities;
 
 namespace FoodRescue.BLL.Services.Orders

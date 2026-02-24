@@ -1,10 +1,11 @@
-﻿using System;
+﻿using FoodRescue.BLL.ResultPattern;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FoodRescue.BLL.Abstractions.TypeErrors
+namespace FoodRescue.BLL.ResultPattern.TypeErrors
 {
     public class ReviewErrors
     {

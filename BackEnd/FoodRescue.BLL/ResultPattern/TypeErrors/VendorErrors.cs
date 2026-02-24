@@ -1,4 +1,6 @@
-﻿namespace FoodRescue.BLL.Abstractions.TypeErrors;
+﻿using FoodRescue.BLL.ResultPattern;
+
+namespace FoodRescue.BLL.ResultPattern.TypeErrors;
 
 public static class VendorErrors
 {

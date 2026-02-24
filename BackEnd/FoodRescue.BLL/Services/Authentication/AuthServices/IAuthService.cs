@@ -1,4 +1,4 @@
-﻿using FoodRescue.BLL.Abstractions;
+﻿using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.CheckCode;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.UpdatePassword;
 using FoodRescue.BLL.Contract.Authentication.Login;

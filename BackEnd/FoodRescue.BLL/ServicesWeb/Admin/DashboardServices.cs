@@ -1,10 +1,10 @@
-﻿using FoodRescue.BLL.Abstractions;
-using FoodRescue.BLL.Abstractions.TypeErrors;
+﻿using FoodRescue.BLL.ResultPattern;
+using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Users;
 using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
-using FoodRescue.BLL.Extensions.Dashboard;
+using FoodRescue.DAL.Extensions.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -1,6 +1,4 @@
-﻿
-
-using FluentValidation;
+﻿using FluentValidation;
 
 
 namespace FoodRescue.BLL.Contract.Authentication.Register
@@ -22,11 +20,14 @@ namespace FoodRescue.BLL.Contract.Authentication.Register
                 .Length(8, 100).WithMessage("Password must be between 8 and 100 characters.");
 
             RuleFor(x => x.Role)
-                .NotEmpty().WithMessage("Type is required.")
+                .NotEmpty().WithMessage("Role is required.")
                 //admin, vendor, customer
                 .Must(type => type == "customer" || type == "admin" || type == "vendor")
                 .WithMessage("Type must be either 'customer' or 'admin' or 'vendor' ");
 
+            RuleFor(x => x.PhoneNumber)
+                .NotNull().WithMessage("Phone number is required.")
+                .Matches(@"^\+?\d{10,15}$").WithMessage("A valid phone number is required.");
 
         }
     }

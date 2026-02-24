@@ -1,6 +1,6 @@
 ﻿using Azure.Core;
-using FoodRescue.BLL.Abstractions;
-using FoodRescue.BLL.Abstractions.TypeErrors;
+using FoodRescue.BLL.ResultPattern;
+using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.BLL.Contract.Reviews;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.DAL.Context;

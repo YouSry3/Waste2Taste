@@ -1,4 +1,4 @@
-﻿using FoodRescue.BLL.Abstractions;
+﻿using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Contract.DTOs;
 using FoodRescue.BLL.Contract.Users;
 using FoodRescue.DAL.Entities;

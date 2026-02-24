@@ -1,5 +1,5 @@
-﻿using FoodRescue.BLL.Abstractions;
-using FoodRescue.BLL.Abstractions.TypeErrors;
+﻿using FoodRescue.BLL.ResultPattern;
+using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.BLL.Contract.Products;
 using FoodRescue.BLL.Extensions.Products;
 using FoodRescue.DAL.Context;

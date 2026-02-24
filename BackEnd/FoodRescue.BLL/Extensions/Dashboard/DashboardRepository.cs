@@ -1,17 +1,16 @@
-﻿using FoodRescue.BLL.Abstractions;
+﻿
+using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Users;
 using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
-using FoodRescue.BLL.Extensions.Dashboard;
+using FoodRescue.BLL.Extensions;
 using FoodRescue.DAL.Context;
+using FoodRescue.DAL.Extensions.Dashboard;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace FoodRescue.BLL.ServicesWeb.Admin
+
+namespace FoodRescue.BLL.Repositorys.Dashboard
 {
     public class DashboardRepository : IDashboardRepository
     {

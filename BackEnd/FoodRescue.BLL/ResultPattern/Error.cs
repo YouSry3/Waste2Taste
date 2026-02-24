@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FoodRescue.BLL.Abstractions
+namespace FoodRescue.BLL.ResultPattern
 {
     public record Error(string code, string description)
     {

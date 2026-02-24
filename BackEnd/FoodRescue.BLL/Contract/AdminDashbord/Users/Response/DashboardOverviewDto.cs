@@ -13,5 +13,6 @@ namespace FoodRescue.BLL.Contract.AdminDashbord.Users.Response
         public int TotalOrders { get; set; }
          public List<UserSummaryDto> TopSpenders { get; set; } = new();
 
+
     }
 }

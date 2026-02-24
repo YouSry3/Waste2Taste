@@ -1,4 +1,4 @@
-﻿using FoodRescue.BLL.Abstractions;
+﻿using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Contract.Vendors;
 
 namespace FoodRescue.BLL.Services.Vendors;
