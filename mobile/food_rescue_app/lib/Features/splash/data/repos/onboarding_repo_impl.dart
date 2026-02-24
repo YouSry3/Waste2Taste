@@ -1,6 +1,6 @@
-import 'package:food_rescue_app/Features/splash/domain/entities/onboarding_entity.dart';
 import '../../../../core/enums/color_name.dart';
 import '../../../../core/enums/icon_name.dart';
+import '../../domain/entities/onboarding_entity.dart';
 import '../../domain/repos/onboarding_repo.dart';
 import '../models/onboarding_model.dart';
 

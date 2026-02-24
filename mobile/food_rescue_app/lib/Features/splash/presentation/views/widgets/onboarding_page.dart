@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:food_rescue_app/Features/splash/domain/entities/onboarding_entity.dart';
-import 'package:food_rescue_app/core/mappers/ui_mappers.dart';
+import '../../../../../core/mappers/ui_mappers.dart';
+import '../../../domain/entities/onboarding_entity.dart';
 import 'onboarding_blob_section.dart';
 import 'onboarding_text_section.dart';
 

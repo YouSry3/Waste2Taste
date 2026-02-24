@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:food_rescue_app/Features/auth/presentation/views/widgets/custom_elevated_button.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_strings.dart';
 import 'auth_input_label.dart';
+import 'custom_elevated_button.dart';
 import 'custom_text_form_field.dart';
 import 'custom_validation_row.dart';
 import 'terms_and_policy.dart';

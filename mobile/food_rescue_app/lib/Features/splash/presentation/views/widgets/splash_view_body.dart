@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:food_rescue_app/core/utils/app_routes.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../../core/utils/app_routes.dart';
 import 'animated_leaf_loader.dart';
 import 'leaves_background.dart';
 import 'splash_logo.dart';

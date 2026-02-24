@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:food_rescue_app/core/widgets/circle_widget.dart';
 import '../../../../../core/enums/particle_animation_type.dart';
+import '../../../../../core/widgets/circle_widget.dart';
 
 class AnimatedParticle extends StatelessWidget {
   final Color color;
