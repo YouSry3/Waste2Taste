@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.waste2taste.package.name"
+    namespace = "com.waste_2_taste"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.waste2taste.package.name"
+        applicationId = "com.waste_2_taste"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

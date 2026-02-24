@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_rescue_app/Features/auth/presentation/views/login_view.dart';
-import 'package:food_rescue_app/Features/auth/presentation/views/signup_view.dart';
 import 'package:go_router/go_router.dart';
+import '../../Features/auth/presentation/views/login_view.dart';
+import '../../Features/auth/presentation/views/signup_view.dart';
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
 import '../../Features/splash/presentation/manager/onboarding_cubit.dart';
 import '../../Features/splash/presentation/views/onboarding_view.dart';

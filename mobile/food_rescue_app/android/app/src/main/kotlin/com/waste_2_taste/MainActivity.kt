@@ -1,4 +1,4 @@
-package com.waste2taste.package.name
+package com.waste_2_taste
 
 import io.flutter.embedding.android.FlutterActivity
 
