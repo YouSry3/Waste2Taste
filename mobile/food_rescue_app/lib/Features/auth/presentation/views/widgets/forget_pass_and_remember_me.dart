@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/app_text_styles.dart';
+import '../../../../../core/utils/app_routes.dart';
 import 'custom_check_box.dart';
 
 class ForgetPassAndRememberMe extends StatelessWidget {
@@ -27,7 +29,7 @@ class ForgetPassAndRememberMe extends StatelessWidget {
           ],
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () => GoRouter.of(context).push(AppRoutes.forgetPassword),
           child: Text(
             AppStrings.forgotPassword,
             style: AppTextStyles.label.copyWith(

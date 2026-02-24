@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
+import 'auth_footer.dart';
 import 'custom_auth_icon.dart';
 import 'custom_greeting_section.dart';
-import 'auth_footer.dart';
-import 'signup_form_widget.dart';
+import 'reset_password_form_widget.dart';
 
-class SignupViewBodyComponents extends StatelessWidget {
-  const SignupViewBodyComponents({super.key});
+class ResetPasswordViewBody extends StatelessWidget {
+  const ResetPasswordViewBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +26,11 @@ class SignupViewBodyComponents extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             const CustomGreetingSection(
-              title: AppStrings.createAccount,
-              subtitle: AppStrings.createAccountSubtitle,
+              title: AppStrings.resetPassword,
+              subtitle: AppStrings.resetPasswordSubtitle,
             ),
             const SizedBox(height: 48),
-            const SignupFormWidget(),
-            const SizedBox(height: 16),
-            AuthFooter(
-              text1: AppStrings.alreadyHaveAccount,
-              text2: AppStrings.login,
-              onTap: () => GoRouter.of(context).pop(),
-            ),
+            const ResetPasswordFormWidget(),
           ],
         ),
       ),

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:waste2taste/core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/utils/app_routes.dart';
 import 'custom_auth_icon.dart';
 import 'custom_elevated_button.dart';
 import 'custom_greeting_section.dart';
 import 'forget_pass_and_remember_me.dart';
-import 'login_and_create_account_navigator.dart';
+import 'auth_footer.dart';
 import 'login_form_widget.dart';
 
 class LoginViewBodyComponents extends StatelessWidget {
@@ -23,7 +24,10 @@ class LoginViewBodyComponents extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 40),
-            const CustomAuthIcon(icon: LucideIcons.user),
+            const CustomAuthIcon(
+              icon: LucideIcons.user,
+              color: AppColors.primary,
+            ),
             const SizedBox(height: 32),
             const CustomGreetingSection(
               title: AppStrings.welcome,
@@ -36,7 +40,7 @@ class LoginViewBodyComponents extends StatelessWidget {
             const SizedBox(height: 32),
             CustomElevatedButton(text: AppStrings.login, onPressed: () {}),
             const SizedBox(height: 42),
-            LoginAndCreateAccountNavigator(
+            AuthFooter(
               text1: AppStrings.dontHaveAccount,
               text2: AppStrings.signup,
               onTap: () => GoRouter.of(context).push(AppRoutes.signup),

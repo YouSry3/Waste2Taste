@@ -49,6 +49,7 @@ abstract class AppStrings {
       "Contains an uppercase letter";
   static const String containsANumber = "Contains a number";
   static const String atLeast8Characters = "At least 8 characters";
+  static const String didntReceiveCode = "Didn't receive code? ";
 
   // Navigation
   static const String navHome = "Home";

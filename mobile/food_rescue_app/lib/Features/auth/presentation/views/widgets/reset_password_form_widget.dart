@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+
 import '../../../../../core/constants/app_strings.dart';
 import 'auth_input_label.dart';
 import 'custom_elevated_button.dart';
@@ -8,14 +9,15 @@ import 'custom_text_form_field.dart';
 import 'custom_validation_row.dart';
 import 'terms_and_policy.dart';
 
-class SignupFormWidget extends StatefulWidget {
-  const SignupFormWidget({super.key});
+class ResetPasswordFormWidget extends StatefulWidget {
+  const ResetPasswordFormWidget({super.key});
 
   @override
-  State<SignupFormWidget> createState() => _SignupFormWidgetState();
+  State<ResetPasswordFormWidget> createState() =>
+      _ResetPasswordFormWidgetState();
 }
 
-class _SignupFormWidgetState extends State<SignupFormWidget> {
+class _ResetPasswordFormWidgetState extends State<ResetPasswordFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -25,21 +27,7 @@ class _SignupFormWidgetState extends State<SignupFormWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AuthInputLabel(text: AppStrings.fullName),
-          CustomTextFormField(
-            hint: AppStrings.fullNameHint,
-            icon: LucideIcons.user,
-            inputType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 20),
-          const AuthInputLabel(text: AppStrings.email),
-          CustomTextFormField(
-            hint: AppStrings.emailHint,
-            icon: LucideIcons.mail,
-            inputType: TextInputType.emailAddress,
-          ),
-          const SizedBox(height: 20),
-          const AuthInputLabel(text: AppStrings.password),
+          const AuthInputLabel(text: AppStrings.newPassword),
           const CustomTextFormField(
             hint: AppStrings.passwordHint,
             icon: LucideIcons.lock,
@@ -66,10 +54,11 @@ class _SignupFormWidgetState extends State<SignupFormWidget> {
           ),
           const SizedBox(height: 8),
           CustomValidationRow(text: AppStrings.passwordsMatch, isValid: true),
-          const SizedBox(height: 24),
-          const TermsAndPolicy(),
           const SizedBox(height: 32),
-          CustomElevatedButton(text: AppStrings.signup, onPressed: () {}),
+          CustomElevatedButton(
+            text: AppStrings.resetPassword,
+            onPressed: () {},
+          ),
         ],
       ).animate().fadeIn(delay: 300.ms).moveY(begin: 20, end: 0),
     );

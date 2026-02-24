@@ -3,8 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 
-class LoginAndCreateAccountNavigator extends StatelessWidget {
-  const LoginAndCreateAccountNavigator({
+class AuthFooter extends StatelessWidget {
+  const AuthFooter({
     super.key,
     required this.text1,
     required this.text2,
