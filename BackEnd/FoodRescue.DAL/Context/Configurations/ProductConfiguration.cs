@@ -1,4 +1,5 @@
-﻿using FoodRescue.DAL.Entities;
+﻿using FoodRescue.DAL.Consts;
+using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -44,6 +45,16 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasMaxLength(500)
             .IsRequired();
 
+        // Status configuration: store enum as string, required, default to Pending
+        builder.Property(x => x.Status)
+            .HasConversion<string>()
+            .HasColumnType("nvarchar(50)")
+            .HasMaxLength(50)
+            .HasDefaultValue(ProductStatus.Pending)
+            .IsRequired();
+          
+
+       
         // Vendor relationship
         builder.HasOne(x => x.Vendor)
             .WithMany(v => v.Products)

@@ -10,10 +10,12 @@ using FoodRescue.BLL.Services.Authentication.Email_Service;
 using FoodRescue.BLL.Services.JWT;
 using FoodRescue.BLL.Services.Orders;
 using FoodRescue.BLL.Services.Products;
+using FoodRescue.BLL.Services.Reports;
 using FoodRescue.BLL.Services.Reviews;
 using FoodRescue.BLL.Services.UserServices;
 using FoodRescue.BLL.Services.Vendors;
 using FoodRescue.BLL.ServicesWeb.Admin;
+using FoodRescue.BLL.ServicesWeb.Admin.Moderation;
 using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Extensions.Dashboard;
@@ -114,6 +116,8 @@ namespace FoodRescue.PL
             services.AddValidatorsFromAssemblyContaining<CreateProductRequestValidator>();
             services.AddScoped<IDashboardServices, DashboardService>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
+            services.AddScoped<IModerationService, ModerationService>();
+            services.AddScoped<IReportsService, ReportsService>();
 
 
             VendorMapsterConfig.RegisterVendorMappings();

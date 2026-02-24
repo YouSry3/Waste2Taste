@@ -20,8 +20,7 @@ public class VendorRepository : IVendorRepository
         if (!string.IsNullOrWhiteSpace(name))
             query = query.Where(v => v.Name.Contains(name));
 
-        if (!string.IsNullOrWhiteSpace(status))
-            query = query.Where(v => v.Status == status);
+        
 
         return await query.OrderBy(v => v.Name).ToListAsync();
     }

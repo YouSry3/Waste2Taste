@@ -31,10 +31,11 @@ namespace FoodRescue.BLL.Services.Reports
             var report = new Report
             {
                 UserId = userId,
-                VendorId = reportRequest.VendorId,
+                ProductId = reportRequest.ProductId,
                 Type = reportRequest.Type,
                 Description = reportRequest.Description,
                 Status = "Pending",
+                Priority = FoodRescue.DAL.Consts.ReportPriority.Medium,
                 CreatedAt = DateTime.UtcNow
             };
 

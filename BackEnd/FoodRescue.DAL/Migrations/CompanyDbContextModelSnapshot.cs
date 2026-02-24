@@ -22,6 +22,42 @@ namespace FoodRescue.DAL.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.AISpoileRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Confidence")
+                        .HasColumnType("decimal(3,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<bool>("IsSpoiled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Prediction")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("SpoiledPercentage")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
+                    b.ToTable("AISpoileRequests", (string)null);
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.Donation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -161,6 +197,13 @@ namespace FoodRescue.DAL.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Pending");
+
                     b.Property<Guid>("VendorId")
                         .HasColumnType("uniqueidentifier");
 
@@ -185,6 +228,16 @@ namespace FoodRescue.DAL.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValueSql("N'Medium'");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -198,16 +251,30 @@ namespace FoodRescue.DAL.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("VendorId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Priority")
+                        .HasDatabaseName("IX_Reports_Priority");
 
-                    b.HasIndex("VendorId");
+                    b.HasIndex("ProductId")
+                        .HasDatabaseName("IX_Reports_ProductId");
 
-                    b.ToTable("reports", (string)null);
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_Reports_Status");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_Reports_UserId");
+
+                    b.HasIndex("CreatedAt", "Status")
+                        .HasDatabaseName("IX_Reports_CreatedAt_Status");
+
+                    b.HasIndex("Status", "Priority")
+                        .HasDatabaseName("IX_Reports_Status_Priority");
+
+                    b.ToTable("reports", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Report_Priority_Enum", "[Priority] IN ('Low','Medium','High')");
+                        });
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Review", b =>
@@ -304,6 +371,11 @@ namespace FoodRescue.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -318,7 +390,7 @@ namespace FoodRescue.DAL.Migrations
                         .HasMaxLength(11)
                         .HasColumnType("nvarchar(11)");
 
-                    b.Property<string>("Status")
+                    b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -326,7 +398,95 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("vendors", (string)null);
+                    b.ToTable("vendors", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Vendor_Category_Enum", "[Category] IN ('Restaurant','Bakery','Cafe','Grocery','Deli','Market')");
+                        });
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.VendorRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("BusinessLicenseUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("BusinessName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("HealthCertificateUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValueSql("N'Pending'");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_VendorRequests_CreatedAt");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_VendorRequests_Status");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_VendorRequests_UserId");
+
+                    b.HasIndex("Status", "CreatedAt")
+                        .HasDatabaseName("IX_VendorRequests_Status_CreatedAt");
+
+                    b.ToTable("VendorRequests", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_VendorRequest_Category_Enum", "[Category] IN ('Restaurant','Bakery','Cafe','Grocery','Deli','Market')");
+
+                            t.HasCheckConstraint("CK_VendorRequest_Status_Enum", "[Status] IN ('Pending','Approved','Rejected')");
+                        });
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.AISpoileRequest", b =>
+                {
+                    b.HasOne("FoodRescue.DAL.Entities.Product", "Product")
+                        .WithOne("AISpoileRequest")
+                        .HasForeignKey("FoodRescue.DAL.Entities.AISpoileRequest", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Donation", b =>
@@ -372,21 +532,21 @@ namespace FoodRescue.DAL.Migrations
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Report", b =>
                 {
+                    b.HasOne("FoodRescue.DAL.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("FoodRescue.DAL.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("FoodRescue.DAL.Entities.Vendor", "Vendor")
-                        .WithMany()
-                        .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Navigation("Product");
 
                     b.Navigation("User");
-
-                    b.Navigation("Vendor");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Review", b =>
@@ -419,8 +579,21 @@ namespace FoodRescue.DAL.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.VendorRequest", b =>
+                {
+                    b.HasOne("FoodRescue.DAL.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.Product", b =>
                 {
+                    b.Navigation("AISpoileRequest");
+
                     b.Navigation("Orders");
 
                     b.Navigation("Reviews");

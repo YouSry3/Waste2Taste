@@ -11,16 +11,14 @@ namespace FoodRescue.BLL.Contract.Reports.Create
     {
         public ReportRequestValidator()
         {
-            
-            RuleFor(x => x.VendorId)
-                .NotEmpty().WithMessage("Vendor ID is required.");
+            RuleFor(x => x.ProductId)
+                .NotEmpty().WithMessage("Product ID is required.");
 
             RuleFor(x => x.Type)
                 .NotEmpty().WithMessage("Report type is required.")
                 .MaximumLength(50).WithMessage("Report type must not exceed 50 characters.")
                 .Must(type => type == "Complaint" || type == "Bug" || type == "Other")
                 .WithMessage("Type must be 'Complaint', 'Bug', or 'Other'.");
-
 
             RuleFor(x => x.Description)
                 .NotEmpty().WithMessage("Description is required.")

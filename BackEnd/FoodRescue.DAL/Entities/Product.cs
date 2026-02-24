@@ -1,4 +1,6 @@
-﻿namespace FoodRescue.DAL.Entities;
+﻿using FoodRescue.DAL.Consts;
+
+namespace FoodRescue.DAL.Entities;
 
 public class Product
 {
@@ -11,7 +13,10 @@ public class Product
     public decimal Price { get; set; }
     public decimal OriginalPrice { get; set; }
     public int Quantity { get; set; }
-    public bool Expired { get; set; }
+    // Status of the product represented as an enum
+    // New products are created as listings (Pending) and become products when Approved by an admin
+    public ProductStatus Status { get; set; } = ProductStatus.Pending;
+    public bool Expired { get; set; }       
     public DateTime ExpiryDate { get; set; }
     public DateTime CreatedAt { get; set; }
 
@@ -21,4 +26,10 @@ public class Product
 
     // 🔴 NEW: One-to-Many relationship (Product can be in many Orders)
     public ICollection<Order> Orders { get; set; } = new List<Order>();
+
+    // One-to-One relationship with AI spoilage detection result
+    public AISpoileRequest? AISpoileRequest { get; set; }
 }
+
+
+        

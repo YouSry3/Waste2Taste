@@ -21,7 +21,7 @@ public class ProductRepository : IProductRepository
             .Where(p => p.ExpiryDate > DateTime.Now
                      && p.Quantity > 0
                      && !p.Expired
-                     && p.Vendor.Status == "approved");
+                     );
 
         if (!string.IsNullOrEmpty(name))
             query = query.Where(p => p.Name.Contains(name));

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FoodRescue.DAL.Consts;
+using System;
 
 namespace FoodRescue.DAL.Entities
 {
@@ -6,14 +7,15 @@ namespace FoodRescue.DAL.Entities
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
-        public Guid VendorId { get; set; }
+        public Guid ProductId { get; set; }
         public string Type { get; set; }
         public string Description { get; set; }
         public string Status { get; set; }
+        public ReportPriority Priority { get; set; } = ReportPriority.Medium;
         public DateTime CreatedAt { get; set; }
 
         // Relations
         public User User { get; set; }
-        public Vendor Vendor { get; set; }
+        public Product Product { get; set; }
     }
 }

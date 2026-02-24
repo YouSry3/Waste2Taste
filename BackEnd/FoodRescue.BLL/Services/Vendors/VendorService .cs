@@ -66,8 +66,8 @@ public class VendorService(IVendorRepository vendorRepository, IUserRepository u
         if (dto.Address is not null)
             vendor.Address = dto.Address;
 
-        if (dto.Status is not null)
-            vendor.Status = dto.Status;
+        //if (dto.Status is not null)
+        //    vendor.Status = dto.Status;
 
         await _vendorRepository.UpdateAsync(vendor);
 

@@ -1,6 +1,7 @@
 ﻿using FoodRescue.BLL.Contract.AdminDashbord.Users;
 using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Request;
 using FoodRescue.BLL.ServicesWeb.Admin;
+using FoodRescue.BLL.ServicesWeb.Admin.Moderation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,10 @@ namespace FoodRescue.PL.Controllers
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class AdminController(IDashboardServices dashboardServices) : ControllerBase
+    public class AdminController(IDashboardServices dashboardServices, IModerationService moderationService) : ControllerBase
     {
         private readonly IDashboardServices _dashboardServices = dashboardServices;
+        private readonly IModerationService _moderationService = moderationService;
         
         /// <summary>
         /// Retrieves dashboard data for the specified number of days.
@@ -118,6 +120,47 @@ namespace FoodRescue.PL.Controllers
                 return BadRequest(result.Error);
 
             return Ok(result.Value);
+        }
+
+        /// <summary>
+        /// Retrieves a comprehensive summary of all items requiring moderation attention.
+        /// </summary>
+        /// <remarks>
+        /// This endpoint is accessible only to users with the "admin" role. It returns counts of:
+        /// - Product listings awaiting admin approval (Pending status)
+        /// - Flagged product listings (AI spoilage detection or manual flags)
+        /// - Vendor requests awaiting approval
+        /// - Open customer reports requiring investigation
+        /// 
+        /// The response includes a total count of all items requiring moderation attention
+        /// and a timestamp of when the data was generated.
+        /// </remarks>
+        /// <returns>
+        /// An <see cref="IActionResult"/> containing a JSON response with the following structure:
+        /// {
+        ///   "data": {
+        ///     "listingsToReviewCount": integer,
+        ///     "flaggedListingsCount": integer,
+        ///     "pendingVendorRequestsCount": integer,
+        ///     "openCustomerReportsCount": integer,
+        ///     "totalItemsForModeration": integer,
+        ///     "generatedAt": "2024-02-24T14:30:45.123Z"
+        ///   }
+        /// }
+        /// </returns>
+        [HttpGet("moderation/summary")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetModerationSummary()
+        {
+            try
+            {
+                var summary = await _moderationService.GetModerationSummaryAsync();
+                return Ok(new { Data = summary });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Error = "An error occurred while retrieving the moderation summary", Details = ex.Message });
+            }
         }
 
     }

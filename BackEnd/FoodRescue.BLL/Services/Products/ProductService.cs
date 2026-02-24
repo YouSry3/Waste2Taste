@@ -176,8 +176,7 @@ public class ProductService : IProductService
         if (vendor is null)
             return Result.Failure<Guid>(ProductErrors.VendorNotFound);
 
-        if (vendor.Status?.ToLower() != "approved")
-            return Result.Failure<Guid>(ProductErrors.UnvalidStatus);
+        
 
         var product = request.Adapt<Product>();
         product.ImageUrl = await SaveImageAsync(request.ImageFile);

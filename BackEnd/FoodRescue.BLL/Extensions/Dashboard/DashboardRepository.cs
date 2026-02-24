@@ -92,7 +92,7 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
 
         public async Task<int> GetNgoPartnersAsync()
             => await _context.Vendors
-                .CountAsync(v => v.Status == "NGO");
+                .CountAsync(v => v.Role == "NGO");
 
         public async Task<int> GetActiveListingsAsync()
             => await _context.Products

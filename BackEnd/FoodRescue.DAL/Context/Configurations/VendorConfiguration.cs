@@ -14,8 +14,20 @@ public class VendorConfiguration : IEntityTypeConfiguration<Vendor>
 
         builder.Property(x => x.Name).IsRequired();
         builder.Property(x => x.Address).IsRequired();
-        builder.Property(x => x.Status).IsRequired();
+
         builder.Property(x => x.CreatedAt).IsRequired();
+
+        // Category configuration: store enum as string, required
+        builder.Property(x => x.Category)
+            .HasConversion<string>()
+            .HasColumnType("nvarchar(50)")
+            .HasMaxLength(50)
+            .IsRequired();
+
+        // Enforce allowed category values at the database level (CHECK constraint)
+        builder.HasCheckConstraint(
+            "CK_Vendor_Category_Enum",
+            "[Category] IN ('Restaurant','Bakery','Cafe','Grocery','Deli','Market')");
 
         builder.HasOne(v => v.Owner)
             .WithMany()
