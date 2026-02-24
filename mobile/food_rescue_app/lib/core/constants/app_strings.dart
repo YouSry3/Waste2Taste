@@ -44,6 +44,11 @@ abstract class AppStrings {
   static const String verify = "Verify";
   static const String resendCode = "Resend Code";
   static const String codeSent = "Code sent!";
+  static const String passwordsMatch = "Passwords match";
+  static const String containsAnUppercaseLetter =
+      "Contains an uppercase letter";
+  static const String containsANumber = "Contains a number";
+  static const String atLeast8Characters = "At least 8 characters";
 
   // Navigation
   static const String navHome = "Home";

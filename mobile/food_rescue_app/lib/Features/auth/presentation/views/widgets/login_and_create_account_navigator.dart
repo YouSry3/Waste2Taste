@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 
@@ -35,6 +36,6 @@ class LoginAndCreateAccountNavigator extends StatelessWidget {
           ),
         ),
       ],
-    );
+    ).animate().fadeIn(delay: 700.ms);
   }
 }

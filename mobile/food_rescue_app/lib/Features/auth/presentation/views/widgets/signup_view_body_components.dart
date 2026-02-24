@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_strings.dart';
-import '../../../../../core/utils/app_routes.dart';
 import 'custom_auth_icon.dart';
-import 'custom_elevated_button.dart';
 import 'custom_greeting_section.dart';
-import 'forget_pass_and_remember_me.dart';
 import 'login_and_create_account_navigator.dart';
-import 'login_form_widget.dart';
+import 'signup_form_widget.dart';
 
-class LoginViewBodyComponents extends StatelessWidget {
-  const LoginViewBodyComponents({super.key});
+class SignupViewBodyComponents extends StatelessWidget {
+  const SignupViewBodyComponents({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,20 +23,16 @@ class LoginViewBodyComponents extends StatelessWidget {
             const CustomAuthIcon(icon: LucideIcons.user),
             const SizedBox(height: 32),
             const CustomGreetingSection(
-              title: AppStrings.welcome,
-              subtitle: AppStrings.loginSubtitle,
+              title: AppStrings.createAccount,
+              subtitle: AppStrings.createAccountSubtitle,
             ),
             const SizedBox(height: 48),
-            const LoginFormWidget(),
+            const SignupFormWidget(),
             const SizedBox(height: 16),
-            const ForgetPassAndRememberMe(),
-            const SizedBox(height: 32),
-            CustomElevatedButton(text: AppStrings.login, onPressed: () {}),
-            const SizedBox(height: 42),
             LoginAndCreateAccountNavigator(
-              text1: AppStrings.dontHaveAccount,
-              text2: AppStrings.signup,
-              onTap: () => GoRouter.of(context).push(AppRoutes.signup),
+              text1: AppStrings.alreadyHaveAccount,
+              text2: AppStrings.login,
+              onTap: () => GoRouter.of(context).pop(),
             ),
           ],
         ),

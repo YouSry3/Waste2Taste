@@ -19,28 +19,24 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child:
-          Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const AuthInputLabel(text: AppStrings.email),
-                  CustomTextFormField(
-                    hint: AppStrings.emailHint,
-                    icon: LucideIcons.mail,
-                    inputType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 20),
-                  const AuthInputLabel(text: AppStrings.password),
-                  const CustomTextFormField(
-                    hint: AppStrings.passwordHint,
-                    icon: LucideIcons.lock,
-                    isPassword: true,
-                  ),
-                ],
-              )
-              .animate()
-              .fadeIn(delay: 300.ms) // Reduced delay
-              .moveY(begin: 20, end: 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const AuthInputLabel(text: AppStrings.email),
+          CustomTextFormField(
+            hint: AppStrings.emailHint,
+            icon: LucideIcons.mail,
+            inputType: TextInputType.emailAddress,
+          ),
+          const SizedBox(height: 20),
+          const AuthInputLabel(text: AppStrings.password),
+          const CustomTextFormField(
+            hint: AppStrings.passwordHint,
+            icon: LucideIcons.lock,
+            isPassword: true,
+          ),
+        ],
+      ).animate().fadeIn(delay: 300.ms).moveY(begin: 20, end: 0),
     );
   }
 }
