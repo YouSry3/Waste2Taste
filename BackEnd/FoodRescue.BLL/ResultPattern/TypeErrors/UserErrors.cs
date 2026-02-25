@@ -1,4 +1,5 @@
 ﻿using FoodRescue.BLL.ResultPattern;
+using Org.BouncyCastle.Tls;
 
 namespace FoodRescue.BLL.ResultPattern.TypeErrors
 {
@@ -14,11 +15,14 @@ namespace FoodRescue.BLL.ResultPattern.TypeErrors
         public static Error InValidIdentifier => new("User.InValidIdentifier", "The user identifier is invalid.");
 
         public static Error OnlyCustomerAccess => new("User.OnlyCustomerAccess", "Only customers can Access this Service.");
+        public static Error OnlyVendorAccess => new("User.OnlyVendorAccess", "Only vendors can Access this Service.");
+        public static Error OnlyAdminAccess => new("User.OnlyAdminAccess", "Only admins can Access this Service.");
 
         public static Error OnlyCustomersCanChangePassword(Guid userId) =>
             new("User.OnlyCustomersCanChangePassword", $"Only customers can change their password. UserId: {userId}");
         public static Error OnlyCustomersCanAccessProfile(Guid userId)=>
             new("User.OnlyCustomersCanAccessProfile", $"Only customers can access their profile. UserId: {userId}");
+
 
     }
 }

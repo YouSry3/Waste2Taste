@@ -8,5 +8,6 @@ public static class VendorErrors
     public static Error InvalidId => new("Vendor.InvalidId", "The vendor ID is invalid.");
     public static Error NameRequired => new("Vendor.NameRequired", "Vendor name is required.");
     public static Error OwnerMustBeVendor(Guid ownerId) => new("Vendor.OwnerMustBeVendor", $"The owner with ID {ownerId} must be a vendor.");
+    public static Error UserNotFound => new("Vendor.UserNotFound", "The user associated with the vendor request was not found.");
 }
 

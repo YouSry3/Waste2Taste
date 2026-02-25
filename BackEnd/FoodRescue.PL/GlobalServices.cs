@@ -118,6 +118,7 @@ namespace FoodRescue.PL
             services.AddScoped<IDashboardRepository, DashboardRepository>();
             services.AddScoped<IModerationService, ModerationService>();
             services.AddScoped<IReportsService, ReportsService>();
+            services.AddScoped<IVendorRequestService,VendorRequestService>();
 
 
             VendorMapsterConfig.RegisterVendorMappings();
