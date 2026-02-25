@@ -18,6 +18,7 @@ namespace FoodRescue.DAL.Context
         public DbSet<Order> Orders { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<VendorRequest> VendorRequests { get; set; }
+        public DbSet<AISpoileRequest> AISpoileRequests { get; set; }
 
         // Configurations
         protected override void OnModelCreating(ModelBuilder modelBuilder)

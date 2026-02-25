@@ -4,10 +4,12 @@ using FoodRescue.BLL.Contract.Products;
 using FoodRescue.BLL.Extensions.Products;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
+using FoodRescue.DAL.Consts;
 using Mapster;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace FoodRescue.BLL.Services.Products;
 
@@ -16,15 +18,21 @@ public class ProductService : IProductService
     private readonly IProductRepository _productRepository;
     private readonly CompanyDbContext _context;
     private readonly IWebHostEnvironment _environment;
+    private readonly IAISpoilageDetectionService _aiDetectionService;
+    private readonly ILogger<ProductService> _logger;
 
     public ProductService(
         IProductRepository productRepository,
         CompanyDbContext context,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment,
+        IAISpoilageDetectionService aiDetectionService,
+        ILogger<ProductService> logger)
     {
         _productRepository = productRepository;
         _context = context;
         _environment = environment;
+        _aiDetectionService = aiDetectionService ?? throw new ArgumentNullException(nameof(aiDetectionService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     private async Task<List<Review>> GetReviewsByProductIdAsync(Guid productId)
@@ -176,15 +184,28 @@ public class ProductService : IProductService
         if (vendor is null)
             return Result.Failure<Guid>(ProductErrors.VendorNotFound);
 
-        
-
         var product = request.Adapt<Product>();
         product.ImageUrl = await SaveImageAsync(request.ImageFile);
         product.Expired = false;
+        product.Status = ProductStatus.Pending;
         product.CreatedAt = DateTime.UtcNow;
 
-     
         await _productRepository.AddAsync(product);
+
+        _logger.LogInformation("Product created with ID {ProductId}. Starting AI spoilage detection...", product.Id);
+
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await _aiDetectionService.DetectSpoilageAsync(product.Id, request.ImageFile);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error running AI spoilage detection for product {ProductId}", product.Id);
+            }
+        });
+
         return Result.Success(product.Id);
     }
 

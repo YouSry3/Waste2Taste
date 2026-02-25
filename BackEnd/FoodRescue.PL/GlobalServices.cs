@@ -119,7 +119,13 @@ namespace FoodRescue.PL
             services.AddScoped<IModerationService, ModerationService>();
             services.AddScoped<IReportsService, ReportsService>();
             services.AddScoped<IVendorRequestService,VendorRequestService>();
-
+            services.AddScoped<IListingApprovalService,ListingApprovalService>();
+            services.AddScoped<IAISpoilageDetectionService, AISpoilageDetectionService>();
+            services.AddHttpClient<IAISpoilageDetectionService, AISpoilageDetectionService>()
+                .ConfigureHttpClient(client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(30);
+                });
 
             VendorMapsterConfig.RegisterVendorMappings();
 
