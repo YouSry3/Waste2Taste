@@ -85,37 +85,31 @@ namespace FoodRescue.PL.Controllers
             return Ok(new { Data = result.Value });
         }
 
-        [HttpPut("{vendorRequestId}/approve")]
+        [HttpPut("approve")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> ApproveVendorRequest(Guid vendorRequestId)
+        public async Task<IActionResult> ApproveVendorRequest([FromHeader]Guid vendorRequestId)
         {
-            var adminId = GetUserIdFromClaims();
-            if (adminId == Guid.Empty)
-                return Unauthorized(new { Error = "Admin ID not found in token" });
+           
+            var result = await _vendorRequestService.ApproveVendorRequestAsync(vendorRequestId);
 
-            var result = await _vendorRequestService.ApproveVendorRequestAsync(vendorRequestId, adminId);
-
-            if (!result.IsSuccess)
+            if (result.IsFailure)
                 return BadRequest(new { Error = result.Error! });
 
             return Ok(new { Message = "Vendor request approved successfully" });
         }
 
-        [HttpPut("{vendorRequestId}/reject")]
+        [HttpPut("reject")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> RejectVendorRequest(Guid vendorRequestId)
+        public async Task<IActionResult> RejectVendorRequest([FromHeader]Guid vendorRequestId)
         {
-            var adminId = GetUserIdFromClaims();
-            if (adminId == Guid.Empty)
-                return Unauthorized(new { Error = "Admin ID not found in token" });
-
-            var result = await _vendorRequestService.RejectVendorRequestAsync(vendorRequestId, adminId);
+         
+            var result = await _vendorRequestService.RejectVendorRequestAsync(vendorRequestId);
 
             if (!result.IsSuccess)
                 return BadRequest(new { Error = result.Error! });
@@ -125,8 +119,8 @@ namespace FoodRescue.PL.Controllers
 
         private Guid GetUserIdFromClaims()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return string.IsNullOrWhiteSpace(userIdClaim) || !Guid.TryParse(userIdClaim, out var userId) ? Guid.Empty : userId;
+            var userIdClaim = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+            return userIdClaim;
         }
     }
 }

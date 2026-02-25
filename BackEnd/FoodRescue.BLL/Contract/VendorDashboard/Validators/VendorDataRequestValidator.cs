@@ -20,7 +20,7 @@ public class VendorDataRequestValidator : AbstractValidator<VendorDataRequest>
         
 
         // BusinessName validation
-        RuleFor(x => x.BusinessName)
+        RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Business name is required.")
             .MinimumLength(3).WithMessage("Business name must be at least 3 characters long.")
             .MaximumLength(200).WithMessage("Business name must not exceed 200 characters.")

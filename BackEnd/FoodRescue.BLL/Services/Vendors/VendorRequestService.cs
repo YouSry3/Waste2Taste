@@ -6,6 +6,7 @@ using FoodRescue.DAL.Consts;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Mapster;
 
 namespace FoodRescue.BLL.Services.Vendors;
 
@@ -29,21 +30,13 @@ public class VendorRequestService : IVendorRequestService
             {
                 _logger.LogWarning("User {UserId} not found", userId);
                 return Result.Failure<Guid>(VendorErrors.UserNotFound);
-            }
+        }
 
-            var vendorRequest = new VendorRequest
-            {
-                
-                UserId = userId,
-                BusinessName = request.BusinessName,
-                Address = request.Address,
-                PhoneNumber = request.PhoneNumber,
-                Category = request.Category,
-                HealthCertificateUrl = request.HealthCertificateUrl,
-                BusinessLicenseUrl = request.BusinessLicenseUrl,
-                Status = VendorRequestStatus.Pending,
-                CreatedAt = DateTime.UtcNow
-            };
+        var vendorRequest = request.Adapt<VendorRequest>();
+        vendorRequest.UserId = userId;
+        vendorRequest.Status = VendorRequestStatus.Pending;
+        vendorRequest.CreatedAt = DateTime.UtcNow;
+            
 
             _context.VendorRequests.Add(vendorRequest);
             await _context.SaveChangesAsync();
@@ -102,56 +95,44 @@ public class VendorRequestService : IVendorRequestService
         }
     }
 
-    public async Task<Result> ApproveVendorRequestAsync(Guid vendorRequestId, Guid adminId)
+    public async Task<Result> ApproveVendorRequestAsync(Guid vendorRequestId)
     {
-        try
+
+        var vendorRequest = await _context.VendorRequests
+            .FirstOrDefaultAsync(vr => vr.Id == vendorRequestId);
+
+        if (vendorRequest == null)
         {
-            _logger.LogInformation("Approving vendor request {VendorRequestId} by admin {AdminId}", vendorRequestId, adminId);
-
-            var vendorRequest = await _context.VendorRequests
-                .FirstOrDefaultAsync(vr => vr.Id == vendorRequestId);
-
-            if (vendorRequest == null)
-            {
-                _logger.LogWarning("Vendor request {VendorRequestId} not found", vendorRequestId);
-                return Result.Failure(new Error("VendorRequestNotFound", "Vendor request not found"));
-            }
-
-            vendorRequest.Status = VendorRequestStatus.Approved;
-            vendorRequest.ReviewedAt = DateTime.UtcNow;
-            
-
-            var vendor = new Vendor
-            {
-                Id = Guid.NewGuid(),
-                OwnerId = vendorRequest.UserId,
-                Name = vendorRequest.BusinessName,
-                Address = vendorRequest.Address,
-                Category = vendorRequest.Category,
-                PhoneNumber = vendorRequest.PhoneNumber,
-                CreatedAt = DateTime.UtcNow,
-                Role = "vendor"
-            };
-
-            _context.Vendors.Add(vendor);
-            _context.VendorRequests.Update(vendorRequest);
-            await _context.SaveChangesAsync();
-
-            _logger.LogInformation("Vendor request {VendorRequestId} approved and vendor created", vendorRequestId);
-            return Result.Success();
+            _logger.LogWarning("Vendor request {VendorRequestId} not found", vendorRequestId);
+            return Result.Failure(new Error("VendorRequestNotFound", "Vendor request not found"));
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error approving vendor request");
-            return Result.Failure(new Error("VendorRequestApprovalError", "An error occurred while approving the vendor request"));
-        }
+
+        vendorRequest.Status = VendorRequestStatus.Approved;
+        vendorRequest.ReviewedAt = DateTime.UtcNow;
+
+
+        var vendor = vendorRequest.Adapt<Vendor>();
+        vendor.Name = vendorRequest.BusinessName;
+        vendor.OwnerId = vendorRequest.UserId;
+        vendor.CreatedAt = DateTime.UtcNow;
+        vendor.Role = "vendor";
+
+
+        _context.Vendors.Add(vendor);
+        _context.VendorRequests.Update(vendorRequest);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Vendor request {VendorRequestId} approved and vendor created", vendorRequestId);
+        return Result.Success();
     }
+        
+       
 
-    public async Task<Result> RejectVendorRequestAsync(Guid vendorRequestId, Guid adminId)
+    public async Task<Result> RejectVendorRequestAsync(Guid vendorRequestId)
     {
         try
         {
-            _logger.LogInformation("Rejecting vendor request {VendorRequestId} by admin {AdminId}", vendorRequestId, adminId);
+            _logger.LogInformation("Rejecting vendor request {VendorRequestId}", vendorRequestId );
 
             var vendorRequest = await _context.VendorRequests
                 .FirstOrDefaultAsync(vr => vr.Id == vendorRequestId);
@@ -159,7 +140,7 @@ public class VendorRequestService : IVendorRequestService
             if (vendorRequest == null)
             {
                 _logger.LogWarning("Vendor request {VendorRequestId} not found", vendorRequestId);
-                return Result.Failure(new Error("VendorRequestNotFound", "Vendor request not found"));
+                return Result.Failure(VendorErrors.NotFound);
             }
 
             vendorRequest.Status = VendorRequestStatus.Rejected;
@@ -209,7 +190,7 @@ public class VendorRequestService : IVendorRequestService
         return new VendorDataRequest
         {
             
-            BusinessName = vendorRequest.BusinessName,
+            Name = vendorRequest.BusinessName,
             Category = vendorRequest.Category,
             Email = vendorRequest.User?.Email ?? string.Empty,
             PhoneNumber = vendorRequest.PhoneNumber,
@@ -219,4 +200,6 @@ public class VendorRequestService : IVendorRequestService
             
         };
     }
+
+
 }

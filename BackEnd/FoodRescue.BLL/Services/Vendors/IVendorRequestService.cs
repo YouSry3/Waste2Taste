@@ -8,7 +8,7 @@ public interface IVendorRequestService
     Task<Result<Guid>> CreateVendorRequestAsync(VendorDataRequest request, Guid userId);
     Task<Result<VendorDataRequest>> GetVendorRequestAsync(Guid vendorRequestId);
     Task<Result<List<VendorDataRequest>>> GetPendingVendorRequestsAsync();
-    Task<Result> ApproveVendorRequestAsync(Guid vendorRequestId, Guid adminId);
-    Task<Result> RejectVendorRequestAsync(Guid vendorRequestId, Guid adminId);
+    Task<Result> ApproveVendorRequestAsync(Guid vendorRequestId);
+    Task<Result> RejectVendorRequestAsync(Guid vendorRequestId);
     Task<Result<List<VendorDataRequest>>> GetAllVendorRequestsAsync(int page, int limit);
 }

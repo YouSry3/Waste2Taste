@@ -13,7 +13,7 @@ namespace FoodRescue.BLL.Contract.VendorDashboard
        
       
 
-        public string BusinessName { get; set; } = null!;
+        public string Name { get; set; } = null!;
 
       
   
