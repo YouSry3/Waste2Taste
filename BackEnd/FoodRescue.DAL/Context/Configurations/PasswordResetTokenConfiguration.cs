@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FoodRescue.DAL.EntitiesConfigurations
+namespace FoodRescue.DAL.Context.Configurations
 {
     public class PasswordResetTokenConfiguration : IEntityTypeConfiguration<PasswordResetToken>
     {

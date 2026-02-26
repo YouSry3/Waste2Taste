@@ -2,6 +2,7 @@
 using FluentValidation.AspNetCore;
 using FoodRescue.BLL.Contract.Authentication.Register;
 using FoodRescue.BLL.Contract.Products;
+using FoodRescue.BLL.Extensions.Dashboard;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.BLL.Extensions.Vendors.MapsterConfiguration;
 using FoodRescue.BLL.Repositorys.Dashboard;
@@ -16,6 +17,7 @@ using FoodRescue.BLL.Services.UserServices;
 using FoodRescue.BLL.Services.Vendors;
 using FoodRescue.BLL.ServicesWeb.Admin;
 using FoodRescue.BLL.ServicesWeb.Admin.Moderation;
+using FoodRescue.BLL.ServicesWeb.VendorDashboard;
 using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Extensions.Dashboard;
@@ -118,14 +120,16 @@ namespace FoodRescue.PL
             services.AddScoped<IDashboardRepository, DashboardRepository>();
             services.AddScoped<IModerationService, ModerationService>();
             services.AddScoped<IReportsService, ReportsService>();
-            services.AddScoped<IVendorRequestService,VendorRequestService>();
-            services.AddScoped<IListingApprovalService,ListingApprovalService>();
+            services.AddScoped<IVendorRequestService, VendorRequestService>();
+            services.AddScoped<IListingApprovalService, ListingApprovalService>();
             services.AddScoped<IAISpoilageDetectionService, AISpoilageDetectionService>();
             services.AddHttpClient<IAISpoilageDetectionService, AISpoilageDetectionService>()
                 .ConfigureHttpClient(client =>
                 {
                     client.Timeout = TimeSpan.FromSeconds(30);
                 });
+            services.AddScoped<IVendorDashboardRepository, VendorDashboardRepository>();
+            services.AddScoped<IVendorDashboardService, VendorDashboardService>();
 
             VendorMapsterConfig.RegisterVendorMappings();
 

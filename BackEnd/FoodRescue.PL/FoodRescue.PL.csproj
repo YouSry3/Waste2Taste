@@ -7,7 +7,7 @@
     <UserSecretsId>bc963905-7016-45fa-aedf-ca01911375ba</UserSecretsId>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DocumentationFile>C:\Users\Lenovo\Desktop\Your Development Projects\AdvancedCShap\Delegates\Delegates.sln</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
