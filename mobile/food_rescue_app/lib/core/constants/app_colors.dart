@@ -11,4 +11,5 @@ abstract class AppColors {
   static const Color fieldGray = Color(0x7DE6E7E6);
   static const Color textPrimary = Color(0xFF1F2937);
   static const Color surface = Colors.white;
+  static const Color black = Colors.black;
 }

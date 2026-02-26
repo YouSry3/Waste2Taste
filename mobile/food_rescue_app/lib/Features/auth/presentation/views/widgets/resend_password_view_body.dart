@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
-import 'auth_footer.dart';
 import 'custom_auth_icon.dart';
 import 'custom_greeting_section.dart';
 import 'reset_password_form_widget.dart';
