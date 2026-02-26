@@ -1,6 +1,6 @@
-﻿using FoodRescue.BLL.Extensions.Dashboard.Models;
-using FoodRescue.DAL.Context;
+﻿using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
+using FoodRescue.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodRescue.BLL.Extensions.Dashboard;
