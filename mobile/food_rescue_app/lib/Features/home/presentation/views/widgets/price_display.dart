@@ -19,6 +19,7 @@ class PriceDisplay extends StatelessWidget {
           "\$${price.toStringAsFixed(2)}",
           style: AppTextStyles.body.copyWith(
             fontSize: 20,
+            fontWeight: FontWeight.bold,
             color: AppColors.primary,
           ),
         ),
