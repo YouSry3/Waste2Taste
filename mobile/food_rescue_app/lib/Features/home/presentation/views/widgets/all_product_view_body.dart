@@ -5,8 +5,8 @@ import 'custom_search_widget.dart';
 import 'custom_sliver_app_bar.dart';
 import 'products_sliver_list_builder.dart';
 
-class ProductDetailsViewBody extends StatelessWidget {
-  const ProductDetailsViewBody({super.key});
+class AllProductsViewBody extends StatelessWidget {
+  const AllProductsViewBody({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -7,5 +7,5 @@ abstract class AppRoutes {
   static const String verifyEmail = '/verifyEmail';
   static const String resetPassword = '/resetPassword';
   static const String home = '/home';
-  static const String productDetails = '/productDetails';
+  static const String allProducts = '/allProducts';
 }
