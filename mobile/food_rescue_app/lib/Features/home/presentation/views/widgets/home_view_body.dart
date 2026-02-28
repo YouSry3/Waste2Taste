@@ -27,7 +27,7 @@ class HomeViewBody extends StatelessWidget {
         SliverToBoxAdapter(
           child: SectionHeader(
             title: AppStrings.nearbyDeals,
-            onTap: () => GoRouter.of(context).push(AppRoutes.productDetails),
+            onTap: () => GoRouter.of(context).push(AppRoutes.allProducts),
           ),
         ),
         ProductsSliverListBuilder(products: products),
