@@ -38,34 +38,34 @@ namespace FoodRescue.PL
         public static IServiceCollection AddProjectServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             // CORS Configuration
+            // CORS Configuration
             services.AddCors(options =>
             {
                 options.AddPolicy("FoodRescueCors", builder =>
                 {
                     if (environment.IsDevelopment())
                     {
-                        builder.WithOrigins(
-                            "http://localhost:5173",   // Vite dev server
-                            "http://localhost:5000",   // Alternative port
-                            "http://localhost:3000"    // Another alternative
-                        );
+                        builder
+                            .SetIsOriginAllowed(_ => true)  // ✅ Allow any origin in dev
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();            // ✅ Required for SignalR
                     }
                     else
                     {
-                        // In production, specify exact frontend domain
-                        builder.WithOrigins(configuration["AllowedOrigins"] ?? "");
+                        builder
+                            .WithOrigins(configuration["AllowedOrigins"] ?? "")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();
                     }
-
-                    builder.AllowAnyMethod()
-                           .AllowAnyHeader()
-                           .AllowCredentials();
                 });
             });
 
             // DbContext
 
             services.AddServices();
-
+            services.AddSignalR();
             services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
 
 

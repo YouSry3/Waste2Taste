@@ -1,8 +1,9 @@
-﻿using FoodRescue.BLL.ResultPattern;
-using FoodRescue.BLL.Contract.DTOs;
+﻿using FoodRescue.BLL.Contract.DTOs;
 using FoodRescue.BLL.Extensions.Users;
+using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Services.UserServices;
 using FoodRescue.BLL.Services.Vendors;
+using FoodRescue.Hubs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace FoodRescue.PL.Controllers
 {
     [Route("/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _service;
@@ -22,6 +23,17 @@ namespace FoodRescue.PL.Controllers
         {
             _service = service;
             _vendorService = vendorService;
+        }
+
+        [HttpGet("online-users")]
+        public IActionResult GetOnlineUsers()
+        {
+            var users = PresenceHub.GetOnlineUsers();
+            return Ok(new
+            {
+                Count = users.Count,
+                Users = users
+            });
         }
         // GET /user/profile
         [HttpGet("profile")]
