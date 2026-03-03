@@ -1,34 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:waste2taste/Features/home/data/models/product_model.dart';
 import 'discount_page.dart';
 import 'expiry_badge.dart';
 import 'rounded_top_image.dart';
 
 class ProductImageHeader extends StatelessWidget {
-  final String imageUrl;
-  final String expiryTime;
-  final String discountPercentage;
-
+  final ProductModel model;
+  final double? farFromTop;
+  final double? farFromBottom;
+  final StackFit? stackFit;
   const ProductImageHeader({
     super.key,
-    required this.imageUrl,
-    required this.expiryTime,
-    required this.discountPercentage,
+    required this.model,
+    this.farFromTop,
+    this.stackFit,
+    this.farFromBottom,
   });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
+      fit: stackFit ?? StackFit.loose,
       children: [
-        RoundedTopImage(imageUrl: imageUrl),
+        RoundedTopImage(imageUrl: model.imageUrl),
         Positioned(
-          top: 16,
+          top: farFromTop,
           left: 16,
-          child: ExpiryBadge(expiryTime: expiryTime),
+          bottom: farFromBottom,
+          child: ExpiryBadge(expiryTime: model.expiryTime),
         ),
         Positioned(
-          top: 16,
+          top: farFromTop,
           right: 16,
-          child: DiscountBadge(discountPercentage: discountPercentage),
+          bottom: farFromBottom,
+          child: DiscountBadge(discountPercentage: model.discountPercentage),
         ),
       ],
     );

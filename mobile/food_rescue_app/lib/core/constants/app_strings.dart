@@ -61,6 +61,8 @@ abstract class AppStrings {
   static const String nearbyDeals = "Nearby Deals";
   static const String seeAll = "See All";
   static const String noOffersNearby = "No offers found nearby.";
+  static const String reserveNow = "Reserve Now.";
+
 
   // Profile
   static const String myActivity = "My Activity";

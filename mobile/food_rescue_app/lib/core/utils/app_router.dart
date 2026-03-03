@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:waste2taste/Features/home/presentation/views/product_details_view.dart';
+import 'package:waste2taste/Features/home/presentation/views/reviews_view.dart';
 import '../../Features/home/presentation/views/home_view.dart';
 import '../../Features/auth/presentation/views/forget_password_view.dart';
 import '../../Features/auth/presentation/views/login_view.dart';
@@ -57,6 +59,14 @@ abstract class AppRouter {
       GoRoute(
         path: AppRoutes.allProducts,
         builder: (context, state) => const AllProductsView(),
+      ),
+      GoRoute(
+        path: AppRoutes.productDetails,
+        builder: (context, state) => const ProductDetailsView(),
+      ),
+      GoRoute(
+        path: AppRoutes.productReviews,
+        builder: (context, state) => const ProductReviewsView(),
       ),
     ],
   );

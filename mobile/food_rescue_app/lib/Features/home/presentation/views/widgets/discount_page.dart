@@ -10,10 +10,10 @@ class DiscountBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PillBadge(
-      color: AppColors.primary,
+      color: AppColors.secondary,
       child: Text(
         "-$discountPercentage",
-        style: AppTextStyles.label.copyWith(color: Colors.white, fontSize: 12),
+        style: AppTextStyles.label.copyWith(color: Colors.white, fontSize: 14),
       ),
     );
   }
