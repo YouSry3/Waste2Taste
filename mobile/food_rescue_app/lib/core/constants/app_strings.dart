@@ -62,8 +62,10 @@ abstract class AppStrings {
   static const String seeAll = "See All";
   static const String noOffersNearby = "No offers found nearby.";
   static const String reserveNow = "Reserve Now.";
-
-
+  static const String submitReview = 'Submit Review';
+  static const String shareYourThoughts = 'Share your thoughts...';
+  static const String howWasYourExperience= 'How was your experience?';
+  static const String writeReview= 'Write a Review';
   // Profile
   static const String myActivity = "My Activity";
   static const String myOrders = "My Orders";

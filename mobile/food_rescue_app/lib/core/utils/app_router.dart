@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:waste2taste/Features/home/presentation/views/product_details_view.dart';
-import 'package:waste2taste/Features/home/presentation/views/reviews_view.dart';
+import 'package:waste2taste/Features/home/presentation/views/poduct_reviews_view.dart';
 import '../../Features/home/presentation/views/home_view.dart';
 import '../../Features/auth/presentation/views/forget_password_view.dart';
 import '../../Features/auth/presentation/views/login_view.dart';

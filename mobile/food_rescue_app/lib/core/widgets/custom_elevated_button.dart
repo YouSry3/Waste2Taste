@@ -12,7 +12,7 @@ class CustomElevatedButton extends StatelessWidget {
     this.bgColor
   });
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color? bgColor;
   @override
   Widget build(BuildContext context) {
