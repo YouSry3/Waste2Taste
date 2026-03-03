@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:waste2taste/Features/home/presentation/views/widgets/custom_sliver_app_bar.dart';
-import 'package:waste2taste/core/constants/app_text_styles.dart';
+import '../../../../../Features/home/presentation/views/widgets/custom_sliver_app_bar.dart';
+import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/widgets/section_header.dart';
 import 'account_auth_section.dart';
@@ -17,6 +17,7 @@ class ProfileViewBody extends StatelessWidget {
     return SafeArea(
       minimum: EdgeInsets.only(left: 20, right: 20),
       child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
           CustomSliverAppBar(
             widget: Text(

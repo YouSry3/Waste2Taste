@@ -10,6 +10,7 @@ class ProfileMenuSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: items.length * 65,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -22,12 +23,11 @@ class ProfileMenuSection extends StatelessWidget {
         ],
       ),
       child: ListView.separated(
-        shrinkWrap: true,
         itemCount: items.length,
         physics: const NeverScrollableScrollPhysics(),
         separatorBuilder: (_, _) => const Divider(
           height: 1,
-          thickness: 1,
+          thickness: 2,
           indent: 72,
           color: Color(0x0D000000),
         ),
