@@ -10,4 +10,5 @@ abstract class AppRoutes {
   static const String allProducts = '/allProducts';
   static const String productDetails = '/productDetails';
   static const String productReviews = '/productReviews';
+  static const String homeNavigationBar = '/homeNavigationBar';
 }

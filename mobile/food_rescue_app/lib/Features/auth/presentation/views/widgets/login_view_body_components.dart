@@ -40,8 +40,9 @@ class LoginViewBodyComponents extends StatelessWidget {
             const SizedBox(height: 32),
             CustomElevatedButton(
               text: AppStrings.login,
-              onPressed: () =>
-                  GoRouter.of(context).pushReplacement(AppRoutes.home),
+              onPressed: () => GoRouter.of(
+                context,
+              ).pushReplacement(AppRoutes.homeNavigationBar),
             ),
             const SizedBox(height: 42),
             AuthFooter(
