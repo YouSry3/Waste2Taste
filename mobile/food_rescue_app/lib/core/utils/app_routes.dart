@@ -11,4 +11,9 @@ abstract class AppRoutes {
   static const String productDetails = '/productDetails';
   static const String productReviews = '/productReviews';
   static const String homeNavigationBar = '/homeNavigationBar';
+  static const String ordersView = '/ordersView';
+  static const String savedOrdersView = '/savedOrdersView';
+  static const String editProfileView = '/editProfileView';
+  static const String generalSettingsView = '/generalSettingsView';
+  static const String reportsView = '/reportsView';
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../Features/home/presentation/views/home_view.dart';
+import '../../Features/profile/presentation/views/profile_view.dart';
 import 'custom_nav_bar.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
@@ -17,7 +18,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
     const HomeView(),
     const Text('Map'),
     const Text('orders'),
-    const Text('profile'),
+    const ProfileView(),
   ];
 
   @override
