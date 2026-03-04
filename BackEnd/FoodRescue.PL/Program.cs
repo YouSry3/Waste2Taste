@@ -1,5 +1,6 @@
 using FoodRescue.BLL.Settings;
 using FoodRescue.DAL.Context;
+using FoodRescue.Hubs;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -21,7 +22,7 @@ namespace FoodRescue.PL
 
 
 
-          
+            builder.Services.AddSignalR();
 
 
 
@@ -40,6 +41,8 @@ namespace FoodRescue.PL
          System.Net.SecurityProtocolType.Tls12;
             var app = builder.Build();
 
+            app.UseCors("FoodRescueCors");
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -49,7 +52,7 @@ namespace FoodRescue.PL
 
             app.UseHttpsRedirection();
             // Use CORS policy
-            app.UseCors("FoodRescueCors");
+           
 
 
             // Create wwwroot if not exists
@@ -60,6 +63,7 @@ namespace FoodRescue.PL
             }
 
             app.UseStaticFiles(); // Serve images from wwwroot
+            app.MapHub<PresenceHub>("/presenceHub");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

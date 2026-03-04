@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/constants/app_text_styles.dart';
+import '../constants/app_colors.dart';
+import '../constants/app_text_styles.dart';
 
 class CustomElevatedButton extends StatelessWidget {
   const CustomElevatedButton({
     super.key,
     required this.text,
     required this.onPressed,
+    this.bgColor
   });
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
+  final Color? bgColor;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(
             fixedSize: Size(MediaQuery.widthOf(context), 56),
-            backgroundColor: AppColors.primary,
+            backgroundColor: bgColor ?? AppColors.primary,
             disabledBackgroundColor: AppColors.primary.withValues(alpha: .6),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),

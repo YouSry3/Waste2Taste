@@ -16,11 +16,7 @@ class CustomProductItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProductImageHeader(
-                  imageUrl: product.imageUrl,
-                  expiryTime: product.expiryTime,
-                  discountPercentage: product.discountPercentage,
-                ),
+                ProductImageHeader(model: product, farFromTop: 16),
                 ProductItemDetails(product: product),
               ],
             ),

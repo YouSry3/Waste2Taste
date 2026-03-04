@@ -8,11 +8,14 @@ import '../../Features/auth/presentation/views/reset_password_view.dart';
 import '../../Features/auth/presentation/views/signup_view.dart';
 import '../../Features/auth/presentation/views/verify_email_view.dart';
 import '../../Features/home/presentation/views/all_product_view.dart';
+import '../../Features/home/presentation/views/poduct_reviews_view.dart';
+import '../../Features/home/presentation/views/product_details_view.dart';
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
 import '../../Features/splash/presentation/manager/onboarding_cubit.dart';
 import '../../Features/splash/presentation/views/onboarding_view.dart';
 import '../../Features/splash/presentation/views/splash_view.dart';
 import '../functions/setup_service_locator.dart';
+import '../widgets/custom_bottom_navigation_bar.dart';
 import 'app_routes.dart';
 
 abstract class AppRouter {
@@ -57,6 +60,18 @@ abstract class AppRouter {
       GoRoute(
         path: AppRoutes.allProducts,
         builder: (context, state) => const AllProductsView(),
+      ),
+      GoRoute(
+        path: AppRoutes.productDetails,
+        builder: (context, state) => const ProductDetailsView(),
+      ),
+      GoRoute(
+        path: AppRoutes.productReviews,
+        builder: (context, state) => const ProductReviewsView(),
+      ),
+      GoRoute(
+        path: AppRoutes.homeNavigationBar,
+        builder: (context, state) => const CustomBottomNavigationBar(),
       ),
     ],
   );

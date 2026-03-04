@@ -14,13 +14,13 @@ class ExpiryBadge extends StatelessWidget {
       color: Colors.white,
       child: Row(
         children: [
-          const Icon(LucideIcons.clock, size: 14, color: AppColors.accent),
+          const Icon(LucideIcons.clock, size: 15, color: AppColors.accent),
           const SizedBox(width: 4),
           Text(
             expiryTime,
             style: AppTextStyles.label.copyWith(
               color: AppColors.accent,
-              fontSize: 12,
+              fontSize: 13,
             ),
           ),
         ],

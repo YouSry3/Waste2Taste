@@ -8,7 +8,7 @@ import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/utils/app_routes.dart';
 import 'auth_footer.dart';
 import 'custom_auth_icon.dart';
-import 'custom_elevated_button.dart';
+import '../../../../../core/widgets/custom_elevated_button.dart';
 import 'custom_greeting_section.dart';
 import 'custom_pinput.dart';
 

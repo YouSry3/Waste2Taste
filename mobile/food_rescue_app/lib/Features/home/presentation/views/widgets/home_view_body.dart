@@ -6,7 +6,7 @@ import '../../../data/models/product_model.dart';
 import 'custom_sliver_app_bar.dart';
 import 'customer_card.dart';
 import 'products_sliver_list_builder.dart';
-import 'section_header.dart';
+import '../../../../../core/widgets/section_header.dart';
 
 class HomeViewBody extends StatelessWidget {
   const HomeViewBody({super.key});
@@ -31,7 +31,6 @@ class HomeViewBody extends StatelessWidget {
           ),
         ),
         ProductsSliverListBuilder(products: products),
-        const SliverPadding(padding: EdgeInsets.only(bottom: 20)),
       ],
     );
   }
