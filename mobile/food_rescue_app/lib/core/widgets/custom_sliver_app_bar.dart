@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
+import '../constants/app_colors.dart';
 
 class CustomSliverAppBar extends StatelessWidget {
-  const CustomSliverAppBar({super.key, required this.widget});
+  const CustomSliverAppBar({
+    super.key,
+    required this.widget,
+    this.toolbarHeight = 48,
+    this.tabBar,
+  });
   final Widget widget;
+  final double toolbarHeight;
+  final PreferredSizeWidget? tabBar;
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
@@ -12,9 +19,10 @@ class CustomSliverAppBar extends StatelessWidget {
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       floating: true,
-      toolbarHeight: 90,
+      toolbarHeight: toolbarHeight,
       centerTitle: true,
       title: widget,
+      bottom: tabBar,
     );
   }
 }

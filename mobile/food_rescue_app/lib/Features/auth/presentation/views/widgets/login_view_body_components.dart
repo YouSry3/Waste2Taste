@@ -6,7 +6,7 @@ import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/utils/app_routes.dart';
 import 'custom_auth_icon.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
-import 'custom_greeting_section.dart';
+import '../../../../../core/widgets/custom_greeting_section.dart';
 import 'forget_pass_and_remember_me.dart';
 import 'auth_footer.dart';
 import 'login_form_widget.dart';

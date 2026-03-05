@@ -51,7 +51,7 @@ final List<ProfileMenuItemModel> generalSettings = [
     icon: LucideIcons.helpCircle,
     label: AppStrings.helpSupport,
     color: Colors.orange,
-    onTap: (context) => GoRouter.of(context).push(AppRoutes.reportsView),
+    onTap: (context) => GoRouter.of(context).push(AppRoutes.helpAndSupportView),
   ),
 ];
 

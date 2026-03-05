@@ -64,8 +64,8 @@ abstract class AppStrings {
   static const String reserveNow = "Reserve Now.";
   static const String submitReview = 'Submit Review';
   static const String shareYourThoughts = 'Share your thoughts...';
-  static const String howWasYourExperience= 'How was your experience?';
-  static const String writeReview= 'Write a Review';
+  static const String howWasYourExperience = 'How was your experience?';
+  static const String writeReview = 'Write a Review';
   // Profile
   static const String myActivity = "My Activity";
   static const String myOrders = "My Orders";
@@ -76,6 +76,15 @@ abstract class AppStrings {
   static const String helpSupport = "Help & Support";
   static const String logOut = "Log Out";
   static const String guest = "Guest";
+  static const String saveChanges = "Save Changes";
+  static const String submitReport = "Submit Report";
+  static const String subject = "Subject";
+  static const String description = "Description";
+  static const String howCanWeHelpYou = "How can we help you?";
+  static const String describeYourIssueOrFeedbackBelow =
+      "Describe your issue or feedback below.";
+  static const String brieflyDescribeTheIssue = "Briefly describe the issue";
+  static const String provideMoreDetails = "Provide more details...";
 
   // Settings
   static const String notifications = "Notifications";

@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import '/core/utils/app_routes.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../data/models/product_model.dart';
-import 'custom_sliver_app_bar.dart';
+import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import 'customer_card.dart';
 import 'products_sliver_list_builder.dart';
 import '../../../../../core/widgets/section_header.dart';
@@ -18,6 +18,7 @@ class HomeViewBody extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       slivers: [
         CustomSliverAppBar(
+          toolbarHeight: 90,
           widget: CustomerCard(
             userName: 'userName',
             location: 'location',

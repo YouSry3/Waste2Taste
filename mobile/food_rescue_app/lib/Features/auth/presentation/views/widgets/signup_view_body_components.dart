@@ -4,7 +4,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
 import 'custom_auth_icon.dart';
-import 'custom_greeting_section.dart';
+import '../../../../../core/widgets/custom_greeting_section.dart';
 import 'auth_footer.dart';
 import 'signup_form_widget.dart';
 

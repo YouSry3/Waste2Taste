@@ -9,7 +9,7 @@ import '../../../../../core/utils/app_routes.dart';
 import 'auth_footer.dart';
 import 'custom_auth_icon.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
-import 'custom_greeting_section.dart';
+import '../../../../../core/widgets/custom_greeting_section.dart';
 import 'custom_pinput.dart';
 
 class VerifyEmailViewBody extends StatelessWidget {

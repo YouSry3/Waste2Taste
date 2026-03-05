@@ -15,5 +15,5 @@ abstract class AppRoutes {
   static const String savedOrdersView = '/savedOrdersView';
   static const String editProfileView = '/editProfileView';
   static const String generalSettingsView = '/generalSettingsView';
-  static const String reportsView = '/reportsView';
+  static const String helpAndSupportView = '/helpAndSupportView';
 }

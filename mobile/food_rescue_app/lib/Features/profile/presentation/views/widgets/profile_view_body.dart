@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../Features/home/presentation/views/widgets/custom_sliver_app_bar.dart';
+import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/widgets/section_header.dart';
@@ -29,6 +29,7 @@ class ProfileViewBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 24),
                 const ProfileImagaWithName(name: 'Abdelaziz sameh'),
                 const SizedBox(height: 24),
                 const StatesRow(),
