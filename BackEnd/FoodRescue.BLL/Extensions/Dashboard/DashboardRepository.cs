@@ -1,14 +1,11 @@
-﻿
-using FoodRescue.BLL.ResultPattern;
+﻿using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Users;
 using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
-using FoodRescue.BLL.Extensions;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Extensions.Dashboard;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace FoodRescue.BLL.Repositorys.Dashboard
 {
@@ -21,38 +18,74 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
             _context = context;
         }
 
-        public async Task<Result<decimal>> GetTotalRevenueAsync(int days)
+        // ==============================
+        // Revenue
+        // ==============================
+        public async Task<Result<decimal>> GetTotalRevenueAsync(int days, int skipDays = 0)
         {
-            var fromDate = DateTime.UtcNow.AddDays(-days);
+            var startDate = DateTime.UtcNow.AddDays(-(days + skipDays));
+            var endDate = DateTime.UtcNow.AddDays(-skipDays);
+
             var totalRevenue = await _context.Orders
-                .Where(o => o.CreatedAt >= fromDate)
+                .Where(o => o.CreatedAt >= startDate && o.CreatedAt < endDate)
                 .SumAsync(o => (decimal?)o.TotalPrice) ?? 0;
+
             return Result.Success(totalRevenue);
         }
 
-        public async Task<Result<int>> GetOrdersCountAsync(int days)
+        // ==============================
+        // Orders Count
+        // ==============================
+        public async Task<Result<int>> GetOrdersCountAsync(int days, int skipDays = 0)
         {
-            var fromDate = DateTime.UtcNow.AddDays(-days);
+            var startDate = DateTime.UtcNow.AddDays(-(days + skipDays));
+            var endDate = DateTime.UtcNow.AddDays(-skipDays);
+
             var count = await _context.Orders
-                .CountAsync(o => o.CreatedAt >= fromDate);
+                .CountAsync(o => o.CreatedAt >= startDate && o.CreatedAt < endDate);
+
             return Result.Success(count);
         }
 
-        public async Task<Result<int>> GetActiveUsersCountAsync(int days)
+        // ==============================
+        // Active Users
+        // ==============================
+        public async Task<Result<int>> GetActiveUsersCountAsync(int days, int skipDays = 0)
         {
-            var count = await _context.Users.CountAsync();
+            var startDate = DateTime.UtcNow.AddDays(-(days + skipDays));
+            var endDate = DateTime.UtcNow.AddDays(-skipDays);
+
+            var count = await _context.Users
+                .Where(u => u.IsActive && u.CreatedAt >= startDate && u.CreatedAt < endDate)
+                .CountAsync();
+
             return Result.Success(count);
         }
 
-        public async Task<Result<int>> GetVendorsCountAsync(int days)
+        // ==============================
+        // Vendors Count
+        // ==============================
+        public async Task<Result<int>> GetVendorsCountAsync(int days, int skipDays = 0)
         {
-            var count = await _context.Vendors.CountAsync();
+            var startDate = DateTime.UtcNow.AddDays(-(days + skipDays));
+            var endDate = DateTime.UtcNow.AddDays(-skipDays);
+
+            var count = await _context.Vendors
+                .Where(v => v.CreatedAt >= startDate && v.CreatedAt < endDate)
+                .CountAsync();
+
             return Result.Success(count);
         }
 
+        // ==============================
+        // Monthly Trends
+        // ==============================
         public async Task<List<MonthlyTrendDto>> GetMonthlyTrendsAsync(int days)
         {
+            var fromDate = DateTime.UtcNow.AddDays(-days);
+
             return await _context.Orders
+                .Where(o => o.CreatedAt >= fromDate)
                 .GroupBy(o => new { o.CreatedAt.Year, o.CreatedAt.Month })
                 .Select(g => new MonthlyTrendDto
                 {
@@ -64,10 +97,13 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
                 .ToListAsync();
         }
 
+        // ==============================
+        // Category Distribution
+        // ==============================
         public async Task<List<CategoryDistributionDto>> GetCategoryDistributionAsync()
         {
             var categoryData = await _context.Products
-                .GroupBy(p => p.Category)
+                .GroupBy(p => p.Vendor.Category)
                 .Select(g => new
                 {
                     Category = g.Key,
@@ -77,32 +113,35 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
 
             var totalProducts = categoryData.Sum(x => x.Count);
 
-            return categoryData
-                .Select(c => new CategoryDistributionDto
-                {
-                    CategoryName = c.Category,
-                    Count = c.Count,
-                    Percentage = totalProducts == 0 ? 0 :
-                                 (decimal)c.Count / totalProducts * 100
-                })
-                .ToList();
+            return categoryData.Select(c => new CategoryDistributionDto
+            {
+                CategoryName = c.Category.ToString(),
+                Count = c.Count,
+                Percentage = totalProducts == 0 ? 0 :
+                    (decimal)c.Count / totalProducts * 100
+            }).ToList();
         }
+
+        // ==============================
+        // Vendors Overview
+        // ==============================
         public async Task<int> GetTotalVendorsAsync()
-       => await _context.Vendors.CountAsync();
+            => await _context.Vendors.CountAsync();
 
         public async Task<int> GetNgoPartnersAsync()
-            => await _context.Vendors
-                .CountAsync(v => v.Role == "NGO");
+            => await _context.Vendors.CountAsync(v => v.Role == "NGO");
 
         public async Task<int> GetActiveListingsAsync()
-            => await _context.Products
-                .CountAsync(p => p.Expired == false);
+            => await _context.Products.CountAsync(p => !p.Expired);
 
         public async Task<decimal> GetTotalRevenueAsync()
             => await _context.Orders
-                .Where(o => o.Status == "completed")
+                .Where(o => o.Status == "Completed")
                 .SumAsync(o => o.TotalPrice);
 
+        // ==============================
+        // Top Vendors
+        // ==============================
         public async Task<List<TopVendorDto>> GetTopPerformersAsync(int count)
         {
             return await _context.Orders
@@ -119,6 +158,9 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
                 .ToListAsync();
         }
 
+        // ==============================
+        // Vendors List
+        // ==============================
         public async Task<PagedResultDto<VendorListItemDto>> GetVendorsAsync(
             int page,
             int limit,
@@ -128,7 +170,7 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
         {
             var query = _context.Vendors.AsQueryable();
 
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrWhiteSpace(search))
                 query = query.Where(v => v.Name.Contains(search));
 
             var total = await query.CountAsync();
@@ -143,8 +185,7 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
                     Revenue = _context.Orders
                         .Where(o => o.Product.VendorId == v.Id)
                         .Sum(o => (decimal?)o.TotalPrice) ?? 0,
-                    ListingsCount = _context.Products
-                        .Count(p => p.VendorId == v.Id),
+                    ListingsCount = _context.Products.Count(p => p.VendorId == v.Id),
                     Rating = _context.Reviews
                         .Where(r => r.Product.VendorId == v.Id)
                         .Average(r => (double?)r.Rating) ?? 0
@@ -159,32 +200,19 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
         }
 
         // ==============================
-        // 1️⃣ Total Users
+        // Users Overview
         // ==============================
         public async Task<int> GetTotalUsersAsync()
-        {
-            return await _context.Users.CountAsync();
-        }
+            => await _context.Users.CountAsync();
 
-        // ==============================
-        // 2️⃣ Active Users
-        // ==============================
         public async Task<int> GetActiveUsersAsync()
-        {
-            return await _context.Users
-                .Where(u => u.IsActive)
-                .CountAsync();
-        }
+            => await _context.Users.CountAsync(u => u.IsActive);
+
+        public async Task<int> GetTotalOrdersAsync()
+            => await _context.Orders.CountAsync();
 
         // ==============================
-        // 3️⃣ Total Orders
-        // ==============================
-        public async Task<int> GetTotalOrdersAsync()
-        {
-            return await _context.Orders.CountAsync();
-        }
-        // ==============================
-        // 4️⃣ Top Spenders
+        // Top Spenders
         // ==============================
         public async Task<List<UserSummaryDto>> GetTopSpendersAsync(int top)
         {
@@ -193,39 +221,29 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
                 {
                     Id = u.Id,
                     FullName = u.Name,
-                    Initials = (u.Name.Substring(0, 1)).ToUpper(),
+                    Initials = u.Name.Substring(0, 1).ToUpper(),
                     TotalSpent = u.Orders.Sum(o => o.TotalPrice)
                 })
                 .OrderByDescending(u => u.TotalSpent)
                 .Take(top)
                 .ToListAsync();
 
-            // Assign Rank
             for (int i = 0; i < users.Count; i++)
-            {
                 users[i].Rank = i + 1;
-            }
 
             return users;
         }
 
-
         // ==============================
-        // 5️⃣ Users List with Filter + Paging
+        // Users List
         // ==============================
         public async Task<PagedResult<UserListDto>> GetUsersAsync(UserFilter filter)
         {
             var query = _context.Users.AsQueryable();
 
-            // 🔍 Search
             if (!string.IsNullOrWhiteSpace(filter.Search))
-            {
-                query = query.Where(u =>
-                    (u.Name)
-                    .Contains(filter.Search));
-            }
+                query = query.Where(u => u.Name.Contains(filter.Search));
 
-            // 📌 Status Filter
             if (!string.IsNullOrWhiteSpace(filter.Status))
             {
                 if (filter.Status == "Active")
@@ -233,28 +251,6 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
                 else if (filter.Status == "Inactive")
                     query = query.Where(u => !u.IsActive);
             }
-
-            // 📊 Sorting
-            query = filter.SortBy switch
-            {
-                "Name" => filter.Ascending
-                    ? query.OrderBy(u => u.Name)
-                    : query.OrderByDescending(u => u.Name),
-
-                "Orders" => filter.Ascending
-                    ? query.OrderBy(u => u.Orders.Count)
-                    : query.OrderByDescending(u => u.Orders.Count),
-
-                "Spend" => filter.Ascending
-                    ? query.OrderBy(u => u.Orders.Sum(o => o.TotalPrice))
-                    : query.OrderByDescending(u => u.Orders.Sum(o => o.TotalPrice)),
-
-                "LastOrder" => filter.Ascending
-                    ? query.OrderBy(u => u.Orders.Max(o => o.CreatedAt))
-                    : query.OrderByDescending(u => u.Orders.Max(o => o.CreatedAt)),
-
-                _ => query.OrderByDescending(u => u.CreatedAt)
-            };
 
             var totalCount = await query.CountAsync();
 
@@ -285,10 +281,6 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
                 Page = filter.Page,
                 PageSize = filter.PageSize
             };
-
-
-
         }
     }
 }
-
