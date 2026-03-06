@@ -23,34 +23,31 @@ class OrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final statusConfig = OrderStatusMapper.getOrderStatusConfig(order.status);
     return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x0A000000),
-                blurRadius: 16,
-                offset: Offset(0, 8),
-              ),
-            ],
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0A000000),
+            blurRadius: 16,
+            offset: Offset(0, 8),
           ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(24),
-            onTap: () {},
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                OrderHeader(orderId: order.id, statusConfig: statusConfig),
-                OrderContent(order: order),
-                isActive
-                    ? ActiveOrderFooter(pickupTime: order.pickupTime)
-                    : PastOrderFooter(order: order),
-              ],
-            ),
-          ),
-        )
-        .animate()
-        .fadeIn(duration: 400.ms, delay: (index * 100).ms)
-        .slideY(begin: 0.1, end: 0, curve: Curves.easeOutQuad);
+        ],
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(24),
+        onTap: () {},
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            OrderHeader(orderId: order.id, statusConfig: statusConfig),
+            OrderContent(order: order),
+            isActive
+                ? ActiveOrderFooter(pickupTime: order.pickupTime)
+                : PastOrderFooter(order: order),
+          ],
+        ),
+      ),
+    ).animate().slideY(begin: 0.1, end: 0, curve: Curves.easeOutQuad);
   }
 }

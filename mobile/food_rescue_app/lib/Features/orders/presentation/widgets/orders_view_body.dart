@@ -20,13 +20,8 @@ class OrdersViewBody extends StatelessWidget {
             widget: Text(AppStrings.myOrders, style: AppTextStyles.appBarTitle),
             tabBar: const CustomTabBar(),
           ),
-          SliverFillRemaining(
-            child: TabBarView(
-              children: [
-                ActiveTab(orders: mockActiveOrders),
-                HistoryTab(orders: mockHistoryOrders),
-              ],
-            ),
+          const SliverFillRemaining(
+            child: TabBarView(children: [ActiveTab(), HistoryTab()]),
           ),
         ],
       ),

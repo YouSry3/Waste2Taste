@@ -3,23 +3,21 @@ import '../../data/models/order_model.dart';
 import 'order_card.dart';
 
 class ActiveTab extends StatelessWidget {
-  final List<OrderModel> orders;
-
-  const ActiveTab({super.key, required this.orders});
+  const ActiveTab({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (orders.isEmpty) {
+    if (mockActiveOrders.isEmpty) {
       return const Center(child: Text("No Active Orders"));
     }
 
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16),
-      itemCount: orders.length,
+      itemCount: mockActiveOrders.length,
       separatorBuilder: (_, _) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
-        return OrderCard(order: orders[index], isActive: true, index: index);
+        return OrderCard(order: mockActiveOrders[index], isActive: true, index: index);
       },
     );
   }
