@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
-import '../../../../../core/functions/get_chars_of_the_name.dart';
 import 'profile_image_widget.dart';
 
 class ProfileImagaWithName extends StatelessWidget {

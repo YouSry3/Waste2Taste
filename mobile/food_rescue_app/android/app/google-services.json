@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "541874614782",
+    "project_id": "maps-flutter-c8512",
+    "storage_bucket": "maps-flutter-c8512.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:541874614782:android:bb5368e2e1369a54de10af",
+        "android_client_info": {
+          "package_name": "com.example.food_rescue"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNgw5p-hWH6HF5vT8al1IDtmMBoJhepuE"
+        },
+        {
+          "current_key": "AIzaSyBa77HuoHBLAzVB6ZY1cwbiZI1LO5SFRMQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:541874614782:android:ad66929f398d1ae8de10af",
+        "android_client_info": {
+          "package_name": "com.example.test_google_maps"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNgw5p-hWH6HF5vT8al1IDtmMBoJhepuE"
+        },
+        {
+          "current_key": "AIzaSyBa77HuoHBLAzVB6ZY1cwbiZI1LO5SFRMQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:541874614782:android:26b1e95963eff87dde10af",
+        "android_client_info": {
+          "package_name": "com.waste_2_taste"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNgw5p-hWH6HF5vT8al1IDtmMBoJhepuE"
+        },
+        {
+          "current_key": "AIzaSyBa77HuoHBLAzVB6ZY1cwbiZI1LO5SFRMQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

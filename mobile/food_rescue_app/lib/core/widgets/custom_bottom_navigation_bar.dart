@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:waste2taste/Features/orders/presentation/orders_view.dart';
 import '../../Features/home/presentation/views/home_view.dart';
+import '../../Features/map/presentation/views/map_view.dart';
+import '../../Features/orders/presentation/orders_view.dart';
 import '../../Features/profile/presentation/views/profile_view.dart';
 import 'custom_nav_bar.dart';
 
@@ -17,7 +18,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
 
   final List<Widget> _pages = [
     const HomeView(),
-    const Text('Map'),
+    const MapView(),
     const OrdersView(),
     const ProfileView(),
   ];
