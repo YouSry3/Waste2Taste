@@ -12,6 +12,7 @@ using FoodRescue.BLL.Repositorys.Dashboard;
 using FoodRescue.BLL.Services.AnalyticsDashboardTab;
 using FoodRescue.BLL.Services.Authentication.AuthServices;
 using FoodRescue.BLL.Services.Authentication.Email_Service;
+using FoodRescue.BLL.Services.FileStorage;
 using FoodRescue.BLL.Services.JWT;
 using FoodRescue.BLL.Services.ListingDashboardTab;
 using FoodRescue.BLL.Services.OrderDashboardTab;
@@ -142,6 +143,7 @@ namespace FoodRescue.PL
             services.AddScoped<IVendorListingService, VendorListingService>();
             services.AddScoped<IVendorAnalyticsRepository, VendorAnalyticsRepository>();
             services.AddScoped<IVendorAnalyticsService, VendorAnalyticsService>();
+            services.AddScoped<IFileStorageService, FileStorageService>();
 
             VendorMapsterConfig.RegisterVendorMappings();
 

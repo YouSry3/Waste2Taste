@@ -1,13 +1,10 @@
-﻿using FoodRescue.BLL.ResultPattern;
+﻿using FoodRescue.BLL.Contract.Products;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
-using FoodRescue.BLL.Contract.Products;
-using FoodRescue.BLL.Extensions.Products;
+using FoodRescue.BLL.Services.FileStorage;
+using FoodRescue.DAL.Consts;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
-using FoodRescue.DAL.Consts;
 using Mapster;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -17,20 +14,20 @@ public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
     private readonly CompanyDbContext _context;
-    private readonly IWebHostEnvironment _environment;
+    private readonly IFileStorageService _fileStorage;
     private readonly IAISpoilageDetectionService _aiDetectionService;
     private readonly ILogger<ProductService> _logger;
 
     public ProductService(
         IProductRepository productRepository,
         CompanyDbContext context,
-        IWebHostEnvironment environment,
+        IFileStorageService fileStorage,
         IAISpoilageDetectionService aiDetectionService,
         ILogger<ProductService> logger)
     {
         _productRepository = productRepository;
         _context = context;
-        _environment = environment;
+        _fileStorage = fileStorage ?? throw new ArgumentNullException(nameof(fileStorage));
         _aiDetectionService = aiDetectionService ?? throw new ArgumentNullException(nameof(aiDetectionService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
@@ -41,37 +38,6 @@ public class ProductService : IProductService
             .AsNoTracking()
             .Where(r => r.ProductId == productId)
             .ToListAsync();
-    }
-
-    private async Task<string> SaveImageAsync(IFormFile imageFile)
-    {
-        var uploadsFolder = Path.Combine(_environment.WebRootPath, "images", "products");
-
-        if (!Directory.Exists(uploadsFolder))
-            Directory.CreateDirectory(uploadsFolder);
-
-        var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(imageFile.FileName)}";
-        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-        using (var fileStream = new FileStream(filePath, FileMode.Create))
-        {
-            await imageFile.CopyToAsync(fileStream);
-        }
-
-        return $"/images/products/{uniqueFileName}";
-    }
-
-    private void DeleteImage(string? imageUrl)
-    {
-        if (string.IsNullOrEmpty(imageUrl)) return;
-
-        var fileName = Path.GetFileName(imageUrl);
-        var filePath = Path.Combine(_environment.WebRootPath, "images", "products", fileName);
-
-        if (File.Exists(filePath))
-        {
-            File.Delete(filePath);
-        }
     }
 
     private static string CalculateExpiresIn(DateTime expiryDate)
@@ -184,8 +150,13 @@ public class ProductService : IProductService
         if (vendor is null)
             return Result.Failure<Guid>(ProductErrors.VendorNotFound);
 
+        // Save image using unified file storage service
+        var imageResult = await _fileStorage.SaveImageAsync(request.ImageFile, "products");
+        if (imageResult.IsFailure)
+            return Result.Failure<Guid>(imageResult.Error);
+
         var product = request.Adapt<Product>();
-        product.ImageUrl = await SaveImageAsync(request.ImageFile);
+        product.ImageUrl = imageResult.Value;
         product.Expired = false;
         product.Status = ProductStatus.Pending;
         product.CreatedAt = DateTime.UtcNow;
@@ -238,11 +209,17 @@ public class ProductService : IProductService
         if (request.Expired.HasValue)
             product.Expired = request.Expired.Value;
 
-        // Handle image update
+        // Handle image update using unified file storage service
         if (request.ImageFile != null)
         {
-            DeleteImage(product.ImageUrl);
-            product.ImageUrl = await SaveImageAsync(request.ImageFile);
+            var deleteResult = await _fileStorage.DeleteImageAsync(product.ImageUrl);
+            // Continue even if delete fails (file might not exist)
+
+            var imageResult = await _fileStorage.SaveImageAsync(request.ImageFile, "products");
+            if (imageResult.IsFailure)
+                return Result.Failure(imageResult.Error);
+
+            product.ImageUrl = imageResult.Value;
         }
 
         await _productRepository.UpdateAsync(product);
@@ -256,7 +233,9 @@ public class ProductService : IProductService
         if (product == null)
             return Result.Failure(ProductErrors.NotFound);
 
-        DeleteImage(product.ImageUrl);
+        // Delete image using unified file storage service
+        await _fileStorage.DeleteImageAsync(product.ImageUrl);
+
         await _productRepository.DeleteAsync(product);
 
         return Result.Success();

@@ -7,7 +7,7 @@ namespace FoodRescue.PL.Controllers;
 
 [ApiController]
 [Route("products")]
-[Authorize]  // ADD: Require authentication for all endpoints
+[Authorize]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _service;
@@ -18,7 +18,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    [AllowAnonymous]  // ADD: Public can view products
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll([FromQuery] string? name)
     {
         var result = await _service.GetAllAsync(name);
@@ -27,7 +27,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    [AllowAnonymous]  // ADD: Public can view details
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _service.GetByIdAsync(id);
@@ -36,7 +36,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet("vendor/{vendorId:guid}")]
-    [AllowAnonymous]  // ADD: Public can view vendor products
+    [AllowAnonymous]
     public async Task<IActionResult> GetByVendor(Guid vendorId)
     {
         var result = await _service.GetByVendorAsync(vendorId);
@@ -45,7 +45,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "vendor")]  // ADD: Only vendors
+    [Authorize(Roles = "vendor")]
     public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
     {
         var result = await _service.CreateAsync(request);
@@ -54,7 +54,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
-    [Authorize(Roles = "vendor")]  // ADD: Only vendors
+    [Authorize(Roles = "vendor")]
     public async Task<IActionResult> Update(Guid id, [FromForm] UpdateProductRequest request)
     {
         var result = await _service.UpdateAsync(id, request);
@@ -63,7 +63,7 @@ public class ProductsController : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Roles = "vendor")]  // ADD: Only vendors
+    [Authorize(Roles = "vendor")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _service.DeleteAsync(id);
