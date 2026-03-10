@@ -22,7 +22,8 @@ export interface RegisterPayload {
   email: string;
   password: string;
   name: string;
-  type: "admin" | "vendor" | "charity";
+  phoneNumber: string;
+  role: "admin" | "vendor" | "charity";
 }
 
 export class AuthService {
@@ -43,8 +44,14 @@ export class AuthService {
     // The backend uses 'type' field based on the register endpoint
     let panelType: "admin" | "vendor" | "charity" | undefined;
 
-    // Check for 'type' field (from your backend schema)
-    const typeValue = user.type || data.type || user.userType || data.userType;
+    // Use role field from backend as fallback
+    const typeValue =
+      user.type ||
+      data.type ||
+      user.userType ||
+      data.userType ||
+      user.role ||
+      data.role;
 
     console.log("🔍 Found type value:", typeValue);
 

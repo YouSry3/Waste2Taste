@@ -3,11 +3,12 @@ import { Button } from "../../../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../ui/card";
 
 type InventoryItem = {
-  id: number;
+  id: number | string;
   name: string;
   stock: number;
   expiry: string;
   status: "critical" | "low" | "medium" | "good";
+  isUrgent?: boolean;
 };
 
 interface InventoryStatusCardProps {
@@ -61,6 +62,12 @@ export function InventoryStatusCard({
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
+          {items.length === 0 && (
+            <div className="rounded-lg border border-dashed border-orange-300 bg-white p-4 text-sm text-orange-700">
+              No expiring products right now.
+            </div>
+          )}
+
           {items.map((item) => {
             const config = statusConfig[item.status] || statusConfig.good;
             const Icon = config.icon;
@@ -68,22 +75,36 @@ export function InventoryStatusCard({
             return (
               <div
                 key={item.id}
-                className={`p-3 rounded-lg border ${config.bg} ${config.border}`}
+                className={`rounded-lg border p-3 ${
+                  item.isUrgent
+                    ? "border-red-300 bg-red-50"
+                    : `${config.bg} ${config.border}`
+                }`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate">
                       {item.name}
                     </p>
-                    <p className={`text-xs ${config.text} mt-1`}>
-                      Stock: {item.stock} • Expires: {item.expiry}
+                    <p
+                      className={`mt-1 text-xs ${
+                        item.isUrgent ? "text-red-700" : config.text
+                      }`}
+                    >
+                      Stock: {item.stock} • Time Remaining: {item.expiry}
                     </p>
-                    <p className={`text-xs font-medium ${config.text} mt-1`}>
+                    <p
+                      className={`mt-1 text-xs font-medium ${
+                        item.isUrgent ? "text-red-700" : config.text
+                      }`}
+                    >
                       {config.label}
                     </p>
                   </div>
                   <Icon
-                    className={`h-4 w-4 ${config.text} flex-shrink-0 mt-0.5`}
+                    className={`mt-0.5 h-4 w-4 flex-shrink-0 ${
+                      item.isUrgent ? "text-red-700" : config.text
+                    }`}
                   />
                 </div>
                 {item.status === "critical" && (

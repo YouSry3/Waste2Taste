@@ -13,12 +13,12 @@ export function EmptyState({ hasFilters, resetFilters }: EmptyStateProps) {
       <div className="text-center">
         <Store className="h-12 w-12 text-gray-300 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          No vendors found
+          {hasFilters ? "No vendors found" : "No vendors listed"}
         </h3>
         <p className="text-gray-500 mb-6">
           {hasFilters
             ? "Try adjusting your filters or search terms"
-            : "Get started by adding your first vendor"}
+            : "No vendors are available from the API yet"}
         </p>
         {hasFilters && (
           <Button variant="outline" onClick={resetFilters}>

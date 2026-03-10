@@ -24,6 +24,11 @@ export function TopCustomersCard({ customers }: TopCustomersCardProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
+          {customers.length === 0 && (
+            <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4 text-sm text-gray-600">
+              No top customer data available yet.
+            </div>
+          )}
           {customers.map((customer, idx) => (
             <div
               key={customer.name}

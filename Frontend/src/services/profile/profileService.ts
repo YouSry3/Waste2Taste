@@ -22,6 +22,16 @@ export interface MonthlyGoals {
 }
 
 export class ProfileService {
+  private getErrorStatus(error: unknown): number | undefined {
+    const e = error as any;
+    return e?.response?.status ?? e?.statusCode;
+  }
+
+  private getErrorMessage(error: unknown, fallback: string): string {
+    const e = error as any;
+    return e?.response?.data?.message || e?.response?.data?.title || e?.message || fallback;
+  }
+
   private isDemoMode(): boolean {
     const token = localStorage.getItem("authToken");
     return !!token && token.startsWith("demo-token-");
@@ -125,12 +135,12 @@ export class ProfileService {
         // Primary endpoint
         response = await apiClient.get("/Profile/me");
       } catch (error: any) {
-        if (error.response?.status === 404) {
+        if (this.getErrorStatus(error) === 404) {
           // Try alternative endpoint
           try {
             response = await apiClient.get("/api/Profile/me");
           } catch (altError: any) {
-            if (altError.response?.status === 404) {
+            if (this.getErrorStatus(altError) === 404) {
               // Try another alternative
               response = await apiClient.get("/Auth/me");
             } else {
@@ -207,7 +217,7 @@ export class ProfileService {
       try {
         response = await apiClient.put("/Profile/me", updates);
       } catch (error: any) {
-        if (error.response?.status === 404) {
+        if (this.getErrorStatus(error) === 404) {
           response = await apiClient.put("/api/Profile/me", updates);
         } else {
           throw error;
@@ -231,11 +241,7 @@ export class ProfileService {
       return this.normalizeProfileResponse(response.data);
     } catch (error: any) {
       console.error("❌ Failed to update profile:", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.title ||
-        error.message ||
-        "Failed to update profile";
+      const errorMessage = this.getErrorMessage(error, "Failed to update profile");
       throw new Error(errorMessage);
     }
   }
@@ -273,8 +279,16 @@ export class ProfileService {
       try {
         response = await apiClient.put("/Profile/goals", goals);
       } catch (error: any) {
-        if (error.response?.status === 404) {
-          response = await apiClient.put("/api/Profile/goals", goals);
+        if (this.getErrorStatus(error) === 404) {
+          try {
+            response = await apiClient.put("/api/Profile/goals", goals);
+          } catch (altError: any) {
+            if (this.getErrorStatus(altError) === 404) {
+              response = await apiClient.put("/profile/goals", goals);
+            } else {
+              throw altError;
+            }
+          }
         } else {
           throw error;
         }
@@ -283,11 +297,7 @@ export class ProfileService {
       console.log("✅ Monthly goals updated:", response.data);
     } catch (error: any) {
       console.error("❌ Failed to update goals:", error);
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.title ||
-        error.message ||
-        "Failed to update goals";
+      const errorMessage = this.getErrorMessage(error, "Failed to update goals");
       throw new Error(errorMessage);
     }
   }
@@ -304,14 +314,14 @@ export class ProfileService {
       try {
         response = await apiClient.post("/Profile/change-password", data);
       } catch (error: any) {
-        if (error.response?.status === 404) {
+        if (this.getErrorStatus(error) === 404) {
           try {
             response = await apiClient.post(
               "/api/Profile/change-password",
               data,
             );
           } catch (altError: any) {
-            if (altError.response?.status === 404) {
+            if (this.getErrorStatus(altError) === 404) {
               response = await apiClient.post("/Auth/change-password", data);
             } else {
               throw altError;
@@ -327,15 +337,12 @@ export class ProfileService {
       console.error("❌ Failed to change password:", error);
 
       // Handle specific error cases
-      if (error.response?.status === 400 || error.response?.status === 401) {
+      const status = this.getErrorStatus(error);
+      if (status === 400 || status === 401) {
         throw new Error("Current password is incorrect");
       }
 
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.title ||
-        error.message ||
-        "Failed to change password";
+      const errorMessage = this.getErrorMessage(error, "Failed to change password");
       throw new Error(errorMessage);
     }
   }

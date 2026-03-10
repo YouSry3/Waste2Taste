@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Vendor, VendorFormData } from "../api/vendors.types";
 import { MOCK_VENDORS } from "../constants/vendors.data";
@@ -9,9 +9,11 @@ import {
 } from "../utils/vendors.helpers";
 import { useVendorActions } from "./useVendorActions";
 import { useVendorFilters } from "./useVendorFilters";
+import { useVendorsList, useVendorsOverview } from "./useVendorsQueries";
 
 export const useVendors = () => {
   const [vendors, setVendors] = useState<Vendor[]>(MOCK_VENDORS);
+  const [hasLocalChanges, setHasLocalChanges] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
   const [vendorToDelete, setVendorToDelete] = useState<Vendor | null>(null);
 
@@ -21,6 +23,8 @@ export const useVendors = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const filterState = useVendorFilters();
+  const summaryQuery = useVendorsOverview();
+  const listQuery = useVendorsList(1, 50);
 
   const actions = useVendorActions({
     vendors,
@@ -28,6 +32,15 @@ export const useVendors = () => {
     selectedVendor,
     vendorToDelete,
   });
+
+  useEffect(() => {
+    if (hasLocalChanges) return;
+
+    const apiItems = listQuery.data?.items ?? [];
+    if (listQuery.source === "api") {
+      setVendors(apiItems);
+    }
+  }, [hasLocalChanges, listQuery.data?.items, listQuery.source]);
 
   const filteredVendors = useMemo(
     () =>
@@ -42,8 +55,39 @@ export const useVendors = () => {
     [vendors, filterState],
   );
 
-  const stats = useMemo(() => getVendorStats(vendors), [vendors]);
-  const topPerformers = useMemo(() => getTopPerformers(vendors), [vendors]);
+  const stats = useMemo(() => {
+    const apiSummary = summaryQuery.data;
+
+    if (summaryQuery.source === "api") {
+      return {
+        totalVendors:
+          apiSummary.totalVendors === null
+            ? "No vendors listed"
+            : apiSummary.totalVendors,
+        ngoPartners:
+          apiSummary.ngoPartners === null
+            ? "No NGO partners"
+            : apiSummary.ngoPartners,
+        activeListings:
+          apiSummary.activeListings === null
+            ? "No active listings"
+            : apiSummary.activeListings,
+        totalRevenue:
+          apiSummary.totalRevenue === null
+            ? "No revenue data"
+            : apiSummary.totalRevenue,
+      };
+    }
+
+    return getVendorStats(vendors);
+  }, [summaryQuery.data, vendors]);
+
+  const topPerformers = useMemo(() => {
+    if (summaryQuery.source === "api") {
+      return summaryQuery.data.topPerformers;
+    }
+    return getTopPerformers(vendors);
+  }, [summaryQuery.data.topPerformers, summaryQuery.source, vendors]);
 
   const categories = useMemo(
     () => Array.from(new Set(vendors.map((v) => v.category))),
@@ -51,6 +95,7 @@ export const useVendors = () => {
   );
 
   const handleAddVendor = useCallback(() => {
+    setHasLocalChanges(true);
     const result = actions.addVendor(actions.formData);
     if (result.success) {
       setIsAddDialogOpen(false);
@@ -60,6 +105,7 @@ export const useVendors = () => {
   }, [actions]);
 
   const handleEditVendor = useCallback(() => {
+    setHasLocalChanges(true);
     if (!selectedVendor) {
       toast.error("No vendor selected");
       return { success: false };
@@ -75,6 +121,7 @@ export const useVendors = () => {
   }, [actions, selectedVendor]);
 
   const handleDeleteVendor = useCallback(() => {
+    setHasLocalChanges(true);
     if (!vendorToDelete) {
       toast.error("No vendor selected");
       return { success: false };
@@ -91,6 +138,7 @@ export const useVendors = () => {
 
   const handleToggleStatus = useCallback(
     (vendor: Vendor) => {
+      setHasLocalChanges(true);
       return actions.toggleStatus(vendor);
     },
     [actions],
@@ -159,6 +207,14 @@ export const useVendors = () => {
     topPerformers,
     categories,
     hasActiveFilters,
+    isLoading: summaryQuery.isLoading || listQuery.isLoading,
+    isError: summaryQuery.isError || listQuery.isError,
+    dataSource:
+      summaryQuery.source === "api" && listQuery.source === "api"
+        ? "api"
+        : summaryQuery.source === "demo" || listQuery.source === "demo"
+          ? "demo"
+          : "fallback",
 
     // Actions
     handleAddVendor,

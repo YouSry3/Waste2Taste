@@ -16,6 +16,7 @@ import {
   User,
   Eye,
   EyeOff,
+  Phone,
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -63,6 +64,7 @@ export default function SignUpPage() {
     password: Yup.string()
       .min(6, "Password must be at least 6 characters")
       .required("Password required"),
+    phoneNumber: Yup.string().required("Phone number is required"),
   });
 
   // Mutation using TanStack Query
@@ -81,13 +83,17 @@ export default function SignUpPage() {
     name: string;
     email: string;
     password: string;
+    phoneNumber: string; // keep for validation only
   }) => {
     const payload: RegisterPayload = {
-      name: values.name,
       email: values.email,
       password: values.password,
-      type: role,
+      name: values.name,
+      phoneNumber:values.phoneNumber,
+      role: role,
     };
+
+    console.log("🚀 Sending payload to backend:", payload); // debug
     registerMutation.mutate(payload);
   };
 
@@ -112,7 +118,12 @@ export default function SignUpPage() {
 
           {/* Formik Form */}
           <Formik
-            initialValues={{ name: "", email: "", password: "" }}
+            initialValues={{
+              name: "",
+              email: "",
+              password: "",
+              phoneNumber: "",
+            }}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
           >
@@ -163,6 +174,30 @@ export default function SignUpPage() {
                   )}
                 </div>
 
+                {/* Phone Number */}
+                <div>
+                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <div className="relative mt-2">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Field
+                      as={Input}
+                      id="phoneNumber"
+                      name="phoneNumber"
+                      placeholder="e.g. +201234567890"
+                      className={`pl-10 border ${
+                        touched.phoneNumber && errors?.phoneNumber
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    />
+                  </div>
+                  {touched.phoneNumber && errors?.phoneNumber && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {errors.phoneNumber}
+                    </p>
+                  )}
+                </div>
+
                 {/* Password */}
                 <div>
                   <Label htmlFor="password">Password</Label>
@@ -180,7 +215,6 @@ export default function SignUpPage() {
                           : "border-gray-300"
                       }`}
                     />
-
                     <motion.button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
