@@ -1,9 +1,10 @@
-using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Consts;
+using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace FoodRescue.BLL.Services.Products;
 
@@ -30,9 +31,13 @@ public class AISpoilageDetectionService : IAISpoilageDetectionService
         {
             _logger.LogInformation("Starting AI spoilage detection for product {ProductId}", productId);
 
+            // ✅ Copy to MemoryStream first
+            using var memoryStream = new MemoryStream();
+            await imageFile.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+
             using var content = new MultipartFormDataContent();
-            using var stream = imageFile.OpenReadStream();
-            var fileContent = new StreamContent(stream);
+            var fileContent = new StreamContent(memoryStream);
             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(imageFile.ContentType);
             content.Add(fileContent, "file", imageFile.FileName);
 
@@ -40,7 +45,7 @@ public class AISpoilageDetectionService : IAISpoilageDetectionService
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning("AI endpoint returned status {StatusCode} for product {ProductId}", 
+                _logger.LogWarning("AI endpoint returned status {StatusCode} for product {ProductId}",
                     response.StatusCode, productId);
                 return null;
             }
@@ -62,7 +67,7 @@ public class AISpoilageDetectionService : IAISpoilageDetectionService
                 ProductId = productId,
                 Prediction = aiResponse.Prediction ?? "Unknown",
                 Confidence = (decimal)aiResponse.Confidence,
-                SpoiledPercentage = aiResponse.SpoiledPercentage,
+                SpoiledPercentage = (int)aiResponse.SpoiledPercentage,
                 IsSpoiled = aiResponse.IsSpoiled,
                 CreatedAt = DateTime.UtcNow
             };
@@ -92,12 +97,20 @@ public class AISpoilageDetectionService : IAISpoilageDetectionService
             return null;
         }
     }
+
 }
 
 internal class AISpoilageResponse
 {
+    [JsonPropertyName("prediction")]
     public string? Prediction { get; set; }
+
+    [JsonPropertyName("confidence")]
     public double Confidence { get; set; }
-    public int SpoiledPercentage { get; set; }
+
+    [JsonPropertyName("spoiled_percentage")]
+    public double SpoiledPercentage { get; set; }
+
+    [JsonPropertyName("is_spoiled")]
     public bool IsSpoiled { get; set; }
 }

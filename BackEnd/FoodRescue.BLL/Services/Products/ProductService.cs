@@ -165,17 +165,11 @@ public class ProductService : IProductService
 
         _logger.LogInformation("Product created with ID {ProductId}. Starting AI spoilage detection...", product.Id);
 
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                await _aiDetectionService.DetectSpoilageAsync(product.Id, request.ImageFile);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error running AI spoilage detection for product {ProductId}", product.Id);
-            }
-        });
+        ///   add in future: Background job to handle this instead of awaiting in the request flow
+        await _aiDetectionService.DetectSpoilageAsync(product.Id, request.ImageFile);
+
+
+
 
         return Result.Success(product.Id);
     }

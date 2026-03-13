@@ -62,6 +62,7 @@ public class VendorRequestService : IVendorRequestService
 
         var vendorRequest = request.Adapt<VendorRequest>();
         vendorRequest.UserId = userId;
+        vendorRequest.BusinessName = request.Name;
         vendorRequest.Status = VendorRequestStatus.Pending;
         vendorRequest.CreatedAt = DateTime.UtcNow;
         vendorRequest.BusinessLicenseUrl = businessLicenseUrl;
