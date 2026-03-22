@@ -14,16 +14,16 @@ class MapUtils {
     } else {
       if (context.mounted) {
         CustomSnackBar.show(
-          context,
           message: 'Could not open Google Maps.',
-          isError: true,
+          type: SnackBarType.error,
+          context: context,
         );
       }
     }
   }
 
   static double calculateDistance(LatLng start, LatLng end) {
-    const double earthRadius = 6371.0; 
+    const double earthRadius = 6371.0;
 
     double dLat = _toRadians(end.latitude - start.latitude);
     double dLon = _toRadians(end.longitude - start.longitude);

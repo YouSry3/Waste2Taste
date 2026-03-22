@@ -1,9 +1,23 @@
 import 'package:get_it/get_it.dart';
+import 'package:waste2taste/Features/auth/data/data_sources/auth_remote_data_source.dart';
+import 'package:waste2taste/Features/auth/data/repos/auth_repo_impl.dart';
+import 'package:waste2taste/Features/auth/domain/repos/auth_repo.dart';
+import 'package:waste2taste/Features/auth/domain/use_cases/signup_usecase.dart';
 import '../../Features/splash/data/repos/onboarding_repo_impl.dart';
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
+import '../services/api_service.dart';
 
 GetIt getIt = GetIt.instance;
 
-void setupLocator() {
+void setupServiceLocator() {
   getIt.registerLazySingleton<OnboardingRepo>(() => OnboardingRepoImpl());
+  getIt.registerLazySingleton<ApiService>(() => ApiService());
+  getIt.registerLazySingleton<AuthRepoImpl>(
+    () => AuthRepoImpl(
+      authRemoteDataSource: AuthRemoteDataSourceImpl(getIt.get<ApiService>()),
+    ),
+  );
+  getIt.registerLazySingleton<SignupUsecase>(
+    () => SignupUsecase(authRepo: getIt.get<AuthRepoImpl>()),
+  );
 }

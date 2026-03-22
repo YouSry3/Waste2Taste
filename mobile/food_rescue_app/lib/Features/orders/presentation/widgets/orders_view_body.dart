@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_text_styles.dart';
 import '../../../../core/widgets/custom_sliver_app_bar.dart';
-import '../../data/models/order_model.dart';
 import 'active_tab.dart';
 import 'custom_tab_bar.dart';
 import 'history_tab.dart';

@@ -8,38 +8,54 @@ class CustomValidationRow extends StatelessWidget {
     required this.text,
     required this.isValid,
   });
+
   final String text;
   final bool isValid;
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          width: 20,
-          height: 20,
-          decoration: BoxDecoration(
-            color: isValid ? AppColors.primary : Colors.transparent,
-            border: Border.all(
-              color: isValid ? AppColors.primary : Colors.grey.shade400,
-              width: 2,
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 300),
+      opacity: isValid ? 1 : 0.7,
+      child: Row(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            width: 22,
+            height: 22,
+            decoration: BoxDecoration(
+              color: isValid ? AppColors.primary : Colors.transparent,
+              borderRadius: BorderRadius.circular(50),
+              border: Border.all(
+                color: isValid ? AppColors.primary : Colors.grey.shade400,
+                width: 2,
+              ),
             ),
-            shape: BoxShape.circle,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: isValid
+                  ? const Icon(
+                      Icons.check,
+                      key: ValueKey("check"),
+                      size: 14,
+                      color: Colors.white,
+                    )
+                  : const SizedBox(key: ValueKey("empty")),
+            ),
           ),
-          child: isValid
-              ? const Icon(Icons.check, size: 12, color: Colors.white)
-              : null,
-        ),
-        const SizedBox(width: 12),
-        Text(
-          text,
-          style: AppTextStyles.body.copyWith(
-            color: isValid ? AppColors.textDark : Colors.grey.shade500,
-            fontWeight: isValid ? FontWeight.w600 : FontWeight.normal,
-            fontSize: 15,
+          const SizedBox(width: 12),
+          AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 300),
+            style: AppTextStyles.body.copyWith(
+              color: isValid ? AppColors.textDark : Colors.grey.shade500,
+              fontWeight: isValid ? FontWeight.w600 : FontWeight.normal,
+              fontSize: 15,
+            ),
+            child: Text(text),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:waste2taste/Features/auth/domain/use_cases/signup_usecase.dart';
+import 'package:waste2taste/Features/auth/presentation/manager/signup_cubit/signup_cubit.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/functions/setup_service_locator.dart';
+import '../../../domain/repos/auth_repo.dart';
 import 'custom_auth_icon.dart';
 import '../../../../../core/widgets/custom_greeting_section.dart';
 import 'auth_footer.dart';
@@ -31,7 +36,10 @@ class SignupViewBodyComponents extends StatelessWidget {
               subtitle: AppStrings.createAccountSubtitle,
             ),
             const SizedBox(height: 48),
-            const SignupFormWidget(),
+            BlocProvider(
+              create: (context) => SignupCubit(getIt.get<SignupUsecase>()),
+              child: const SignupFormWidget(),
+            ),
             const SizedBox(height: 16),
             AuthFooter(
               text1: AppStrings.alreadyHaveAccount,
