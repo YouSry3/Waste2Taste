@@ -17,6 +17,7 @@ class VerifyEmailViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final email = GoRouter.of(context).state.extra as String;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24),
       child: Column(
@@ -34,7 +35,7 @@ class VerifyEmailViewBody extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            "test@example.com",
+            email,
             style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 48),

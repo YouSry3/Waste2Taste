@@ -25,4 +25,18 @@ class AuthRepoImpl extends AuthRepo {
       }
     }
   }
+
+  @override
+  Future<Either<Failure, void>> resetPassword({required String email}) async {
+   try {
+      var result = await authRemoteDataSource.resetPassword(email: email);
+      return Right(result);
+    } catch (e) {
+      if (e is DioException) {
+        return left(ServerFailure.fromDioException(e));
+      } else {
+        return left(ServerFailure(errorMessage: e.toString()));
+      }
+    }
+  }
 }

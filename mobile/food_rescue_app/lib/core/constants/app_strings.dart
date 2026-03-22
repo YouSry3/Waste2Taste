@@ -16,7 +16,7 @@ abstract class AppStrings {
   static const String email = "Email Address";
   static const String emailHint = "your@email.com";
   static const String password = "Password";
-  static const String passwordHint = "••••••••";
+  static const String passwordHint = "Enter Password";
   static const String startCooking = "Start Cooking";
   static const String fullName = "Full Name";
   static const String fullNameHint = "John Doe";

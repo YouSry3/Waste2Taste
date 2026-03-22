@@ -11,10 +11,12 @@ class CustomTextFormField extends StatefulWidget {
     this.isPassword = false,
     this.controller,
     this.validator,
+    this.obsecureText,
   });
 
   final String hint;
   final bool isPassword;
+  final bool? obsecureText;
   final TextInputType inputType;
   final IconData icon;
   final TextEditingController? controller;
@@ -44,7 +46,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           controller: widget.controller,
           validator: widget.validator,
           keyboardType: widget.inputType,
-          obscureText: showPassword.value,
+          obscureText: widget.obsecureText ?? showPassword.value,
           style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500),
           decoration: InputDecoration(
             filled: true,

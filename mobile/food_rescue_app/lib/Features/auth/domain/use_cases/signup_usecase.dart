@@ -14,7 +14,6 @@ class SignupUsecase extends UseCase<UserEntity, SignupRequestModel> {
 
   @override
   Future<Either<Failure, UserEntity>> call(SignupRequestModel param) async {
-    log(param.toString());
     return await authRepo.signup(param);
   }
 }

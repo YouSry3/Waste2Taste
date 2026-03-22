@@ -5,4 +5,5 @@ import '../../data/models/signup_request_params_model.dart';
 
 abstract class AuthRepo {
   Future<Either<Failure, UserEntity>> signup(SignupRequestModel signupReqModel);
+  Future<Either<Failure, void>> resetPassword({required String email});
 }
