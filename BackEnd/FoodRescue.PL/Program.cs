@@ -1,7 +1,5 @@
 using FoodRescue.BLL.Settings;
-using FoodRescue.DAL.Context;
 using FoodRescue.Hubs;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace FoodRescue.PL
@@ -52,7 +50,7 @@ namespace FoodRescue.PL
 
             app.UseHttpsRedirection();
             // Use CORS policy
-           
+
 
 
             // Create wwwroot if not exists
