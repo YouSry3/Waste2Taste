@@ -5,15 +5,33 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/app_text_styles.dart';
-import '../../../../../core/utils/app_routes.dart';
-import 'auth_footer.dart';
+import 'auth_footer_bloc_provider.dart';
 import 'custom_auth_icon.dart';
-import '../../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../../core/widgets/custom_greeting_section.dart';
 import 'custom_pinput.dart';
+import 'verify_email_bloc_provider.dart';
 
-class VerifyEmailViewBody extends StatelessWidget {
+class VerifyEmailViewBody extends StatefulWidget {
   const VerifyEmailViewBody({super.key});
+
+  @override
+  State<VerifyEmailViewBody> createState() => _VerifyEmailViewBodyState();
+}
+
+class _VerifyEmailViewBodyState extends State<VerifyEmailViewBody> {
+  late TextEditingController _pinController;
+
+  @override
+  void initState() {
+    _pinController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pinController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,20 +57,13 @@ class VerifyEmailViewBody extends StatelessWidget {
             style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 48),
-          const Center(
-            child: CustomPinput(),
+          Center(
+            child: CustomPinput(pinController: _pinController),
           ).animate().fadeIn(delay: 300.ms).moveY(begin: 20, end: 0),
           const SizedBox(height: 32),
-          CustomElevatedButton(
-            text: AppStrings.verify,
-            onPressed: () => GoRouter.of(context).push(AppRoutes.resetPassword),
-          ),
+          VerifyEmailBlocProvider(email: email, pinController: _pinController),
           const SizedBox(height: 24),
-          AuthFooter(
-            text1: AppStrings.didntReceiveCode,
-            text2: AppStrings.resendCode,
-            onTap: () {},
-          ),
+          AuthFooterBlocProvider(email: email),
         ],
       ),
     );

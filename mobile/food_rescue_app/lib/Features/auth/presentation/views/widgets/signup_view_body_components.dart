@@ -7,7 +7,6 @@ import 'package:waste2taste/Features/auth/presentation/manager/signup_cubit/sign
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/functions/setup_service_locator.dart';
-import '../../../domain/repos/auth_repo.dart';
 import 'custom_auth_icon.dart';
 import '../../../../../core/widgets/custom_greeting_section.dart';
 import 'auth_footer.dart';

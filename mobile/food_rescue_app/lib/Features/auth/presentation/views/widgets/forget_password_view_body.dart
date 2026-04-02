@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:load_it/load_it.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:waste2taste/Features/auth/presentation/manager/reset_password_cubit/reset_password_cubit.dart';
+import 'package:waste2taste/Features/auth/presentation/manager/send_reset_password_code_cubit/send_reset_password_code_cubit.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/app_text_styles.dart';
@@ -65,15 +65,18 @@ class _ForgetPasswordViewBodyState extends State<ForgetPasswordViewBody> {
               obsecureText: false,
             ),
             const SizedBox(height: 32),
-            BlocConsumer<ResetPasswordCubit, ResetPasswordState>(
+            BlocConsumer<
+              SendResetPasswordCodeCubit,
+              SendResetPasswordCodeState
+            >(
               listener: (context, state) {
-                if (state is ResetPasswordFailureState) {
+                if (state is SendResetPasswordCodeFailureState) {
                   return CustomSnackBar.show(
                     context: context,
                     message: state.errMessage,
                     type: SnackBarType.info,
                   );
-                } else if (state is ResetPasswordSucessState) {
+                } else if (state is SendResetPasswordCodeSucessState) {
                   return CustomSnackBar.show(
                     context: context,
                     message: "Code sent successfully",
@@ -82,9 +85,11 @@ class _ForgetPasswordViewBodyState extends State<ForgetPasswordViewBody> {
                 }
               },
               builder: (context, state) {
-                var cubit = BlocProvider.of<ResetPasswordCubit>(context);
+                var cubit = BlocProvider.of<SendResetPasswordCodeCubit>(
+                  context,
+                );
                 return CustomElevatedButton(
-                  child: state is ResetPasswordLoadingState
+                  child: state is SendResetPasswordCodeLoadingState
                       ? const BouncingDotsIndicator(color: AppColors.background)
                       : Text(
                           AppStrings.sendCode,
