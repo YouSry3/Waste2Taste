@@ -1,23 +1,12 @@
 import 'package:flutter/material.dart';
-import 'core/constants/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:waste2taste/core/functions/simple_bloc_observer.dart';
 import 'core/functions/setup_service_locator.dart';
-import 'core/utils/app_router.dart';
+import 'waste_2_taste_app.dart';
 
 void main() {
-  setupLocator();
+  WidgetsFlutterBinding.ensureInitialized();
+  setupServiceLocator();
+  Bloc.observer = SimpleBlocObserver();
   runApp(const Waste2TasteApp());
-}
-
-class Waste2TasteApp extends StatelessWidget {
-  const Waste2TasteApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: "Waste2Taste",
-      theme: ThemeData(scaffoldBackgroundColor: AppColors.background),
-      debugShowCheckedModeBanner: false,
-      routerConfig: AppRouter.routerConfig,
-    );
-  }
 }

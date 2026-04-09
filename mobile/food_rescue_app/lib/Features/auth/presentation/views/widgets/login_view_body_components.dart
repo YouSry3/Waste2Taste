@@ -37,7 +37,7 @@ class LoginViewBodyComponents extends StatelessWidget {
             const LoginFormWidget(),
             const SizedBox(height: 16),
             const ForgetPassAndRememberMe(),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
             CustomElevatedButton(
               text: AppStrings.login,
               onPressed: () => GoRouter.of(

@@ -1,32 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
-import '../../../../../core/utils/app_routes.dart';
 
 class CustomPinput extends StatefulWidget {
-  const CustomPinput({super.key});
-
+  const CustomPinput({
+    super.key,
+    required this.pinController,
+  });
+  final TextEditingController pinController;
   @override
   State<CustomPinput> createState() => _CustomPinputState();
 }
 
 class _CustomPinputState extends State<CustomPinput> {
-  late TextEditingController _pinController;
-
-  @override
-  void initState() {
-    _pinController = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _pinController.dispose();
-    super.dispose();
-  }
-
   final defaultPinTheme = PinTheme(
     width: 56,
     height: 56,
@@ -46,11 +33,10 @@ class _CustomPinputState extends State<CustomPinput> {
   @override
   Widget build(BuildContext context) {
     return Pinput(
-      controller: _pinController,
-      length: 4,
+      controller: widget.pinController,
+      length: 6,
       defaultPinTheme: defaultPinTheme,
       focusedPinTheme: focusedPinTheme,
-      onCompleted: (pin) => GoRouter.of(context).push(AppRoutes.forgetPassword),
     );
   }
 }

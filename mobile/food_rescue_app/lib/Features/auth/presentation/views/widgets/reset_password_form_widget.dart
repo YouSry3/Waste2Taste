@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/utils/app_validations.dart';
 import 'auth_input_label.dart';
-import '../../../../../core/widgets/custom_elevated_button.dart';
 import 'custom_text_form_field.dart';
-import 'custom_validation_row.dart';
+import 'password_validation_group.dart';
+import 'reset_pass_button_bloc_provider.dart';
 
 class ResetPasswordFormWidget extends StatefulWidget {
   const ResetPasswordFormWidget({super.key});
@@ -17,6 +18,29 @@ class ResetPasswordFormWidget extends StatefulWidget {
 
 class _ResetPasswordFormWidgetState extends State<ResetPasswordFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late TextEditingController _passController;
+  late TextEditingController _confirmPassController;
+  late ValueNotifier<String> passwordNotifier;
+  late ValueNotifier<String> confirmPasswordNotifier;
+  @override
+  void initState() {
+    _passController = TextEditingController()
+      ..addListener(() => passwordNotifier.value = _passController.text);
+    _confirmPassController = TextEditingController()
+      ..addListener(
+        () => confirmPasswordNotifier.value = _confirmPassController.text,
+      );
+    passwordNotifier = ValueNotifier("");
+    confirmPasswordNotifier = ValueNotifier("");
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _passController.dispose();
+    _confirmPassController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,36 +50,34 @@ class _ResetPasswordFormWidgetState extends State<ResetPasswordFormWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const AuthInputLabel(text: AppStrings.newPassword),
-          const CustomTextFormField(
+          CustomTextFormField(
+            controller: _passController,
+            validator: (value) => AppValidations.validatePassword(value),
             hint: AppStrings.passwordHint,
             icon: LucideIcons.lock,
             isPassword: true,
           ),
           const SizedBox(height: 20),
           const AuthInputLabel(text: AppStrings.confirmPassword),
-          const CustomTextFormField(
+          CustomTextFormField(
+            controller: _confirmPassController,
+            validator: (value) => AppValidations.validateConfirmPassword(
+              value,
+              _passController.text.trim(),
+            ),
             hint: AppStrings.passwordHint,
             icon: LucideIcons.lock,
             isPassword: true,
           ),
           const SizedBox(height: 20),
-          CustomValidationRow(
-            text: AppStrings.atLeast8Characters,
-            isValid: false,
+          PasswordValidationGroup(
+            confirmPasswordNotifier: confirmPasswordNotifier,
+            passwordNotifier: passwordNotifier,
           ),
-          const SizedBox(height: 8),
-          CustomValidationRow(text: AppStrings.containsANumber, isValid: true),
-          const SizedBox(height: 8),
-          CustomValidationRow(
-            text: AppStrings.containsAnUppercaseLetter,
-            isValid: false,
-          ),
-          const SizedBox(height: 8),
-          CustomValidationRow(text: AppStrings.passwordsMatch, isValid: true),
           const SizedBox(height: 32),
-          CustomElevatedButton(
-            text: AppStrings.resetPassword,
-            onPressed: () {},
+          ResetPasswordButtonBlocProvider(
+            formKey: _formKey,
+            passController: _passController,
           ),
         ],
       ).animate().fadeIn(delay: 300.ms).moveY(begin: 20, end: 0),

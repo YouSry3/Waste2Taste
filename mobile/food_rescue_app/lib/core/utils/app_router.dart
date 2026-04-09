@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:waste2taste/Features/profile/presentation/views/help_and_support_view.dart';
+import '../../Features/auth/domain/use_cases/send_reset_password_code_usecase.dart';
+import '../../Features/auth/presentation/manager/send_reset_password_code_cubit/send_reset_password_code_cubit.dart';
 import '../../Features/home/presentation/views/home_view.dart';
 import '../../Features/auth/presentation/views/forget_password_view.dart';
 import '../../Features/auth/presentation/views/login_view.dart';
@@ -52,7 +54,12 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.forgetPassword,
-        builder: (context, state) => const ForgetPasswordView(),
+        builder: (context, state) => BlocProvider(
+          create: (context) => SendResetPasswordCodeCubit(
+            getIt.get<SendResetPasswordCodeUsecase>(),
+          ),
+          child: const ForgetPasswordView(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.resetPassword,
