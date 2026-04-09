@@ -2,6 +2,7 @@
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.SendForgetEmail;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.UpdatePassword;
 using FoodRescue.BLL.Contract.Authentication.Login;
+using FoodRescue.BLL.Contract.Authentication.RefreshToken;
 using FoodRescue.BLL.Contract.Authentication.Register;
 using FoodRescue.BLL.Services.Authentication.AuthServices;
 using FoodRescue.BLL.Services.Authentication.Email_Service;
@@ -81,25 +82,20 @@ namespace FoodRescue.PL.Controllers
 
         [HttpPost("refresh-token")]
         [Authorize]
-        public async Task<IActionResult> RefreshToken(CancellationToken cancellationToken)
+        
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
-            // For now, re-validate the current token and return new token with extended expiry
-            // In production, implement refresh token pattern with separate refresh tokens
-            
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var emailClaim = User.FindFirst(ClaimTypes.Email)?.Value;
-            
-            if (string.IsNullOrEmpty(userIdClaim) || string.IsNullOrEmpty(emailClaim))
-            {
-                return Unauthorized(new { code = "InvalidToken", description = "Invalid or expired token" });
-            }
+            // give id from the token to make sure the user is the same as the one who logged in
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await AuthService.RefreshTokenAsync(request, Guid.Parse(userId!), cancellationToken);
 
-            // In a real scenario, you would fetch the user from DB and regenerate token
-            // For now, we'll return a simple response indicating token refresh is not fully implemented
-            return StatusCode(501, new { code = "NotImplemented", description = "Token refresh not yet implemented" });
+            if (!result.IsSuccess)
+                return Unauthorized(result.Error);
+
+            return Ok(result.Value);
         }
 
-        
+
     }
 }
 

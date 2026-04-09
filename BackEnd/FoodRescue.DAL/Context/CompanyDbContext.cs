@@ -4,8 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodRescue.DAL.Context
 {
-    public class CompanyDbContext(DbContextOptions<CompanyDbContext> options) : DbContext(options)
+    public class CompanyDbContext : DbContext
     {
+        public CompanyDbContext(DbContextOptions<CompanyDbContext> options)
+            : base(options)  // <--- هنا يجب تمرير options ل base class
+        {
+        }
 
         public DbSet<User> Users { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
@@ -17,8 +21,8 @@ namespace FoodRescue.DAL.Context
         public DbSet<Review> Reviews { get; set; }
         public DbSet<VendorRequest> VendorRequests { get; set; }
         public DbSet<AISpoileRequest> AISpoileRequests { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-        // Configurations
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CompanyDbContext).Assembly);
@@ -26,13 +30,13 @@ namespace FoodRescue.DAL.Context
             modelBuilder.ApplyConfiguration(new PasswordResetTokenConfiguration());
             modelBuilder.ApplyConfiguration(new VendorConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
+
             modelBuilder.Entity<Order>()
-            .HasOne(o => o.Customer)
-            .WithMany(u => u.Orders)
-            .HasForeignKey(o => o.CustomerId);
+                .HasOne(o => o.Customer)
+                .WithMany(u => u.Orders)
+                .HasForeignKey(o => o.CustomerId);
+
             base.OnModelCreating(modelBuilder);
-
-
         }
     }
 }

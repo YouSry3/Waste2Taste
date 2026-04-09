@@ -12,6 +12,7 @@ namespace FoodRescue.BLL.Contract.Authentication.Login
         string Role,
         string Token,
         int ExpireAt,
+        string RefreshToken,
         string? ImageUrl);
     
 }

@@ -119,7 +119,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.PasswordResetToken", b =>
@@ -212,6 +212,34 @@ namespace FoodRescue.DAL.Migrations
                     b.HasIndex("VendorId");
 
                     b.ToTable("Products", (string)null);
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Report", b =>
@@ -347,6 +375,12 @@ namespace FoodRescue.DAL.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(11)
                         .HasColumnType("nvarchar(11)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -528,6 +562,17 @@ namespace FoodRescue.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Vendor");
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("FoodRescue.DAL.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Report", b =>

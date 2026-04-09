@@ -1,11 +1,12 @@
 ﻿using FluentEmail.Core;
-using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Contract.Authentication;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.CheckCode;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.UpdatePassword;
 using FoodRescue.BLL.Contract.Authentication.Login;
+using FoodRescue.BLL.Contract.Authentication.RefreshToken;
 using FoodRescue.BLL.Contract.Authentication.Register;
 using FoodRescue.BLL.Extensions.Users;
+using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.BLL.Services.Authentication.Email_Service;
 using FoodRescue.BLL.Services.JWT;
@@ -14,6 +15,8 @@ using FoodRescue.DAL.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace FoodRescue.BLL.Services.Authentication.AuthServices
 {
@@ -40,8 +43,21 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
 
             //Generate Token
             var (Token, ExpiresIn) = _JwtProvider.GenerateToken(user);
-       
-         
+
+
+            var refreshToken = _JwtProvider.GenerateRefreshToken();
+
+            // 💾 Save Refresh Token in RefreshTokens table
+            var refreshTokenEntity = new RefreshToken
+            {
+                Token = refreshToken,
+                Expires = DateTime.Now.AddDays(7),
+                IsRevoked = false,
+                UserId = user.Id
+            };
+
+            await _Context.RefreshTokens.AddAsync(refreshTokenEntity);
+            await _Context.SaveChangesAsync();
 
             return Result.Success(new LoginResponse
                         (
@@ -52,7 +68,9 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                              user.Role,
                             Token,
                             ExpiresIn,
+                            refreshToken,
                             user.ImageUrl
+                            
 
                         ));
         }
@@ -202,5 +220,67 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
         }
 
 
+        public async Task<Result<RefreshResponse>> RefreshTokenAsync(RefreshTokenRequest request,Guid userId, CancellationToken cancellationToken = default)
+        {
+        
+
+            // Step 2: Get principal from expired token
+            ClaimsPrincipal principal;
+            try
+            {
+                principal = _JwtProvider.GetPrincipalFromExpiredToken(request.AccessToken);
+            }
+            catch
+            {
+                return Result.Failure<RefreshResponse>(UserErrors.InvalidAccessToken);
+            }
+
+            
+
+            if (userId == Guid.Empty)
+                return Result.Failure<RefreshResponse>(UserErrors.InvalidTokenData);
+
+            
+
+            var user = await UserRepository.GetByIdAsync(userId);
+
+            // Step 4: Validate refresh token from RefreshTokens table
+            var storedRefreshToken = await _Context.RefreshTokens
+                .FirstOrDefaultAsync(rt => rt.Token == request.RefreshToken && rt.UserId == userId, cancellationToken);
+
+            if (storedRefreshToken == null || storedRefreshToken.IsRevoked || storedRefreshToken.Expires <= DateTime.Now)
+            {
+                return Result.Failure<RefreshResponse>(UserErrors.InvalidRefreshToken);
+            }
+
+            // Step 5: Generate new tokens
+            var (newAccessToken, expiresIn) = _JwtProvider.GenerateToken(user);
+            var newRefreshToken = _JwtProvider.GenerateRefreshToken();
+
+            // Step 6: Revoke old refresh token and create new one
+            storedRefreshToken.IsRevoked = true;
+            _Context.RefreshTokens.Update(storedRefreshToken);
+
+            var newRefreshTokenEntity = new RefreshToken
+            {
+                Token = newRefreshToken,
+                Expires = DateTime.Now.AddDays(7),
+                IsRevoked = false,
+                UserId = userId
+            };
+
+            await _Context.RefreshTokens.AddAsync(newRefreshTokenEntity, cancellationToken);
+            await _Context.SaveChangesAsync(cancellationToken);
+
+            // Step 7: Return response
+            var response = new RefreshResponse
+            {
+                Token = newAccessToken,
+                ExpiresIn = expiresIn,
+                RefreshToken = newRefreshToken
+            };
+
+            return Result.Success(response);
+        }
     }
 }
