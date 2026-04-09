@@ -24,6 +24,9 @@ export interface RegisterPayload {
   name: string;
   phoneNumber: string;
   role: "admin" | "vendor" | "charity";
+  businessName?: string;
+  address?: string;
+  category?: string;
 }
 
 export class AuthService {

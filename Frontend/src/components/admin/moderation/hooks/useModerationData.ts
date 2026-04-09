@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Listing,
@@ -13,12 +13,39 @@ import {
   initialCustomerReports,
 } from "../types";
 import toast from "react-hot-toast";
+import {
+  getStoredVendorRequests,
+  subscribeToVendorApprovalStore,
+  updateVendorApprovalStatus,
+} from "../../../../services/vendorApproval/vendorApprovalStore";
+import { VendorApprovalRequest } from "../../../../types/vendorApproval";
+
+function mapStoredVendorRequest(request: VendorApprovalRequest): VendorRequest {
+  return {
+    id: request.id,
+    businessName: request.businessName,
+    ownerName: request.ownerName,
+    email: request.email,
+    phone: request.phone,
+    address: request.address,
+    category: request.category,
+    submitted: request.submitted,
+    documents: request.documents,
+    status: request.status,
+    notes: request.notes,
+  };
+}
+
+function getInitialVendorRequestState() {
+  const storedRequests = getStoredVendorRequests().map(mapStoredVendorRequest);
+  return [...storedRequests, ...initialVendorRequests];
+}
 
 // Keep local state for now (will be replaced with queries when backend is ready)
 export function useModerationData() {
   const [listings, setListings] = useState<Listing[]>(initialPendingListings);
-  const [vendorRequests, setVendorRequests] = useState<VendorRequest[]>(
-    initialVendorRequests,
+  const [vendorRequests, setVendorRequests] = useState<VendorRequest[]>(() =>
+    getInitialVendorRequestState(),
   );
   const [customerReports, setCustomerReports] = useState<CustomerReport[]>(
     initialCustomerReports,
@@ -27,6 +54,15 @@ export function useModerationData() {
 
   // For future API integration - initialize but don't use yet
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const syncVendorRequests = () => {
+      setVendorRequests(getInitialVendorRequestState());
+    };
+
+    syncVendorRequests();
+    return subscribeToVendorApprovalStore(syncVendorRequests);
+  }, []);
 
   const addToActivityLog = (action: Omit<ModerationAction, "id">) => {
     const newAction: ModerationAction = {
@@ -131,8 +167,12 @@ export function useModerationData() {
       // TODO: Replace with actual API call when backend is ready
       await mockMutation("approveVendor", id);
 
-      // Remove vendor from list (as requested)
-      setVendorRequests((prev) => prev.filter((v) => v.id !== id));
+      updateVendorApprovalStatus(id, "approved", "Vendor application approved");
+      setVendorRequests((prev) =>
+        prev.map((v) =>
+          v.id === id ? { ...v, status: "approved" as const } : v,
+        ),
+      );
 
       addToActivityLog({
         moderatorName: "Admin",
@@ -158,8 +198,22 @@ export function useModerationData() {
       // TODO: Replace with actual API call when backend is ready
       await mockMutation("rejectVendor", id, data);
 
-      // Remove vendor from list
-      setVendorRequests((prev) => prev.filter((v) => v.id !== id));
+      updateVendorApprovalStatus(
+        id,
+        "rejected",
+        `${data.reason}: ${data.notes || ""}`.trim(),
+      );
+      setVendorRequests((prev) =>
+        prev.map((v) =>
+          v.id === id
+            ? {
+                ...v,
+                status: "rejected" as const,
+                notes: `${data.reason}: ${data.notes || ""}`.trim(),
+              }
+            : v,
+        ),
+      );
 
       addToActivityLog({
         moderatorName: "Admin",
@@ -313,8 +367,14 @@ export function useModerationData() {
       // TODO: Replace with actual API call when backend is ready
       await mockMutation("bulkApproveVendors", 0, { ids });
 
-      // Remove vendors from list
-      setVendorRequests((prev) => prev.filter((v) => !ids.includes(v.id)));
+      ids.forEach((id) =>
+        updateVendorApprovalStatus(id, "approved", "Vendor application approved"),
+      );
+      setVendorRequests((prev) =>
+        prev.map((v) =>
+          ids.includes(v.id) ? { ...v, status: "approved" as const } : v,
+        ),
+      );
 
       toast.success(`${ids.length} vendors approved successfully!`);
       return { success: true };
@@ -333,8 +393,24 @@ export function useModerationData() {
       // TODO: Replace with actual API call when backend is ready
       await mockMutation("bulkRejectVendors", 0, { ids, data });
 
-      // Remove vendors from list
-      setVendorRequests((prev) => prev.filter((v) => !ids.includes(v.id)));
+      ids.forEach((id) =>
+        updateVendorApprovalStatus(
+          id,
+          "rejected",
+          `${data.reason}: ${data.notes || ""}`.trim(),
+        ),
+      );
+      setVendorRequests((prev) =>
+        prev.map((v) =>
+          ids.includes(v.id)
+            ? {
+                ...v,
+                status: "rejected" as const,
+                notes: `${data.reason}: ${data.notes || ""}`.trim(),
+              }
+            : v,
+        ),
+      );
 
       toast.error(`${ids.length} vendor applications rejected`);
       return { success: true };

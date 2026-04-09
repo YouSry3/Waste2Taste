@@ -15,6 +15,7 @@ import {
   Clock,
   Loader2,
 } from "lucide-react";
+import { VendorDocument } from "../../../../../types/vendorApproval";
 
 interface VendorCardProps {
   vendor: VendorRequest;
@@ -23,7 +24,7 @@ interface VendorCardProps {
   onSelect: (id: number, checked: boolean) => void;
   onApprove: (id: number) => void;
   onReject: (id: number) => void;
-  onViewDocuments: (documents: string[]) => void;
+  onViewDocuments: (documents: VendorDocument[]) => void;
   onContactApplicant: (vendor: VendorRequest) => void;
 }
 
@@ -37,6 +38,14 @@ export function VendorCard({
   onViewDocuments,
   onContactApplicant,
 }: VendorCardProps) {
+  const isPending = vendor.status === "pending";
+  const statusBadgeClass =
+    vendor.status === "approved"
+      ? "bg-green-100 text-green-700"
+      : vendor.status === "rejected"
+        ? "bg-red-100 text-red-700"
+        : "bg-amber-100 text-amber-700";
+
   return (
     <Card className="shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-6">
@@ -56,9 +65,14 @@ export function VendorCard({
               <p className="text-sm text-gray-600">Owner: {vendor.ownerName}</p>
             </div>
           </div>
-          <Badge className="bg-orange-100 text-orange-700">
-            {vendor.category}
-          </Badge>
+          <div className="flex flex-col items-end gap-2">
+            <Badge className="bg-orange-100 text-orange-700">
+              {vendor.category}
+            </Badge>
+            <Badge className={statusBadgeClass}>
+              {vendor.status.charAt(0).toUpperCase() + vendor.status.slice(1)}
+            </Badge>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -89,11 +103,13 @@ export function VendorCard({
             <div className="space-y-2">
               {vendor.documents.map((doc, idx) => (
                 <div
-                  key={idx}
+                  key={doc.id || idx}
                   className="flex items-center gap-2 text-sm bg-green-50 p-2 rounded-lg"
                 >
                   <CheckCircle className="h-4 w-4 text-green-600" />
-                  <span className="text-gray-700">{doc}</span>
+                  <span className="text-gray-700">
+                    {doc.label}: {doc.name}
+                  </span>
                 </div>
               ))}
             </div>
@@ -105,34 +121,36 @@ export function VendorCard({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {/* Approve Button */}
-          <button
-            onClick={() => onApprove(vendor.id)}
-            disabled={isLoading}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Approving...
-              </>
-            ) : (
-              <>
-                <CheckCircle className="h-4 w-4" />
-                Approve Vendor
-              </>
-            )}
-          </button>
+          {isPending && (
+            <>
+              <button
+                onClick={() => onApprove(vendor.id)}
+                disabled={isLoading}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Approving...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    Approve Vendor
+                  </>
+                )}
+              </button>
 
-          {/* Destructive Action - Reject Vendor */}
-          <button
-            onClick={() => onReject(vendor.id)}
-            disabled={isLoading}
-            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
-          >
-            <XCircle className="h-4 w-4" />
-            Reject Application
-          </button>
+              <button
+                onClick={() => onReject(vendor.id)}
+                disabled={isLoading}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
+              >
+                <XCircle className="h-4 w-4" />
+                Reject Application
+              </button>
+            </>
+          )}
 
           <button
             onClick={() => onViewDocuments(vendor.documents)}
@@ -150,6 +168,9 @@ export function VendorCard({
             Contact Applicant
           </button>
         </div>
+        {!isPending && vendor.notes && (
+          <p className="mt-3 text-xs text-gray-500">{vendor.notes}</p>
+        )}
       </CardContent>
     </Card>
   );

@@ -1,8 +1,10 @@
-using FoodRescue.DAL.Context;
-using FoodRescue.DAL.Consts;
-using FoodRescue.DAL.Entities;
+using FoodRescue.BLL.Contract.Listings;
 using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
+using FoodRescue.DAL.Consts;
+using FoodRescue.DAL.Context;
+using FoodRescue.DAL.Entities;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -104,22 +106,29 @@ public class ListingApprovalService : IListingApprovalService
         }
     }
 
-    public async Task<Result<IEnumerable<Product>>> GetAllPendingListingsAsync()
+    public async Task<Result<IEnumerable<ListingsPindingResponse>>> GetAllPendingListingsAsync()
     {
         try
         {
-            var pendingProducts = await _context.Products
+            var products = await _context.Products
                 .Where(p => p.Status == ProductStatus.Pending)
+                .Include(p => p.AISpoileRequest)
                 .OrderByDescending(p => p.CreatedAt)
                 .ToListAsync();
 
-            return Result.Success<IEnumerable<Product>>(pendingProducts);
+            var pendingProducts = products.Adapt<List<ListingsPindingResponse>>();
+
+            return Result.Success<IEnumerable<ListingsPindingResponse>>(pendingProducts);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving all pending products");
-            return Result.Failure<IEnumerable<Product>>(new Error("Listing.RetrievalError", "An error occurred while retrieving pending listings"));
+
+            return Result.Failure<IEnumerable<ListingsPindingResponse>>(
+                new Error("Listing.RetrievalError",
+                "An error occurred while retrieving pending listings"));
         }
     }
+
 }
 

@@ -105,7 +105,7 @@ export function useModerationActions() {
         vendor.status,
         "approved",
         "Vendor application approved",
-        vendor.documents,
+        vendor.documents.map((document) => document.label),
       );
       addToActivityLog(activityLog);
 
@@ -145,7 +145,7 @@ export function useModerationActions() {
         vendor.status,
         "rejected",
         `Reason: ${reason}. ${notes}`,
-        vendor.documents,
+        vendor.documents.map((document) => document.label),
       );
       addToActivityLog(activityLog);
 
@@ -187,7 +187,7 @@ export function useModerationActions() {
           vendor.status,
           "approved",
           "Bulk vendor approval",
-          vendor.documents,
+          vendor.documents.map((document) => document.label),
         );
         addToActivityLog(activityLog);
       });
@@ -245,7 +245,7 @@ export function useModerationActions() {
           vendor.status,
           "rejected",
           "Bulk vendor rejection",
-          vendor.documents,
+          vendor.documents.map((document) => document.label),
         );
         addToActivityLog(activityLog);
       });

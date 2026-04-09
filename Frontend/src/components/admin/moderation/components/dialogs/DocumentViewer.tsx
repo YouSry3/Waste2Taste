@@ -9,10 +9,11 @@ import {
 } from "../../../../ui/dialog";
 import { Card, CardContent } from "../../../../ui/card";
 import { FileText, Eye } from "lucide-react";
+import { VendorDocument } from "../../../../../types/vendorApproval";
 
 interface DocumentViewerProps {
   open: boolean;
-  documents: string[];
+  documents: VendorDocument[];
   onOpenChange: (open: boolean) => void;
 }
 
@@ -31,8 +32,8 @@ export function DocumentViewer({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
-          {documents.map((doc, index) => (
-            <Card key={index} className="border border-gray-200">
+          {documents.map((doc) => (
+            <Card key={doc.id} className="border border-gray-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -40,13 +41,18 @@ export function DocumentViewer({
                       <FileText className="h-5 w-5 text-blue-600" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{doc}</p>
-                      <p className="text-sm text-gray-500">PDF Document</p>
+                      <p className="font-medium text-gray-900">{doc.label}</p>
+                      <p className="text-sm text-gray-500">{doc.name}</p>
                     </div>
                   </div>
-                  <button className="px-3 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200">
+                  <button
+                    type="button"
+                    disabled={!doc.url}
+                    onClick={() => doc.url && window.open(doc.url, "_blank")}
+                    className="px-3 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
                     <Eye className="h-4 w-4" />
-                    View
+                    {doc.url ? "View" : "Unavailable"}
                   </button>
                 </div>
               </CardContent>

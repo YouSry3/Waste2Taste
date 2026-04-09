@@ -13,6 +13,7 @@ import {
 } from "../../../../ui/select";
 import { Filter } from "lucide-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { VendorDocument } from "../../../../../types/vendorApproval";
 
 interface VendorModerationProps {
   vendors: VendorRequest[];
@@ -31,7 +32,7 @@ interface VendorModerationProps {
   onClearSelection: () => void;
   onStatusFilterChange: (value: string) => void;
   onPageChange: (page: number) => void;
-  onViewDocuments: (documents: string[]) => void;
+  onViewDocuments: (documents: VendorDocument[]) => void;
   onContactApplicant: (vendor: VendorRequest) => void;
 }
 

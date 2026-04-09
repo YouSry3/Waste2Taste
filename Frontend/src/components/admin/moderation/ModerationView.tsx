@@ -18,6 +18,7 @@ import { ActivityDetailsDialog } from "./components/dialogs/ActivityDetailsDialo
 import { ImageZoomDialog } from "./components/dialogs/ImageZoomDialog";
 import { VendorRequest, ModerationAction } from "./types";
 import toast from "react-hot-toast";
+import { VendorDocument } from "../../../types/vendorApproval";
 
 export function ModerationView() {
   // State Management
@@ -33,7 +34,9 @@ export function ModerationView() {
   // Dialog States
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [documentViewerOpen, setDocumentViewerOpen] = useState(false);
-  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
+  const [selectedDocuments, setSelectedDocuments] = useState<VendorDocument[]>(
+    [],
+  );
   const [warningDialogOpen, setWarningDialogOpen] = useState(false);
   const [selectedReportForWarning, setSelectedReportForWarning] =
     useState<any>(null);
@@ -233,7 +236,7 @@ export function ModerationView() {
         beforeStatus: vendor?.status || "pending",
         afterStatus: "approved",
         notes: "Vendor application approved",
-        documents: vendor?.documents,
+        documents: vendor?.documents?.map((document) => document.label),
       });
     } catch (error) {
       console.error("Failed to approve vendor:", error);
@@ -261,7 +264,7 @@ export function ModerationView() {
         beforeStatus: vendor?.status || "pending",
         afterStatus: "rejected",
         notes: `Reason: ${reason}. ${notes}`,
-        documents: vendor?.documents,
+        documents: vendor?.documents?.map((document) => document.label),
       });
     } catch (error) {
       console.error("Failed to reject vendor:", error);
@@ -499,7 +502,7 @@ export function ModerationView() {
   };
 
   // Other Handlers
-  const handleViewDocuments = (documents: string[]) => {
+  const handleViewDocuments = (documents: VendorDocument[]) => {
     setSelectedDocuments(documents);
     setDocumentViewerOpen(true);
   };

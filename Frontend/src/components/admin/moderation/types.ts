@@ -1,3 +1,5 @@
+import { VendorDocument } from "../../../types/vendorApproval";
+
 // Status Types
 export type ListingStatus =
   | "pending"
@@ -60,8 +62,9 @@ export interface VendorRequest {
   address: string;
   category: string;
   submitted: string;
-  documents: string[];
+  documents: VendorDocument[];
   status: VendorStatus;
+  notes?: string;
 }
 
 export interface CustomerReport {
@@ -423,7 +426,28 @@ export const initialVendorRequests: VendorRequest[] = [
     address: "Mohandessin, Giza",
     category: "Restaurant",
     submitted: "2025-10-28",
-    documents: ["Business License", "Health Certificate"],
+    documents: [
+      {
+        id: "mock-license-1",
+        kind: "business_license",
+        label: "Business License",
+        name: "nile-valley-license.pdf",
+        type: "application/pdf",
+        size: 0,
+        url: "",
+        uploadedAt: "2025-10-28T09:00:00Z",
+      },
+      {
+        id: "mock-health-1",
+        kind: "health_certificate",
+        label: "Health Certificate",
+        name: "nile-valley-health-certificate.pdf",
+        type: "application/pdf",
+        size: 0,
+        url: "",
+        uploadedAt: "2025-10-28T09:00:00Z",
+      },
+    ],
     status: "pending",
   },
   {
@@ -435,7 +459,28 @@ export const initialVendorRequests: VendorRequest[] = [
     address: "New Cairo",
     category: "Bakery",
     submitted: "2025-10-29",
-    documents: ["Business License", "Food Safety Certificate"],
+    documents: [
+      {
+        id: "mock-license-2",
+        kind: "business_license",
+        label: "Business License",
+        name: "cairo-fresh-license.pdf",
+        type: "application/pdf",
+        size: 0,
+        url: "",
+        uploadedAt: "2025-10-29T10:00:00Z",
+      },
+      {
+        id: "mock-health-2",
+        kind: "health_certificate",
+        label: "Health Certificate",
+        name: "cairo-fresh-health-certificate.pdf",
+        type: "application/pdf",
+        size: 0,
+        url: "",
+        uploadedAt: "2025-10-29T10:00:00Z",
+      },
+    ],
     status: "pending",
   },
   {
@@ -447,7 +492,18 @@ export const initialVendorRequests: VendorRequest[] = [
     address: "Zamalek, Cairo",
     category: "Cafe",
     submitted: "2025-10-27",
-    documents: ["Business License"],
+    documents: [
+      {
+        id: "mock-license-3",
+        kind: "business_license",
+        label: "Business License",
+        name: "mediterranean-cafe-license.pdf",
+        type: "application/pdf",
+        size: 0,
+        url: "",
+        uploadedAt: "2025-10-27T08:00:00Z",
+      },
+    ],
     status: "pending",
   },
 ];
@@ -518,7 +574,7 @@ export const initialActivityLog: ModerationAction[] = [
     afterStatus: "rejected",
     timestamp: "2025-10-29T14:45:00Z",
     notes: "Missing required health certifications",
-    documents: ["Business License", "Food Safety Certificate"],
+    documents: ["Business License", "Health Certificate"],
   },
   {
     id: 3,

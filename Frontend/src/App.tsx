@@ -2,9 +2,13 @@ import { useState, useEffect } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
 import { LoginPage } from "./components/auth/LoginPage";
-import SignupPage from "./components/auth/SignupPage";
+import SignupChooserPage from "./components/auth/SignupChooserPage";
+import AdminSignupPage from "./components/auth/AdminSignupPage";
+import VendorSignupPage from "./components/auth/VendorSignupPage";
+import CharitySignupPage from "./components/auth/CharitySignupPage";
 import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 import EnterResetCodePage from "./components/auth/EnterResetCodePage";
+import PendingApprovalPage from "./components/auth/pending-approval";
 
 import { PanelLayout } from "./components/layout/PanelLayout";
 
@@ -91,7 +95,11 @@ export default function App() {
           )
         }
       />
-      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/signup" element={<SignupChooserPage />} />
+      <Route path="/signup/admin" element={<AdminSignupPage />} />
+      <Route path="/signup/vendor" element={<VendorSignupPage />} />
+      <Route path="/signup/charity" element={<CharitySignupPage />} />
+      <Route path="/pending-approval" element={<PendingApprovalPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/enter-reset-code" element={<EnterResetCodePage />} />
 

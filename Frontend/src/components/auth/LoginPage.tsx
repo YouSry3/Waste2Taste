@@ -1,9 +1,9 @@
 // src/components/auth/LoginPage.tsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -19,6 +19,10 @@ import {
   LoginCredentials,
   LoginResponse,
 } from "../../services/auth/authService";
+import {
+  getVendorRequestByEmail,
+  setPendingVendorApprovalEmail,
+} from "../../services/vendorApproval/vendorApprovalStore";
 
 type PanelType = "admin" | "vendor" | "charity";
 
@@ -31,6 +35,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const [useDemo, setUseDemo] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const PANEL_OPTIONS = [
     {
@@ -58,6 +63,47 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       bg: "bg-red-50",
     },
   ];
+
+  useEffect(() => {
+    const panelParam = searchParams.get("panel");
+    if (
+      panelParam === "admin" ||
+      panelParam === "vendor" ||
+      panelParam === "charity"
+    ) {
+      setSelectedPanel(panelParam);
+    }
+  }, [searchParams]);
+
+  const blockVendorByApprovalStatus = (email: string) => {
+    if (selectedPanel !== "vendor") {
+      return false;
+    }
+
+    const vendorRequest = getVendorRequestByEmail(email);
+    if (!vendorRequest) {
+      return false;
+    }
+
+    if (vendorRequest.status === "pending") {
+      setPendingVendorApprovalEmail(vendorRequest.email);
+      toast(
+        "Your vendor account is still under review. You can track approval here.",
+      );
+      navigate(`/pending-approval?email=${encodeURIComponent(email)}`);
+      return true;
+    }
+
+    if (vendorRequest.status === "rejected") {
+      toast.error(
+        vendorRequest.notes ||
+          "Your vendor application was rejected. Please contact support.",
+      );
+      return true;
+    }
+
+    return false;
+  };
 
   // ✅ React Query Mutation for real backend login
   const loginMutation = useMutation({
@@ -136,6 +182,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
   // ✅ Handle form submit
   const handleSubmit = async (values: { email: string; password: string }) => {
+    if (blockVendorByApprovalStatus(values.email)) {
+      return;
+    }
+
     if (useDemo) {
       // Clear any existing auth first (client-side only)
       authService.clearLocalAuth();
@@ -187,7 +237,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               <Store className="h-10 w-10 text-white" />
             </div>
             <h1 className="mb-2 font-semibold text-2xl">
-              Food Rescue Platform
+              Waste2Taste
             </h1>
             <p className="text-gray-600">Sign in to access your panel</p>
           </div>
@@ -355,7 +405,19 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   <Button
                     type="button"
                     className="w-full border hover:bg-green-700 hover:text-white"
-                    onClick={() => navigate("/signup")}
+                    onClick={() => {
+                      if (selectedPanel === "vendor") {
+                        navigate("/signup/vendor");
+                        return;
+                      }
+
+                      if (selectedPanel === "admin") {
+                        navigate("/signup/admin");
+                        return;
+                      }
+
+                      navigate("/signup/charity");
+                    }}
                   >
                     Create a new account
                   </Button>

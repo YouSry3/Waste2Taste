@@ -41,7 +41,7 @@ public class ListingController : ControllerBase
     }
 
     [HttpPost("approve")]
-    public async Task<IActionResult> ApproveListing([FromBody] Guid productId)
+    public async Task<IActionResult> ApproveListing([FromHeader] Guid productId)
     {
         if (productId == Guid.Empty)
             return BadRequest(new { Error = "Product ID is required" });
@@ -49,7 +49,7 @@ public class ListingController : ControllerBase
         var result = await _listingApprovalService.ApproveListingAsync(productId);
 
         if (!result.IsSuccess)
-            return BadRequest(new { Error = result.Error.description });
+            return BadRequest(new { Error = result.Error!.description });
 
         return Ok(new { Message = "Listing approved successfully", Data = new { ProductId = productId, Status = "Approved" } });
     }
