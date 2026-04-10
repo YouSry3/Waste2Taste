@@ -5,14 +5,15 @@ import 'package:load_it/load_it.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:waste2taste/Features/auth/presentation/manager/send_reset_password_code_cubit/send_reset_password_code_cubit.dart';
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/app_text_styles.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/utils/app_routes.dart';
 import '../../../../../core/utils/custom_snack_bar.dart';
-import 'auth_input_label.dart';
-import 'custom_auth_icon.dart';
+import '../../../../../core/utils/translator.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../../core/widgets/custom_greeting_section.dart';
+import 'auth_input_label.dart';
+import 'custom_auth_icon.dart';
 import 'custom_text_form_field.dart';
 
 class ForgetPasswordViewBody extends StatefulWidget {
@@ -52,14 +53,14 @@ class _ForgetPasswordViewBodyState extends State<ForgetPasswordViewBody> {
               color: AppColors.primary,
             ),
             const SizedBox(height: 32),
-            const CustomGreetingSection(
-              title: AppStrings.forgotPasswordTitle,
-              subtitle: AppStrings.forgotPasswordSubtitle,
+            CustomGreetingSection(
+              title: context.loc.forgotPasswordTitle,
+              subtitle: context.loc.forgotPasswordSubtitle,
             ),
             const SizedBox(height: 48),
-            const AuthInputLabel(text: AppStrings.email),
+            AuthInputLabel(text: context.loc.email),
             CustomTextFormField(
-              hint: AppStrings.emailHint,
+              hint: context.loc.emailHint,
               icon: LucideIcons.mail,
               controller: _emailController,
               obsecureText: false,
@@ -71,17 +72,32 @@ class _ForgetPasswordViewBodyState extends State<ForgetPasswordViewBody> {
             >(
               listener: (context, state) {
                 if (state is SendResetPasswordCodeFailureState) {
-                  return CustomSnackBar.show(
-                    context: context,
-                    message: state.errMessage,
-                    type: SnackBarType.info,
-                  );
+                  var localLangCode = Localizations.localeOf(
+                    context,
+                  ).languageCode;
+                  translateMessage(state.errMessage, localLangCode).then((
+                    translatedMessage,
+                  ) {
+                    if (context.mounted) {
+                      CustomSnackBar.show(
+                        context: context,
+                        message: translatedMessage,
+                        type: SnackBarType.info,
+                      );
+                    }
+                  });
                 } else if (state is SendResetPasswordCodeSucessState) {
-                  return CustomSnackBar.show(
+                  CustomSnackBar.show(
                     context: context,
-                    message: "Code sent successfully",
+                    message: context.loc.codeSentSuccessfully,
                     type: SnackBarType.success,
                   );
+                  String email = _emailController.text.trim();
+                  if (context.mounted) {
+                    GoRouter.of(
+                      context,
+                    ).push(AppRoutes.verifyEmail, extra: email);
+                  }
                 }
               },
               builder: (context, state) {
@@ -92,18 +108,13 @@ class _ForgetPasswordViewBodyState extends State<ForgetPasswordViewBody> {
                   child: state is SendResetPasswordCodeLoadingState
                       ? const BouncingDotsIndicator(color: AppColors.background)
                       : Text(
-                          AppStrings.sendCode,
+                          context.loc.sendCode,
                           style: AppTextStyles.button.copyWith(fontSize: 19),
                         ),
                   onPressed: () async {
                     String email = _emailController.text.trim();
                     if (_formKey.currentState!.validate()) {
                       await cubit.resetPassword(email: email);
-                    }
-                    if (context.mounted) {
-                      GoRouter.of(
-                        context,
-                      ).push(AppRoutes.verifyEmail, extra: email);
                     }
                   },
                 );

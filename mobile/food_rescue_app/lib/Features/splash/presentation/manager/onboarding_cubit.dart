@@ -4,7 +4,7 @@ import '../../domain/entities/onboarding_entity.dart';
 import '../../domain/repos/onboarding_repo.dart';
 
 class OnboardingCubit extends Cubit<int> {
-  OnboardingCubit({required this.onboardingRepo})
+  OnboardingCubit({required this.onboardingRepo, })
     : _onBoardingList = onboardingRepo.getPages(),
       super(0) {
     pageController = PageController();
@@ -12,7 +12,7 @@ class OnboardingCubit extends Cubit<int> {
 
   late PageController pageController;
   final OnboardingRepo onboardingRepo;
-
+  
   final List<OnboardingEntity> _onBoardingList;
   void next() {
     if (state < getLastPage) {

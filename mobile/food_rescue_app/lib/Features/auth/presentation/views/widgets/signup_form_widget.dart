@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/utils/app_validations.dart';
 import 'auth_input_label.dart';
 import 'custom_text_form_field.dart';
@@ -54,43 +54,45 @@ class _SignupFormWidgetState extends State<SignupFormWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AuthInputLabel(text: AppStrings.fullName),
+          AuthInputLabel(text: context.loc.fullName),
           CustomTextFormField(
             controller: _fullNameController,
-            validator: (value) => AppValidations.validateName(value),
-            hint: AppStrings.fullNameHint,
+            validator: (value) => AppValidations.validateName(context, value),
+            hint: context.loc.fullNameHint,
             icon: LucideIcons.user,
             inputType: TextInputType.emailAddress,
             obsecureText: false,
           ),
           const SizedBox(height: 20),
-          const AuthInputLabel(text: AppStrings.email),
+          AuthInputLabel(text: context.loc.email),
           CustomTextFormField(
-            validator: (value) => AppValidations.validateEmail(value),
-            hint: AppStrings.emailHint,
+            validator: (value) => AppValidations.validateEmail(context, value),
+            hint: context.loc.emailHint,
             icon: LucideIcons.mail,
             inputType: TextInputType.emailAddress,
             controller: _emailController,
             obsecureText: false,
           ),
           const SizedBox(height: 20),
-          const AuthInputLabel(text: AppStrings.password),
+          AuthInputLabel(text: context.loc.password),
           CustomTextFormField(
             controller: _passController,
-            validator: (value) => AppValidations.validatePassword(value),
-            hint: AppStrings.passwordHint,
+            validator: (value) =>
+                AppValidations.validatePassword(context, value),
+            hint: context.loc.passwordHint,
             icon: LucideIcons.lock,
             isPassword: true,
           ),
           const SizedBox(height: 20),
-          const AuthInputLabel(text: AppStrings.confirmPassword),
+          AuthInputLabel(text: context.loc.confirmPassword),
           CustomTextFormField(
             controller: _confirmPassController,
             validator: (value) => AppValidations.validateConfirmPassword(
+              context,
               value,
               _passController.text.trim(),
             ),
-            hint: AppStrings.passwordHint,
+            hint: context.loc.passwordHint,
             icon: LucideIcons.lock,
             isPassword: true,
           ),

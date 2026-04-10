@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-
-import '../constants/app_strings.dart';
+import '../extensions/app_localization_extention.dart';
 import 'nav_bar_item.dart';
 
 class CustomNavBar extends StatelessWidget {
@@ -27,36 +26,36 @@ class CustomNavBar extends StatelessWidget {
         24,
         12 + MediaQuery.of(context).padding.bottom,
       ),
-      child: Row(children: navBarList),
+      child: Row(children: navBarList(context)),
     );
   }
 
-  List<Widget> get navBarList {
+  List<Widget> navBarList(BuildContext context) {
     return [
       NavBarItem(
         icon: LucideIcons.home,
-        label: AppStrings.navHome,
+        label: context.loc.navHome,
         index: 0,
         currentIndex: currentIndex,
         onTap: onTap,
       ),
       NavBarItem(
         icon: LucideIcons.map,
-        label: AppStrings.navMap,
+        label: context.loc.navMap,
         index: 1,
         currentIndex: currentIndex,
         onTap: onTap,
       ),
       NavBarItem(
         icon: LucideIcons.shoppingBag,
-        label: AppStrings.navOrders,
+        label: context.loc.navOrders,
         index: 2,
         currentIndex: currentIndex,
         onTap: onTap,
       ),
       NavBarItem(
         icon: LucideIcons.user,
-        label: AppStrings.navProfile,
+        label: context.loc.navProfile,
         index: 3,
         currentIndex: currentIndex,
         onTap: onTap,

@@ -5,11 +5,11 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:waste2taste/Features/auth/domain/use_cases/signup_usecase.dart';
 import 'package:waste2taste/Features/auth/presentation/manager/signup_cubit/signup_cubit.dart';
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/functions/setup_service_locator.dart';
-import 'custom_auth_icon.dart';
-import '../../../../../core/widgets/custom_greeting_section.dart';
 import 'auth_footer.dart';
+import '../../../../../core/widgets/custom_greeting_section.dart';
+import 'custom_auth_icon.dart';
 import 'signup_form_widget.dart';
 
 class SignupViewBodyComponents extends StatelessWidget {
@@ -30,9 +30,9 @@ class SignupViewBodyComponents extends StatelessWidget {
               color: AppColors.primary,
             ),
             const SizedBox(height: 32),
-            const CustomGreetingSection(
-              title: AppStrings.createAccount,
-              subtitle: AppStrings.createAccountSubtitle,
+            CustomGreetingSection(
+              title: context.loc.createAccount,
+              subtitle: context.loc.createAccountSubtitle,
             ),
             const SizedBox(height: 48),
             BlocProvider(
@@ -41,8 +41,8 @@ class SignupViewBodyComponents extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             AuthFooter(
-              text1: AppStrings.alreadyHaveAccount,
-              text2: AppStrings.login,
+              text1: context.loc.alreadyHaveAccount,
+              text2: context.loc.login,
               onTap: () => GoRouter.of(context).pop(),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
+import '../extensions/app_localization_extention.dart';
 
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
@@ -30,7 +31,7 @@ class SectionHeader extends StatelessWidget {
             TextButton(
               onPressed: onTap,
               child: Text(
-                'See All',
+                context.loc.seeAll,
                 style: AppTextStyles.body.copyWith(
                   fontWeight: FontWeight.w600,
                   fontSize: 19,

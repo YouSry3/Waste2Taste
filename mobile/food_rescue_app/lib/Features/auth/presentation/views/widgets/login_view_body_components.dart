@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:waste2taste/core/constants/app_colors.dart';
-import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/utils/app_routes.dart';
-import 'custom_auth_icon.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../../core/widgets/custom_greeting_section.dart';
-import 'forget_pass_and_remember_me.dart';
 import 'auth_footer.dart';
+import 'custom_auth_icon.dart';
+import 'forget_pass_and_remember_me.dart';
 import 'login_form_widget.dart';
 
 class LoginViewBodyComponents extends StatelessWidget {
@@ -29,9 +29,9 @@ class LoginViewBodyComponents extends StatelessWidget {
               color: AppColors.primary,
             ),
             const SizedBox(height: 32),
-            const CustomGreetingSection(
-              title: AppStrings.welcome,
-              subtitle: AppStrings.loginSubtitle,
+            CustomGreetingSection(
+              title: context.loc.welcome,
+              subtitle: context.loc.loginSubtitle,
             ),
             const SizedBox(height: 48),
             const LoginFormWidget(),
@@ -39,15 +39,15 @@ class LoginViewBodyComponents extends StatelessWidget {
             const ForgetPassAndRememberMe(),
             const SizedBox(height: 16),
             CustomElevatedButton(
-              text: AppStrings.login,
+              text: context.loc.login,
               onPressed: () => GoRouter.of(
                 context,
               ).pushReplacement(AppRoutes.homeNavigationBar),
             ),
             const SizedBox(height: 42),
             AuthFooter(
-              text1: AppStrings.dontHaveAccount,
-              text2: AppStrings.signup,
+              text1: context.loc.dontHaveAccount,
+              text2: context.loc.signup,
               onTap: () => GoRouter.of(context).push(AppRoutes.signup),
             ),
           ],

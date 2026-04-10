@@ -13,6 +13,8 @@ class ImageHeaderWidgetForProductDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final bool isArabic = languageCode == 'ar';
     return Stack(
       children: [
         ProductImageHeader(
@@ -27,7 +29,7 @@ class ImageHeaderWidgetForProductDetails extends StatelessWidget {
           child: Row(
             children: [
               CircleIconButton(
-                icon: LucideIcons.arrowLeft,
+                icon: isArabic ? LucideIcons.arrowRight : LucideIcons.arrowLeft,
                 onPressed: () => GoRouter.of(context).pop(),
               ),
               const Spacer(),

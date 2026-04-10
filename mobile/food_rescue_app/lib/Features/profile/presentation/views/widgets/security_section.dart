@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import 'setting_nav_item.dart';
 import 'settings_section.dart';
 
@@ -9,11 +10,11 @@ class SecuritySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsSection(
-      title: "Security",
+      title: context.loc.security,
       children: [
         SettingsNavItem(
           icon: LucideIcons.lock,
-          label: "Change Password",
+          label: context.loc.changePassword,
           onTap: () {},
         ),
       ],

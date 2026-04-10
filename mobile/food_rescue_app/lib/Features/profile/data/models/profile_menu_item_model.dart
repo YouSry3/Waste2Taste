@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/extensions/app_localization_extention.dart';
 import '../../../../core/utils/app_routes.dart';
 
 class ProfileMenuItemModel {
   final IconData icon;
-  final String label;
+  final String Function(BuildContext context) label;
   final Color color;
   final Function(BuildContext context) onTap;
 
@@ -22,13 +22,13 @@ class ProfileMenuItemModel {
 final List<ProfileMenuItemModel> myActivity = [
   ProfileMenuItemModel(
     icon: LucideIcons.shoppingBag,
-    label: AppStrings.myOrders,
+    label: (context) => context.loc.myOrders,
     color: Colors.blue,
     onTap: (context) => GoRouter.of(context).push(AppRoutes.ordersView),
   ),
   ProfileMenuItemModel(
     icon: LucideIcons.heart,
-    label: AppStrings.savedOffers,
+    label: (context) => context.loc.savedOffers,
     color: Colors.red,
     onTap: (context) => GoRouter.of(context).push(AppRoutes.savedOrdersView),
   ),
@@ -36,20 +36,20 @@ final List<ProfileMenuItemModel> myActivity = [
 final List<ProfileMenuItemModel> generalSettings = [
   ProfileMenuItemModel(
     icon: LucideIcons.user,
-    label: AppStrings.editProfile,
+    label: (context) => context.loc.editProfile,
     color: AppColors.primary,
     onTap: (context) => GoRouter.of(context).push(AppRoutes.editProfileView),
   ),
   ProfileMenuItemModel(
     icon: LucideIcons.settings,
-    label: AppStrings.generalSettings,
+    label: (context) => context.loc.generalSettings,
     color: Colors.grey,
     onTap: (context) =>
         GoRouter.of(context).push(AppRoutes.generalSettingsView),
   ),
   ProfileMenuItemModel(
     icon: LucideIcons.helpCircle,
-    label: AppStrings.helpSupport,
+    label: (context) => context.loc.helpSupport,
     color: Colors.orange,
     onTap: (context) => GoRouter.of(context).push(AppRoutes.helpAndSupportView),
   ),
@@ -58,7 +58,7 @@ final List<ProfileMenuItemModel> generalSettings = [
 final List<ProfileMenuItemModel> accountAuth = [
   ProfileMenuItemModel(
     icon: LucideIcons.logOut,
-    label: AppStrings.logOut,
+    label: (context) => context.loc.logOut,
     color: Colors.red,
     onTap: (context) {},
   ),

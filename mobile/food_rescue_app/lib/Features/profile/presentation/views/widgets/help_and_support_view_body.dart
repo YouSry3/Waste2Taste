@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/app_text_styles.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import '../../../../../core/widgets/custom_greeting_section.dart';
@@ -36,7 +36,7 @@ class _HelpAndSupportViewBodyState extends State<HelpAndSupportViewBody> {
       slivers: [
         CustomSliverAppBar(
           widget: Text(
-            AppStrings.helpSupport,
+            context.loc.helpSupport,
             style: AppTextStyles.appBarTitle,
           ),
         ),
@@ -47,26 +47,26 @@ class _HelpAndSupportViewBodyState extends State<HelpAndSupportViewBody> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 32),
-                const CustomGreetingSection(
-                  title: AppStrings.howCanWeHelpYou,
-                  subtitle: AppStrings.describeYourIssueOrFeedbackBelow,
+                CustomGreetingSection(
+                  title: context.loc.howCanWeHelpYou,
+                  subtitle: context.loc.describeYourIssueOrFeedbackBelow,
                 ),
                 const SizedBox(height: 40),
                 ProfileTextField(
-                  label: "Subject",
+                  label: context.loc.subject,
                   controller: _subjectController,
-                  hintText: "Briefly describe the issue",
+                  hintText: context.loc.brieflyDescribeTheIssue,
                 ),
                 const SizedBox(height: 24),
                 ProfileTextField(
-                  label: "Description",
+                  label: context.loc.description,
                   controller: _descriptionController,
-                  hintText: "Provide more details...",
+                  hintText: context.loc.provideMoreDetails,
                   maxLines: 4,
                 ),
                 const SizedBox(height: 32),
                 CustomElevatedButton(
-                  text: AppStrings.submitReport,
+                  text: context.loc.submitReport,
                   onPressed: () {},
                 ),
               ],

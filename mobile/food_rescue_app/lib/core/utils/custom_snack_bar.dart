@@ -25,8 +25,7 @@ abstract class CustomSnackBar {
         icon = Icons.warning;
         break;
       case SnackBarType.info:
-      default:
-        bgColor = Colors.blue;
+      bgColor = Colors.blue;
         icon = Icons.info;
     }
 

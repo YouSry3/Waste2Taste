@@ -3,11 +3,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/app_text_styles.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import 'auth_footer_bloc_provider.dart';
-import 'custom_auth_icon.dart';
 import '../../../../../core/widgets/custom_greeting_section.dart';
+import 'custom_auth_icon.dart';
 import 'custom_pinput.dart';
 import 'verify_email_bloc_provider.dart';
 
@@ -47,9 +47,9 @@ class _VerifyEmailViewBodyState extends State<VerifyEmailViewBody> {
             color: AppColors.secondary,
           ),
           const SizedBox(height: 32),
-          const CustomGreetingSection(
-            title: AppStrings.verifyEmail,
-            subtitle: AppStrings.verifyEmailSubtitle,
+          CustomGreetingSection(
+            title: context.loc.verifyEmail,
+            subtitle: context.loc.verifyEmailSubtitle,
           ),
           const SizedBox(height: 6),
           Text(

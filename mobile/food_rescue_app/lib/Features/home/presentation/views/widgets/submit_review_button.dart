@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
 
 class SubmitReviewButton extends StatelessWidget {
@@ -18,7 +18,7 @@ class SubmitReviewButton extends StatelessWidget {
       valueListenable: ratingNotifier,
       builder: (context, rating, _) {
         return CustomElevatedButton(
-          text: AppStrings.submitReview,
+          text: context.loc.submitReview,
           onPressed: rating > 0 ? onSubmit : null,
         );
       },

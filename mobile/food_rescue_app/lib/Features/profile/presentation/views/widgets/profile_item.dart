@@ -22,7 +22,7 @@ class ProfileItem extends StatelessWidget {
         child: Icon(item.icon, color: item.color, size: 22),
       ),
       title: Text(
-        item.label,
+        item.label(context),
         style: AppTextStyles.button.copyWith(color: AppColors.textDark),
       ),
       trailing: const Icon(

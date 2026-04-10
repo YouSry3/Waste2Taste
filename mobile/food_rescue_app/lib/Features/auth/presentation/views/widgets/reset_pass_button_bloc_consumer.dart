@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:load_it/load_it.dart';
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/app_text_styles.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/utils/app_routes.dart';
 import '../../../../../core/utils/custom_snack_bar.dart';
+import '../../../../../core/utils/translator.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
 import '../../../data/models/reset_pass_request_model.dart';
 import '../../../data/models/verify_email_request_model.dart';
@@ -28,16 +29,24 @@ class ResetPasswordButtonBlocConsumer extends StatelessWidget {
 
     return BlocConsumer<ResetNewPasswordCubit, ResetNewPasswordState>(
       listener: (context, state) {
+        final langCode = Localizations.localeOf(context).languageCode;
+
         if (state is ResetNewPasswordFailureState) {
-          return CustomSnackBar.show(
-            context: context,
-            message: state.errMessage,
-            type: SnackBarType.info,
-          );
+          translateMessage(state.errMessage, langCode).then((
+            translatedMessage,
+          ) {
+            if (context.mounted) {
+              CustomSnackBar.show(
+                context: context,
+                message: translatedMessage,
+                type: SnackBarType.info,
+              );
+            }
+          });
         } else if (state is ResetNewPasswordSuccessState) {
           CustomSnackBar.show(
             context: context,
-            message: state.message,
+            message: context.loc.passwordResetedSuccessfully,
             type: SnackBarType.success,
           );
           context.go(AppRoutes.login);
@@ -49,7 +58,7 @@ class ResetPasswordButtonBlocConsumer extends StatelessWidget {
           child: state is ResetNewPasswordLoadingState
               ? const BouncingDotsIndicator(color: AppColors.background)
               : Text(
-                  AppStrings.resetPassword,
+                  context.loc.resetPassword,
                   style: AppTextStyles.button.copyWith(fontSize: 19),
                 ),
 

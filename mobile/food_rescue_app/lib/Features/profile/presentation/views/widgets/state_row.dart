@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import 'state_item.dart';
 
 class StatesRow extends StatelessWidget {
@@ -21,14 +22,14 @@ class StatesRow extends StatelessWidget {
           ),
         ],
       ),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          StateItem(value: '24', label: 'Orders'),
-          VerticalDivider(),
-          StateItem(value: '\$180', label: 'Money Spent'),
-          VerticalDivider(),
-          StateItem(value: '\$80', label: 'Money Saved'),
+          StateItem(value: '24', label: context.loc.orders),
+          const VerticalDivider(),
+          StateItem(value: '\$180', label: context.loc.moneySpent),
+          const VerticalDivider(),
+          StateItem(value: '\$80', label: context.loc.moneySaved),
         ],
       ),
     );

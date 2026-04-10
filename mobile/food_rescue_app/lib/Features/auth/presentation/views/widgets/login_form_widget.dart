@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import 'auth_input_label.dart';
 import 'custom_text_form_field.dart';
 
@@ -22,16 +22,16 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AuthInputLabel(text: AppStrings.email),
+          AuthInputLabel(text: context.loc.email),
           CustomTextFormField(
-            hint: AppStrings.emailHint,
+            hint: context.loc.emailHint,
             icon: LucideIcons.mail,
             inputType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 20),
-          const AuthInputLabel(text: AppStrings.password),
-          const CustomTextFormField(
-            hint: AppStrings.passwordHint,
+          AuthInputLabel(text: context.loc.password),
+          CustomTextFormField(
+            hint: context.loc.passwordHint,
             icon: LucideIcons.lock,
             isPassword: true,
           ),

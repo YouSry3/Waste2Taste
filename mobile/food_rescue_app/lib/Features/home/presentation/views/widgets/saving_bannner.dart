@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 
 class SavingsBanner extends StatelessWidget {
   const SavingsBanner({super.key, required this.amount});
@@ -16,7 +17,7 @@ class SavingsBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        "💰 You save \$${amount.toStringAsFixed(2)} and help reduce food waste!",
+        context.loc.savingsMessage(amount.toStringAsFixed(2)),
         textAlign: TextAlign.center,
         style: AppTextStyles.label.copyWith(
           color: AppColors.primary,

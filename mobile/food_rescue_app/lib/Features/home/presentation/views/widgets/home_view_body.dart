@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '/core/utils/app_routes.dart';
-import '../../../../../core/constants/app_strings.dart';
 import '../../../data/models/product_model.dart';
 import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import 'customer_card.dart';
@@ -27,7 +27,7 @@ class HomeViewBody extends StatelessWidget {
         ),
         SliverToBoxAdapter(
           child: SectionHeader(
-            title: AppStrings.nearbyDeals,
+            title: context.loc.nearbyDeals,
             onTap: () => GoRouter.of(context).push(AppRoutes.allProducts),
           ),
         ),

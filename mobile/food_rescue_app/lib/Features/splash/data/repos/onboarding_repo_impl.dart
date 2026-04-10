@@ -1,30 +1,26 @@
 import '../../../../core/enums/color_name.dart';
 import '../../../../core/enums/icon_name.dart';
-import '../../domain/entities/onboarding_entity.dart';
 import '../../domain/repos/onboarding_repo.dart';
 import '../models/onboarding_model.dart';
 
 class OnboardingRepoImpl implements OnboardingRepo {
   @override
-  List<OnboardingEntity> getPages() => [
+  List<OnboardingModel> getPages() => [
     OnboardingModel(
-      title: "Rescue Great Food",
-      description:
-          "Find quality meals at up to 70% off while helping protect the planet.",
+      titleKey: "rescueFoodTitle",
+      descriptionKey: "rescueFoodDesc",
       iconName: IconName.utensils,
       colorName: ColorName.primary,
     ),
     OnboardingModel(
-      title: "Premium Meals. Better Prices.",
-      description:
-          "Enjoy fresh, high-quality food at amazing discounts. Reserve in seconds.",
+      titleKey: "premiumMealsTitle",
+      descriptionKey: "premiumMealsDesc",
       iconName: IconName.shoppingBag,
       colorName: ColorName.secondary,
     ),
     OnboardingModel(
-      title: "Join the Food Rescue Movement",
-      description:
-          "Save money, reduce waste, and turn everyday meals into real impact.",
+      titleKey: "joinMovementTitle",
+      descriptionKey: "joinMovementDesc",
       iconName: IconName.heart,
       colorName: ColorName.accent,
     ),

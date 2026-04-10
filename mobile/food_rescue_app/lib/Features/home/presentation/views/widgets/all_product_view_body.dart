@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../data/models/product_model.dart';
 import '/core/constants/app_text_styles.dart';
 import 'custom_search_widget.dart';
@@ -14,7 +15,10 @@ class AllProductsViewBody extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         CustomSliverAppBar(
-          widget: Text("All Products", style: AppTextStyles.appBarTitle),
+          widget: Text(
+            context.loc.allProducts,
+            style: AppTextStyles.appBarTitle,
+          ),
         ),
         const HomeSearchBar(),
         ProductsSliverListBuilder(products: products),

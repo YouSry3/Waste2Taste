@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/utils/app_regex.dart';
 import 'custom_validation_row.dart';
 
@@ -21,17 +21,17 @@ class PasswordValidationGroup extends StatelessWidget {
         return Column(
           children: [
             CustomValidationRow(
-              text: AppStrings.atLeast8Characters,
+              text: context.loc.atLeast8Characters,
               isValid: passwordNotifier.value.length >= 8,
             ),
             const SizedBox(height: 8),
             CustomValidationRow(
-              text: AppStrings.containsANumber,
+              text: context.loc.containsANumber,
               isValid: AppRegex.isContainsNumber(pass),
             ),
             const SizedBox(height: 8),
             CustomValidationRow(
-              text: AppStrings.containsAnUppercaseLetter,
+              text: context.loc.containsAnUppercaseLetter,
               isValid: AppRegex.isContainsCapitalLetter(pass),
             ),
             const SizedBox(height: 8),
@@ -39,7 +39,7 @@ class PasswordValidationGroup extends StatelessWidget {
               valueListenable: confirmPasswordNotifier,
               builder: (context, confrimPass, child) {
                 return CustomValidationRow(
-                  text: AppStrings.passwordsMatch,
+                  text: context.loc.passwordsMatch,
                   isValid: pass == confrimPass && pass.isNotEmpty,
                 );
               },

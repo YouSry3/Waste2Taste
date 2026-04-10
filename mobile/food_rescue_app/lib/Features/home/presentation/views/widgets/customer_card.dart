@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 
 class CustomerCard extends StatelessWidget {
   const CustomerCard({
@@ -21,7 +22,7 @@ class CustomerCard extends StatelessWidget {
     return ListTile(
       contentPadding: const EdgeInsets.all(7),
       title: Text(
-        'Hello, $userName 👋',
+        context.loc.helloUser(userName),
         style: AppTextStyles.label.copyWith(
           fontWeight: FontWeight.normal,
           color: AppColors.textGray,

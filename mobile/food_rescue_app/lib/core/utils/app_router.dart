@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:waste2taste/Features/profile/presentation/views/help_and_support_view.dart';
+import 'package:waste2taste/Features/orders/presentation/views/order_confirmation_view.dart';
 import '../../Features/auth/domain/use_cases/send_reset_password_code_usecase.dart';
 import '../../Features/auth/presentation/manager/send_reset_password_code_cubit/send_reset_password_code_cubit.dart';
 import '../../Features/home/presentation/views/home_view.dart';
@@ -11,12 +11,13 @@ import '../../Features/auth/presentation/views/reset_password_view.dart';
 import '../../Features/auth/presentation/views/signup_view.dart';
 import '../../Features/auth/presentation/views/verify_email_view.dart';
 import '../../Features/home/presentation/views/all_product_view.dart';
-import '../../Features/home/presentation/views/poduct_reviews_view.dart';
-import '../../Features/home/presentation/views/product_details_view.dart';
-import '../../Features/orders/presentation/orders_view.dart';
-import '../../Features/orders/presentation/saved_orders_view.dart';
+import '../../Features/products/presentation/views/poduct_reviews_view.dart';
+import '../../Features/products/presentation/views/product_details_view.dart';
+import '../../Features/orders/presentation/views/orders_view.dart';
+import '../../Features/orders/presentation/views/saved_orders_view.dart';
 import '../../Features/profile/presentation/views/edit_profile_view.dart';
 import '../../Features/profile/presentation/views/general_settings_view.dart';
+import '../../Features/profile/presentation/views/help_and_support_view.dart';
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
 import '../../Features/splash/presentation/manager/onboarding_cubit.dart';
 import '../../Features/splash/presentation/views/onboarding_view.dart';
@@ -80,6 +81,10 @@ abstract class AppRouter {
       GoRoute(
         path: AppRoutes.productReviews,
         builder: (context, state) => const ProductReviewsView(),
+      ),
+      GoRoute(
+        path: AppRoutes.orderConfirmationView,
+        builder: (context, state) => const OrderConfirmationView(),
       ),
       GoRoute(
         path: AppRoutes.homeNavigationBar,

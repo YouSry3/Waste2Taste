@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/extensions/app_loc_mapper.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/mappers/ui_mappers.dart';
 import '../../../domain/entities/onboarding_entity.dart';
 import 'onboarding_blob_section.dart';
@@ -19,8 +21,8 @@ class OnboardingPage extends StatelessWidget {
         ),
         const SizedBox(height: 48),
         OnboardingTextSection(
-          title: model.title,
-          description: model.description,
+          title: context.loc.getString(model.titleKey),
+          description: context.loc.getString(model.descriptionKey),
         ),
       ],
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/app_text_styles.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import 'danger_section.dart';
 import 'general_section.dart';
@@ -15,7 +15,7 @@ class GeneralSettingsViewBody extends StatelessWidget {
       slivers: [
         CustomSliverAppBar(
           widget: Text(
-            AppStrings.generalSettings,
+            context.loc.generalSettings,
             style: AppTextStyles.appBarTitle,
           ),
         ),

@@ -20,6 +20,8 @@ class SettingsNavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final bool isArabic = languageCode == 'ar';
     return ListTile(
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -43,7 +45,13 @@ class SettingsNavItem extends StatelessWidget {
                 style: const TextStyle(color: Colors.grey, fontSize: 14),
               ),
             ),
-          Icon(LucideIcons.chevronRight, size: 20, color: Colors.grey[400]),
+          isArabic
+              ? Icon(LucideIcons.chevronLeft, size: 20, color: Colors.grey[400])
+              : Icon(
+                  LucideIcons.chevronRight,
+                  size: 20,
+                  color: Colors.grey[400],
+                ),
         ],
       ),
     );

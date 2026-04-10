@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/extensions/app_localization_extention.dart';
+
 class SearchTextField extends StatelessWidget {
   const SearchTextField({super.key});
 
@@ -13,7 +15,7 @@ class SearchTextField extends StatelessWidget {
       textInputAction: TextInputAction.search,
       onSubmitted: (query) => _onSearchSubmitted(context, query),
       decoration: InputDecoration(
-        hintText: 'Search foods, groceries...',
+        hintText: context.loc.searchfood,
         hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
         border: InputBorder.none,
         contentPadding: EdgeInsets.zero,

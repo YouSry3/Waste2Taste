@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'package:waste2taste/core/extensions/app_localization_extention.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/utils/app_routes.dart';
 import '../../manager/onboarding_cubit.dart';
@@ -30,22 +30,15 @@ class CustomOnboardingNextButton extends StatelessWidget {
               ),
               elevation: 0,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  cubit.currentIndex == cubit.getLastPage
-                      ? 'Get Started'
-                      : "Next",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Icon(LucideIcons.chevronRight, color: Colors.white),
-              ],
+            child: Text(
+              cubit.currentIndex == cubit.getLastPage
+                  ? context.loc.getStarted
+                  : context.loc.next,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           );
         },

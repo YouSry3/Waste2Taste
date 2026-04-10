@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../data/models/product_model.dart';
 import 'price_column.dart';
 
@@ -12,11 +13,11 @@ class DetailsPriceRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         PriceColumn(
-          label: "Original Price",
+          label: context.loc.originalPrice,
           price: product.originalPrice,
           isOldPrice: true,
         ),
-        PriceColumn(label: "Your Price", price: product.price),
+        PriceColumn(label: context.loc.yourPrice, price: product.price),
       ],
     );
   }

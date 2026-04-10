@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import 'setting_nav_item.dart';
 import 'setting_swich_item.dart';
 import 'settings_section.dart';
@@ -9,18 +10,20 @@ class GeneralSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final bool isArabic = languageCode == 'ar';
     return SettingsSection(
-      title: "General",
+      title: context.loc.general,
       children: [
         SettingsNavItem(
           icon: LucideIcons.globe,
-          label: "Language",
-          trailingText: "English",
+          label: context.loc.language,
+          trailingText: isArabic ? "اللغة العربية" : "English",
           onTap: () {},
         ),
         SettingsSwitchItem(
           icon: LucideIcons.moon,
-          label: "Dark Mode",
+          label: context.loc.darkMode,
           value: true,
           onChanged: (val) {},
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:waste2taste/core/l10n/app_localizations.dart';
 import 'core/constants/app_colors.dart';
 import 'core/utils/app_router.dart';
 
@@ -12,6 +13,9 @@ class Waste2TasteApp extends StatelessWidget {
       theme: ThemeData(scaffoldBackgroundColor: AppColors.background),
       debugShowCheckedModeBanner: false,
       routerConfig: AppRouter.routerConfig,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: Locale('ar'),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/app_text_styles.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import 'profile_avatar_picker.dart';
@@ -15,7 +15,7 @@ class EditProfileViewBody extends StatelessWidget {
       slivers: [
         CustomSliverAppBar(
           widget: Text(
-            AppStrings.editProfile,
+            context.loc.editProfile,
             style: AppTextStyles.appBarTitle,
           ),
         ),
@@ -28,13 +28,13 @@ class EditProfileViewBody extends StatelessWidget {
               children: [
                 ProfileAvatarPicker(),
                 const SizedBox(height: 32),
-                const ProfileTextField(
-                  label: "Full Name",
+                ProfileTextField(
+                  label: context.loc.fullName,
                   initialValue: "John Doe",
                 ),
                 const SizedBox(height: 16),
                 CustomElevatedButton(
-                  text: AppStrings.saveChanges,
+                  text: context.loc.saveChanges,
                   onPressed: () {},
                 ),
               ],

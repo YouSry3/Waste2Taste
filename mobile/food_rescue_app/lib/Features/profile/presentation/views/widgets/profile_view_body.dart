@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import '../../../../../core/constants/app_text_styles.dart';
-import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/widgets/section_header.dart';
 import 'account_auth_section.dart';
 import 'general_settings_section.dart';
@@ -21,7 +21,7 @@ class ProfileViewBody extends StatelessWidget {
         slivers: [
           CustomSliverAppBar(
             widget: Text(
-              AppStrings.navProfile,
+              context.loc.navProfile,
               style: AppTextStyles.appBarTitle,
             ),
           ),
@@ -34,10 +34,10 @@ class ProfileViewBody extends StatelessWidget {
                 const SizedBox(height: 24),
                 const StatesRow(),
                 const SizedBox(height: 24),
-                const SectionHeader(title: AppStrings.myActivity),
+                SectionHeader(title: context.loc.myActivity),
                 const MyActivitySection(),
                 const SizedBox(height: 24),
-                const SectionHeader(title: AppStrings.general),
+                SectionHeader(title: context.loc.general),
                 const GeneralSettingsSection(),
                 const SizedBox(height: 32),
                 const AccountAuthSection(),

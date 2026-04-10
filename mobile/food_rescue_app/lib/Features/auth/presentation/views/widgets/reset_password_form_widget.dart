@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/utils/app_validations.dart';
 import 'auth_input_label.dart';
 import 'custom_text_form_field.dart';
@@ -49,23 +49,25 @@ class _ResetPasswordFormWidgetState extends State<ResetPasswordFormWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const AuthInputLabel(text: AppStrings.newPassword),
+          AuthInputLabel(text: context.loc.newPassword),
           CustomTextFormField(
             controller: _passController,
-            validator: (value) => AppValidations.validatePassword(value),
-            hint: AppStrings.passwordHint,
+            validator: (value) =>
+                AppValidations.validatePassword(context, value),
+            hint: context.loc.passwordHint,
             icon: LucideIcons.lock,
             isPassword: true,
           ),
           const SizedBox(height: 20),
-          const AuthInputLabel(text: AppStrings.confirmPassword),
+          AuthInputLabel(text: context.loc.confirmPassword),
           CustomTextFormField(
             controller: _confirmPassController,
             validator: (value) => AppValidations.validateConfirmPassword(
+              context,
               value,
               _passController.text.trim(),
             ),
-            hint: AppStrings.passwordHint,
+            hint: context.loc.passwordHint,
             icon: LucideIcons.lock,
             isPassword: true,
           ),

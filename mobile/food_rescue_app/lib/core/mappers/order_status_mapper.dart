@@ -2,38 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../Features/orders/data/models/order_status_config.dart';
 import '../enums/order_status.dart';
+import '../extensions/app_localization_extention.dart';
 
 class OrderStatusMapper {
-  static OrderStatusConfig getOrderStatusConfig(OrderStatus orderStatus) {
+  static OrderStatusConfig getOrderStatusConfig(
+    BuildContext context,
+    OrderStatus orderStatus,
+  ) {
     switch (orderStatus) {
       case OrderStatus.ready:
-        return const OrderStatusConfig(
-          color: Color(0xFF2ECC71),
-          text: "Ready for Pickup",
+        return OrderStatusConfig(
+          color: const Color(0xFF2ECC71),
+          text: context.loc.statusReady,
           icon: LucideIcons.packageCheck,
         );
+
       case OrderStatus.preparing:
-        return const OrderStatusConfig(
-          color: Color(0xFFFFA940),
-          text: "Being Prepared",
+        return OrderStatusConfig(
+          color: const Color(0xFFFFA940),
+          text: context.loc.statusPreparing,
           icon: LucideIcons.chefHat,
         );
+
       case OrderStatus.completed:
-        return const OrderStatusConfig(
+        return OrderStatusConfig(
           color: Colors.grey,
-          text: "Completed",
+          text: context.loc.statusCompleted,
           icon: LucideIcons.checkCircle,
         );
+
       case OrderStatus.cancelled:
-        return const OrderStatusConfig(
-          color: Color(0xFFE74C3C),
-          text: "Cancelled",
+        return OrderStatusConfig(
+          color: const Color(0xFFE74C3C),
+          text: context.loc.statusCancelled,
           icon: LucideIcons.clock,
         );
+
       case OrderStatus.pending:
-        return const OrderStatusConfig(
-          color: Color(0xFF6C757D),
-          text: "Pending",
+        return OrderStatusConfig(
+          color: const Color(0xFF6C757D),
+          text: context.loc.statusPending,
           icon: LucideIcons.clock,
         );
     }

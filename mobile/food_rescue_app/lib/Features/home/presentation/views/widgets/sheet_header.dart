@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-
 import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 
 class SheetHeader extends StatelessWidget {
   const SheetHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          AppStrings.writeReview,
-          style: TextStyle(
+          context.loc.writeReview,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppColors.textDark,
@@ -21,8 +20,8 @@ class SheetHeader extends StatelessWidget {
         ),
         SizedBox(height: 8),
         Text(
-          AppStrings.howWasYourExperience,
-          style: TextStyle(color: Colors.grey, fontSize: 16),
+          context.loc.howWasYourExperience,
+          style: const TextStyle(color: Colors.grey, fontSize: 16),
         ),
       ],
     );
