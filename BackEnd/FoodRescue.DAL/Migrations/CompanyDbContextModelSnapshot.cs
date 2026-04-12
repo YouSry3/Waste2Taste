@@ -253,8 +253,24 @@ namespace FoodRescue.DAL.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETUTCDATE()");
 
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IssueType")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ListingName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Priority")
                         .IsRequired()
@@ -266,20 +282,27 @@ namespace FoodRescue.DAL.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<decimal>("RefundAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ReportCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("Priority")
                         .HasDatabaseName("IX_Reports_Priority");
@@ -303,6 +326,37 @@ namespace FoodRescue.DAL.Migrations
                         {
                             t.HasCheckConstraint("CK_Report_Priority_Enum", "[Priority] IN ('Low','Medium','High')");
                         });
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.ReportResponse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Attachment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ReportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ResponderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReportId");
+
+                    b.HasIndex("ResponderId");
+
+                    b.ToTable("ReportResponses");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Review", b =>
@@ -589,6 +643,11 @@ namespace FoodRescue.DAL.Migrations
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Report", b =>
                 {
+                    b.HasOne("FoodRescue.DAL.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("FoodRescue.DAL.Entities.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
@@ -601,9 +660,30 @@ namespace FoodRescue.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Order");
+
                     b.Navigation("Product");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.ReportResponse", b =>
+                {
+                    b.HasOne("FoodRescue.DAL.Entities.Report", "Report")
+                        .WithMany("Responses")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FoodRescue.DAL.Entities.User", "Responder")
+                        .WithMany()
+                        .HasForeignKey("ResponderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Report");
+
+                    b.Navigation("Responder");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Review", b =>
@@ -654,6 +734,11 @@ namespace FoodRescue.DAL.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Report", b =>
+                {
+                    b.Navigation("Responses");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.User", b =>

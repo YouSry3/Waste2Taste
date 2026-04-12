@@ -21,7 +21,7 @@ public class ReportConfiguration : IEntityTypeConfiguration<Report>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Type)
+        builder.Property(x => x.IssueType)
             .IsRequired()
             .HasMaxLength(255);
 

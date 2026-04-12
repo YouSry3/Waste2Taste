@@ -6,6 +6,7 @@ using FoodRescue.BLL.Extensions.Dashboard;
 using FoodRescue.BLL.Extensions.Dashboard.AnalyticsDashboardTab;
 using FoodRescue.BLL.Extensions.Dashboard.ListingDashboardTab;
 using FoodRescue.BLL.Extensions.Dashboard.OrderDashboardTab;
+using FoodRescue.BLL.Extensions.Reports;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.BLL.Extensions.Vendors.MapsterConfiguration;
 using FoodRescue.BLL.Repositorys.Dashboard;
@@ -126,6 +127,7 @@ namespace FoodRescue.PL
             services.AddScoped<IDashboardServices, DashboardService>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
             services.AddScoped<IModerationService, ModerationService>();
+            services.AddScoped<IReportRepository, ReportRepository>();
             services.AddScoped<IReportsService, ReportsService>();
             services.AddScoped<IVendorRequestService, VendorRequestService>();
             services.AddScoped<IListingApprovalService, ListingApprovalService>();
@@ -181,3 +183,4 @@ namespace FoodRescue.PL
         }
     }
 }
+
