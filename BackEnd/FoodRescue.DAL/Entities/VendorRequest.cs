@@ -19,7 +19,10 @@ namespace FoodRescue.DAL.Entities
         public string PhoneNumber { get; set; }
         public VendorCategory Category { get; set; }
         public string? HealthCertificateUrl { get; set; }
-        public string? BusinessLicenseUrl { get; set; } 
+        public string? BusinessLicenseUrl { get; set; }
+
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
 
         public VendorRequestStatus Status { get; set; } = VendorRequestStatus.Pending;
 

@@ -9,6 +9,8 @@ public class VendorDataRequest
     public string Email { get; set; } = null!;
     public string PhoneNumber { get; set; } = null!;
     public string Address { get; set; } = null!;
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
 
     // File uploads (not stored in DB, handled separately)
     public IFormFile? BusinessLicenseFile { get; set; }

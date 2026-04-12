@@ -79,7 +79,10 @@ public class ProductService : IProductService
                 DiscountPercentage = CalculateDiscountPercentage(product.OriginalPrice, product.Price),
                 ExpiresIn = CalculateExpiresIn(product.ExpiryDate),
                 Rating = Math.Round(avgRating, 1),
-                VendorName = product.Vendor.Name
+                VendorName = product.Vendor.Name,
+
+                Latitude = product.Vendor.Latitude,
+                Longitude = product.Vendor.Longitude
             });
         }
 

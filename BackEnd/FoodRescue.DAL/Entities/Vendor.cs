@@ -11,6 +11,8 @@ public class Vendor
     public Guid OwnerId { get; set; }
     public string Address { get; set; } = string.Empty;
     public VendorCategory Category { get; set; }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
     //public string Status { get; set; } = "active";
     // For Simplicity, vendor status is determined by the presence of a VendorRequest with "approved" status. If no approved request exists, vendor is considered "pending".
     // and EG

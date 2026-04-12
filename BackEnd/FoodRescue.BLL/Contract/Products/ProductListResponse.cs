@@ -11,4 +11,6 @@ public class ProductListResponse
     public string ExpiresIn { get; set; } = null!;
     public double Rating { get; set; }
     public string VendorName { get; set; } = null!;
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
 }
