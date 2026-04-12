@@ -8,10 +8,12 @@ import 'package:waste2taste/Features/auth/domain/use_cases/verify_email_usecase.
 import '../../Features/splash/data/repos/onboarding_repo_impl.dart';
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
 import '../services/api_service.dart';
+import '../theme/theme_cubit.dart';
 
 GetIt getIt = GetIt.instance;
 
 void setupServiceLocator() {
+  getIt.registerLazySingleton<ThemeCubit>(() => ThemeCubit());
   getIt.registerLazySingleton<OnboardingRepo>(() => OnboardingRepoImpl());
   getIt.registerLazySingleton<ApiService>(() => ApiService());
   getIt.registerLazySingleton<AuthRepoImpl>(

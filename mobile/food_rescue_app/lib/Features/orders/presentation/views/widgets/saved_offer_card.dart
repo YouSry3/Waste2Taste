@@ -13,7 +13,7 @@ class SavedOfferCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12, left: 20, right: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4),

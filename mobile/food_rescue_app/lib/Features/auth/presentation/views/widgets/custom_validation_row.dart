@@ -48,7 +48,7 @@ class CustomValidationRow extends StatelessWidget {
           AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 300),
             style: AppTextStyles.body.copyWith(
-              color: isValid ? AppColors.textDark : Colors.grey.shade500,
+              color: isValid ? Theme.of(context).colorScheme.onSurface : Colors.grey.shade500,
               fontWeight: isValid ? FontWeight.w600 : FontWeight.normal,
               fontSize: 15,
             ),

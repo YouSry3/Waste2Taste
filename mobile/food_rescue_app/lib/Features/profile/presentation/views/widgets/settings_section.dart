@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
-
 class SettingsSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
@@ -18,16 +16,16 @@ class SettingsSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.bold,
-            color: AppColors.textGray,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             borderRadius: BorderRadius.circular(16),
             boxShadow: const [
               BoxShadow(

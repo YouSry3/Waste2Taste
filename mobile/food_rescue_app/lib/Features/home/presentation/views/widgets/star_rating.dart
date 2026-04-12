@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 
 class StarRating extends StatelessWidget {
@@ -17,7 +16,7 @@ class StarRating extends StatelessWidget {
           rating.toString(),
           style: AppTextStyles.body.copyWith(
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],

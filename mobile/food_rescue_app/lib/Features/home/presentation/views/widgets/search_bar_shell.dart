@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
-
 class SearchBarShell extends StatelessWidget {
   const SearchBarShell({super.key, required this.child});
   final Widget child;
@@ -11,11 +9,11 @@ class SearchBarShell extends StatelessWidget {
       height: 56,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: .05),
+            color: Colors.black.withValues(alpha: .05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),

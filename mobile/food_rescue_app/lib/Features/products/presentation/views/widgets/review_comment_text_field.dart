@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 
 class ReviewCommentField extends StatelessWidget {
@@ -14,7 +13,7 @@ class ReviewCommentField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: context.loc.shareYourThoughts,
         filled: true,
-        fillColor: AppColors.background,
+        fillColor: Theme.of(context).scaffoldBackgroundColor,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide.none,

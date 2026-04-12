@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 
 class DirectionsButton extends StatelessWidget {
@@ -17,7 +16,7 @@ class DirectionsButton extends StatelessWidget {
       icon: const Icon(LucideIcons.mapPin, size: 16),
       label: Text(context.loc.directions),
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.textDark,
+        backgroundColor: Theme.of(context).colorScheme.onSurface,
         foregroundColor: Colors.white,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),

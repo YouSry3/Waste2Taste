@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 
 class StatusMessage extends StatelessWidget {
@@ -13,7 +12,7 @@ class StatusMessage extends StatelessWidget {
         Text(
            context.loc.orderConfirmed,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AppColors.textDark,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,

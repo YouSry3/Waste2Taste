@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../constants/app_colors.dart';
-
 class CustomSliverAppBar extends StatelessWidget {
   const CustomSliverAppBar({
     super.key,
@@ -15,7 +13,7 @@ class CustomSliverAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverAppBar(
       pinned: true,
-      backgroundColor: AppColors.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       floating: true,

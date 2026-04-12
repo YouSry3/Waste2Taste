@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
 
 class CustomCardWidget extends StatelessWidget {
   const CustomCardWidget({super.key, required this.widget, this.paddingValue});
@@ -9,7 +8,7 @@ class CustomCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppColors.surface,
+      color: Theme.of(context).colorScheme.surface,
       elevation: 4,
       shadowColor: Colors.black.withValues(alpha: 0.5),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),

@@ -29,8 +29,8 @@ class SettingsSwitchItem extends StatelessWidget {
       ),
       title: Text(
         label,
-        style: const TextStyle(
-          color: AppColors.textDark,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
           fontSize: 16,
           fontWeight: FontWeight.w500,
         ),

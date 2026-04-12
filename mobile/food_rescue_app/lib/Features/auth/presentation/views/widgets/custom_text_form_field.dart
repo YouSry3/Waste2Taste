@@ -50,7 +50,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500),
           decoration: InputDecoration(
             filled: true,
-            fillColor: AppColors.fieldGray,
+            fillColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
 
             hintText: widget.hint,
             hintStyle: AppTextStyles.body.copyWith(color: Colors.grey.shade500),

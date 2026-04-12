@@ -70,21 +70,22 @@ class _CustomPinputState extends State<CustomPinput> {
     super.dispose();
   }
 
-  PinTheme get defaultPinTheme => PinTheme(
+  PinTheme _buildDefaultPinTheme(BuildContext context) => PinTheme(
     width: 56,
     height: 56,
     textStyle: AppTextStyles.title.copyWith(fontSize: 21),
     decoration: BoxDecoration(
-      color: AppColors.fieldGray.withValues(alpha: 0.5),
+      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(16),
       border: Border.all(color: Colors.transparent),
     ),
   );
 
-  PinTheme get focusedPinTheme => defaultPinTheme.copyDecorationWith(
-    border: Border.all(color: AppColors.primary),
-    color: AppColors.background,
-  );
+  PinTheme _buildFocusedPinTheme(BuildContext context) =>
+      _buildDefaultPinTheme(context).copyDecorationWith(
+        border: Border.all(color: AppColors.primary),
+        color: Theme.of(context).scaffoldBackgroundColor,
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -93,8 +94,8 @@ class _CustomPinputState extends State<CustomPinput> {
     return Pinput(
       controller: _displayController,
       length: 6,
-      defaultPinTheme: defaultPinTheme,
-      focusedPinTheme: focusedPinTheme,
+      defaultPinTheme: _buildDefaultPinTheme(context),
+      focusedPinTheme: _buildFocusedPinTheme(context),
       inputFormatters: _isArabic
           ? [
               TextInputFormatter.withFunction((oldValue, newValue) {

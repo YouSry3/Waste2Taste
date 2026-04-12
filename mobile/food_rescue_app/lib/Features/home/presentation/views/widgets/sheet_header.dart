@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 
 class SheetHeader extends StatelessWidget {
@@ -12,10 +11,10 @@ class SheetHeader extends StatelessWidget {
       children: [
         Text(
           context.loc.writeReview,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppColors.textDark,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         SizedBox(height: 8),

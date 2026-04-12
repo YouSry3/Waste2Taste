@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import '../../../data/models/profile_menu_item_model.dart';
 
@@ -23,7 +22,7 @@ class ProfileItem extends StatelessWidget {
       ),
       title: Text(
         item.label(context),
-        style: AppTextStyles.button.copyWith(color: AppColors.textDark),
+        style: AppTextStyles.button.copyWith(color: Theme.of(context).colorScheme.onSurface),
       ),
       trailing: const Icon(
         LucideIcons.chevronRight,

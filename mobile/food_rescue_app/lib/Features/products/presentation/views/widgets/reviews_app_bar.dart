@@ -13,12 +13,12 @@ class ReviewsAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       centerTitle: true,
       title: Text(context.loc.reviews),
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       elevation: 0,
       leading: IconButton(
         icon: Icon(
           isArabic ? LucideIcons.arrowRight : LucideIcons.arrowLeft,
-          color: Colors.black,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         onPressed: () => Navigator.pop(context),
       ),

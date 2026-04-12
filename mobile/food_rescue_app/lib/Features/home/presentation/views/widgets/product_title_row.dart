@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import 'star_rating.dart';
 
@@ -18,7 +17,7 @@ class ProductTitleRow extends StatelessWidget {
             title,
             style: AppTextStyles.body.copyWith(
               fontSize: 19,
-              color: AppColors.textDark,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,

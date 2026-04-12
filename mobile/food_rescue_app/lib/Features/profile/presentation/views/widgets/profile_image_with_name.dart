@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import 'profile_image_widget.dart';
 
@@ -18,7 +17,7 @@ class ProfileImagaWithName extends StatelessWidget {
             name,
             style: AppTextStyles.title.copyWith(
               fontSize: 22,
-              color: AppColors.textDark,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ],
