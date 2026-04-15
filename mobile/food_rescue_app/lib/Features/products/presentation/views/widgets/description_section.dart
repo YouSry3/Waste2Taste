@@ -14,13 +14,13 @@ class DescriptionSection extends StatelessWidget {
       children: [
         Text(
           context.loc.description,
-          style: AppTextStyles.label.copyWith(fontSize: 18),
+          style: AppTextStyles.label(context).copyWith(fontSize: 18),
         ),
         const SizedBox(height: 8),
         Text(
           description,
-          style: AppTextStyles.body.copyWith(
-            color: AppColors.textGray,
+          style: AppTextStyles.body(context).copyWith(
+            color: AppColors.textMuted(context),
             fontSize: 15,
             height: 1.6,
           ),

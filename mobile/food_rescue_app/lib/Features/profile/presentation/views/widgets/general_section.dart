@@ -2,13 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
-import '../../../../../core/theme/theme_cubit.dart';
+import '../../../../../core/cubits/theme_cubit/theme_cubit.dart';
+import 'language_sheet.dart';
 import 'setting_nav_item.dart';
 import 'setting_swich_item.dart';
 import 'settings_section.dart';
+import 'theme_switcher_widget.dart';
 
 class GeneralSection extends StatelessWidget {
   const GeneralSection({super.key});
+  void _showLanguageSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) {
+        return const LanguageSheet();
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +35,15 @@ class GeneralSection extends StatelessWidget {
         SettingsNavItem(
           icon: LucideIcons.globe,
           label: context.loc.language,
-          trailingText: isArabic ? "اللغة العربية" : "English",
-          onTap: () {},
+          color: Theme.of(context).colorScheme.onSurface,
+          trailingText: isArabic ? "العربية" : "English",
+          onTap: () => _showLanguageSheet(context),
         ),
         SettingsSwitchItem(
           icon: LucideIcons.moon,
           label: context.loc.darkMode,
           value: themeState.themeMode == AppThemeMode.dark,
-          onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
+          trailing: ThemeSwicherWidget(themeState: themeState),
         ),
       ],
     );

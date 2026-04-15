@@ -37,7 +37,7 @@ class _HelpAndSupportViewBodyState extends State<HelpAndSupportViewBody> {
         CustomSliverAppBar(
           widget: Text(
             context.loc.helpSupport,
-            style: AppTextStyles.appBarTitle,
+            style: AppTextStyles.title(context),
           ),
         ),
         SliverToBoxAdapter(

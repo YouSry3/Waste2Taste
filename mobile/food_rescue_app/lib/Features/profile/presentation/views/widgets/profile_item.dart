@@ -22,7 +22,10 @@ class ProfileItem extends StatelessWidget {
       ),
       title: Text(
         item.label(context),
-        style: AppTextStyles.button.copyWith(color: Theme.of(context).colorScheme.onSurface),
+        style: AppTextStyles.subtitle(context).copyWith(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontSize: 16,
+        ),
       ),
       trailing: const Icon(
         LucideIcons.chevronRight,

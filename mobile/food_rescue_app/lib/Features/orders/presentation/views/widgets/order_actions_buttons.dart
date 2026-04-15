@@ -36,7 +36,8 @@ class OrderActionButtons extends StatelessWidget {
             width: double.infinity,
             height: 56,
             child: OutlinedButton(
-              onPressed: () => GoRouter.of(context).go(AppRoutes.home),
+              onPressed: () =>
+                  GoRouter.of(context).go(AppRoutes.homeNavigationBar),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.grey.shade600,
                 side: BorderSide(color: Colors.grey.shade300),
@@ -44,7 +45,10 @@ class OrderActionButtons extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: Text(context.loc.backToHome),
+              child: Text(
+                context.loc.backToHome,
+                style: TextStyle(color: AppColors.textMuted(context)),
+              ),
             ),
           ),
         ],

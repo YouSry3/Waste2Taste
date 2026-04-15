@@ -15,7 +15,7 @@ class ProductTitleRow extends StatelessWidget {
         Expanded(
           child: Text(
             title,
-            style: AppTextStyles.body.copyWith(
+            style: AppTextStyles.body(context).copyWith(
               fontSize: 19,
               color: Theme.of(context).colorScheme.onSurface,
             ),

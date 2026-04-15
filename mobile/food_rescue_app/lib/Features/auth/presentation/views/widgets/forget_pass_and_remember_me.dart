@@ -18,7 +18,7 @@ class ForgetPassAndRememberMe extends StatelessWidget {
           onPressed: () => GoRouter.of(context).push(AppRoutes.forgetPassword),
           child: Text(
             context.loc.forgotPassword,
-            style: AppTextStyles.label.copyWith(
+            style: AppTextStyles.label(context).copyWith(
               color: AppColors.primary,
               fontWeight: FontWeight.w600,
               fontSize: 15,

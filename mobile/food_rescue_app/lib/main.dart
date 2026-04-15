@@ -4,9 +4,9 @@ import 'package:waste2taste/core/functions/simple_bloc_observer.dart';
 import 'core/functions/setup_service_locator.dart';
 import 'waste_2_taste_app.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupServiceLocator();
+  await setupServiceLocator();
   Bloc.observer = SimpleBlocObserver();
   runApp(const Waste2TasteApp());
 }

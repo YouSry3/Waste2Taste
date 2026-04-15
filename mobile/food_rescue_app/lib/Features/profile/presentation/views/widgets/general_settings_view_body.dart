@@ -16,7 +16,7 @@ class GeneralSettingsViewBody extends StatelessWidget {
         CustomSliverAppBar(
           widget: Text(
             context.loc.generalSettings,
-            style: AppTextStyles.appBarTitle,
+            style: AppTextStyles.title(context),
           ),
         ),
         const SliverToBoxAdapter(

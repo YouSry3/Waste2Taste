@@ -15,7 +15,7 @@ class SavedOrdersViewBody extends StatelessWidget {
         CustomSliverAppBar(
           widget: Text(
             context.loc.savedOffers,
-            style: AppTextStyles.appBarTitle,
+            style: AppTextStyles.title(context),
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 10)),

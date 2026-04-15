@@ -54,7 +54,7 @@ class _VerifyEmailViewBodyState extends State<VerifyEmailViewBody> {
           const SizedBox(height: 6),
           Text(
             email,
-            style: AppTextStyles.body.copyWith(fontWeight: FontWeight.bold),
+            style: AppTextStyles.body(context).copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 48),
           Center(

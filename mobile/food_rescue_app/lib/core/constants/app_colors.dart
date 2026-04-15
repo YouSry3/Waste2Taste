@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 abstract class AppColors {
-  // const theme 
+  // const theme
   static const Color primary = Color(0xFF10B981);
   static const Color primaryDark = Color(0xFF047857);
   static const Color secondary = Color(0xFFF59E0B);
   static const Color accent = Color(0xFFEF4444);
   static const Color black = Colors.black;
 
-  //  Light Mode 
+  //  Light Mode
   static const Color backgroundLight = Color(0xFFFAFAFA);
   static const Color surfaceLight = Colors.white;
   static const Color textDarkLight = Color(0xFF1F2937);
@@ -28,4 +28,15 @@ abstract class AppColors {
   static const Color textGray = textGrayLight;
   static const Color fieldGray = fieldGrayLight;
   static const Color textPrimary = textDarkLight;
+  static Color textOnBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? textDarkDark
+        : textDarkLight;
+  }
+
+  static Color textMuted(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? textGrayDark
+        : textGrayLight;
+  }
 }

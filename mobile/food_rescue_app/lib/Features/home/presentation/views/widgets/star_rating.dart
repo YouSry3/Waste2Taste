@@ -14,7 +14,7 @@ class StarRating extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           rating.toString(),
-          style: AppTextStyles.body.copyWith(
+          style: AppTextStyles.body(context).copyWith(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.onSurface,
           ),

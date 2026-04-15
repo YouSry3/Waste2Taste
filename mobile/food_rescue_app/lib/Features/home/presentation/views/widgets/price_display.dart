@@ -17,7 +17,7 @@ class PriceDisplay extends StatelessWidget {
       children: [
         Text(
           "\$${price.toStringAsFixed(2)}",
-          style: AppTextStyles.body.copyWith(
+          style: AppTextStyles.body(context).copyWith(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: AppColors.primary,
@@ -26,7 +26,7 @@ class PriceDisplay extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           "\$${originalPrice.toStringAsFixed(2)}",
-          style: AppTextStyles.body.copyWith(
+          style: AppTextStyles.body(context).copyWith(
             fontSize: 14,
             decoration: TextDecoration.lineThrough,
             color: Colors.grey[400],

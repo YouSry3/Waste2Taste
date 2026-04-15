@@ -16,8 +16,8 @@ class DirectionsButton extends StatelessWidget {
       icon: const Icon(LucideIcons.mapPin, size: 16),
       label: Text(context.loc.directions),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.onSurface,
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
+        foregroundColor: Theme.of(context).colorScheme.onTertiary,
         elevation: 0,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

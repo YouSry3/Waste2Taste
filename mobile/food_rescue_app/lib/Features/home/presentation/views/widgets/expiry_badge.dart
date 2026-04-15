@@ -18,7 +18,7 @@ class ExpiryBadge extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             expiryTime,
-            style: AppTextStyles.label.copyWith(
+            style: AppTextStyles.label(context).copyWith(
               color: AppColors.accent,
               fontSize: 13,
             ),

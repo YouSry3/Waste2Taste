@@ -28,9 +28,7 @@ class CustomElevatedButton extends StatelessWidget {
         elevation: 8,
         shadowColor: AppColors.primary.withValues(alpha: 0.4),
       ),
-      child:
-          child ??
-          Text(text ?? '', style: AppTextStyles.button.copyWith(fontSize: 19)),
+      child: child ?? Text(text ?? '', style: AppTextStyles.button),
     ).animate().fadeIn(delay: 500.ms).scale(begin: const Offset(0.9, 0.9));
   }
 }

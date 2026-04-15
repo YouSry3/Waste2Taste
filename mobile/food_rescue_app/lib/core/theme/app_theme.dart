@@ -10,6 +10,8 @@ abstract class AppTheme {
       primary: AppColors.primary,
       secondary: AppColors.secondary,
       surface: AppColors.surfaceLight,
+      onTertiary: AppColors.background,
+      onTertiaryContainer: AppColors.primary,
     ),
     textTheme: GoogleFonts.outfitTextTheme().apply(
       bodyColor: AppColors.textDarkLight,
@@ -29,6 +31,8 @@ abstract class AppTheme {
       primary: AppColors.primary,
       secondary: AppColors.secondary,
       surface: AppColors.surfaceDark,
+      onTertiary: AppColors.background,
+      onTertiaryContainer: AppColors.primaryDark,
     ),
     textTheme: GoogleFonts.outfitTextTheme().apply(
       bodyColor: AppColors.textDarkDark,

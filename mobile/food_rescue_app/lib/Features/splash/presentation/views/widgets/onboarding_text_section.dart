@@ -18,12 +18,18 @@ class OnboardingTextSection extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          Text(title, textAlign: TextAlign.center, style: AppTextStyles.title),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.title(
+              context,
+            ).copyWith(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 16),
           Text(
             description,
             textAlign: TextAlign.center,
-            style: AppTextStyles.subtitle.copyWith(height: 1.5),
+            style: AppTextStyles.subtitle(context).copyWith(height: 1.5),
           ).animate().fadeIn(delay: 200.ms).moveY(begin: 20, end: 0),
         ],
       ),

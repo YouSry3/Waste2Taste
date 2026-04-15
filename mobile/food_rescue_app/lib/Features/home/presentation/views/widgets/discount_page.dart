@@ -13,7 +13,7 @@ class DiscountBadge extends StatelessWidget {
       color: AppColors.secondary,
       child: Text(
         "-$discountPercentage",
-        style: AppTextStyles.label.copyWith(color: Colors.white, fontSize: 14),
+        style: AppTextStyles.label(context).copyWith(color: Colors.white, fontSize: 14),
       ),
     );
   }

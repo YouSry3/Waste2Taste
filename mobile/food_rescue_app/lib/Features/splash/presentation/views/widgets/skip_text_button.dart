@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:waste2taste/core/constants/app_text_styles.dart';
 import 'package:waste2taste/core/extensions/app_localization_extention.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../manager/onboarding_cubit.dart';
 
 class SkipTextButton extends StatelessWidget {
@@ -23,9 +23,11 @@ class SkipTextButton extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 50, right: 16),
             child: TextButton(
-              style: TextButton.styleFrom(foregroundColor: AppColors.textGray),
               onPressed: () => context.read<OnboardingCubit>().jumpToPage(),
-              child: Text(context.loc.skip),
+              child: Text(
+                context.loc.skip,
+                style: AppTextStyles.subtitle(context).copyWith(fontSize: 15),
+              ),
             ),
           ),
         ],

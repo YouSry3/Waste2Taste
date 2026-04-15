@@ -19,7 +19,7 @@ class SavingsBanner extends StatelessWidget {
       child: Text(
         context.loc.savingsMessage(amount.toStringAsFixed(2)),
         textAlign: TextAlign.center,
-        style: AppTextStyles.label.copyWith(
+        style: AppTextStyles.label(context).copyWith(
           color: AppColors.primary,
           fontSize: 12,
         ),

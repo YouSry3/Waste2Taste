@@ -16,7 +16,7 @@ class EditProfileViewBody extends StatelessWidget {
         CustomSliverAppBar(
           widget: Text(
             context.loc.editProfile,
-            style: AppTextStyles.appBarTitle,
+            style: AppTextStyles.title(context),
           ),
         ),
         SliverToBoxAdapter(
