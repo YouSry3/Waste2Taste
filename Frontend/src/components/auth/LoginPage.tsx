@@ -18,13 +18,12 @@ import {
   authService,
   LoginCredentials,
   LoginResponse,
+  PanelType,
+  VendorAccessState,
 } from "../../services/auth/authService";
-import {
-  getVendorRequestByEmail,
-  setPendingVendorApprovalEmail,
-} from "../../services/vendorApproval/vendorApprovalStore";
-
-type PanelType = "admin" | "vendor" | "charity";
+import { setPendingVendorApprovalEmail } from "../../services/vendorApproval/vendorApprovalStore";
+import { getVendorRequestStatus } from "../../services/vendorApproval/vendorRequestService";
+import { getVendorSignupDraft } from "../../services/vendorApproval/vendorOnboardingStore";
 
 interface LoginPageProps {
   onLogin: (panelType: PanelType) => void;
@@ -32,7 +31,7 @@ interface LoginPageProps {
 
 export function LoginPage({ onLogin }: LoginPageProps) {
   const [selectedPanel, setSelectedPanel] = useState<PanelType>("admin");
-  const [useDemo, setUseDemo] = useState(true);
+  const [useDemo, setUseDemo] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -75,34 +74,26 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     }
   }, [searchParams]);
 
-  const blockVendorByApprovalStatus = (email: string) => {
-    if (selectedPanel !== "vendor") {
-      return false;
+  const resolveVendorAccessState = async (
+    user: LoginResponse["user"],
+  ): Promise<VendorAccessState> => {
+    if (user.panelType !== "vendor") {
+      return "approved";
     }
 
-    const vendorRequest = getVendorRequestByEmail(email);
-    if (!vendorRequest) {
-      return false;
+    try {
+      const backendStatus = await getVendorRequestStatus();
+      if (backendStatus) {
+        authService.setVendorRequestState({
+          vendorRequestCompleted: true,
+          vendorApprovalStatus: backendStatus,
+        });
+      }
+    } catch {
+      // Keep local auth flags when status endpoint is unavailable.
     }
 
-    if (vendorRequest.status === "pending") {
-      setPendingVendorApprovalEmail(vendorRequest.email);
-      toast(
-        "Your vendor account is still under review. You can track approval here.",
-      );
-      navigate(`/pending-approval?email=${encodeURIComponent(email)}`);
-      return true;
-    }
-
-    if (vendorRequest.status === "rejected") {
-      toast.error(
-        vendorRequest.notes ||
-          "Your vendor application was rejected. Please contact support.",
-      );
-      return true;
-    }
-
-    return false;
+    return authService.getVendorAccessState();
   };
 
   // ✅ React Query Mutation for real backend login
@@ -153,13 +144,44 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       toast.error(errorMessage);
     },
     onSuccess: async (res: LoginResponse) => {
-      // Show success toast
+      if (res.user.panelType === "vendor") {
+        const draft = getVendorSignupDraft();
+        if (
+          (!res.user.phoneNumber || !res.user.phoneNumber.trim()) &&
+          draft?.phoneNumber &&
+          draft.email.trim().toLowerCase() === res.user.email.trim().toLowerCase()
+        ) {
+          authService.updateCurrentUser({
+            phoneNumber: draft.phoneNumber,
+          });
+        }
+
+        const vendorAccessState = await resolveVendorAccessState(res.user);
+
+        if (vendorAccessState === "needs_request") {
+          toast("Complete your vendor request to continue.");
+          onLogin(res.user.panelType);
+          return;
+        }
+
+        if (vendorAccessState === "rejected") {
+          authService.clearLocalAuth();
+          toast.error(
+            "Your vendor request was rejected. Please contact support.",
+          );
+          return;
+        }
+
+        if (vendorAccessState === "pending") {
+          setPendingVendorApprovalEmail(res.user.email);
+          toast("Your vendor request is pending admin approval.");
+          onLogin(res.user.panelType);
+          return;
+        }
+      }
+
       toast.success("Login successful!");
-
-      // Wait 500ms to let user see the toast before navigation
       await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Then trigger navigation
       onLogin(res.user.panelType);
     },
   });
@@ -182,10 +204,6 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
   // ✅ Handle form submit
   const handleSubmit = async (values: { email: string; password: string }) => {
-    if (blockVendorByApprovalStatus(values.email)) {
-      return;
-    }
-
     if (useDemo) {
       // Clear any existing auth first (client-side only)
       authService.clearLocalAuth();
@@ -196,6 +214,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         name: "Demo User",
         panelType: selectedPanel,
         roles: [selectedPanel],
+        vendorRequestCompleted: selectedPanel === "vendor" ? true : undefined,
+        vendorApprovalStatus: selectedPanel === "vendor" ? "approved" : undefined,
       };
       // Save demo user
       localStorage.setItem("user", JSON.stringify(mockUser));

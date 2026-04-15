@@ -78,7 +78,10 @@ export function VendorModeration({
       {selectedVendors.length > 0 && (
         <VendorBulkActions
           selectedCount={selectedVendors.length}
-          loading={loadingStates["bulk-approve-vendors"]}
+          loading={
+            loadingStates["bulk-approve-vendors"] ||
+            loadingStates["bulk-reject-vendors"]
+          }
           onApproveAll={() => onBulkApproveVendors(selectedVendors)}
           onRejectAll={() => onBulkRejectVendors(selectedVendors)}
           onClearSelection={onClearSelection}

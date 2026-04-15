@@ -5,13 +5,17 @@ import { AlertCircle, RotateCcw } from "lucide-react";
 import { profileService } from "../../../services/profile/profileService";
 import { UserProfile } from "../../../types/profile";
 import { VendorOrder } from "../types";
-import { useVendorDashboard } from "@/hooks/useVendorDashboard";
+import { useVendorDashboard } from "../../../hooks/useVendorDashboard";
 import { initialStatsData } from "./constants/statsData";
 import { weeklyData } from "./constants/weeklyData";
 import { topCustomers } from "./constants/topCustomers";
 import { inventoryItems } from "./constants/inventoryItems";
 import { initialRecentOrders } from "./constants/recentOrders";
-import { getInitials, getStatusColor, getSuggestedPrice } from "./utils/dashboardUtils";
+import {
+  getInitials,
+  getStatusColor,
+  getSuggestedPrice,
+} from "./utils/dashboardUtils";
 import { DashboardHeader } from "./components/DashboardHeader";
 import { StatsGrid } from "./components/StatsGrid";
 import { MonthlyGoalsCard } from "./components/MonthlyGoalsCard";
@@ -121,7 +125,11 @@ function ApiErrorState({
             {details.status ? `Status ${details.status}: ` : ""}
             {details.message}
           </p>
-          <Button onClick={onRetry} variant="outline" className="border-red-300">
+          <Button
+            onClick={onRetry}
+            variant="outline"
+            className="border-red-300"
+          >
             <RotateCcw className="h-4 w-4 mr-2" />
             Retry
           </Button>
@@ -157,7 +165,10 @@ export function VendorDashboard() {
     return initialStatsData.map((stat) => {
       switch (stat.title) {
         case "Active Listings":
-          return { ...stat, value: apiDashboard.stats.activeListings.toString() };
+          return {
+            ...stat,
+            value: apiDashboard.stats.activeListings.toString(),
+          };
         case "Revenue (30d)":
           return {
             ...stat,
@@ -225,7 +236,9 @@ export function VendorDashboard() {
           name: "Customer Rating",
           current: 4.7,
           target: profile.monthlyGoals.customerRating,
-          percentage: Math.round((4.7 / profile.monthlyGoals.customerRating) * 100),
+          percentage: Math.round(
+            (4.7 / profile.monthlyGoals.customerRating) * 100,
+          ),
         },
       ];
     }
@@ -272,25 +285,27 @@ export function VendorDashboard() {
 
     if (!apiDashboard) return;
 
-    const mappedOrders: VendorOrder[] = apiDashboard.recentOrders.map((order) => ({
-      id: order.orderId,
-      customer: order.customerName,
-      item: order.productName,
-      amount: `$${order.amount.toFixed(2)}`,
-      status: mapOrderStatus(order.status),
-      time: order.pickupTime,
-      timeSlot: order.pickupTime,
-      orderPlacedTime: new Date(order.pickupTime),
-      customerEmail: "",
-      customerPhone: order.customerPhone,
-      pickupAddress: order.pickupLocation,
-      paymentMethod: "N/A",
-      orderNotes: "",
-      items: [{ name: order.productName, quantity: 1, price: order.amount }],
-      subtotal: order.amount,
-      tax: 0,
-      total: order.amount,
-    }));
+    const mappedOrders: VendorOrder[] = apiDashboard.recentOrders.map(
+      (order) => ({
+        id: order.orderId,
+        customer: order.customerName,
+        item: order.productName,
+        amount: `$${order.amount.toFixed(2)}`,
+        status: mapOrderStatus(order.status),
+        time: order.pickupTime,
+        timeSlot: order.pickupTime,
+        orderPlacedTime: new Date(order.pickupTime),
+        customerEmail: "",
+        customerPhone: order.customerPhone,
+        pickupAddress: order.pickupLocation,
+        paymentMethod: "N/A",
+        orderNotes: "",
+        items: [{ name: order.productName, quantity: 1, price: order.amount }],
+        subtotal: order.amount,
+        tax: 0,
+        total: order.amount,
+      }),
+    );
 
     setRecentOrders(mappedOrders);
   }, [apiDashboard, isApiMode]);

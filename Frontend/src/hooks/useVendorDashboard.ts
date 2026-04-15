@@ -1,41 +1,33 @@
-import { useQuery } from "@tanstack/react-query";
-import { getVendorDashboard } from "@/api/vendorDashboard";
-import { AxiosError } from "axios";
+// src/hooks/useVendorDashboard.ts
+
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { vendorDashboardApi } from "../services/vendor/vendorDashboardApi";
+import { VendorDashboardResponse } from "../types/vendorDashboard";
+
+// Query keys for cache management
+export const vendorDashboardQueryKeys = {
+  all: ["vendor-dashboard"] as const,
+  overview: () => [...vendorDashboardQueryKeys.all, "overview"] as const,
+};
 
 interface UseVendorDashboardOptions {
   enabled?: boolean;
 }
 
-export const useVendorDashboard = (options?: UseVendorDashboardOptions) => {
-  const getStatus = (error: unknown): number | undefined => {
-    const axiosError = error as AxiosError;
-    if (axiosError?.response?.status) return axiosError.response.status;
-
-    if (typeof error === "object" && error !== null && "statusCode" in error) {
-      const status = (error as { statusCode?: unknown }).statusCode;
-      if (typeof status === "number") return status;
-    }
-
-    return undefined;
-  };
-
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["vendor-dashboard"],
-    queryFn: getVendorDashboard,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    retry: (failureCount, error) => {
-      const status = getStatus(error);
-      if (status === 404 || status === 500) return false;
-      return failureCount < 1;
-    },
-    enabled: options?.enabled ?? true,
+/**
+ * Hook to fetch vendor dashboard overview data
+ */
+export const useVendorDashboard = (
+  options?: UseVendorDashboardOptions &
+    UseQueryOptions<VendorDashboardResponse, Error>,
+) => {
+  return useQuery<VendorDashboardResponse, Error>({
+    queryKey: vendorDashboardQueryKeys.overview(),
+    queryFn: () => vendorDashboardApi.getDashboardOverview(),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes cache time
+    retry: 2,
+    refetchOnWindowFocus: true,
+    ...options,
   });
-
-  return {
-    data,
-    isLoading,
-    error,
-    refetch,
-  };
 };

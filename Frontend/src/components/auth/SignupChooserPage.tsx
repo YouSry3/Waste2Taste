@@ -9,7 +9,7 @@ const signupOptions = [
   {
     title: "Vendor Signup",
     description:
-      "Create a business account, upload your documents, and wait for admin approval.",
+      "Create your account first, then complete a vendor request with business documents.",
     to: "/signup/vendor",
     icon: Store,
     accent: "text-green-700",

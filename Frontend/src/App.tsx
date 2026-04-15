@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import { LoginPage } from "./components/auth/LoginPage";
 import SignupChooserPage from "./components/auth/SignupChooserPage";
 import AdminSignupPage from "./components/auth/AdminSignupPage";
 import VendorSignupPage from "./components/auth/VendorSignupPage";
+import VendorRequestPage from "./components/auth/VendorRequestPage";
 import CharitySignupPage from "./components/auth/CharitySignupPage";
 import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 import EnterResetCodePage from "./components/auth/EnterResetCodePage";
@@ -44,6 +45,7 @@ import { VendorListingsProvider } from "./components/vendor/listings/context/Lis
 type PanelType = "admin" | "vendor" | "charity";
 
 export default function App() {
+  const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return authService.isAuthenticated();
   });
@@ -63,6 +65,32 @@ export default function App() {
     setCurrentPanel(null);
   };
 
+  useEffect(() => {
+    setIsAuthenticated(authService.isAuthenticated());
+    setCurrentPanel(authService.getPanelType());
+  }, [location.pathname]);
+
+  const getAuthenticatedHomePath = () => {
+    if (!currentPanel) {
+      return "/";
+    }
+
+    if (currentPanel !== "vendor") {
+      return `/panel/${currentPanel}/dashboard`;
+    }
+
+    const vendorAccessState = authService.getVendorAccessState();
+    if (vendorAccessState === "needs_request") {
+      return "/vendor-request";
+    }
+
+    if (vendorAccessState === "pending" || vendorAccessState === "rejected") {
+      return "/pending-approval";
+    }
+
+    return "/panel/vendor/dashboard";
+  };
+
   function ProtectedRoute({
     children,
     allowedRoles,
@@ -79,6 +107,20 @@ export default function App() {
       return <Navigate to={`/panel/${currentPanel}/dashboard`} replace />;
     }
 
+    if (currentPanel === "vendor") {
+      const vendorAccessState = authService.getVendorAccessState();
+      if (vendorAccessState === "needs_request") {
+        return <Navigate to="/vendor-request" replace />;
+      }
+
+      if (
+        vendorAccessState === "pending" ||
+        vendorAccessState === "rejected"
+      ) {
+        return <Navigate to="/pending-approval" replace />;
+      }
+    }
+
     return children;
   }
 
@@ -89,7 +131,7 @@ export default function App() {
         path="/"
         element={
           isAuthenticated && currentPanel ? (
-            <Navigate to={`/panel/${currentPanel}/dashboard`} replace />
+            <Navigate to={getAuthenticatedHomePath()} replace />
           ) : (
             <LoginPage onLogin={handleLogin} />
           )
@@ -99,6 +141,10 @@ export default function App() {
       <Route path="/signup/admin" element={<AdminSignupPage />} />
       <Route path="/signup/vendor" element={<VendorSignupPage />} />
       <Route path="/signup/charity" element={<CharitySignupPage />} />
+      <Route
+        path="/vendor-request"
+        element={<VendorRequestPage />}
+      />
       <Route path="/pending-approval" element={<PendingApprovalPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/enter-reset-code" element={<EnterResetCodePage />} />

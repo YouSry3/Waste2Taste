@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useModerationData } from "./hooks/useModerationData";
-import { useModerationActions } from "./hooks/useModerationActions";
+import { useModerationUiState } from "./hooks/useModerationUiState";
 import { useModerationFilters } from "./hooks/useModerationFilters";
 import { ModerationHeader } from "./components/ModerationHeader";
 import { StatsCards } from "./components/StatsCards";
@@ -48,7 +48,7 @@ export function ModerationView() {
 
   // Hooks
   const data = useModerationData();
-  const actions = useModerationActions();
+  const actions = useModerationUiState();
   const filters = useModerationFilters();
 
   // Activity Log Helper Function
@@ -220,6 +220,7 @@ export function ModerationView() {
 
   // Vendor Actions - Updated to be async
   const handleApproveVendor = async (id: number) => {
+    actions.setLoading(`vendor-${id}`, true);
     try {
       await data.handleApproveVendor(id);
 
@@ -240,6 +241,8 @@ export function ModerationView() {
       });
     } catch (error) {
       console.error("Failed to approve vendor:", error);
+    } finally {
+      actions.setLoading(`vendor-${id}`, false);
     }
   };
 
@@ -248,6 +251,7 @@ export function ModerationView() {
     reason: string,
     notes: string,
   ) => {
+    actions.setLoading(`vendor-${id}`, true);
     try {
       await data.handleRejectVendor(id, { reason, notes });
 
@@ -268,6 +272,8 @@ export function ModerationView() {
       });
     } catch (error) {
       console.error("Failed to reject vendor:", error);
+    } finally {
+      actions.setLoading(`vendor-${id}`, false);
     }
   };
 
@@ -385,6 +391,7 @@ export function ModerationView() {
   };
 
   const handleBulkApproveVendors = async (selectedVendorIds: number[]) => {
+    actions.setLoading("bulk-approve-vendors", true);
     try {
       await data.handleBulkApproveVendors(selectedVendorIds);
 
@@ -403,15 +410,21 @@ export function ModerationView() {
       toast.success(
         `${selectedVendorIds.length} vendors approved successfully!`,
       );
+      setSelectedVendors((prev) =>
+        prev.filter((id) => !selectedVendorIds.includes(id)),
+      );
       return selectedVendorIds;
     } catch (error) {
       console.error("Failed to bulk approve vendors:", error);
       toast.error("Failed to bulk approve vendors");
       return [];
+    } finally {
+      actions.setLoading("bulk-approve-vendors", false);
     }
   };
 
   const handleBulkRejectVendors = async (selectedVendorIds: number[]) => {
+    actions.setLoading("bulk-reject-vendors", true);
     try {
       await data.handleBulkRejectVendors(selectedVendorIds, {
         reason: "Bulk rejection",
@@ -431,11 +444,16 @@ export function ModerationView() {
       });
 
       toast.error(`${selectedVendorIds.length} vendor applications rejected`);
+      setSelectedVendors((prev) =>
+        prev.filter((id) => !selectedVendorIds.includes(id)),
+      );
       return selectedVendorIds;
     } catch (error) {
       console.error("Failed to bulk reject vendors:", error);
       toast.error("Failed to bulk reject vendors");
       return [];
+    } finally {
+      actions.setLoading("bulk-reject-vendors", false);
     }
   };
 

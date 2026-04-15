@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { authService } from "../../services/auth/authService";
+import { Button } from "../ui/button";
 import {
   clearPendingVendorApprovalEmail,
   getPendingVendorApprovalEmail,
@@ -7,145 +9,129 @@ import {
   setPendingVendorApprovalEmail,
   subscribeToVendorApprovalStore,
 } from "../../services/vendorApproval/vendorApprovalStore";
-import { authService } from "../../services/auth/authService";
+import { getVendorRequestStatus } from "../../services/vendorApproval/vendorRequestService";
 
 type ApprovalViewState = "missing" | "pending" | "approved" | "rejected";
-
-function HourglassIcon() {
-  return (
-    <svg
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-full h-full"
-    >
-      <rect x="14" y="8" width="36" height="6" rx="3" fill="#C8B8F8" />
-      <rect x="14" y="50" width="36" height="6" rx="3" fill="#C8B8F8" />
-      <path d="M18 14 L32 34 L46 14 Z" fill="#DDD3FC" />
-      <path d="M18 50 L32 36 L46 50 Z" fill="#A78BFA" className="animate-pulse" />
-      <circle cx="32" cy="36" r="3" fill="#7C3AED" />
-    </svg>
-  );
-}
-
-function StepBadge({
-  step,
-  label,
-  active,
-}: {
-  step: number;
-  label: string;
-  active: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <div
-        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-          active
-            ? "bg-violet-600 text-white shadow-md shadow-violet-200"
-            : "bg-violet-100 text-violet-400"
-        }`}
-      >
-        {active ? (
-          <svg
-            className="w-3 h-3"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
-            viewBox="0 0 24 24"
-          >
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
-        ) : (
-          step
-        )}
-      </div>
-      <span
-        className={`text-xs font-medium ${active ? "text-violet-700" : "text-slate-400"}`}
-      >
-        {label}
-      </span>
-    </div>
-  );
-}
 
 export default function PendingApprovalPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
-  const [dots, setDots] = useState(".");
+  const [isLeaving, setIsLeaving] = useState(false);
+  const [viewState, setViewState] = useState<ApprovalViewState>("pending");
+  const [details, setDetails] = useState<string>("");
   const [trackedEmail, setTrackedEmail] = useState("");
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  useEffect(() => {
-    const id = setInterval(
-      () => setDots((current) => (current.length >= 3 ? "." : `${current}.`)),
-      600,
-    );
-
-    return () => clearInterval(id);
-  }, []);
 
   useEffect(() => {
     const queryEmail = searchParams.get("email")?.trim() || "";
-    const storedEmail = getPendingVendorApprovalEmail() || "";
-    const effectiveEmail = queryEmail || storedEmail;
+    const storedEmail = getPendingVendorApprovalEmail()?.trim() || "";
+    const currentUserEmail = authService.getCurrentUser()?.email || "";
+    const resolvedEmail = queryEmail || storedEmail || currentUserEmail;
 
-    if (queryEmail) {
-      setPendingVendorApprovalEmail(queryEmail);
+    if (resolvedEmail) {
+      setPendingVendorApprovalEmail(resolvedEmail);
+      setTrackedEmail(resolvedEmail);
     }
-
-    setTrackedEmail(effectiveEmail);
   }, [searchParams]);
 
-  useEffect(() => {
-    if (!trackedEmail) {
+  const syncApprovalState = useCallback(async () => {
+    setIsChecking(true);
+    try {
+      const backendStatus = await getVendorRequestStatus();
+      if (backendStatus) {
+        authService.setVendorRequestState({
+          vendorRequestCompleted: true,
+          vendorApprovalStatus: backendStatus,
+        });
+
+        if (backendStatus === "approved") {
+          setViewState("approved");
+          setDetails("Your vendor account is approved.");
+          return;
+        }
+
+        if (backendStatus === "rejected") {
+          setViewState("rejected");
+          setDetails(
+            "Your vendor request was rejected. Please contact support.",
+          );
+          return;
+        }
+
+        setViewState("pending");
+        setDetails("Request pending. Please wait for an admin to approve.");
+        return;
+      }
+    } catch {
+      // Fall back to local shared store + current user flags.
+    } finally {
+      setIsChecking(false);
+    }
+
+    if (trackedEmail) {
+      const localRequest = getVendorRequestByEmail(trackedEmail);
+      if (localRequest?.status === "approved") {
+        authService.setVendorRequestState({
+          vendorRequestCompleted: true,
+          vendorApprovalStatus: "approved",
+        });
+        setViewState("approved");
+        setDetails("Your vendor account is approved.");
+        return;
+      }
+      if (localRequest?.status === "rejected") {
+        authService.setVendorRequestState({
+          vendorRequestCompleted: true,
+          vendorApprovalStatus: "rejected",
+        });
+        setViewState("rejected");
+        setDetails(
+          localRequest.notes ||
+            "Your vendor request was rejected. Please contact support.",
+        );
+        return;
+      }
+      if (localRequest?.status === "pending") {
+        setViewState("pending");
+        setDetails("Request pending. Please wait for an admin to approve.");
+        return;
+      }
+    }
+
+    const vendorAccessState = authService.getVendorAccessState();
+    if (vendorAccessState === "approved") {
+      setViewState("approved");
+      setDetails("Your vendor account is approved.");
       return;
     }
 
-    const syncRequestState = () => {
-      setRefreshKey((current) => current + 1);
-    };
+    if (vendorAccessState === "rejected") {
+      setViewState("rejected");
+      setDetails("Your vendor request was rejected. Please contact support.");
+      return;
+    }
 
-    syncRequestState();
-    const unsubscribe = subscribeToVendorApprovalStore(syncRequestState);
+    if (vendorAccessState === "needs_request") {
+      setViewState("missing");
+      setDetails("Complete your vendor request before dashboard access.");
+      return;
+    }
 
-    const intervalId = setInterval(() => {
-      setIsChecking(true);
-      syncRequestState();
-      setIsChecking(false);
-    }, 8000);
+    setViewState("pending");
+    setDetails("Request pending. Please wait for an admin to approve.");
+  }, [trackedEmail]);
+
+  useEffect(() => {
+    syncApprovalState();
+
+    const unsubscribe = subscribeToVendorApprovalStore(syncApprovalState);
+    const intervalId = setInterval(syncApprovalState, 7000);
 
     return () => {
       unsubscribe();
       clearInterval(intervalId);
     };
-  }, [trackedEmail]);
-
-  const request = useMemo(() => {
-    if (!trackedEmail) {
-      return null;
-    }
-
-    return getVendorRequestByEmail(trackedEmail);
-  }, [trackedEmail, refreshKey]);
-
-  const viewState: ApprovalViewState = useMemo(() => {
-    if (!trackedEmail || !request) {
-      return "missing";
-    }
-
-    if (request.status === "approved") {
-      return "approved";
-    }
-
-    if (request.status === "rejected") {
-      return "rejected";
-    }
-
-    return "pending";
-  }, [trackedEmail, request]);
+  }, [syncApprovalState]);
 
   useEffect(() => {
     if (viewState !== "approved") {
@@ -153,110 +139,81 @@ export default function PendingApprovalPage() {
     }
 
     clearPendingVendorApprovalEmail();
-    const redirectId = setTimeout(() => {
-      navigate("/?panel=vendor", { replace: true });
-    }, 1800);
+    const redirectTimer = setTimeout(() => {
+      navigate("/panel/vendor/dashboard", { replace: true });
+    }, 1400);
 
-    return () => clearTimeout(redirectId);
+    return () => clearTimeout(redirectTimer);
   }, [navigate, viewState]);
 
-  const handleBackToLogin = async () => {
-    setIsLoggingOut(true);
+  const statusLabel = useMemo(() => {
+    if (viewState === "approved") return "Approved";
+    if (viewState === "rejected") return "Rejected";
+    if (viewState === "missing") return "Action Needed";
+    return "Pending Approval";
+  }, [viewState]);
+
+  const statusClass = useMemo(() => {
+    if (viewState === "approved") return "bg-green-50 text-green-700 border-green-200";
+    if (viewState === "rejected") return "bg-red-50 text-red-700 border-red-200";
+    if (viewState === "missing") return "bg-blue-50 text-blue-700 border-blue-200";
+    return "bg-amber-50 text-amber-700 border-amber-200";
+  }, [viewState]);
+
+  const handleBack = async () => {
+    setIsLeaving(true);
     authService.clearLocalAuth();
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 250));
     navigate("/?panel=vendor", { replace: true });
   };
 
-  const statusLabel =
-    viewState === "approved"
-      ? "Approved"
-      : viewState === "rejected"
-        ? "Rejected"
-        : viewState === "pending"
-          ? "Under Review"
-          : "Not Found";
-
-  const statusDescription =
-    viewState === "approved"
-      ? "Your vendor account has been approved. Redirecting you to login."
-      : viewState === "rejected"
-        ? request?.notes || "Your request was rejected. Please contact support."
-        : viewState === "pending"
-          ? "Your vendor account has been created successfully. Please wait until an admin reviews your request."
-          : "We could not find a pending vendor request for this account.";
-
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-purple-50 flex items-center justify-center p-4 font-sans">
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-violet-100 opacity-50 blur-3xl" />
-        <div className="absolute -bottom-32 -left-32 w-96 h-96 rounded-full bg-purple-100 opacity-50 blur-3xl" />
-      </div>
-
-      <div className="relative w-full max-w-md">
-        <div className="bg-white/85 backdrop-blur-xl rounded-3xl shadow-2xl shadow-violet-100/50 border border-white/60 p-8 text-center">
-          <div
-            className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full mb-6 ${
-              viewState === "approved"
-                ? "bg-green-50 border border-green-200 text-green-700"
-                : viewState === "rejected"
-                  ? "bg-red-50 border border-red-200 text-red-700"
-                  : "bg-amber-50 border border-amber-200 text-amber-700"
-            }`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                viewState === "approved"
-                  ? "bg-green-500"
-                  : viewState === "rejected"
-                    ? "bg-red-500"
-                    : "bg-amber-400 animate-pulse"
-              }`}
-            />
-            {statusLabel}
-          </div>
-
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-full bg-violet-50 flex items-center justify-center border border-violet-100">
-              <div className="w-10 h-10">
-                <HourglassIcon />
-              </div>
-            </div>
-          </div>
-
-          <h1 className="text-2xl font-extrabold tracking-tight text-slate-800 mb-3">
-            Vendor Approval Status
-          </h1>
-
-          <p className="text-slate-500 text-sm leading-relaxed mb-2 px-2">
-            {statusDescription}
-          </p>
-
-          {trackedEmail && (
-            <p className="text-xs text-violet-500 font-medium mb-6">{trackedEmail}</p>
-          )}
-
-          <div className="flex items-center justify-center gap-3 bg-slate-50 rounded-2xl px-4 py-3 mb-7 border border-slate-100">
-            <StepBadge step={1} label="Registered" active={!!request} />
-            <div className="flex-1 h-px bg-gradient-to-r from-violet-200 to-slate-200 mx-1" />
-            <StepBadge step={2} label="Under Review" active={viewState === "pending"} />
-            <div className="flex-1 h-px bg-slate-200 mx-1" />
-            <StepBadge step={3} label="Approved" active={viewState === "approved"} />
-          </div>
-
-          {viewState === "pending" && (
-            <p className="text-xs text-slate-400 mb-6">
-              {isChecking ? "Checking status..." : `Checking automatically${dots}`}
-            </p>
-          )}
-
-          <button
-            onClick={handleBackToLogin}
-            disabled={isLoggingOut}
-            className="group w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-200 text-slate-500 text-sm font-medium hover:border-violet-200 hover:text-violet-600 hover:bg-violet-50 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isLoggingOut ? "Returning to login..." : "Back to Login"}
-          </button>
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-violet-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-xl rounded-3xl border border-white/60 bg-white/85 p-8 text-center shadow-2xl shadow-violet-100/50 backdrop-blur">
+        <div
+          className={`mb-6 inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-semibold ${statusClass}`}
+        >
+          {statusLabel}
         </div>
+
+        <h1 className="mb-3 text-2xl font-bold text-slate-900">
+          Vendor Approval Status
+        </h1>
+        <p className="mb-3 text-sm text-slate-600">
+          {details ||
+            "Your request is being reviewed. We will update this page automatically."}
+        </p>
+        {trackedEmail && (
+          <p className="mb-6 text-xs font-medium text-violet-500">
+            {trackedEmail}
+          </p>
+        )}
+
+        {viewState === "missing" && (
+          <Button
+            className="mb-3 w-full bg-green-600 text-white hover:bg-green-700"
+            onClick={() => navigate("/vendor-request", { replace: true })}
+          >
+            Complete Vendor Request
+          </Button>
+        )}
+
+        {viewState === "pending" && (
+          <p className="mb-4 text-xs text-slate-500">
+            {isChecking
+              ? "Checking latest status..."
+              : "Status auto-refreshes every few seconds."}
+          </p>
+        )}
+
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={handleBack}
+          disabled={isLeaving}
+        >
+          {isLeaving ? "Returning to login..." : "Back to Login"}
+        </Button>
       </div>
     </main>
   );

@@ -1,21 +1,33 @@
-// src/services/auth/authService.ts
-import { apiClient, setAuthToken, clearAuthToken } from "../api/apiClient";
+import { apiClient, clearAuthToken, setAuthToken } from "../api/apiClient";
+
+export type PanelType = "admin" | "vendor" | "charity";
+export type VendorApprovalStatus = "pending" | "approved" | "rejected";
+export type VendorAccessState =
+  | "approved"
+  | "pending"
+  | "rejected"
+  | "needs_request";
 
 export interface LoginCredentials {
   email: string;
   password: string;
 }
 
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  panelType: PanelType;
+  roles: string[];
+  phoneNumber?: string;
+  vendorRequestCompleted?: boolean;
+  vendorApprovalStatus?: VendorApprovalStatus;
+}
+
 export interface LoginResponse {
   token: string;
   expiration: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    panelType: "admin" | "vendor" | "charity";
-    roles: string[];
-  };
+  user: AuthUser;
 }
 
 export interface RegisterPayload {
@@ -23,38 +35,108 @@ export interface RegisterPayload {
   password: string;
   name: string;
   phoneNumber: string;
-  role: "admin" | "vendor" | "charity";
+  role: PanelType;
   businessName?: string;
   address?: string;
   category?: string;
 }
 
+const isPanelType = (value: unknown): value is PanelType =>
+  value === "admin" || value === "vendor" || value === "charity";
+
+const normalizeApprovalStatus = (
+  value: unknown,
+): VendorApprovalStatus | undefined => {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (
+    normalized === "pending" ||
+    normalized === "approved" ||
+    normalized === "rejected"
+  ) {
+    return normalized;
+  }
+
+  return undefined;
+};
+
+const normalizeBoolean = (value: unknown): boolean | undefined => {
+  if (typeof value === "boolean") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "true") {
+      return true;
+    }
+
+    if (normalized === "false") {
+      return false;
+    }
+  }
+
+  return undefined;
+};
+
 export class AuthService {
+  private getStoredVendorRequestStatusByEmail(
+    email: string,
+  ): VendorApprovalStatus | undefined {
+    if (!email) {
+      return undefined;
+    }
+
+    try {
+      const raw = localStorage.getItem("vendorApprovalRequests");
+      if (!raw) {
+        return undefined;
+      }
+
+      const requests = JSON.parse(raw) as Array<{
+        email?: string;
+        status?: unknown;
+      }>;
+
+      const request = requests.find(
+        (item) =>
+          item?.email?.trim().toLowerCase() === email.trim().toLowerCase(),
+      );
+
+      return normalizeApprovalStatus(request?.status);
+    } catch {
+      return undefined;
+    }
+  }
+
   // Normalize API login response
   private normalizeLoginResponse(data: any): LoginResponse {
     // Debug: Log the raw response to see what structure we're getting
     console.log("🔍 Raw API Response:", JSON.stringify(data, null, 2));
 
     // ASP.NET Core typically returns flat structure or nested user object
-    const user = data.user || data;
-    const token = data.token || data.accessToken || "";
+    const sourceUser = data?.user ?? data ?? {};
+    const token = data?.token || data?.accessToken || "";
     const expiration =
-      data.expiration || data.expiresAt || new Date().toISOString();
+      data?.expiration || data?.expiresAt || new Date().toISOString();
 
-    console.log("🔍 User object:", user);
+    console.log("🔍 User object:", sourceUser);
     console.log("🔍 Data keys:", Object.keys(data));
 
     // The backend uses 'type' field based on the register endpoint
-    let panelType: "admin" | "vendor" | "charity" | undefined;
+    let panelType: PanelType | undefined;
 
     // Use role field from backend as fallback
     const typeValue =
-      user.type ||
-      data.type ||
-      user.userType ||
-      data.userType ||
-      user.role ||
-      data.role;
+      sourceUser?.type ??
+      data?.type ??
+      sourceUser?.userType ??
+      data?.userType ??
+      sourceUser?.role ??
+      data?.role;
 
     console.log("🔍 Found type value:", typeValue);
 
@@ -65,13 +147,13 @@ export class AuthService {
         normalized === "vendor" ||
         normalized === "charity"
       ) {
-        panelType = normalized as "admin" | "vendor" | "charity";
+        panelType = normalized as PanelType;
       }
     }
 
     // Fallback: check roles array
-    if (!panelType && (user.roles || data.roles)) {
-      const roles = user.roles || data.roles;
+    if (!panelType && (sourceUser?.roles || data?.roles)) {
+      const roles = sourceUser?.roles || data?.roles;
       const firstRole = Array.isArray(roles) ? roles[0] : roles;
       if (firstRole) {
         const normalized = firstRole.toString().toLowerCase();
@@ -80,7 +162,7 @@ export class AuthService {
           normalized === "vendor" ||
           normalized === "charity"
         ) {
-          panelType = normalized as "admin" | "vendor" | "charity";
+          panelType = normalized as PanelType;
         }
       }
     }
@@ -88,17 +170,48 @@ export class AuthService {
     console.log("✅ Final panelType:", panelType);
 
     // Extract roles array
-    let roles = user.roles || data.roles || [];
+    let roles = sourceUser?.roles ?? data?.roles ?? [];
     if (!Array.isArray(roles)) {
       roles = [roles];
     }
     // Filter out null/undefined values
-    roles = roles.filter((r: any) => r != null && r !== "");
+    roles = roles
+      .filter((value: any) => value != null && value !== "")
+      .map((value: any) => String(value).toLowerCase());
+
+    if (!panelType && roles.length > 0) {
+      const roleCandidate = roles.find((role: string) => isPanelType(role));
+      if (roleCandidate && isPanelType(roleCandidate)) {
+        panelType = roleCandidate;
+      }
+    }
+
+    if (!panelType) {
+      throw new Error(
+        "Unable to determine user role. Please ensure your account has a valid role.",
+      );
+    }
 
     // If roles is empty but we have panelType, use it
     if (roles.length === 0 && panelType) {
       roles = [panelType];
     }
+
+    const vendorRequestCompleted = normalizeBoolean(
+      sourceUser?.vendorRequestCompleted ??
+        data?.vendorRequestCompleted ??
+        sourceUser?.hasVendorRequest ??
+        data?.hasVendorRequest ??
+        sourceUser?.vendorDataSubmitted ??
+        data?.vendorDataSubmitted,
+    );
+
+    const vendorApprovalStatus = normalizeApprovalStatus(
+      sourceUser?.vendorApprovalStatus ??
+        data?.vendorApprovalStatus ??
+        sourceUser?.vendorRequestStatus ??
+        data?.vendorRequestStatus,
+    );
 
     console.log("✅ Final roles:", roles);
 
@@ -107,23 +220,30 @@ export class AuthService {
       expiration,
       user: {
         id:
-          user.id ||
-          user.userId ||
-          data.id ||
-          data.userId ||
-          user.email ||
-          data.email ||
+          sourceUser?.id ||
+          sourceUser?.userId ||
+          data?.id ||
+          data?.userId ||
+          sourceUser?.email ||
+          data?.email ||
           "",
-        email: user.email || data.email || "",
+        email: sourceUser?.email || data?.email || "",
         name:
-          user.name ||
-          user.fullName ||
-          user.userName ||
-          data.name ||
-          user.email?.split("@")[0] ||
+          sourceUser?.name ||
+          sourceUser?.fullName ||
+          sourceUser?.userName ||
+          data?.name ||
+          sourceUser?.email?.split("@")[0] ||
           "",
-        panelType: panelType!,
-        roles: roles,
+        panelType,
+        roles,
+        phoneNumber:
+          sourceUser?.phoneNumber ??
+          sourceUser?.phone ??
+          data?.phoneNumber ??
+          data?.phone,
+        vendorRequestCompleted,
+        vendorApprovalStatus,
       },
     };
 
@@ -134,38 +254,15 @@ export class AuthService {
 
   // LOGIN
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const response = await apiClient.post("/Auth/login", credentials);
-    console.log("📡 Login Response Status:", response.status);
-    console.log("📡 Full Response:", response);
+    const loginResponse = await apiClient.post("/Auth/login", credentials);
+    const normalizedLogin = this.normalizeLoginResponse(loginResponse.data);
 
-    const normalized = this.normalizeLoginResponse(response.data);
+    setAuthToken(normalizedLogin.token);
+    localStorage.setItem("authToken", normalizedLogin.token);
+    localStorage.setItem("user", JSON.stringify(normalizedLogin.user));
+    localStorage.setItem("panelType", normalizedLogin.user.panelType);
 
-    // Validate panelType exists
-    if (!normalized.user.panelType) {
-      console.error("❌ panelType is missing from response!");
-      console.error("❌ Backend response:", response.data);
-
-      // Show helpful error to user
-      throw new Error(
-        "Unable to determine user role. Please ensure your account has a valid user type (admin/vendor/charity) assigned.",
-      );
-    }
-
-    // Validate panelType is valid
-    if (!["admin", "vendor", "charity"].includes(normalized.user.panelType)) {
-      console.error("❌ Invalid panelType:", normalized.user.panelType);
-      throw new Error(`Invalid user role: ${normalized.user.panelType}`);
-    }
-
-    // Save token, user, and panel type
-    setAuthToken(normalized.token);
-    localStorage.setItem("authToken", normalized.token);
-    localStorage.setItem("user", JSON.stringify(normalized.user));
-    localStorage.setItem("panelType", normalized.user.panelType);
-
-    console.log("💾 Saved to localStorage successfully");
-
-    return normalized;
+    return normalizedLogin;
   }
 
   // REGISTER
@@ -173,6 +270,70 @@ export class AuthService {
     const response = await apiClient.post("/Auth/register", payload);
     console.log("📡 Register Response:", response.data);
     return response.data;
+  }
+
+  updateCurrentUser(patch: Partial<AuthUser>): AuthUser | null {
+    const currentUser = this.getCurrentUser();
+    if (!currentUser) {
+      return null;
+    }
+
+    const updatedUser: AuthUser = {
+      ...currentUser,
+      ...patch,
+    };
+
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    return updatedUser;
+  }
+
+  setVendorRequestState(
+    patch: Pick<AuthUser, "vendorRequestCompleted" | "vendorApprovalStatus">,
+  ) {
+    this.updateCurrentUser(patch);
+  }
+
+  getVendorAccessState(userArg?: AuthUser | null): VendorAccessState {
+    const user = userArg ?? this.getCurrentUser();
+
+    if (!user || user.panelType !== "vendor") {
+      return "approved";
+    }
+
+    const storedStatus = this.getStoredVendorRequestStatusByEmail(user.email);
+    const effectiveStatus = user.vendorApprovalStatus ?? storedStatus;
+    const hasVendorRequest = user.vendorRequestCompleted || !!effectiveStatus;
+
+    if (effectiveStatus && userArg == null) {
+      const shouldSync =
+        user.vendorRequestCompleted !== true ||
+        user.vendorApprovalStatus !== effectiveStatus;
+
+      if (shouldSync) {
+        this.updateCurrentUser({
+          vendorRequestCompleted: true,
+          vendorApprovalStatus: effectiveStatus,
+        });
+      }
+    }
+
+    if (effectiveStatus === "approved") {
+      return "approved";
+    }
+
+    if (effectiveStatus === "rejected") {
+      return "rejected";
+    }
+
+    if (effectiveStatus === "pending") {
+      return "pending";
+    }
+
+    if (!hasVendorRequest) {
+      return "needs_request";
+    }
+
+    return "pending";
   }
 
   // CLIENT-SIDE ONLY LOGOUT (no API call)
@@ -199,7 +360,7 @@ export class AuthService {
   }
 
   // GET CURRENT USER
-  getCurrentUser(): LoginResponse["user"] | null {
+  getCurrentUser(): AuthUser | null {
     const userJson = localStorage.getItem("user");
     if (!userJson) return null;
     try {
@@ -212,19 +373,11 @@ export class AuthService {
   }
 
   // GET CURRENT PANEL TYPE
-  getPanelType(): "admin" | "vendor" | "charity" | null {
+  getPanelType(): PanelType | null {
     const panelType = localStorage.getItem("panelType");
-    if (!panelType || panelType === "undefined" || panelType === "null") {
-      return null;
-    }
-    if (
-      panelType === "admin" ||
-      panelType === "vendor" ||
-      panelType === "charity"
-    ) {
+    if (isPanelType(panelType)) {
       return panelType;
     }
-    console.warn("Invalid panelType in localStorage:", panelType);
     return null;
   }
 

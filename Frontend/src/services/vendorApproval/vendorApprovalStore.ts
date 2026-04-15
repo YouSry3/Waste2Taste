@@ -86,6 +86,7 @@ export function clearPendingVendorApprovalEmail() {
 
 export function submitVendorApprovalRequest(
   payload: Omit<VendorApprovalRequest, "id" | "submitted" | "status">,
+  options?: { requestId?: number | null },
 ) {
   const requests = getStoredVendorRequests();
   const existingIndex = requests.findIndex(
@@ -95,7 +96,9 @@ export function submitVendorApprovalRequest(
 
   const request: VendorApprovalRequest = {
     id:
-      existingIndex >= 0
+      typeof options?.requestId === "number"
+        ? options.requestId
+        : existingIndex >= 0
         ? requests[existingIndex].id
         : Date.now() + Math.floor(Math.random() * 1000),
     businessName: payload.businessName,
@@ -140,6 +143,32 @@ export function updateVendorApprovalStatus(
   saveStoredVendorRequests(updatedRequests);
 
   return updatedRequests.find((request) => request.id === id) ?? null;
+}
+
+export function updateVendorApprovalStatusByEmail(
+  email: string,
+  status: VendorApprovalStatus,
+  notes?: string,
+) {
+  const normalizedEmail = email.trim().toLowerCase();
+  const requests = getStoredVendorRequests();
+  const updatedRequests = requests.map((request) =>
+    request.email.trim().toLowerCase() === normalizedEmail
+      ? {
+          ...request,
+          status,
+          notes,
+        }
+      : request,
+  );
+
+  saveStoredVendorRequests(updatedRequests);
+
+  return (
+    updatedRequests.find(
+      (request) => request.email.trim().toLowerCase() === normalizedEmail,
+    ) ?? null
+  );
 }
 
 export function getVendorApprovalStatus(email: string) {
