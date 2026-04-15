@@ -3,6 +3,7 @@ using FoodRescue.BLL.Extensions.Dashboard;
 
 namespace FoodRescue.BLL.ServicesWeb.VendorDashboard;
 
+
 public class VendorDashboardService : IVendorDashboardService
 {
     private readonly IVendorDashboardRepository _repository;
@@ -14,22 +15,13 @@ public class VendorDashboardService : IVendorDashboardService
 
     public async Task<Result<VendorDashboardResponse>> GetDashboardAsync(Guid vendorId)
     {
-        var statsTask = GetStatsAsync(vendorId);
-        var goalsTask = _repository.GetMonthlyGoalsProgressAsync(vendorId);
-        var expiringTask = _repository.GetExpiringSoonProductsAsync(vendorId, 24);
-        var recentOrdersTask = _repository.GetRecentOrdersAsync(vendorId, 5);
-        var topCustomersTask = _repository.GetTopCustomersAsync(vendorId, 7);
-        var environmentalTask = _repository.GetEnvironmentalImpactAsync(vendorId);
-
-        await Task.WhenAll(statsTask, goalsTask, expiringTask,
-                          recentOrdersTask, topCustomersTask, environmentalTask);
-
-        var stats = await statsTask;
-        var goals = await goalsTask;
-        var expiringProducts = await expiringTask;
-        var recentOrders = await recentOrdersTask;
-        var topCustomers = await topCustomersTask;
-        var environmental = await environmentalTask;
+        // FIXED: Execute sequentially 
+        var stats = await GetStatsAsync(vendorId);
+        var goals = await _repository.GetMonthlyGoalsProgressAsync(vendorId);
+        var expiringProducts = await _repository.GetExpiringSoonProductsAsync(vendorId, 24);
+        var recentOrders = await _repository.GetRecentOrdersAsync(vendorId, 5);
+        var topCustomers = await _repository.GetTopCustomersAsync(vendorId, 7);
+        var environmental = await _repository.GetEnvironmentalImpactAsync(vendorId);
 
         var response = new VendorDashboardResponse
         {
@@ -69,7 +61,7 @@ public class VendorDashboardService : IVendorDashboardService
                 Name = c.CustomerName,
                 OrderCount = c.OrderCount,
                 TotalSpent = c.TotalSpent,
-                Rating = c.Rating  // Now calculated from reviews
+                Rating = c.Rating
             }).ToList(),
             EnvironmentalImpact = new EnvironmentalImpactDto
             {
@@ -84,6 +76,7 @@ public class VendorDashboardService : IVendorDashboardService
 
     private async Task<VendorDashboardStatsResponse> GetStatsAsync(Guid vendorId)
     {
+        // FIXED: Execute sequentially here too
         var activeListings = await _repository.GetActiveListingsCountAsync(vendorId);
         var revenue = await _repository.GetTotalRevenueAsync(vendorId, 30);
         var orders = await _repository.GetTotalOrdersCountAsync(vendorId);
