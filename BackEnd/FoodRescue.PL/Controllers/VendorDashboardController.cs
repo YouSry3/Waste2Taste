@@ -20,7 +20,7 @@ public class VendorDashboardController : ControllerBase
     }
 
     [HttpGet("overview")]
-    [Authorize(Roles ="admin")]
+    //[Authorize(Roles ="admin")]
     public async Task<IActionResult> GetOverview()
     {
         var vendorId = GetCurrentVendorId();
