@@ -92,7 +92,7 @@ namespace FoodRescue.PL.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetDashboard()
         {
-            var result = await _dashboardServices.GetOverviewAsync();
+            var result = await _dashboardServices.GetUserOverViewAsync();
 
             if (!result.IsSuccess)
                 return BadRequest(result.Error);
