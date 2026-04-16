@@ -1,5 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/services/api/apiClient";
+import { API_CONFIG } from "@/services/api/apiConfig";
+import { authService } from "@/services/auth/authService";
 import { MOCK_VENDORS } from "../constants/vendors.data";
 import type { Vendor } from "../api/vendors.types";
 
@@ -30,27 +32,26 @@ const QUERY_KEYS = {
     ["admin-vendors-list", page, limit] as const,
 };
 
-const API_PREFIX = (import.meta.env.VITE_API_PREFIX as string | undefined) ?? "";
+const API_ROOT = (API_CONFIG.BASE_URL || "").replace(/\/api\/?$/i, "");
 
-const normalizePrefix = (prefix: string): string => {
-  const trimmed = prefix.trim();
-  if (!trimmed) return "";
-  return trimmed.startsWith("/") ? trimmed.replace(/\/+$/, "") : `/${trimmed.replace(/\/+$/, "")}`;
+const buildSummaryEndpointCandidates = (): string[] => {
+  const relative = [
+    "/Admin/Vendors-overview",
+    "/Admin/Vendors-overview/",
+    "/admin/Vendors-overview",
+    "/admin/vendors-overview",
+  ];
+
+  const absolute = API_ROOT
+    ? relative.map((path) => `${API_ROOT}${path.replace(/\/+$/, "")}`)
+    : [];
+
+  return Array.from(new Set([...absolute, ...relative]));
 };
-
-const withPrefix = (path: string): string => {
-  const cleanPath = path.startsWith("/") ? path : `/${path}`;
-  const prefix = normalizePrefix(API_PREFIX);
-  return prefix ? `${prefix}${cleanPath}` : cleanPath;
-};
-
-const SUMMARY_ENDPOINT =
-  (import.meta.env.VITE_ADMIN_VENDORS_SUMMARY_ENDPOINT as string | undefined) ??
-  withPrefix("/Admin/Vendors-overview");
 
 const LIST_ENDPOINT =
   (import.meta.env.VITE_ADMIN_VENDORS_LIST_ENDPOINT as string | undefined) ??
-  withPrefix("/Admin/Vendors");
+  "/Admin/Vendors";
 
 const isDemoMode = (): boolean => {
   const hasMockFlag = import.meta.env.VITE_ENABLE_MOCK_DATA === "true";
@@ -171,19 +172,33 @@ const fallbackList = (page: number, limit: number): VendorsListResponse => {
 
 const normalizeSummaryPayload = (payload: unknown): VendorsSummaryResponse => {
   const raw = asObject(payload);
-  const topPerformersPayload = Array.isArray(raw.topPerformers)
-    ? raw.topPerformers
+  const body = asObject(raw.data);
+  const resolved = Object.keys(body).length > 0 ? body : raw;
+  const topPerformersPayload = Array.isArray(resolved.topPerformers)
+    ? resolved.topPerformers
     : [];
-  const hasTotalVendors = Object.prototype.hasOwnProperty.call(raw, "totalVendors");
-  const hasNgoPartners = Object.prototype.hasOwnProperty.call(raw, "ngoPartners");
-  const hasActiveListings = Object.prototype.hasOwnProperty.call(raw, "activeListings");
-  const hasTotalRevenue = Object.prototype.hasOwnProperty.call(raw, "totalRevenue");
+  const hasTotalVendors = Object.prototype.hasOwnProperty.call(
+    resolved,
+    "totalVendors",
+  );
+  const hasNgoPartners = Object.prototype.hasOwnProperty.call(
+    resolved,
+    "ngoPartners",
+  );
+  const hasActiveListings = Object.prototype.hasOwnProperty.call(
+    resolved,
+    "activeListings",
+  );
+  const hasTotalRevenue = Object.prototype.hasOwnProperty.call(
+    resolved,
+    "totalRevenue",
+  );
 
   return {
-    totalVendors: toOptionalNumber(raw.totalVendors, hasTotalVendors),
-    ngoPartners: toOptionalNumber(raw.ngoPartners, hasNgoPartners),
-    activeListings: toOptionalNumber(raw.activeListings, hasActiveListings),
-    totalRevenue: toOptionalNumber(raw.totalRevenue, hasTotalRevenue),
+    totalVendors: toOptionalNumber(resolved.totalVendors, hasTotalVendors),
+    ngoPartners: toOptionalNumber(resolved.ngoPartners, hasNgoPartners),
+    activeListings: toOptionalNumber(resolved.activeListings, hasActiveListings),
+    totalRevenue: toOptionalNumber(resolved.totalRevenue, hasTotalRevenue),
     topPerformers: topPerformersPayload.map(mapApiVendorToVendor),
   };
 };
@@ -200,8 +215,24 @@ const normalizeListPayload = (payload: unknown): VendorsListResponse => {
 };
 
 const fetchSummary = async (): Promise<VendorsSummaryResponse> => {
-  const response = await apiClient.get(SUMMARY_ENDPOINT);
-  return normalizeSummaryPayload(response.data);
+  let lastError: unknown;
+
+  for (const endpoint of buildSummaryEndpointCandidates()) {
+    try {
+      const response = await apiClient.get(endpoint);
+      return normalizeSummaryPayload(response.data);
+    } catch (error) {
+      lastError = error;
+
+      if (getStatusCode(error) === 404) {
+        continue;
+      }
+
+      throw error;
+    }
+  }
+
+  throw lastError ?? new Error("Failed to fetch vendor summary");
 };
 
 const fetchList = async (
@@ -259,21 +290,19 @@ const fetchList = async (
 };
 
 export const useVendorsOverview = () => {
-  const queryClient = useQueryClient();
   const demoMode = isDemoMode();
-  const queryKey = QUERY_KEYS.summary;
+  const currentUser = authService.getCurrentUser();
+  const authToken = localStorage.getItem("authToken") || "no-token";
+  const queryKey = [
+    ...QUERY_KEYS.summary,
+    currentUser?.email || "anonymous",
+    currentUser?.panelType || "unknown",
+    authToken,
+  ] as const;
 
   const query = useQuery({
     queryKey,
     queryFn: async (): Promise<QueryPayload<VendorsSummaryResponse>> => {
-      const cached =
-        queryClient.getQueryData<QueryPayload<VendorsSummaryResponse>>(
-          queryKey,
-        );
-      if (cached) {
-        return cached;
-      }
-
       if (demoMode) {
         return { data: fallbackSummary, source: "demo" };
       }
@@ -288,9 +317,9 @@ export const useVendorsOverview = () => {
         return { data: fallbackSummary, source: "fallback" };
       }
     },
-    staleTime: 5 * 60 * 1000,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
     retry: false,
   });
 

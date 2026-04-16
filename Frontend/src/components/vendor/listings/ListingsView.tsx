@@ -1,187 +1,108 @@
-// src/components/vendor/listings/ListingsView.tsx
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
 import { Button } from "../../ui/button";
-import {
-  Plus,
-  MapPin,
-  Clock,
-  RefreshCw,
-  AlertCircle,
-  ImageIcon,
-} from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
-
-// Components
+import { useListings } from "./api/listing.queries";
+import { useUpdateListing, useDeleteListing } from "./api/listing.mutations";
 import { ListingCard } from "./components/ListingCard";
-import { ListingFilters } from "./components/ListingFilters";
-import { ListingForm } from "./components/ListingForm";
-
-// UI
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "../../ui/dialog";
-import { Card, CardContent } from "../../ui/card";
-import { Badge } from "../../ui/badge";
-
-// Context & types - CHANGED: Use context instead of hook
-import { useVendorListings } from "./context/ListingsContext";
-import {
-  statusColors,
-  formFields,
-  CATEGORIES,
-} from "./constants/listings.data";
-import { Listing } from "./types/listing.types";
 
 export function MyListings() {
   const navigate = useNavigate();
 
-  // CHANGED: Use context instead of useListings hook
-  const {
-    filteredListings, // Use filteredListings (not listings)
-    searchTerm,
-    setSearchTerm,
-    filterCategory,
-    setFilterCategory,
-    filterStatus,
-    setFilterStatus,
-    updateListing,
-    deleteListing,
-  } = useVendorListings();
+  /* -------------------- API -------------------- */
+  const { data, isLoading, error } = useListings();
 
-  // Context doesn't have loading states, so set to false (add to context if needed)
-  const isLoading = false;
-  const isUpdating = false;
-  const isDeleting = false;
-  const error = null;
+  const listings = data?.listings || [];
+  const activeCount = data?.activeCount || 0;
 
-  // Use categories from constants
-  const categories = CATEGORIES;
+  const { mutate: updateListing } = useUpdateListing();
+  const { mutate: deleteListing } = useDeleteListing();
 
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [viewDialogOpen, setViewDialogOpen] = useState(false);
-  const [currentListing, setCurrentListing] = useState<Listing | null>(null);
+  /* -------------------- FILTERS -------------------- */
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
 
-  const [formState, setFormState] = useState<Partial<Listing>>({
-    vendor: "",
-    title: "",
-    category: "Bakery",
-    originalPrice: 0,
-    salePrice: 0,
-    quantity: 0,
-    pickupTime: "",
-    location: "",
-    description: "",
-    status: "Active",
-    rating: 0,
-  });
+  /* -------------------- FILTER LOGIC -------------------- */
+  const filteredListings = useMemo(() => {
+    return listings.filter((listing) => {
+      const matchesSearch =
+        searchTerm === "" ||
+        listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        listing.vendor.toLowerCase().includes(searchTerm.toLowerCase());
 
-  // UPDATE - FIXED: Context uses (id, data) signature, not ({id, data})
-  const handleEdit = () => {
-    if (!currentListing) return;
+      const matchesCategory =
+        filterCategory === "all" || listing.category === filterCategory;
 
-    updateListing(currentListing.id, formState); // Changed from object to separate args
+      const matchesStatus =
+        filterStatus === "all" || listing.status === filterStatus;
 
-    toast.success("Listing updated successfully!");
-    setEditDialogOpen(false);
-    setViewDialogOpen(false);
-  };
+      return matchesSearch && matchesCategory && matchesStatus;
+    });
+  }, [listings, searchTerm, filterCategory, filterStatus]);
 
-  // DELETE
-  const handleDeleteListing = (id: number | string) => {
-    deleteListing(id);
-    toast.success("Listing deleted successfully!");
-    setViewDialogOpen(false);
-  };
-
-  const openEditDialog = (listing: Listing) => {
-    setCurrentListing(listing);
-    setFormState(listing);
-    setEditDialogOpen(true);
-  };
-
-  const openViewDialog = (listing: Listing) => {
-    setCurrentListing(listing);
-    setFormState(listing);
-    setViewDialogOpen(true);
-  };
-
-  // Navigate to create listing page
-  const handleCreateListing = () => {
-    navigate("/panel/vendor/create-listing");
-  };
-
+  /* -------------------- LOADING / ERROR -------------------- */
   if (isLoading) {
     return (
-      <div className="p-8 flex justify-center items-center min-h-screen">
-        <RefreshCw className="h-10 w-10 animate-spin text-green-600" />
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-8 text-center">
-        <AlertCircle className="h-10 w-10 text-red-600 mx-auto mb-4" />
-        <p className="text-red-600">{"Failed to load listings"}</p>
+      <div className="text-center py-20 text-red-600">
+        Failed to load listings
       </div>
     );
   }
 
+  /* -------------------- UI -------------------- */
   return (
     <div className="p-8 mt-6">
-      <Toaster position="top-center" />
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8 ">
+      {/* HEADER */}
+      <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-semibold">Food Listings</h1>
           <p className="text-gray-500">
-            Manage surplus food listings • {filteredListings.length} active{" "}
-            {/* CHANGED */}
+            Manage surplus food listings • {activeCount} active
           </p>
         </div>
 
+        {/* ✅ RESTORED BUTTON */}
         <Button
-          onClick={handleCreateListing}
+          onClick={() => navigate("/panel/vendor/create-listing")}
           className="bg-green-600 hover:bg-green-700 text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Create Listing
         </Button>
       </div>
-      {/* Filters */}
-      <ListingFilters
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        filterCategory={filterCategory}
-        onCategoryChange={setFilterCategory}
-        filterStatus={filterStatus}
-        onStatusChange={setFilterStatus}
-        categories={categories}
-        isLoading={isLoading}
-      />
-      {/* Grid */}
-      {filteredListings.length ===
-      0 /* CHANGED from listings to filteredListings */ ? (
-        <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-            <Plus className="h-8 w-8 text-gray-400" />
+
+      {/* EMPTY STATE */}
+      {filteredListings.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 px-6 text-center border rounded-2xl bg-gray-50">
+          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-6">
+            <Plus className="w-10 h-10 text-green-600" />
           </div>
-          <p className="text-gray-500 text-lg mb-2">No listings found</p>
-          <p className="text-gray-400 text-sm mb-6">
+
+          <h2 className="text-xl font-semibold text-gray-800">
+            No listings found
+          </h2>
+
+          <p className="text-gray-500 mt-2 max-w-md">
             {searchTerm || filterCategory !== "all" || filterStatus !== "all"
-              ? "Try adjusting your filters"
-              : "Create your first listing to get started"}
+              ? "No listings match your filters. Try adjusting your search."
+              : "You haven't created any listings yet. Start by adding your first one."}
           </p>
+
           {!searchTerm &&
             filterCategory === "all" &&
             filterStatus === "all" && (
               <Button
-                onClick={handleCreateListing}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => navigate("/panel/vendor/create-listing")}
+                className="mt-6 bg-green-600 hover:bg-green-700 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Your First Listing
@@ -189,185 +110,23 @@ export function MyListings() {
             )}
         </div>
       ) : (
+        /* GRID */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredListings.map(
-            (listing /* CHANGED from listings to filteredListings */) => (
-              <ListingCard
-                key={listing.id}
-                listing={listing}
-                onEdit={openEditDialog}
-                onView={openViewDialog}
-                onDelete={handleDeleteListing}
-                isLoading={isDeleting}
-              />
-            ),
-          )}
+          {filteredListings.map((listing) => (
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              onEdit={(item) =>
+                updateListing({
+                  id: item.id,
+                  data: item,
+                })
+              }
+              onDelete={(id) => deleteListing(id)}
+            />
+          ))}
         </div>
       )}
-      {/* EDIT */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Listing</DialogTitle>
-          </DialogHeader>
-          <ListingForm
-            formState={formState}
-            setFormState={setFormState}
-            formFields={formFields}
-            onSubmit={handleEdit}
-            submitLabel="Update Listing"
-            isLoading={isUpdating}
-          />
-        </DialogContent>
-      </Dialog>
-      {/* VIEW */}
-      <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Listing Details</DialogTitle>
-          </DialogHeader>
-
-          {/* Photo Gallery */}
-          {formState.photos && formState.photos.length > 0 ? (
-            <div className="space-y-4">
-              <div className="relative h-64 bg-gray-100 rounded-lg overflow-hidden">
-                <img
-                  src={formState.photos[0]}
-                  alt={formState.title}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-
-              {formState.photos.length > 1 && (
-                <div className="grid grid-cols-3 gap-2">
-                  {formState.photos.slice(1).map((photo, index) => (
-                    <div
-                      key={index}
-                      className="h-20 bg-gray-100 rounded overflow-hidden"
-                    >
-                      <img
-                        src={photo}
-                        alt={`${formState.title} ${index + 2}`}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="h-48 bg-gray-100 rounded-lg flex flex-col items-center justify-center text-gray-400">
-              <ImageIcon className="h-16 w-16 mb-3" />
-              <p className="text-sm">No photos available</p>
-            </div>
-          )}
-
-          <Card>
-            <CardContent className="space-y-4 pt-6">
-              <div className="flex justify-between items-start">
-                <div>
-                  <Badge variant={statusColors[formState.status || "Active"]}>
-                    {formState.status}
-                  </Badge>
-                  <h3 className="font-semibold text-xl mt-2">
-                    {formState.title}
-                  </h3>
-                  <p className="text-gray-600">{formState.vendor}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">Rating</p>
-                  <p className="text-lg font-semibold flex items-center">
-                    ★ {formState.rating?.toFixed(1) || "4.5"}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-2 text-gray-600">
-                  <MapPin className="h-5 w-5" />
-                  <div>
-                    <p className="text-sm text-gray-500">Location</p>
-                    <p>{formState.location}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Clock className="h-5 w-5" />
-                  <div>
-                    <p className="text-sm text-gray-500">Pickup Time</p>
-                    <p>{formState.pickupTime}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t">
-                <p className="text-sm text-gray-500 mb-2">Description</p>
-                <p className="text-gray-700 whitespace-pre-line">
-                  {formState.description}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t">
-                <div className="text-center">
-                  <p className="text-sm text-gray-500">Original Price</p>
-                  <p className="text-lg line-through text-gray-500">
-                    ${formState.originalPrice?.toFixed(2)}
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-sm text-gray-500">Sale Price</p>
-                  <p className="text-2xl font-bold text-green-600">
-                    ${formState.salePrice?.toFixed(2)}
-                  </p>
-                </div>
-                <div className="text-center">
-                  <p className="text-sm text-gray-500">Available</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {formState.quantity} bags
-                  </p>
-                </div>
-              </div>
-
-              {/* Calculate discount */}
-              {formState.originalPrice && formState.salePrice && (
-                <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-                  <p className="font-semibold text-green-800">
-                    {Math.round(
-                      (1 - formState.salePrice / formState.originalPrice) * 100,
-                    )}
-                    % OFF
-                  </p>
-                  <p className="text-sm text-green-700">
-                    Save $
-                    {(formState.originalPrice - formState.salePrice).toFixed(2)}{" "}
-                    per bag
-                  </p>
-                </div>
-              )}
-
-              <div className="flex gap-2 pt-4 border-t">
-                <Button
-                className="flex-1 bg-orange-400 hover:bg-orange-500 text-white"
-                  onClick={() =>
-                    currentListing && openEditDialog(currentListing)
-                  }
-                 
-                >
-                  Edit Listing
-                </Button>
-                <Button
-                  onClick={() =>
-                    currentListing && handleDeleteListing(currentListing.id)
-                  }
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? "Deleting..." : "Delete Listing"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -12,7 +12,7 @@ export const API_CONFIG = {
   ENDPOINTS: {
     AUTH: {
       LOGIN: "/auth/login",
-      REGISTER: "/auth/register",
+      REGISTER: "/Auth/register",
       LOGOUT: "/auth/logout",
       REFRESH_TOKEN: "/auth/refresh-token",
       VERIFY_TOKEN: "/auth/verify-token",

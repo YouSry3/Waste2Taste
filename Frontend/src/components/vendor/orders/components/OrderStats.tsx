@@ -8,6 +8,12 @@ interface OrderStatsProps {
 }
 
 export const OrderStatsComponent: React.FC<OrderStatsProps> = ({ stats }) => {
+  const formatMoney = (value: number) =>
+    value.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
   return (
     <>
       {/* Stats Cards */}
@@ -18,7 +24,7 @@ export const OrderStatsComponent: React.FC<OrderStatsProps> = ({ stats }) => {
               <div>
                 <p className="text-sm text-gray-500 mb-1">Total Revenue</p>
                 <h3 className="text-3xl font-bold text-gray-900">
-                  ${stats.totalRevenue}
+                  ${formatMoney(stats.totalRevenue)}
                 </h3>
               </div>
               <div className="p-3 bg-green-100 rounded-lg">
@@ -63,7 +69,7 @@ export const OrderStatsComponent: React.FC<OrderStatsProps> = ({ stats }) => {
               <div>
                 <p className="text-sm text-gray-500 mb-1">Avg. Order Value</p>
                 <h3 className="text-3xl font-bold text-gray-900">
-                  ${stats.avgOrderValue}
+                  ${formatMoney(stats.avgOrderValue)}
                 </h3>
               </div>
               <div className="p-3 bg-blue-100 rounded-lg">

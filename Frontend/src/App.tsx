@@ -14,8 +14,8 @@ import PendingApprovalPage from "./components/auth/pending-approval";
 import { PanelLayout } from "./components/layout/PanelLayout";
 
 import { AdminPanel } from "./components/admin/AdminPanel";
-import { Dashboard } from "./components/admin/dashboard/DashboardView";
 import { UsersView } from "./components/admin/users/UsersView";
+import { Dashboard } from "./components/admin/dashboard/DashboardView";
 import { VendorsView } from "./components/admin/vendors/pages/VendorsView";
 import { ModerationView } from "./components/admin/moderation/ModerationView";
 
@@ -170,6 +170,7 @@ export default function App() {
           <Route path="profile" element={<AdminProfile />} />
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
+
           <Route path="users" element={<UsersView />} />
           <Route path="vendors" element={<VendorsView />} />
           <Route path="moderation" element={<ModerationView />} />

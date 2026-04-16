@@ -9,61 +9,13 @@
  * 5. Add proper error types and validation
  */
 
-import axios, { AxiosInstance } from "axios";
+import { apiClient } from "../../../../services/api/apiClient";
 import {
   DashboardStats,
   ChartData,
   RecentOrder,
   ApiResponse,
 } from "../types/dashboard.ts";
-
-// TODO: Set your actual API base URL from environment variables
-const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "http://localhost:5199/api";
-
-/**
- * Create axios instance with base configuration
- * AI: Configure this according to your backend requirements
- */
-export const createApiClient = (): AxiosInstance => {
-  const instance = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    timeout: 15000, // 15 seconds timeout
-  });
-
-  // TODO: Add request interceptor for authentication
-  instance.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("authToken");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => Promise.reject(error),
-  );
-
-  // TODO: Add response interceptor for error handling
-  instance.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      // Handle common errors
-      if (error.response?.status === 401) {
-        // Redirect to login or refresh token
-        window.location.href = "/login";
-      }
-      return Promise.reject(error);
-    },
-  );
-
-  return instance;
-};
-
-// Export axios instance
-export const apiClient = createApiClient();
 
 /**
  * Dashboard API endpoints

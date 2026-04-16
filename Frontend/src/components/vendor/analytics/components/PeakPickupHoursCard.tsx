@@ -11,9 +11,27 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../../ui/card";
 
 interface PeakPickupHoursCardProps {
   data: Array<{ hour: string; orders: number }>;
+  peakTime?: string;
+  peakOrders?: number;
 }
 
-export function PeakPickupHoursCard({ data }: PeakPickupHoursCardProps) {
+export function PeakPickupHoursCard({
+  data,
+  peakTime,
+  peakOrders,
+}: PeakPickupHoursCardProps) {
+  const mostActiveHour =
+    data.reduce<{ hour: string; orders: number } | null>((best, current) => {
+      if (!best || current.orders > best.orders) {
+        return current;
+      }
+      return best;
+    }, null) ?? null;
+
+  const resolvedPeakTime = peakTime ?? mostActiveHour?.hour ?? "N/A";
+  const resolvedPeakOrders =
+    peakOrders ?? mostActiveHour?.orders ?? 0;
+
   return (
     <Card className="shadow-sm border-gray-200">
       <CardHeader className="border-b border-gray-100">
@@ -52,7 +70,8 @@ export function PeakPickupHoursCard({ data }: PeakPickupHoursCardProps) {
         </ResponsiveContainer>
         <div className="mt-4 p-3 bg-blue-50 rounded-lg">
           <p className="text-sm text-blue-800">
-            <strong>Peak time:</strong> 7 PM with 22 orders
+            <strong>Peak time:</strong> {resolvedPeakTime} with{" "}
+            {resolvedPeakOrders} orders
           </p>
         </div>
       </CardContent>
