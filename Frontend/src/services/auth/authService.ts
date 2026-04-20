@@ -1,4 +1,5 @@
 import { apiClient, clearAuthToken, setAuthToken } from "../api/apiClient";
+import { API_CONFIG } from "../api/apiConfig";
 
 export type PanelType = "admin" | "vendor" | "charity";
 export type VendorApprovalStatus = "pending" | "approved" | "rejected";
@@ -11,6 +12,7 @@ export type VendorAccessState =
 export interface LoginCredentials {
   email: string;
   password: string;
+  panelType?: PanelType;
 }
 
 export interface AuthUser {
@@ -83,6 +85,72 @@ const normalizeBoolean = (value: unknown): boolean | undefined => {
 };
 
 export class AuthService {
+  private isGenericNotFoundError(error: unknown): boolean {
+    if (!error || typeof error !== "object") {
+      return false;
+    }
+
+    const errorObj = error as {
+      statusCode?: unknown;
+      message?: unknown;
+      response?: { status?: unknown };
+    };
+
+    const statusCode =
+      typeof errorObj.statusCode === "number"
+        ? errorObj.statusCode
+        : typeof errorObj.response?.status === "number"
+          ? errorObj.response.status
+          : undefined;
+
+    if (statusCode !== 404) {
+      return false;
+    }
+
+    const message =
+      typeof errorObj.message === "string"
+        ? errorObj.message.trim().toLowerCase()
+        : "";
+
+    return (
+      message === "" ||
+      message === "request failed with status code 404" ||
+      message === "404 not found"
+    );
+  }
+
+  private async postAuthWithFallbacks<TResponse>(
+    paths: string[],
+    payload?: unknown,
+  ): Promise<TResponse> {
+    let lastError: unknown;
+    const rootBase = (API_CONFIG?.BASE_URL || "").replace(/\/api\/?$/i, "");
+    const candidates = Array.from(
+      new Set(
+        paths.flatMap((path) => {
+          const normalized = path.startsWith("/") ? path : `/${path}`;
+          const absoluteRoot = rootBase ? `${rootBase}${normalized}` : null;
+          return absoluteRoot ? [absoluteRoot, normalized] : [normalized];
+        }),
+      ),
+    );
+
+    for (const path of candidates) {
+      try {
+        const response = await apiClient.post<TResponse>(path, payload);
+        return response.data;
+      } catch (error) {
+        lastError = error;
+
+        if (!this.isGenericNotFoundError(error)) {
+          throw error;
+        }
+      }
+    }
+
+    throw lastError ?? new Error("Authentication request failed.");
+  }
+
   private getStoredVendorRequestStatusByEmail(
     email: string,
   ): VendorApprovalStatus | undefined {
@@ -254,8 +322,11 @@ export class AuthService {
 
   // LOGIN
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const loginResponse = await apiClient.post("/Auth/login", credentials);
-    const normalizedLogin = this.normalizeLoginResponse(loginResponse.data);
+    const loginResponse = await this.postAuthWithFallbacks<any>(
+      [API_CONFIG.ENDPOINTS.AUTH.LOGIN],
+      credentials,
+    );
+    const normalizedLogin = this.normalizeLoginResponse(loginResponse);
 
     setAuthToken(normalizedLogin.token);
     localStorage.setItem("authToken", normalizedLogin.token);
@@ -267,9 +338,12 @@ export class AuthService {
 
   // REGISTER
   async register(payload: RegisterPayload): Promise<any> {
-    const response = await apiClient.post("/Auth/register", payload);
-    console.log("📡 Register Response:", response.data);
-    return response.data;
+    const response = await this.postAuthWithFallbacks<any>(
+      [API_CONFIG.ENDPOINTS.AUTH.REGISTER],
+      payload,
+    );
+    console.log("📡 Register Response:", response);
+    return response;
   }
 
   updateCurrentUser(patch: Partial<AuthUser>): AuthUser | null {
@@ -348,7 +422,12 @@ export class AuthService {
   // LOGOUT (with API call)
   async logout(): Promise<void> {
     try {
-      await apiClient.post("/Auth/logout");
+      await this.postAuthWithFallbacks([
+        API_CONFIG.ENDPOINTS.AUTH.LOGOUT,
+        "/Auth/logout",
+        "/api/auth/logout",
+        "/api/Auth/logout",
+      ]);
     } catch (error) {
       console.warn(
         "Logout API call failed (this is normal if endpoint doesn't exist):",

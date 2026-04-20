@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../services/api/apiClient";
+import { API_CONFIG } from "../services/api/apiConfig";
+import { authService } from "../services/auth/authService";
 import { statsData } from "../components/admin/dashboard/constants/statsData";
 import { monthlyData } from "../components/admin/dashboard/constants/monthlyData";
 import { categoryData } from "../components/admin/dashboard/constants/categoryData";
@@ -139,7 +141,22 @@ const getErrorStatus = (error: unknown): number | undefined => {
 };
 
 const fetchDashboard = async (): Promise<DashboardData> => {
-  const endpoints = ["/Admin/dashboard", "/admin/dashboard"];
+  // Try absolute admin endpoints first (remove any trailing /api from base)
+  const apiBase = (API_CONFIG.BASE_URL || "").replace(/\/api\/?$/i, "");
+
+  const endpoints = [
+    // Absolute variants
+    `${apiBase}/Admin/Dashboard`,
+    `${apiBase}/Admin/dashboard`,
+    `${apiBase}/admin/Dashboard`,
+    `${apiBase}/admin/dashboard`,
+    // Relative variants (use apiClient base)
+    "/Admin/Dashboard",
+    "/Admin/dashboard",
+    "/admin/Dashboard",
+    "/admin/dashboard",
+  ];
+
   let lastError: unknown;
 
   for (const endpoint of endpoints) {
@@ -149,8 +166,10 @@ const fetchDashboard = async (): Promise<DashboardData> => {
     } catch (error) {
       lastError = error;
       if (getErrorStatus(error) === 404) {
+        // try next endpoint
         continue;
       }
+      // for other errors, rethrow so the query can handle it
       throw error;
     }
   }
@@ -161,9 +180,17 @@ const fetchDashboard = async (): Promise<DashboardData> => {
 export const useAdminDashboard = () => {
   const demoMode = isDemoMode();
   const demoData = buildDemoDashboardData();
+  const currentUser = authService.getCurrentUser();
+  const authToken = localStorage.getItem("authToken") || "no-token";
+  const queryKey = [
+    "admin-dashboard",
+    currentUser?.email || "anonymous",
+    currentUser?.panelType || "unknown",
+    authToken,
+  ] as const;
 
   const query = useQuery({
-    queryKey: ["admin-dashboard"],
+    queryKey,
     queryFn: async () => {
       if (demoMode) {
         return demoData;
@@ -171,8 +198,9 @@ export const useAdminDashboard = () => {
 
       return fetchDashboard();
     },
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
     retry: (failureCount, error) => {
       const status = getErrorStatus(error);
       if (status === 404) {

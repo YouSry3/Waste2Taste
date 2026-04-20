@@ -14,6 +14,26 @@ interface TopItemsCardProps {
 }
 
 export function TopItemsCard({ items }: TopItemsCardProps) {
+  if (items.length === 0) {
+    return (
+      <Card className="shadow-sm border-gray-200">
+        <CardHeader className="border-b border-gray-100">
+          <CardTitle className="text-lg font-semibold text-gray-900">
+            Top Performing Items
+          </CardTitle>
+          <p className="text-sm text-gray-500 mt-1">
+            Best sellers this month
+          </p>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <div className="flex min-h-[220px] items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 text-sm text-gray-500">
+            No product performance data returned yet.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="shadow-sm border-gray-200">
       <CardHeader className="border-b border-gray-100">

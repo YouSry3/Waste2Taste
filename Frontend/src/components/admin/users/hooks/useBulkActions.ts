@@ -76,6 +76,11 @@ export const useBulkActions = (
     [selectedUsers, users, actions],
   );
 
+  const clearSelection = useCallback(() => {
+    setSelectedUsers([]);
+    setIsSelectAll(false);
+  }, []);
+
   return {
     selectedUsers,
     isSelectAll,
@@ -83,5 +88,6 @@ export const useBulkActions = (
     toggleUserSelection,
     toggleSelectAll,
     handleBulkAction,
+    clearSelection,
   };
 };

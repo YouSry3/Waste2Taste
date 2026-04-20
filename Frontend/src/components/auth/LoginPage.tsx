@@ -22,6 +22,7 @@ import {
   VendorAccessState,
 } from "../../services/auth/authService";
 import { setPendingVendorApprovalEmail } from "../../services/vendorApproval/vendorApprovalStore";
+import { getVendorRequestByEmail } from "../../services/vendorApproval/vendorApprovalStore";
 import { getVendorRequestStatus } from "../../services/vendorApproval/vendorRequestService";
 import { getVendorSignupDraft } from "../../services/vendorApproval/vendorOnboardingStore";
 
@@ -106,7 +107,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       authService.clearLocalAuth();
 
       // Call the backend login
-      const response = await authService.login(payload.credentials);
+      const response = await authService.login({
+        ...payload.credentials,
+        panelType: payload.panelType,
+      });
 
       // Validate the panel type matches what user selected
       if (response.user.panelType !== payload.panelType) {
@@ -164,17 +168,20 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           return;
         }
 
-        if (vendorAccessState === "rejected") {
-          authService.clearLocalAuth();
-          toast.error(
-            "Your vendor request was rejected. Please contact support.",
-          );
-          return;
-        }
-
         if (vendorAccessState === "pending") {
           setPendingVendorApprovalEmail(res.user.email);
           toast("Your vendor request is pending admin approval.");
+          onLogin(res.user.panelType);
+          return;
+        }
+
+        if (vendorAccessState === "rejected") {
+          const localRequest = getVendorRequestByEmail(res.user.email);
+          setPendingVendorApprovalEmail(res.user.email);
+          toast.error(
+            localRequest?.notes ||
+              "Your vendor request was rejected. Please review the reason on the status page.",
+          );
           onLogin(res.user.panelType);
           return;
         }

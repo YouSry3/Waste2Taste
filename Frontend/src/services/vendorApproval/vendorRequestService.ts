@@ -1,4 +1,5 @@
 import { apiClient } from "../api/apiClient";
+import { API_CONFIG } from "../api/apiConfig";
 import { VendorApprovalStatus } from "../auth/authService";
 
 export interface CreateVendorRequestPayload {
@@ -89,6 +90,54 @@ const tryReadStatus = (payload: any): VendorApprovalStatus | null => {
 const getErrorStatusCode = (error: any): number | undefined =>
   error?.statusCode ?? error?.response?.status;
 
+const buildVendorRequestCandidates = (paths: string[]): string[] => {
+  const rootBase = (API_CONFIG?.BASE_URL || "").replace(/\/api\/?$/i, "");
+
+  return Array.from(
+    new Set(
+      paths.flatMap((path) => {
+        const normalized = path.startsWith("/") ? path : `/${path}`;
+        const candidates = [];
+
+        if (rootBase) {
+          candidates.push(`${rootBase}${normalized}`);
+        }
+
+        candidates.push(normalized);
+
+        return candidates;
+      }),
+    ),
+  );
+};
+
+const postVendorRequestWithFallbacks = async <TResponse>(
+  paths: string[],
+  body: unknown,
+): Promise<TResponse> => {
+  let lastError: unknown;
+
+  for (const endpoint of buildVendorRequestCandidates(paths)) {
+    try {
+      // Let Axios/browser set the multipart boundary automatically.
+      const response = await apiClient.post<TResponse>(endpoint, body);
+      return response.data;
+    } catch (error: any) {
+      lastError = error;
+      if (getErrorStatusCode(error) !== 404) {
+        throw error;
+      }
+    }
+  }
+
+  throw lastError;
+};
+
+const getVendorRequestCreateEndpoint = (): string => {
+  const rootBase = (API_CONFIG?.BASE_URL || "").replace(/\/api\/?$/i, "");
+  return rootBase ? `${rootBase}/vendorRequests` : "/vendorRequests";
+};
+
 const normalizeId = (value: unknown): number | null => {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -105,17 +154,17 @@ const normalizeId = (value: unknown): number | null => {
 };
 
 export const extractVendorRequestId = (payload: any): number | null => {
+  const source = payload?.data ?? payload;
+
   const directId = normalizeId(
-    payload?.id ?? payload?.requestId ?? payload?.vendorRequestId,
+    source?.id ?? source?.requestId ?? source?.vendorRequestId,
   );
   if (directId != null) {
     return directId;
   }
 
   const nestedId = normalizeId(
-    payload?.data?.id ??
-      payload?.data?.requestId ??
-      payload?.data?.vendorRequestId,
+    source?.data?.id ?? source?.data?.requestId ?? source?.data?.vendorRequestId,
   );
   if (nestedId != null) {
     return nestedId;
@@ -128,20 +177,19 @@ export const createVendorRequest = async (
   payload: CreateVendorRequestPayload,
 ): Promise<VendorRequestCreationResult> => {
   const formData = new FormData();
-  formData.append("OwnerName", payload.ownerName);
-  formData.append("Name", payload.businessName);
-  formData.append("Category", payload.category);
-  formData.append("Email", payload.email);
-  formData.append("PhoneNumber", payload.phoneNumber);
+  // Match the backend/Postman form field names exactly.
+  formData.append("name", payload.businessName);
+  formData.append("category", payload.category);
+  formData.append("email", payload.email);
+  formData.append("phoneNumber", payload.phoneNumber);
   formData.append("Address", payload.address);
-  formData.append("BusinessLicenseFile", payload.businessLicenseFile);
-  formData.append("HealthCertificateFile", payload.healthCertificateFile);
+  formData.append("healthCertificateFile", payload.healthCertificateFile);
+  formData.append("businessLicenseFile", payload.businessLicenseFile);
 
-  const response = await apiClient.post("/vendorRequests", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const response = await apiClient.post<unknown>(
+    getVendorRequestCreateEndpoint(),
+    formData,
+  );
 
   return {
     requestId: extractVendorRequestId(response.data),
@@ -150,7 +198,7 @@ export const createVendorRequest = async (
 };
 
 export const getVendorRequestStatus = async (): Promise<VendorApprovalStatus | null> => {
-  for (const endpoint of VENDOR_REQUEST_STATUS_ENDPOINTS) {
+  for (const endpoint of buildVendorRequestCandidates(VENDOR_REQUEST_STATUS_ENDPOINTS)) {
     try {
       const response = await apiClient.get(endpoint);
       const status = tryReadStatus(response.data);
@@ -175,7 +223,7 @@ export const getPendingVendorRequestsForAdmin = async (): Promise<any[]> => {
     "/vendorRequests/pending/all",
   ];
 
-  for (const endpoint of endpoints) {
+  for (const endpoint of buildVendorRequestCandidates(endpoints)) {
     try {
       const response = await apiClient.get(endpoint);
       const payload = response.data;
@@ -222,7 +270,7 @@ export const rejectVendorRequest = async (
 
   let lastError: unknown;
 
-  for (const endpoint of endpoints) {
+  for (const endpoint of buildVendorRequestCandidates(endpoints)) {
     for (const body of bodyCandidates) {
       try {
         const response = await apiClient.put(endpoint, body);
@@ -281,7 +329,7 @@ const performVendorDecisionRequest = async (
   const methods = ["put", "post", "patch"] as const;
   let lastError: unknown;
 
-  for (const endpoint of endpoints) {
+  for (const endpoint of buildVendorRequestCandidates(endpoints)) {
     for (const method of methods) {
       for (const body of bodyCandidates) {
         try {

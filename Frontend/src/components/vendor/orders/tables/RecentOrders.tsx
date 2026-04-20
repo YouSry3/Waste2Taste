@@ -9,7 +9,7 @@ import {
 import { Button } from "../../../ui/button";
 import { Badge } from "../../../ui/badge";
 import { useNavigate } from "react-router-dom";
-import { RecentOrder } from "../../../types";
+import { RecentOrder } from "../types/dashboard";
 
 interface RecentOrdersProps {
   orders: RecentOrder[];

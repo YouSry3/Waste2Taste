@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import { Calendar, Download, DollarSign, Users, Store, ShoppingBag } from "lucide-react";
 import { Button } from "../../ui/button";
+import { Badge } from "../../ui/badge";
 import {
   Select,
   SelectContent,
@@ -21,6 +22,7 @@ import { monthlyData } from "./constants/monthlyData";
 import { categoryData } from "./constants/categoryData";
 import { StatsData, MonthlyData, CategoryData } from "./types";
 import { useAdminDashboard } from "../../../hooks/useAdminDashboard";
+type DashboardDataSource = ReturnType<typeof useAdminDashboard>["dataSource"];
 
 const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -40,6 +42,27 @@ const buildFallbackTrend = (baseValue: number): number[] => {
   return [0.6, 0.72, 0.81, 0.9, 0.96, 1].map((factor) =>
     Math.round(baseValue * factor),
   );
+};
+
+const getDataSourceBadge = (dataSource: DashboardDataSource) => {
+  if (dataSource === "demo") {
+    return {
+      label: "Demo data",
+      className: "border-sky-200 bg-sky-50 text-sky-700",
+    };
+  }
+
+  if (dataSource === "fallback") {
+    return {
+      label: "Fallback data",
+      className: "border-amber-200 bg-amber-50 text-amber-700",
+    };
+  }
+
+  return {
+    label: "Live API",
+    className: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  };
 };
 
 const buildStatsData = (dashboardData: ReturnType<typeof useAdminDashboard>["data"]): StatsData[] => {
@@ -171,6 +194,7 @@ const buildCategoryChartData = (
 export function DashboardView() {
   const [timeRange, setTimeRange] = useState("30d");
   const { data, isLoading, isError, refetch, dataSource } = useAdminDashboard();
+  const sourceBadge = getDataSourceBadge(dataSource);
 
   const mappedStats = useMemo(() => buildStatsData(data), [data]);
   const mappedMonthlyData = useMemo(() => buildMonthlyChartData(data, dataSource), [data, dataSource]);
@@ -181,7 +205,12 @@ export function DashboardView() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
+            <Badge variant="outline" className={sourceBadge.className}>
+              Data source: {sourceBadge.label}
+            </Badge>
+          </div>
           <p className="text-gray-500">
             Overview of your food rescue marketplace
           </p>

@@ -51,15 +51,19 @@ export default function PendingApprovalPage() {
         }
 
         if (backendStatus === "rejected") {
+          const localRequest = trackedEmail
+            ? getVendorRequestByEmail(trackedEmail)
+            : null;
           setViewState("rejected");
           setDetails(
-            "Your vendor request was rejected. Please contact support.",
+            localRequest?.notes ||
+              "Your vendor request was rejected. Please review the reason below.",
           );
           return;
         }
 
         setViewState("pending");
-        setDetails("Request pending. Please wait for an admin to approve.");
+        setDetails("Your request is pending. Wait for an admin to approve your request.");
         return;
       }
     } catch {
@@ -93,7 +97,7 @@ export default function PendingApprovalPage() {
       }
       if (localRequest?.status === "pending") {
         setViewState("pending");
-        setDetails("Request pending. Please wait for an admin to approve.");
+        setDetails("Your request is pending. Wait for an admin to approve your request.");
         return;
       }
     }
@@ -106,8 +110,14 @@ export default function PendingApprovalPage() {
     }
 
     if (vendorAccessState === "rejected") {
+      const localRequest = trackedEmail
+        ? getVendorRequestByEmail(trackedEmail)
+        : null;
       setViewState("rejected");
-      setDetails("Your vendor request was rejected. Please contact support.");
+      setDetails(
+        localRequest?.notes ||
+          "Your vendor request was rejected. Please review the reason below.",
+      );
       return;
     }
 
@@ -118,7 +128,7 @@ export default function PendingApprovalPage() {
     }
 
     setViewState("pending");
-    setDetails("Request pending. Please wait for an admin to approve.");
+    setDetails("Your request is pending. Wait for an admin to approve your request.");
   }, [trackedEmail]);
 
   useEffect(() => {

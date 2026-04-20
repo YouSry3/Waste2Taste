@@ -13,6 +13,24 @@ interface SalesByTypeCardProps {
 }
 
 export function SalesByTypeCard({ data }: SalesByTypeCardProps) {
+  if (data.length === 0) {
+    return (
+      <Card className="shadow-sm border-gray-200">
+        <CardHeader className="border-b border-gray-100">
+          <CardTitle className="text-lg font-semibold text-gray-900">
+            Sales by Type
+          </CardTitle>
+          <p className="text-sm text-gray-500 mt-1">Breakdown by category</p>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="flex h-[300px] items-center justify-center rounded-xl border border-dashed border-gray-200 bg-gray-50 text-sm text-gray-500">
+            No category breakdown returned yet.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="shadow-sm border-gray-200">
       <CardHeader className="border-b border-gray-100">
