@@ -1,38 +1,77 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
 class LoggerInterceptor extends Interceptor {
-  Logger logger = Logger(
-    printer: PrettyPrinter(methodCount: 0, colors: true, printEmojis: true),
+  final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 0,
+      errorMethodCount: 3,
+      lineLength: 80,
+      colors: true,
+      printEmojis: true,
+      dateTimeFormat: DateTimeFormat.onlyTime,
+    ),
   );
 
-  @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
-    final options = err.requestOptions;
-    final requestPath = '${options.baseUrl}${options.path}';
-    logger.e('${options.method} request ==> $requestPath'); //Error log
-    logger.d(
-      'Error type: ${err.error} \n '
-      'Error message: ${err.message}',
-    ); //Debug log
-    handler.next(err); //Continue with the Error
-  }
+  bool get _isDebug => kDebugMode;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final requestPath = '${options.baseUrl}${options.path}';
-    logger.i('${options.method} request ==> $requestPath'); //Info log
-    handler.next(options); // continue with the Request
+    if (_isDebug) {
+      _logger.i('''
+╔════════════════ REQUEST ════════════════
+║ ${options.method} => ${options.baseUrl}${options.path}
+║ Headers: ${_sanitizeHeaders(options.headers)}
+║ Query: ${options.queryParameters}
+║ Body: ${options.data}
+╚════════════════════════════════════════
+''');
+    }
+
+    super.onRequest(options, handler);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    logger.d(
-      'STATUSCODE: ${response.statusCode} \n '
-      'STATUSMESSAGE: ${response.statusMessage} \n'
-      'HEADERS: ${response.headers} \n'
-      'Data: ${response.data}',
-    ); // Debug log
-    handler.next(response); // continue with the Response
+    if (_isDebug) {
+      _logger.d('''
+╔════════════════ RESPONSE ═══════════════
+║ ${response.requestOptions.method} => ${response.requestOptions.baseUrl}${response.requestOptions.path}
+║ Status: ${response.statusCode}
+║ Data: ${response.data}
+╚════════════════════════════════════════
+''');
+    }
+
+    super.onResponse(response, handler);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    if (_isDebug) {
+      _logger.e('''
+╔════════════════ ERROR ══════════════════
+║ ${err.requestOptions.method} => ${err.requestOptions.baseUrl}${err.requestOptions.path}
+║ Type: ${err.type}
+║ Message: ${err.message}
+║ Status: ${err.response?.statusCode}
+║ Data: ${err.response?.data}
+╚════════════════════════════════════════
+''');
+    }
+
+    super.onError(err, handler);
+  }
+
+  /// Remove sensitive data like tokens
+  Map<String, dynamic> _sanitizeHeaders(Map<String, dynamic> headers) {
+    final sanitized = Map<String, dynamic>.from(headers);
+
+    if (sanitized.containsKey('Authorization')) {
+      sanitized['Authorization'] = '***TOKEN HIDDEN***';
+    }
+
+    return sanitized;
   }
 }
