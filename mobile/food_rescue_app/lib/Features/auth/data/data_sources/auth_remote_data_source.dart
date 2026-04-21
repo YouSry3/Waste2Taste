@@ -1,18 +1,17 @@
 import 'package:waste2taste/Features/auth/data/models/login_request_model.dart';
 import 'package:waste2taste/Features/auth/data/models/reset_pass_request_model.dart';
 import 'package:waste2taste/Features/auth/data/models/reset_pass_response_model.dart';
-import 'package:waste2taste/Features/auth/data/models/user_model.dart';
 import 'package:waste2taste/Features/auth/data/models/verify_email_response_model.dart';
-import 'package:waste2taste/Features/auth/domain/entities/user_entity.dart';
 import '../../../../core/constants/api_urls.dart';
 import '../../../../core/services/api_service.dart';
 import '../../../../core/utils/save_token_in_secure_storage.dart';
 import '../models/signup_request_params_model.dart';
 import '../models/signup_response_model.dart';
+import '../models/user_login_keys.dart';
 import '../models/verify_email_request_model.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<UserEntity> login(LoginRequestModel loginReqModel);
+  Future<UserLoginKeys> login(LoginRequestModel loginReqModel);
   Future<SignupResponseModel> signup(SignupRequestModel signupReqModel);
   Future<void> sendResetPasswordCode({required String email});
   Future<VerifyEmailResponseModel> verifyEmail(
@@ -69,14 +68,14 @@ class AuthRemoteDataSourceImpl extends AuthRemoteDataSource {
   }
 
   @override
-  Future<UserEntity> login(LoginRequestModel loginReqModel) async {
+  Future<UserLoginKeys> login(LoginRequestModel loginReqModel) async {
     var response = await _apiService.post(
       ApiUrls.loginUrl,
       data: loginReqModel.toJson(),
     );
     var data = response.data as Map<String, dynamic>;
-    var userEntity = UserModel.fromJson(data);
-    await saveDataInSecureStorage(userEntity.userLoginKeys);
-    return userEntity;
+    var userLoginKeys = UserLoginKeys.fromJson(data);
+    await saveDataInSecureStorage(userLoginKeys);
+    return userLoginKeys;
   }
 }

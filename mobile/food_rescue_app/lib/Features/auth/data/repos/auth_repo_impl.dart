@@ -5,12 +5,12 @@ import 'package:waste2taste/Features/auth/data/models/reset_pass_request_model.d
 import 'package:waste2taste/Features/auth/data/models/reset_pass_response_model.dart';
 import 'package:waste2taste/Features/auth/data/models/verify_email_request_model.dart';
 import 'package:waste2taste/Features/auth/data/models/verify_email_response_model.dart';
-import 'package:waste2taste/Features/auth/domain/entities/user_entity.dart';
 import '../../../../core/errors/failure.dart';
 import '../../domain/repos/auth_repo.dart';
 import '../data_sources/auth_remote_data_source.dart';
 import '../models/signup_request_params_model.dart';
 import '../models/signup_response_model.dart';
+import '../models/user_login_keys.dart';
 
 class AuthRepoImpl extends AuthRepo {
   AuthRepoImpl({required this.authRemoteDataSource});
@@ -87,7 +87,7 @@ class AuthRepoImpl extends AuthRepo {
   }
 
   @override
-  Future<Either<Failure, UserEntity>> login(
+  Future<Either<Failure, UserLoginKeys>> login(
     LoginRequestModel loginReqModel,
   ) async {
     try {

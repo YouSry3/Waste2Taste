@@ -8,9 +8,9 @@ final class LoginInitialState extends LoginState {}
 final class LoginLoadingState extends LoginState {}
 
 final class LoginSuccessState extends LoginState {
-  final UserEntity user;
+  final UserLoginKeys keys;
 
-  LoginSuccessState({required this.user});
+  LoginSuccessState({required this.keys});
 }
 
 final class LoginFailureState extends LoginState {

@@ -2,7 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:waste2taste/Features/auth/data/models/login_request_model.dart';
 import 'package:waste2taste/Features/auth/domain/use_cases/login_usecase.dart';
-import '../../../domain/entities/user_entity.dart';
+
+import '../../../data/models/user_login_keys.dart';
 
 part 'login_state.dart';
 
@@ -18,7 +19,7 @@ class LoginCubit extends Cubit<LoginState> {
         emit(LoginFailureState(errMessage: failure.errorMessage));
       },
       (success) {
-        emit(LoginSuccessState(user: success));
+        emit(LoginSuccessState(keys: success));
       },
     );
   }

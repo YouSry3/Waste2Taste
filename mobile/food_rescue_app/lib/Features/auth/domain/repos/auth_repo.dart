@@ -7,13 +7,13 @@ import '../../data/models/reset_pass_request_model.dart';
 import '../../data/models/reset_pass_response_model.dart';
 import '../../data/models/signup_request_params_model.dart';
 import '../../data/models/signup_response_model.dart';
-import '../entities/user_entity.dart';
+import '../../data/models/user_login_keys.dart';
 
 abstract class AuthRepo {
   Future<Either<Failure, SignupResponseModel>> signup(
     SignupRequestModel signupReqModel,
   );
-  Future<Either<Failure, UserEntity>> login(LoginRequestModel loginReqModel);
+  Future<Either<Failure, UserLoginKeys>> login(LoginRequestModel loginReqModel);
 
   Future<Either<Failure, void>> sendResetPasswordCode({required String email});
   Future<Either<Failure, VerifyEmailResponseModel>> verifyEmail(
