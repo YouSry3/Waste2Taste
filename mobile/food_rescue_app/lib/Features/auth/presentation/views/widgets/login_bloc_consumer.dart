@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:load_it/load_it.dart';
 import 'package:waste2taste/Features/auth/data/models/login_request_model.dart';
 import 'package:waste2taste/Features/auth/presentation/manager/login_cubit/login_cubit.dart';
@@ -8,7 +7,6 @@ import 'package:waste2taste/core/utils/app_router.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
-import '../../../../../core/utils/app_routes.dart';
 import '../../../../../core/utils/custom_snack_bar.dart';
 import '../../../../../core/utils/translator.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';

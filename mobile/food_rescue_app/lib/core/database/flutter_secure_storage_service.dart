@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:waste2taste/Features/auth/data/models/user_login_keys.dart';
 
@@ -41,7 +42,7 @@ class FlutterSecureStorageServiceImpl extends FlutterSecureStorageService {
     return UserLoginKeys(
       token: token,
       refreshToken: refreshToken,
-      expireAt: int.parse(expireAt),
+      expireAt: DateTime.parse(expireAt),
     );
   }
 
@@ -50,5 +51,6 @@ class FlutterSecureStorageServiceImpl extends FlutterSecureStorageService {
     await storage.delete(key: _tokenKey);
     await storage.delete(key: _refreshTokenKey);
     await storage.delete(key: _expireAtKey);
+    debugPrint("deleted:::::::::::::::::::");
   }
 }
