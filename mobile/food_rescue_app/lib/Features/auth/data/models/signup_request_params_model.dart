@@ -2,7 +2,7 @@ class SignupRequestModel {
   final String email;
   final String password;
   final String name;
-  final String type = "customer";
+  final String role = "customer";
   final String phoneNumber;
 
   SignupRequestModel({
@@ -17,7 +17,7 @@ class SignupRequestModel {
       "email": email,
       "password": password,
       "name": name,
-      "type": type,
+      "role": role,
       "PhoneNumber": phoneNumber,
     };
   }

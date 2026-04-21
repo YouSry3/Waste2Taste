@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:waste2taste/Features/orders/presentation/views/order_confirmation_view.dart';
+import '../../Features/auth/data/models/user_login_keys.dart';
 import '../../Features/auth/domain/use_cases/send_reset_password_code_usecase.dart';
 import '../../Features/auth/presentation/manager/send_reset_password_code_cubit/send_reset_password_code_cubit.dart';
 import '../../Features/home/presentation/views/home_view.dart';
@@ -23,12 +24,36 @@ import '../../Features/splash/presentation/manager/onboarding_cubit.dart';
 import '../../Features/splash/presentation/views/onboarding_view.dart';
 import '../../Features/splash/presentation/views/splash_view.dart';
 import '../../Features/report/presentation/views/report_vendor_view.dart';
+import '../database/flutter_secure_storage_service.dart';
 import '../functions/setup_service_locator.dart';
 import '../widgets/custom_bottom_navigation_bar.dart';
 import 'app_routes.dart';
 
 abstract class AppRouter {
+  static final ValueNotifier<bool?> authNotifier = ValueNotifier(null);
+
   static GoRouter routerConfig = GoRouter(
+    initialLocation: AppRoutes.splash,
+    refreshListenable: authNotifier,
+    redirect: (context, state) {
+      if (authNotifier.value == null) return AppRoutes.splash;
+      final bool isLoggedIn = authNotifier.value!;
+      final String location = state.matchedLocation;
+      final List<String> authRoutes = [
+        AppRoutes.splash,
+        AppRoutes.onboarding,
+        AppRoutes.login,
+        AppRoutes.signup,
+        AppRoutes.verifyEmail,
+        AppRoutes.forgetPassword,
+        AppRoutes.resetPassword,
+      ];
+      final bool isAuthRoute = authRoutes.contains(location);
+      if (isLoggedIn && isAuthRoute) return AppRoutes.homeNavigationBar;
+      if (!isLoggedIn && !isAuthRoute) return AppRoutes.login;
+
+      return null;
+    },
     routes: [
       GoRoute(
         path: AppRoutes.splash,
@@ -117,4 +142,14 @@ abstract class AppRouter {
       ),
     ],
   );
+  static Future<void> checkToken() async {
+    UserLoginKeys? keys = await getIt
+        .get<FlutterSecureStorageService>()
+        .getAuthToken();
+    authNotifier.value = keys != null;
+  }
+
+  static void login() => authNotifier.value = true;
+
+  static void logout() => authNotifier.value = false;
 }

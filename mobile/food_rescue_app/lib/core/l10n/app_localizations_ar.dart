@@ -492,4 +492,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get describeYourIssueBelow => 'صف مشكلتك أدناه';
+
+  @override
+  String get loginSuccess => 'تم تسجيل الدخول بنجاح';
 }

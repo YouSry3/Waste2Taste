@@ -1033,6 +1033,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Describe your issue below.'**
   String get describeYourIssueBelow;
+
+  /// No description provided for @loginSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Login successful'**
+  String get loginSuccess;
 }
 
 class _AppLocalizationsDelegate

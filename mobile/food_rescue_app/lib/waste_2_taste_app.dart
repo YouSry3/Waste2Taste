@@ -2,7 +2,10 @@ import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waste2taste/core/cubits/localization_cubit/localization_cubit.dart';
+import 'package:waste2taste/core/functions/setup_service_locator.dart';
 import 'package:waste2taste/core/l10n/app_localizations.dart';
+import 'Features/auth/data/models/user_login_keys.dart';
+import 'core/database/flutter_secure_storage_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/cubits/theme_cubit/theme_cubit.dart';
 import 'core/utils/app_router.dart';
@@ -45,3 +48,4 @@ class Waste2TasteApp extends StatelessWidget {
     );
   }
 }
+

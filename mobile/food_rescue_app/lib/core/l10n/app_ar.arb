@@ -154,5 +154,6 @@
     "phoneNumber": "رقم الهاتف",
     "phoneNumberHint": "ادخل رقم هاتفك",
     "reportVendor": "الإبلاغ عن البائع",
-    "describeYourIssueBelow": "صف مشكلتك أدناه"
+    "describeYourIssueBelow": "صف مشكلتك أدناه",
+    "loginSuccess": "تم تسجيل الدخول بنجاح"
 }

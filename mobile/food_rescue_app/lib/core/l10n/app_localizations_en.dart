@@ -492,4 +492,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get describeYourIssueBelow => 'Describe your issue below.';
+
+  @override
+  String get loginSuccess => 'Login successful';
 }
