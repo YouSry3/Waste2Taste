@@ -4,7 +4,7 @@ import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import 'profile_avatar_picker.dart';
-import 'profile_text_field.dart';
+import '../../../../../core/widgets/profile_text_field.dart';
 
 class EditProfileViewBody extends StatelessWidget {
   const EditProfileViewBody({super.key});
@@ -16,7 +16,7 @@ class EditProfileViewBody extends StatelessWidget {
         CustomSliverAppBar(
           widget: Text(
             context.loc.editProfile,
-            style: AppTextStyles.appBarTitle,
+            style: AppTextStyles.title(context),
           ),
         ),
         SliverToBoxAdapter(

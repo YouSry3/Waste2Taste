@@ -42,7 +42,7 @@ class NavBarItem extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 label,
-                style: AppTextStyles.label.copyWith(
+                style: AppTextStyles.label(context).copyWith(
                   fontSize: 12,
                   fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                   color: isActive ? AppColors.primary : Colors.grey,

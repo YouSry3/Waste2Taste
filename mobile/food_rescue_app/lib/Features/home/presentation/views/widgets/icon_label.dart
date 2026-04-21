@@ -14,7 +14,7 @@ class IconLabel extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           label,
-          style: AppTextStyles.body.copyWith(color: Colors.grey, fontSize: 13),
+          style: AppTextStyles.body(context).copyWith(color: Colors.grey, fontSize: 13),
         ),
       ],
     );

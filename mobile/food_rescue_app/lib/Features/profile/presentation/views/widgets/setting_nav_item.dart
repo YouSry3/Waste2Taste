@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import '../../../../../core/constants/app_colors.dart';
+
+import 'icon_circle.dart';
 
 class SettingsNavItem extends StatelessWidget {
   final IconData icon;
@@ -15,13 +16,12 @@ class SettingsNavItem extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.trailingText,
-    this.color = AppColors.textDark,
+    required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    final languageCode = Localizations.localeOf(context).languageCode;
-    final bool isArabic = languageCode == 'ar';
+    final isRTL = Directionality.of(context) == TextDirection.rtl;
     return ListTile(
       onTap: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -45,34 +45,13 @@ class SettingsNavItem extends StatelessWidget {
                 style: const TextStyle(color: Colors.grey, fontSize: 14),
               ),
             ),
-          isArabic
-              ? Icon(LucideIcons.chevronLeft, size: 20, color: Colors.grey[400])
-              : Icon(
-                  LucideIcons.chevronRight,
-                  size: 20,
-                  color: Colors.grey[400],
-                ),
+          Icon(
+            isRTL ? LucideIcons.chevronLeft : LucideIcons.chevronRight,
+            size: 20,
+            color: Colors.grey[400],
+          ),
         ],
       ),
-    );
-  }
-}
-
-class IconCircle extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-
-  const IconCircle({super.key, required this.icon, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: .1),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: color, size: 20),
     );
   }
 }

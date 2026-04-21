@@ -477,4 +477,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get status => 'Status';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get phoneNumberHint => 'Enter your phone number ';
+
+  @override
+  String get reportThisVendor => 'Report This Vendor';
+
+  @override
+  String get reportVendor => 'Report Vendor';
+
+  @override
+  String get describeYourIssueBelow => 'Describe your issue below.';
+
+  @override
+  String get loginSuccess => 'Login successful';
 }

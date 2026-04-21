@@ -13,6 +13,7 @@ class SecuritySection extends StatelessWidget {
       title: context.loc.security,
       children: [
         SettingsNavItem(
+          color: Theme.of(context).colorScheme.onSurface,
           icon: LucideIcons.lock,
           label: context.loc.changePassword,
           onTap: () {},

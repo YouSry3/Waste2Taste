@@ -23,7 +23,7 @@ class ProfileImageWidget extends StatelessWidget {
         backgroundColor: AppColors.primary,
         child: Text(
           getFirstCharsOfTwoStings(name),
-          style: AppTextStyles.title.copyWith(
+          style: AppTextStyles.title(context).copyWith(
             fontSize: 32,
             color: Colors.white,
           ),

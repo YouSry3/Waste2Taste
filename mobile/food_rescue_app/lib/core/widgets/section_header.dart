@@ -22,17 +22,16 @@ class SectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: AppTextStyles.body.copyWith(
-              fontWeight: FontWeight.w600,
-              fontSize: fontSize ?? 19,
-            ),
+            style: AppTextStyles.body(
+              context,
+            ).copyWith(fontWeight: FontWeight.w600, fontSize: fontSize ?? 19),
           ),
           if (onTap != null)
             TextButton(
               onPressed: onTap,
               child: Text(
                 context.loc.seeAll,
-                style: AppTextStyles.body.copyWith(
+                style: AppTextStyles.body(context).copyWith(
                   fontWeight: FontWeight.w600,
                   fontSize: 19,
                   color: AppColors.primary,

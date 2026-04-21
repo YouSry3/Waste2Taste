@@ -24,22 +24,22 @@ class PriceColumn extends StatelessWidget {
       children: [
         Text(
           label,
-          style: AppTextStyles.body.copyWith(
-            fontSize: 12,
-            color: AppColors.textGray,
-          ),
+          style: AppTextStyles.body(
+            context,
+          ).copyWith(fontSize: 12, color: AppColors.textMuted(context)),
         ),
         Text(
           formattedPrice,
           style: isOldPrice
-              ? AppTextStyles.body.copyWith(
-                  color: AppColors.textGray,
+              ? AppTextStyles.body(context).copyWith(
+                  color: AppColors.textMuted(context),
+
                   decoration: TextDecoration.lineThrough,
+                  decorationColor: Theme.of(context).colorScheme.onSurface,
                 )
-              : AppTextStyles.title.copyWith(
-                  fontSize: 28,
-                  color: AppColors.primary,
-                ),
+              : AppTextStyles.title(
+                  context,
+                ).copyWith(fontSize: 28, color: AppColors.primary),
         ),
       ],
     );

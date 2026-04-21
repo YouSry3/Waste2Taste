@@ -10,7 +10,7 @@ class AuthInputLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0, left: 4),
-      child: Text(text, style: AppTextStyles.label),
+      child: Text(text, style: AppTextStyles.label(context)),
     );
   }
 }

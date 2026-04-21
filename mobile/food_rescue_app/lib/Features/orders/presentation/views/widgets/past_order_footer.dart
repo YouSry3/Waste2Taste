@@ -15,7 +15,7 @@ class PastOrderFooter extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Text(
         context.loc.completedOn(order.completedDate ?? context.loc.unknown),
-        style: AppTextStyles.body.copyWith(
+        style: AppTextStyles.body(context).copyWith(
           color: AppColors.textGray,
           fontSize: 14,
         ),

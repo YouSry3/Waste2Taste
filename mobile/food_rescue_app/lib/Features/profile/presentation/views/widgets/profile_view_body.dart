@@ -22,7 +22,7 @@ class ProfileViewBody extends StatelessWidget {
           CustomSliverAppBar(
             widget: Text(
               context.loc.navProfile,
-              style: AppTextStyles.appBarTitle,
+              style: AppTextStyles.title(context),
             ),
           ),
           SliverToBoxAdapter(

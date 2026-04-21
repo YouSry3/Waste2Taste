@@ -29,11 +29,11 @@ class SavedOfferCard extends StatelessWidget {
                 children: [
                   Text(
                     order.itemTitle,
-                    style: AppTextStyles.title.copyWith(fontSize: 16),
+                    style: AppTextStyles.title(context).copyWith(fontSize: 16),
                   ),
                   Text(
                     order.vendorName,
-                    style: AppTextStyles.body.copyWith(
+                    style: AppTextStyles.body(context).copyWith(
                       color: Colors.grey,
                       fontSize: 12,
                     ),
@@ -42,7 +42,7 @@ class SavedOfferCard extends StatelessWidget {
               ),
               Text(
                 "-${order.price}",
-                style: AppTextStyles.title.copyWith(
+                style: AppTextStyles.title(context).copyWith(
                   color: Colors.orange,
                   fontSize: 16,
                 ),
@@ -55,7 +55,7 @@ class SavedOfferCard extends StatelessWidget {
             children: [
               Text(
                 order.orderDate,
-                style: AppTextStyles.body.copyWith(
+                style: AppTextStyles.body(context).copyWith(
                   color: Colors.red,
                   fontSize: 12,
                 ),

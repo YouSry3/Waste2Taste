@@ -26,7 +26,14 @@ namespace FoodRescue.PL
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                var xmlFile = Path.Combine(AppContext.BaseDirectory, "FoodRescue.PL.xml");
+                if (File.Exists(xmlFile))
+                {
+                    c.IncludeXmlComments(xmlFile);
+                }
+            });
 
 
 

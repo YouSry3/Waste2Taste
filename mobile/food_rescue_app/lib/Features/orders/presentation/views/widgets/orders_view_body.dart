@@ -18,7 +18,7 @@ class OrdersViewBody extends StatelessWidget {
           CustomSliverAppBar(
             widget: Text(
               context.loc.myOrders,
-              style: AppTextStyles.appBarTitle,
+              style: AppTextStyles.title(context),
             ),
             tabBar: const CustomTabBar(),
           ),

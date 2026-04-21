@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waste2taste/core/functions/simple_bloc_observer.dart';
 import 'core/functions/setup_service_locator.dart';
+import 'core/utils/app_router.dart';
 import 'waste_2_taste_app.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupServiceLocator();
+  await setupServiceLocator();
+  await AppRouter.checkToken();
   Bloc.observer = SimpleBlocObserver();
   runApp(const Waste2TasteApp());
 }

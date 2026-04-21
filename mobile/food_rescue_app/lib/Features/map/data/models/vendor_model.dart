@@ -43,12 +43,12 @@ final List<VendorModel> mapVendors = [
   ),
   const VendorModel(
     id: "3",
-    name: "Fresh Corner",
+    name: "Cairo",
     imageUrl: "https://via.placeholder.com/150",
     rating: 4.2,
     reviewCount: 50,
-    latitude: 30.2591,
-    longitude: 31.1661,
+    latitude: 30.033333,
+    longitude: 31.233334,
     address: "789 Fruit Blvd",
   ),
 ];

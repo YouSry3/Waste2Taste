@@ -14,7 +14,6 @@ class ActiveOrderFooter extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(24),
           bottomRight: Radius.circular(24),
@@ -28,7 +27,7 @@ class ActiveOrderFooter extends StatelessWidget {
               children: [
                 Text(
                   context.loc.pickupDetails,
-                  style: AppTextStyles.body.copyWith(
+                  style: AppTextStyles.body(context).copyWith(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                     color: AppColors.textGray,
@@ -37,7 +36,7 @@ class ActiveOrderFooter extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   pickupTime,
-                  style: AppTextStyles.body.copyWith(fontSize: 15),
+                  style: AppTextStyles.body(context).copyWith(fontSize: 15),
                 ),
               ],
             ),

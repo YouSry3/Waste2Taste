@@ -16,16 +16,17 @@ class ReviewsSection extends StatelessWidget {
       children: [
         const Icon(LucideIcons.star, size: 16, color: AppColors.secondary),
         const SizedBox(width: 4),
-        Text("$rating", style: AppTextStyles.label),
+        Text("$rating", style: AppTextStyles.label(context)),
         const SizedBox(width: 6),
         TextButton(
           style: TextButton.styleFrom(padding: EdgeInsets.zero),
           onPressed: () => GoRouter.of(context).push(AppRoutes.productReviews),
           child: Text(
             context.loc.reviewsCount(234),
-            style: AppTextStyles.body.copyWith(
-              color: AppColors.textGray,
+            style: AppTextStyles.body(context).copyWith(
+              color: AppColors.textMuted(context),
               decoration: TextDecoration.underline,
+              decorationColor: Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),

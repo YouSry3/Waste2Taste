@@ -35,6 +35,7 @@ export function UsersView() {
   const {
     selectedUsers,
     isSelectAll,
+    clearSelection,
     toggleUserSelection,
     toggleSelectAll,
     handleBulkAction,
@@ -138,8 +139,7 @@ export function UsersView() {
         <BulkActions
           selectedCount={selectedUsers.length}
           onClear={() => {
-            selectedUsers.length = 0;
-            isSelectAll = false;
+            clearSelection();
           }}
           onBulkAction={handleBulkAction}
         />

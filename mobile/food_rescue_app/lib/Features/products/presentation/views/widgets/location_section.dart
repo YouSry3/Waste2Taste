@@ -17,7 +17,7 @@ class LocationSection extends StatelessWidget {
       widget: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: const Icon(LucideIcons.mapPin, color: AppColors.primary),
-        title: Text(product.vendorName, style: AppTextStyles.label),
+        title: Text(product.vendorName, style: AppTextStyles.label(context)),
         trailing: const Icon(
           LucideIcons.chevronRight,
           color: AppColors.textGray,

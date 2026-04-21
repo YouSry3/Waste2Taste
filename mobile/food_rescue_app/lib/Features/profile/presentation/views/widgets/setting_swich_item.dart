@@ -5,15 +5,17 @@ import '../../../../../core/constants/app_colors.dart';
 class SettingsSwitchItem extends StatelessWidget {
   final IconData icon;
   final String label;
-  final bool value;
-  final ValueChanged<bool> onChanged;
+  final bool? value;
+  final ValueChanged<bool>? onChanged;
+  final Widget? trailing;
 
   const SettingsSwitchItem({
     super.key,
     required this.icon,
     required this.label,
-    required this.value,
-    required this.onChanged,
+     this.value,
+     this.onChanged,
+    this.trailing,
   });
 
   @override
@@ -35,11 +37,13 @@ class SettingsSwitchItem extends StatelessWidget {
           fontWeight: FontWeight.w500,
         ),
       ),
-      trailing: Switch(
-        value: value,
-        onChanged: onChanged,
-        activeThumbColor: AppColors.primary,
-      ),
+      trailing:
+          trailing ??
+          Switch(
+            value: value??false,
+            onChanged: onChanged??(b){},
+            activeThumbColor: AppColors.primary,
+          ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     );
   }

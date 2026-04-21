@@ -150,5 +150,10 @@
     "trackOrder": "تتبع الطلب",
     "pickupTime": "وقت الاستلام",
     "orderTotal": "الإجمالي",
-    "status": "الحالة"
+    "status": "الحالة",
+    "phoneNumber": "رقم الهاتف",
+    "phoneNumberHint": "ادخل رقم هاتفك",
+    "reportVendor": "الإبلاغ عن البائع",
+    "describeYourIssueBelow": "صف مشكلتك أدناه",
+    "loginSuccess": "تم تسجيل الدخول بنجاح"
 }

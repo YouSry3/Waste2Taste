@@ -15,7 +15,7 @@ class OrderInfo extends StatelessWidget {
       children: [
         Text(
           order.itemTitle,
-          style: AppTextStyles.body.copyWith(fontSize: 18),
+          style: AppTextStyles.body(context).copyWith(fontSize: 18),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
@@ -27,7 +27,7 @@ class OrderInfo extends StatelessWidget {
             Expanded(
               child: Text(
                 order.vendorName,
-                style: AppTextStyles.body.copyWith(
+                style: AppTextStyles.body(context).copyWith(
                   fontSize: 13,
                   color: AppColors.textGray,
                 ),
@@ -39,7 +39,7 @@ class OrderInfo extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           "\$${order.price.toStringAsFixed(2)}",
-          style: AppTextStyles.body.copyWith(
+          style: AppTextStyles.body(context).copyWith(
             fontSize: 18,
             color: AppColors.primary,
             fontWeight: FontWeight.bold,

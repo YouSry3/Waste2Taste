@@ -477,4 +477,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get status => 'الحالة';
+
+  @override
+  String get phoneNumber => 'رقم الهاتف';
+
+  @override
+  String get phoneNumberHint => 'ادخل رقم هاتفك';
+
+  @override
+  String get reportThisVendor => 'Report This Vendor';
+
+  @override
+  String get reportVendor => 'الإبلاغ عن البائع';
+
+  @override
+  String get describeYourIssueBelow => 'صف مشكلتك أدناه';
+
+  @override
+  String get loginSuccess => 'تم تسجيل الدخول بنجاح';
 }

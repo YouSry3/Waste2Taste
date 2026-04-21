@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
@@ -10,6 +10,13 @@ import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { Textarea } from "../ui/textarea";
 import { authService } from "../../services/auth/authService";
 import {
@@ -32,11 +39,20 @@ const requestSchema = Yup.object({
   phoneNumber: Yup.string().required("Phone number is required"),
 });
 
+const CATEGORY_OPTIONS = [
+  { value: "1", label: "Bakery" },
+  { value: "2", label: "Restaurant" },
+  { value: "3", label: "Cafe" },
+  { value: "4", label: "Grocery" },
+  { value: "5", label: "Other" },
+];
+
 export default function VendorRequestPage() {
   const navigate = useNavigate();
   const currentUser = authService.getCurrentUser();
   const draft = getVendorSignupDraft();
   const [isLeaving, setIsLeaving] = useState(false);
+  const submitLockRef = useRef(false);
 
   const [businessLicense, setBusinessLicense] = useState<File | null>(null);
   const [healthCertificate, setHealthCertificate] = useState<File | null>(null);
@@ -59,6 +75,16 @@ export default function VendorRequestPage() {
     () => currentUser?.phoneNumber || draft?.phoneNumber || "",
     [currentUser?.phoneNumber, draft?.phoneNumber],
   );
+  const resolvedPhoneNumber = useMemo(
+    () => formValues.phoneNumber.trim() || phoneNumber.trim(),
+    [formValues.phoneNumber, phoneNumber],
+  );
+  const selectedCategoryLabel = useMemo(() => {
+    return (
+      CATEGORY_OPTIONS.find((option) => option.value === formValues.category)
+        ?.label || formValues.category
+    );
+  }, [formValues.category]);
 
   useEffect(() => {
     if (phoneNumber && !formValues.phoneNumber) {
@@ -90,11 +116,18 @@ export default function VendorRequestPage() {
 
   const requestMutation = useMutation({
     mutationFn: async () => {
+      if (submitLockRef.current) {
+        throw new Error("__REQUEST_IN_PROGRESS__");
+      }
+
       if (!currentUser || currentUser.panelType !== "vendor") {
         throw new Error("Please log in as a vendor to continue.");
       }
 
-      await requestSchema.validate(formValues, { abortEarly: false });
+      const payload = {
+        ...formValues,
+        phoneNumber: resolvedPhoneNumber,
+      };
 
       if (!businessLicense) {
         throw new Error("Business license upload is required.");
@@ -102,59 +135,69 @@ export default function VendorRequestPage() {
       if (!healthCertificate) {
         throw new Error("Health certificate upload is required.");
       }
+      if (!resolvedPhoneNumber) {
+        throw new Error("Phone number is required.");
+      }
 
-      const requestResult = await createVendorRequest({
-        ownerName,
-        businessName: formValues.businessName,
-        email,
-        phoneNumber: formValues.phoneNumber,
-        category: formValues.category,
-        address: formValues.address,
-        businessLicenseFile: businessLicense,
-        healthCertificateFile: healthCertificate,
-      });
+      submitLockRef.current = true;
+      try {
+        await requestSchema.validate(payload, { abortEarly: false });
 
-      const [businessLicenseUrl, healthCertificateUrl] = await Promise.all([
-        fileToDataUrl(businessLicense),
-        fileToDataUrl(healthCertificate),
-      ]);
-
-      submitVendorApprovalRequest(
-        {
-          businessName: formValues.businessName,
+        const requestResult = await createVendorRequest({
           ownerName,
+          businessName: formValues.businessName,
           email,
-          phone: formValues.phoneNumber,
-          address: formValues.address,
+          phoneNumber: resolvedPhoneNumber,
           category: formValues.category,
-          documents: [
-            createVendorDocument(businessLicense, businessLicenseUrl, {
-              kind: "business_license",
-              label: "Business License",
-            }),
-            createVendorDocument(healthCertificate, healthCertificateUrl, {
-              kind: "health_certificate",
-              label: "Health Certificate",
-            }),
-          ],
-        },
-        { requestId: requestResult.requestId },
-      );
+          address: formValues.address,
+          businessLicenseFile: businessLicense,
+          healthCertificateFile: healthCertificate,
+        });
 
-      authService.updateCurrentUser({
-        phoneNumber: formValues.phoneNumber,
-      });
+        const [businessLicenseUrl, healthCertificateUrl] = await Promise.all([
+          fileToDataUrl(businessLicense),
+          fileToDataUrl(healthCertificate),
+        ]);
+
+        submitVendorApprovalRequest(
+          {
+            businessName: formValues.businessName,
+            ownerName,
+            email,
+            phone: resolvedPhoneNumber,
+            address: formValues.address,
+            category: selectedCategoryLabel,
+            documents: [
+              createVendorDocument(businessLicense, businessLicenseUrl, {
+                kind: "business_license",
+                label: "Business License",
+              }),
+              createVendorDocument(healthCertificate, healthCertificateUrl, {
+                kind: "health_certificate",
+                label: "Health Certificate",
+              }),
+            ],
+          },
+          { requestId: requestResult.requestId },
+        );
+
+        authService.updateCurrentUser({
+          phoneNumber: resolvedPhoneNumber,
+        });
       saveVendorSignupDraft({
         ownerName,
         email,
-        phoneNumber: formValues.phoneNumber,
+        phoneNumber: resolvedPhoneNumber,
       });
-      authService.setVendorRequestState({
-        vendorRequestCompleted: true,
-        vendorApprovalStatus: "pending",
-      });
-      setPendingVendorApprovalEmail(email);
-      clearVendorSignupDraft();
+        authService.setVendorRequestState({
+          vendorRequestCompleted: true,
+          vendorApprovalStatus: "pending",
+        });
+        setPendingVendorApprovalEmail(email);
+        clearVendorSignupDraft();
+      } finally {
+        submitLockRef.current = false;
+      }
     },
     onSuccess: () => {
       toast.success("Vendor request submitted. Waiting for admin approval.");
@@ -163,6 +206,10 @@ export default function VendorRequestPage() {
       });
     },
     onError: (error: any) => {
+      if (error?.message === "__REQUEST_IN_PROGRESS__") {
+        return;
+      }
+
       if (error?.name === "ValidationError" && Array.isArray(error.inner)) {
         toast.error(error.inner[0]?.message || "Please complete the form.");
         return;
@@ -251,7 +298,7 @@ export default function VendorRequestPage() {
               </p>
               <p className="text-sm text-slate-700 md:col-span-2">
                 <Phone className="mr-2 inline h-4 w-4" />
-                Phone: <strong>{formValues.phoneNumber || "Not available"}</strong>
+                Phone: <strong>{resolvedPhoneNumber || "Not available"}</strong>
               </p>
             </div>
 
@@ -289,13 +336,26 @@ export default function VendorRequestPage() {
 
               <div>
                 <Label htmlFor="category">Category</Label>
-                <Input
-                  id="category"
+                <Select
                   value={formValues.category}
-                  onChange={updateField("category")}
-                  placeholder="Restaurant, Bakery, Cafe..."
-                  className="mt-2"
-                />
+                  onValueChange={(value) =>
+                    setFormValues((current) => ({
+                      ...current,
+                      category: value,
+                    }))
+                  }
+                >
+                  <SelectTrigger className="mt-2">
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORY_OPTIONS.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

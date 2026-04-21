@@ -6,8 +6,8 @@ import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/utils/app_routes.dart';
 
-class ForgetPassAndRememberMe extends StatelessWidget {
-  const ForgetPassAndRememberMe({super.key});
+class ForgetPasswordWiget extends StatelessWidget {
+  const ForgetPasswordWiget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class ForgetPassAndRememberMe extends StatelessWidget {
           onPressed: () => GoRouter.of(context).push(AppRoutes.forgetPassword),
           child: Text(
             context.loc.forgotPassword,
-            style: AppTextStyles.label.copyWith(
+            style: AppTextStyles.label(context).copyWith(
               color: AppColors.primary,
               fontWeight: FontWeight.w600,
               fontSize: 15,

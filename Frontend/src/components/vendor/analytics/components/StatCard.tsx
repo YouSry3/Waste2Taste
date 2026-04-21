@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "../../../ui/card";
 
 interface StatCardProps {
@@ -19,7 +19,8 @@ export function StatCard({
   iconBg,
   iconColor,
 }: StatCardProps) {
-  const isPositive = change >= 0;
+  const isPositive = change > 0;
+  const isNegative = change < 0;
 
   return (
     <Card className="shadow-sm border-gray-200 hover:shadow-md transition-shadow">
@@ -31,12 +32,18 @@ export function StatCard({
             <div className="flex items-center gap-1">
               {isPositive ? (
                 <TrendingUp className="w-4 h-4 text-green-600" />
-              ) : (
+              ) : isNegative ? (
                 <TrendingDown className="w-4 h-4 text-red-600" />
+              ) : (
+                <Minus className="w-4 h-4 text-gray-500" />
               )}
               <span
                 className={`text-sm font-medium ${
-                  isPositive ? "text-green-600" : "text-red-600"
+                  isPositive
+                    ? "text-green-600"
+                    : isNegative
+                      ? "text-red-600"
+                      : "text-gray-500"
                 }`}
               >
                 {isPositive ? "+" : ""}

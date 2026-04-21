@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:waste2taste/core/database/flutter_secure_storage_service.dart';
+import 'package:waste2taste/core/functions/setup_service_locator.dart';
+import 'package:waste2taste/core/utils/app_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/extensions/app_localization_extention.dart';
 import '../../../../core/utils/app_routes.dart';
@@ -60,6 +63,9 @@ final List<ProfileMenuItemModel> accountAuth = [
     icon: LucideIcons.logOut,
     label: (context) => context.loc.logOut,
     color: Colors.red,
-    onTap: (context) {},
+    onTap: (context) async {
+      await getIt.get<FlutterSecureStorageService>().clearAuthToken();
+      AppRouter.logout();
+    },
   ),
 ];

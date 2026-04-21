@@ -17,7 +17,7 @@ class AllProductsViewBody extends StatelessWidget {
         CustomSliverAppBar(
           widget: Text(
             context.loc.allProducts,
-            style: AppTextStyles.appBarTitle,
+            style: AppTextStyles.title(context),
           ),
         ),
         const HomeSearchBar(),

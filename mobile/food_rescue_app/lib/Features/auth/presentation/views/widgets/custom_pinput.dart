@@ -73,7 +73,7 @@ class _CustomPinputState extends State<CustomPinput> {
   PinTheme _buildDefaultPinTheme(BuildContext context) => PinTheme(
     width: 56,
     height: 56,
-    textStyle: AppTextStyles.title.copyWith(fontSize: 21),
+    textStyle: AppTextStyles.title(context).copyWith(fontSize: 21),
     decoration: BoxDecoration(
       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
       borderRadius: BorderRadius.circular(16),

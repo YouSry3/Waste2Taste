@@ -4,7 +4,7 @@ import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import '../../../../../core/widgets/custom_greeting_section.dart';
-import 'profile_text_field.dart';
+import '../../../../../core/widgets/profile_text_field.dart';
 
 class HelpAndSupportViewBody extends StatefulWidget {
   const HelpAndSupportViewBody({super.key});
@@ -37,7 +37,7 @@ class _HelpAndSupportViewBodyState extends State<HelpAndSupportViewBody> {
         CustomSliverAppBar(
           widget: Text(
             context.loc.helpSupport,
-            style: AppTextStyles.appBarTitle,
+            style: AppTextStyles.title(context),
           ),
         ),
         SliverToBoxAdapter(

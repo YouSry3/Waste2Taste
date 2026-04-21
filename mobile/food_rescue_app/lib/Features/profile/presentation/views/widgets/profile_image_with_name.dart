@@ -15,7 +15,7 @@ class ProfileImagaWithName extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             name,
-            style: AppTextStyles.title.copyWith(
+            style: AppTextStyles.title(context).copyWith(
               fontSize: 22,
               color: Theme.of(context).colorScheme.onSurface,
             ),

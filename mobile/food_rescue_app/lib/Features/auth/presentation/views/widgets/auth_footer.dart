@@ -20,7 +20,9 @@ class AuthFooter extends StatelessWidget {
       children: [
         Text(
           text1,
-          style: AppTextStyles.body.copyWith(color: AppColors.textGray),
+          style: AppTextStyles.body(
+            context,
+          ).copyWith(color: AppColors.textGray),
         ),
         InkWell(
           borderRadius: BorderRadius.circular(10),
@@ -29,9 +31,9 @@ class AuthFooter extends StatelessWidget {
             padding: const EdgeInsets.all(3.0),
             child: Text(
               text2,
-              style: AppTextStyles.linkPrimary.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTextStyles.subtitle(
+                context,
+              ).copyWith(fontWeight: FontWeight.bold, fontSize: 15),
             ),
           ),
         ),

@@ -12,7 +12,7 @@ class ProductInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(product.title, style: AppTextStyles.title),
+        Text(product.title, style: AppTextStyles.title(context)),
         const SizedBox(height: 8),
         VendorCard(vendorName: product.vendorName),
       ],

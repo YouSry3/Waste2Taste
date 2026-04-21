@@ -1,5 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:waste2taste/core/functions/setup_service_locator.dart';
+
+import '../../constants/keys.dart';
+import '../../database/pref_service.dart';
 part 'theme_state.dart';
 
 class ThemeCubit extends Cubit<ThemeState> {
@@ -7,18 +10,20 @@ class ThemeCubit extends Cubit<ThemeState> {
     _loadTheme();
   }
 
-  static const _key = 'theme_mode';
-
   Future<void> _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isDark = prefs.getBool(_key) ?? false;
+    final isDark = getIt.get<PrefsService>().getBool(kDarkLightKey);
     emit(ThemeState(isDark ? AppThemeMode.dark : AppThemeMode.light));
   }
 
+  void setTheme(AppThemeMode mode) {
+    if (state.themeMode == mode) return;
+    getIt.get<PrefsService>().setBool(kDarkLightKey, mode == AppThemeMode.dark);
+    emit(ThemeState(mode));
+  }
+
   Future<void> toggleTheme() async {
-    final prefs = await SharedPreferences.getInstance();
     final isDark = state.themeMode == AppThemeMode.dark;
-    await prefs.setBool(_key, !isDark);
+    getIt.get<PrefsService>().setBool(kDarkLightKey, !isDark);
     emit(ThemeState(isDark ? AppThemeMode.light : AppThemeMode.dark));
   }
 }

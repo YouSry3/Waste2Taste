@@ -150,5 +150,11 @@
     "trackOrder": "Track Order",
     "pickupTime": "Pickup Time",
     "orderTotal": "Total",
-    "status": "Status"
+    "status": "Status",
+    "phoneNumber": "Phone Number",
+    "phoneNumberHint": "Enter your phone number ",
+    "reportThisVendor": "Report This Vendor",
+    "reportVendor": "Report Vendor",
+    "describeYourIssueBelow": "Describe your issue below.",
+    "loginSuccess": "Login successful"
 }

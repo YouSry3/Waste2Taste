@@ -1,114 +1,88 @@
-// src/components/admin/listings/api/listing.api.ts
 import axios from "axios";
 import { API_CONFIG, API_ENDPOINTS } from "../constants/api.config";
 import {
   Listing,
   CreateListingDto,
   UpdateListingDto,
-  ListingFilters,
 } from "../types/listing.types";
 
-// Create axios instance with configuration
 const apiClient = axios.create({
   baseURL: API_CONFIG.baseURL,
   timeout: API_CONFIG.timeout,
   headers: API_CONFIG.headers,
 });
 
-/**
- * Listing API Service
- * TODO: Update request/response types to match your actual API schema
- * AI: When backend is ready, update these functions to match your API response structure
- * Example: response.data might be { data: Listing[], total: number } or just Listing[]
- */
-
-// Interceptor for adding auth token (uncomment when auth is ready)
-// apiClient.interceptors.request.use((config) => {
-//   const token = localStorage.getItem('token');
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
+// Backend response shape
+export type ListingsResponse = {
+  activeCount: number;
+  listings: Listing[];
+};
 
 export const listingApi = {
-  // GET all listings with pagination
   getAllListings: async (params?: {
     page?: number;
     limit?: number;
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }) => {
-    const response = await apiClient.get(API_ENDPOINTS.LISTINGS.BASE, {
-      params,
-    });
-    return response.data;
-    // TODO: Expected response structure: { data: Listing[], total: number, page: number, limit: number }
-  },
-
-  // GET listing by ID
-  getListingById: async (id: number | string) => {
-    const response = await apiClient.get(API_ENDPOINTS.LISTINGS.BY_ID(id));
-    return response.data;
-    // TODO: Expected response structure: Listing
-  },
-
-  // POST create new listing
-  createListing: async (listingData: CreateListingDto) => {
-    const response = await apiClient.post(
+    const res = await apiClient.get<ListingsResponse>(
       API_ENDPOINTS.LISTINGS.BASE,
-      listingData,
+      { params },
     );
-    return response.data;
-    // TODO: Expected response structure: { message: string, data: Listing }
+
+    return res.data;
   },
 
-  // PUT update listing
-  updateListing: async (id: number | string, listingData: UpdateListingDto) => {
-    const response = await apiClient.put(
+  getListingById: async (id: number | string) => {
+    const res = await apiClient.get<Listing>(API_ENDPOINTS.LISTINGS.BY_ID(id));
+    return res.data;
+  },
+
+  createListing: async (data: CreateListingDto) => {
+    const res = await apiClient.post<{ message: string; data: Listing }>(
+      API_ENDPOINTS.LISTINGS.BASE,
+      data,
+    );
+    return res.data;
+  },
+
+  updateListing: async (id: number | string, data: UpdateListingDto) => {
+    const res = await apiClient.put<{ message: string; data: Listing }>(
       API_ENDPOINTS.LISTINGS.BY_ID(id),
-      listingData,
+      data,
     );
-    return response.data;
-    // TODO: Expected response structure: { message: string, data: Listing }
+    return res.data;
   },
 
-  // DELETE listing
   deleteListing: async (id: number | string) => {
-    const response = await apiClient.delete(API_ENDPOINTS.LISTINGS.BY_ID(id));
-    return response.data;
-    // TODO: Expected response structure: { message: string }
+    const res = await apiClient.delete<{ message: string }>(
+      API_ENDPOINTS.LISTINGS.BY_ID(id),
+    );
+    return res.data;
   },
 
-  // GET filtered listings
-  getFilteredListings: async (filters: ListingFilters) => {
-    const response = await apiClient.get(API_ENDPOINTS.LISTINGS.FILTER, {
-      params: filters,
-    });
-    return response.data;
-    // TODO: Expected response structure: { data: Listing[], total: number }
+  getFilteredListings: async (filters: any) => {
+    const res = await apiClient.get<ListingsResponse>(
+      API_ENDPOINTS.LISTINGS.FILTER,
+      { params: filters },
+    );
+    return res.data;
   },
 
-  // GET listings by search term
   searchListings: async (searchTerm: string) => {
-    const response = await apiClient.get(API_ENDPOINTS.LISTINGS.SEARCH, {
+    const res = await apiClient.get<Listing[]>(API_ENDPOINTS.LISTINGS.SEARCH, {
       params: { q: searchTerm },
     });
-    return response.data;
-    // TODO: Expected response structure: Listing[]
+    return res.data;
   },
 
-  // GET available categories
   getCategories: async () => {
-    const response = await apiClient.get(API_ENDPOINTS.CATEGORIES);
-    return response.data;
-    // TODO: Expected response structure: string[] or Category[]
+    const res = await apiClient.get<string[]>(API_ENDPOINTS.CATEGORIES);
+    return res.data;
   },
 
-  // GET listing statistics
   getListingStats: async () => {
-    const response = await apiClient.get(API_ENDPOINTS.LISTINGS.STATS);
-    return response.data;
-    // TODO: Expected response structure: { active: number, soldOut: number, totalRevenue: number, etc. }
+    const res = await apiClient.get<any>(API_ENDPOINTS.LISTINGS.STATS);
+    return res.data;
   },
 };

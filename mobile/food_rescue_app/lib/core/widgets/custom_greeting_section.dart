@@ -17,12 +17,12 @@ class CustomGreetingSection extends StatelessWidget {
       children: [
         Text(
           title,
-          style: AppTextStyles.title.copyWith(fontSize: 33),
+          style: AppTextStyles.title(context).copyWith(fontSize: 33),
         ).animate().fadeIn(delay: 100.ms).moveY(begin: 20, end: 0),
         const SizedBox(height: 8),
         Text(
           subtitle,
-          style: AppTextStyles.subtitle.copyWith(fontSize: 17),
+          style: AppTextStyles.subtitle(context).copyWith(fontSize: 17),
         ).animate().fadeIn(delay: 200.ms).moveY(begin: 20, end: 0),
       ],
     );

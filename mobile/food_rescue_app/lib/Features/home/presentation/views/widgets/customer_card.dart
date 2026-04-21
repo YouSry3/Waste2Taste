@@ -23,9 +23,9 @@ class CustomerCard extends StatelessWidget {
       contentPadding: const EdgeInsets.all(7),
       title: Text(
         context.loc.helloUser(userName),
-        style: AppTextStyles.label.copyWith(
-          fontWeight: FontWeight.normal,
-          color: AppColors.textGray,
+        style: AppTextStyles.title(context).copyWith(
+          // fontWeight: FontWeight.normal,
+          // color: AppColors.textGray,
           wordSpacing: 2,
           height: 2,
           fontSize: 16,
@@ -38,20 +38,22 @@ class CustomerCard extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             location,
-            style: AppTextStyles.appBarTitle.copyWith(
-              wordSpacing: 2,
-              fontSize: 16,
-            ),
+            style: AppTextStyles.subtitle(
+              context,
+            ).copyWith(wordSpacing: 2, fontSize: 16),
           ),
         ],
       ),
       trailing: CircleAvatar(
-        radius: 22,
-        backgroundColor: Colors.grey.shade200,
-        child: CachedNetworkImage(
-          imageUrl: profileImageUrl,
-          errorWidget: (context, url, error) =>
-              const Icon(Icons.person, color: AppColors.primary),
+        radius: 24,
+        child: CircleAvatar(
+          radius: 22,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          child: CachedNetworkImage(
+            imageUrl: profileImageUrl,
+            errorWidget: (context, url, error) =>
+                const Icon(Icons.person, color: AppColors.primary),
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 abstract class AppRoutes {
+  static const String initialLocation = splash;
   static const String splash = '/';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
@@ -17,4 +18,5 @@ abstract class AppRoutes {
   static const String editProfileView = '/editProfileView';
   static const String generalSettingsView = '/generalSettingsView';
   static const String helpAndSupportView = '/helpAndSupportView';
+  static const String reportVendorView = '/reportVendorView';
 }

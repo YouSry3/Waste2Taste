@@ -47,13 +47,13 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
           validator: widget.validator,
           keyboardType: widget.inputType,
           obscureText: widget.obsecureText ?? showPassword.value,
-          style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w500),
+          style: AppTextStyles.body(context).copyWith(fontWeight: FontWeight.w500),
           decoration: InputDecoration(
             filled: true,
             fillColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
 
             hintText: widget.hint,
-            hintStyle: AppTextStyles.body.copyWith(color: Colors.grey.shade500),
+            hintStyle: AppTextStyles.body(context).copyWith(color: Colors.grey.shade500),
             prefixIcon: Icon(
               widget.icon,
               color: Colors.grey.shade600,

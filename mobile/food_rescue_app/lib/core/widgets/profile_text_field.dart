@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/constants/app_text_styles.dart';
+import '../constants/app_colors.dart';
+import '../constants/app_text_styles.dart';
 
 class ProfileTextField extends StatelessWidget {
   final String label;
@@ -26,29 +26,41 @@ class ProfileTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: AppTextStyles.label),
+        Text(label, style: AppTextStyles.label(context)),
         const SizedBox(height: 8),
         TextFormField(
           maxLines: maxLines,
           initialValue: initialValue,
           controller: controller,
           obscureText: obscureText,
+
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: AppTextStyles.subtitle(context).copyWith(fontSize: 15),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.15)),
+              borderSide: BorderSide(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.15),
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.15)),
+              borderSide: BorderSide(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.15),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: const BorderSide(color: AppColors.primary),
             ),
             filled: true,
-            fillColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.04),
+            fillColor: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.04),
             contentPadding: const EdgeInsets.symmetric(
               vertical: 16,
               horizontal: 16,
