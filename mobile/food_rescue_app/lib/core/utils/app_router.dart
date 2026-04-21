@@ -22,6 +22,7 @@ import '../../Features/splash/domain/repos/onboarding_repo.dart';
 import '../../Features/splash/presentation/manager/onboarding_cubit.dart';
 import '../../Features/splash/presentation/views/onboarding_view.dart';
 import '../../Features/splash/presentation/views/splash_view.dart';
+import '../../Features/report/presentation/views/report_vendor_view.dart';
 import '../functions/setup_service_locator.dart';
 import '../widgets/custom_bottom_navigation_bar.dart';
 import 'app_routes.dart';
@@ -109,6 +110,10 @@ abstract class AppRouter {
       GoRoute(
         path: AppRoutes.helpAndSupportView,
         builder: (context, state) => const HelpAndSupportView(),
+      ),
+      GoRoute(
+        path: AppRoutes.reportVendorView,
+        builder: (context, state) => const ReportVendorView(),
       ),
     ],
   );

@@ -151,6 +151,8 @@
     "pickupTime": "وقت الاستلام",
     "orderTotal": "الإجمالي",
     "status": "الحالة",
-    "phoneNumber":"رقم الهاتف" ,
-    "phoneNumberHint":"ادخل رقم هاتفك"
+    "phoneNumber": "رقم الهاتف",
+    "phoneNumberHint": "ادخل رقم هاتفك",
+    "reportVendor": "الإبلاغ عن البائع",
+    "describeYourIssueBelow": "صف مشكلتك أدناه"
 }

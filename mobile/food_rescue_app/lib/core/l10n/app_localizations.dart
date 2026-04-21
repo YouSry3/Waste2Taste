@@ -1015,6 +1015,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your phone number '**
   String get phoneNumberHint;
+
+  /// No description provided for @reportThisVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Report This Vendor'**
+  String get reportThisVendor;
+
+  /// No description provided for @reportVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Vendor'**
+  String get reportVendor;
+
+  /// No description provided for @describeYourIssueBelow.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your issue below.'**
+  String get describeYourIssueBelow;
 }
 
 class _AppLocalizationsDelegate

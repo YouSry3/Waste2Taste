@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
-import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import '../../../../../core/widgets/custom_greeting_section.dart';
+import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import '../../../../../core/widgets/profile_text_field.dart';
 
-class HelpAndSupportViewBody extends StatefulWidget {
-  const HelpAndSupportViewBody({super.key});
+class ReportVendorViewBody extends StatefulWidget {
+  const ReportVendorViewBody({super.key});
 
   @override
-  State<HelpAndSupportViewBody> createState() => _HelpAndSupportViewBodyState();
+  State<ReportVendorViewBody> createState() => _ReportVendorViewBodyState();
 }
 
-class _HelpAndSupportViewBodyState extends State<HelpAndSupportViewBody> {
+class _ReportVendorViewBodyState extends State<ReportVendorViewBody> {
   late TextEditingController _subjectController;
   late TextEditingController _descriptionController;
   @override
@@ -36,7 +36,7 @@ class _HelpAndSupportViewBodyState extends State<HelpAndSupportViewBody> {
       slivers: [
         CustomSliverAppBar(
           widget: Text(
-            context.loc.helpSupport,
+            context.loc.reportVendor,
             style: AppTextStyles.title(context),
           ),
         ),
@@ -49,7 +49,7 @@ class _HelpAndSupportViewBodyState extends State<HelpAndSupportViewBody> {
                 const SizedBox(height: 32),
                 CustomGreetingSection(
                   title: context.loc.howCanWeHelpYou,
-                  subtitle: context.loc.describeYourIssueOrFeedbackBelow,
+                  subtitle: context.loc.describeYourIssueBelow,
                 ),
                 const SizedBox(height: 40),
                 ProfileTextField(

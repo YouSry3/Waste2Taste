@@ -152,5 +152,8 @@
     "orderTotal": "Total",
     "status": "Status",
     "phoneNumber":"Phone Number" ,
-    "phoneNumberHint":"Enter your phone number "
+    "phoneNumberHint":"Enter your phone number ",
+    "reportThisVendor":"Report This Vendor",
+    "reportVendor":"Report Vendor",
+    "describeYourIssueBelow": "Describe your issue below."
 }

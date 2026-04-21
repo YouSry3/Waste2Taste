@@ -483,4 +483,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phoneNumberHint => 'Enter your phone number ';
+
+  @override
+  String get reportThisVendor => 'Report This Vendor';
+
+  @override
+  String get reportVendor => 'Report Vendor';
+
+  @override
+  String get describeYourIssueBelow => 'Describe your issue below.';
 }
