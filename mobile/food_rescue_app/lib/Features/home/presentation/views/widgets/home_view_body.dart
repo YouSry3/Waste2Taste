@@ -13,7 +13,6 @@ class HomeViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final products = mockProducts.map((e) => ProductModel.fromJson(e)).toList();
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
@@ -31,7 +30,7 @@ class HomeViewBody extends StatelessWidget {
             onTap: () => GoRouter.of(context).push(AppRoutes.allProducts),
           ),
         ),
-        ProductsSliverListBuilder(products: products),
+        ProductsSliverListBuilder(products: mockProducts),
       ],
     );
   }

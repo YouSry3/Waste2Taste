@@ -11,7 +11,7 @@ class AllProductsViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final products = mockProducts.map((e) => ProductModel.fromJson(e)).toList();
+    
     return CustomScrollView(
       slivers: [
         CustomSliverAppBar(
@@ -21,7 +21,7 @@ class AllProductsViewBody extends StatelessWidget {
           ),
         ),
         const HomeSearchBar(),
-        ProductsSliverListBuilder(products: products),
+        ProductsSliverListBuilder(products: mockProducts),
       ],
     );
   }

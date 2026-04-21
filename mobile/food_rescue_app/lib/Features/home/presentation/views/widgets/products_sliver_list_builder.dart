@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import '../../../../../core/utils/app_routes.dart';
-import '../../../data/models/product_model.dart';
 import 'custom_product_item.dart';
 
 class ProductsSliverListBuilder extends StatelessWidget {
   const ProductsSliverListBuilder({super.key, required this.products});
-  final List<ProductModel> products;
+  final List<ProductEntity> products;
   @override
   Widget build(BuildContext context) {
     return SliverList.builder(

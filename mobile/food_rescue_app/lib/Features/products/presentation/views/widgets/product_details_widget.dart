@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 
 import '../../../../home/data/models/product_model.dart';
 import 'description_section.dart';
@@ -9,7 +10,7 @@ import 'reviews_section.dart';
 
 class ProductDetailsWidget extends StatelessWidget {
   const ProductDetailsWidget({super.key, required this.product});
-  final ProductModel product;
+  final ProductEntity product;
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +21,9 @@ class ProductDetailsWidget extends StatelessWidget {
         children: [
           ProductInfoSection(product: product),
           const SizedBox(height: 16),
-          ReviewsSection(rating: product.vendorRating),
+          ReviewsSection(rating: product.rating),
           const SizedBox(height: 24),
-          DescriptionSection(description: product.description),
+          DescriptionSection(description: product.name),
           const SizedBox(height: 24),
           PriceSection(product: product),
           const SizedBox(height: 24),

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:waste2taste/Features/home/data/models/product_model.dart';
+import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import 'discount_page.dart';
 import 'expiry_badge.dart';
 import 'rounded_top_image.dart';
 
 class ProductImageHeader extends StatelessWidget {
-  final ProductModel model;
+  final ProductEntity model;
   final double? farFromTop;
   final double? farFromBottom;
   final StackFit? stackFit;
@@ -22,18 +23,23 @@ class ProductImageHeader extends StatelessWidget {
     return Stack(
       fit: stackFit ?? StackFit.loose,
       children: [
-        RoundedTopImage(imageUrl: model.imageUrl),
+        RoundedTopImage(
+          imageUrl: model.imageUrl,
+          heroTag: 'product-image-${model.id}',
+        ),
         Positioned(
           top: farFromTop,
           left: 16,
           bottom: farFromBottom,
-          child: ExpiryBadge(expiryTime: model.expiryTime),
+          child: ExpiryBadge(expiryTime: model.expiresIn),
         ),
         Positioned(
           top: farFromTop,
           right: 16,
           bottom: farFromBottom,
-          child: DiscountBadge(discountPercentage: model.discountPercentage),
+          child: DiscountBadge(
+            discountPercentage: model.discountPercentage.toString(),
+          ),
         ),
       ],
     );

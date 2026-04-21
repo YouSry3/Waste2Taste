@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../data/models/product_model.dart';
 import 'price_column.dart';
 
 class DetailsPriceRow extends StatelessWidget {
   const DetailsPriceRow({super.key, required this.product});
-  final ProductModel product;
+  final ProductEntity product;
 
   @override
   Widget build(BuildContext context) {

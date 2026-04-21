@@ -14,5 +14,7 @@ final class GetProfileFailureState extends GetProfileState {
 }
 
 final class GetProfileSuccessState extends GetProfileState {
-  
+  final UserEntity userEntity;
+
+  GetProfileSuccessState({required this.userEntity});
 }

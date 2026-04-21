@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
-import '../../../../home/data/models/product_model.dart';
 import '../../../../home/presentation/views/widgets/custom_card_widget.dart';
 
 class LocationSection extends StatelessWidget {
   const LocationSection({super.key, required this.product});
-  final ProductModel product;
+  final ProductEntity product;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class LocationSection extends StatelessWidget {
     );
   }
 
-  Future<void> _openMap(ProductModel product) async {
+  Future<void> _openMap(ProductEntity product) async {
     final url = Uri.parse(
       "https://www.google.com/maps/search/?api=1&query=${product.latitude},${product.longitude}",
     );

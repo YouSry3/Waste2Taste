@@ -14,6 +14,7 @@ import '../database/flutter_secure_storage_service.dart';
 import '../database/pref_service.dart';
 import '../services/api_service.dart';
 import '../cubits/theme_cubit/theme_cubit.dart';
+import '../services/location_service.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -23,6 +24,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<PrefsService>(
     () => PrefsService(getIt.get<SharedPreferences>()),
   );
+  getIt.registerLazySingleton<LocationService>(() => LocationService());
 
   getIt.registerLazySingleton<FlutterSecureStorage>(
     () => FlutterSecureStorage(),

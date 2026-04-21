@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../data/models/product_model.dart';
 import 'circle_icon_button.dart';
@@ -9,7 +10,7 @@ import 'product_image_header.dart';
 class ImageHeaderWidgetForProductDetails extends StatelessWidget {
   const ImageHeaderWidgetForProductDetails({super.key, required this.product});
 
-  final ProductModel product;
+  final ProductEntity product;
 
   @override
   Widget build(BuildContext context) {
