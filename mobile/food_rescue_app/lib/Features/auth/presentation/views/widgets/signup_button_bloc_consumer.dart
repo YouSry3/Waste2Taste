@@ -17,15 +17,18 @@ class SignupButtonBlocConsumer extends StatelessWidget {
     required TextEditingController emailController,
     required TextEditingController passController,
     required TextEditingController fullNameController,
+    required TextEditingController phoneController,
   }) : _formKey = formKey,
        _emailController = emailController,
        _passController = passController,
-       _fullNameController = fullNameController;
+       _fullNameController = fullNameController,_phoneController=phoneController
+       ;
 
   final GlobalKey<FormState> _formKey;
   final TextEditingController _emailController;
   final TextEditingController _passController;
   final TextEditingController _fullNameController;
+  final TextEditingController _phoneController;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +48,7 @@ class SignupButtonBlocConsumer extends StatelessWidget {
                 email: _emailController.text.trim(),
                 password: _passController.text.trim(),
                 name: _fullNameController.text.trim(),
+                phoneNumber: _phoneController.text.trim()
               );
 
               await cubit.signup(requestModel: model);

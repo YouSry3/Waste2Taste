@@ -19,6 +19,7 @@ class _SignupFormWidgetState extends State<SignupFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late TextEditingController _fullNameController;
   late TextEditingController _emailController;
+  late TextEditingController _phoneNumberController;
   late TextEditingController _passController;
   late TextEditingController _confirmPassController;
   late ValueNotifier<String> passwordNotifier;
@@ -35,6 +36,7 @@ class _SignupFormWidgetState extends State<SignupFormWidget> {
       );
     passwordNotifier = ValueNotifier("");
     confirmPasswordNotifier = ValueNotifier("");
+    _phoneNumberController = TextEditingController();
     super.initState();
   }
 
@@ -44,6 +46,7 @@ class _SignupFormWidgetState extends State<SignupFormWidget> {
     _emailController.dispose();
     _passController.dispose();
     _confirmPassController.dispose();
+    _phoneNumberController.dispose();
     super.dispose();
   }
 
@@ -71,6 +74,16 @@ class _SignupFormWidgetState extends State<SignupFormWidget> {
             icon: LucideIcons.mail,
             inputType: TextInputType.emailAddress,
             controller: _emailController,
+            obsecureText: false,
+          ),
+          const SizedBox(height: 20),
+          AuthInputLabel(text: context.loc.phoneNumber),
+          CustomTextFormField(
+            validator: (value) => AppValidations.validatePhone(context, value),
+            hint: context.loc.phoneNumberHint,
+            icon: LucideIcons.phone,
+            inputType: TextInputType.number,
+            controller: _phoneNumberController,
             obsecureText: false,
           ),
           const SizedBox(height: 20),
@@ -107,6 +120,7 @@ class _SignupFormWidgetState extends State<SignupFormWidget> {
             emailController: _emailController,
             passController: _passController,
             fullNameController: _fullNameController,
+            phoneController: _phoneNumberController,
           ),
         ],
       ).animate().fadeIn(delay: 300.ms).moveY(begin: 20, end: 0),

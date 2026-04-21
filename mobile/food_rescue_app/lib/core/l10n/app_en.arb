@@ -150,5 +150,7 @@
     "trackOrder": "Track Order",
     "pickupTime": "Pickup Time",
     "orderTotal": "Total",
-    "status": "Status"
+    "status": "Status",
+    "phoneNumber":"Phone Number" ,
+    "phoneNumberHint":"Enter your phone number "
 }
