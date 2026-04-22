@@ -15,6 +15,7 @@ abstract class ProfileRemoteDataSource {
   Future<ChangePasswordResponseModel> changePassword(
     ChangePasswordRequestModel requestModel,
   );
+  Future<void> deleteAccount();
 }
 
 class ProfileRemoteDataSourceImpl extends ProfileRemoteDataSource {
@@ -28,10 +29,10 @@ class ProfileRemoteDataSourceImpl extends ProfileRemoteDataSource {
     var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
 
     var requestData = requestModel.toJson();
-    if (requestData['Image'] != null &&
-        !requestData['Image'].toString().startsWith('http')) {
-      requestData['Image'] = await MultipartFile.fromFile(requestData['Image']);
-    }
+    // if (requestData['Image'] != null &&
+    //     !requestData['Image'].toString().startsWith('http')) {
+    //   requestData['Image'] = await MultipartFile.fromFile(requestData['Image']);
+    // }
 
     var formData = FormData.fromMap(requestData);
 
@@ -57,5 +58,15 @@ class ProfileRemoteDataSourceImpl extends ProfileRemoteDataSource {
     );
     var data = response.data as Map<String, dynamic>;
     return ChangePasswordResponseModel.fromJson(data);
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
+
+    await _apiService.delete(
+      ApiUrls.deleteAccount,
+      options: Options(headers: {'Authorization': 'Bearer ${tokens!.token}'}),
+    );
   }
 }

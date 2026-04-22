@@ -12,4 +12,5 @@ abstract class ApiUrls {
   static const productsUrl = "$baseUrl${ApiEndPoints.productsEndPoint}";
   static const editProfile = "$baseUrl${ApiEndPoints.editProfileEndPoint}";
   static const changePassword = "$baseUrl${ApiEndPoints.changePasswordEndPoint}";
+  static const deleteAccount = "$baseUrl${ApiEndPoints.deleteAccountEndPoint}";
 }

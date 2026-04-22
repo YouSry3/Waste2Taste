@@ -501,4 +501,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordChangedSuccessfully => 'Password changed successfully';
+
+  @override
+  String get deleteAccountConfirmation =>
+      'Are you sure you want to delete your account? This action cannot be undone.';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get accountDeletedSuccessfully => 'Account deleted successfully';
 }

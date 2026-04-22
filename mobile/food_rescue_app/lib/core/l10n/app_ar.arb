@@ -157,5 +157,9 @@
     "describeYourIssueBelow": "صف مشكلتك أدناه",
     "loginSuccess": "تم تسجيل الدخول بنجاح",
     "oldPassword": "كلمة المرور القديمة",
-    "passwordChangedSuccessfully": "تم تغيير كلمة المرور بنجاح"
+    "passwordChangedSuccessfully": "تم تغيير كلمة المرور بنجاح",
+    "deleteAccountConfirmation": "هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "accountDeletedSuccessfully": "تم حذف الحساب بنجاح"
 }

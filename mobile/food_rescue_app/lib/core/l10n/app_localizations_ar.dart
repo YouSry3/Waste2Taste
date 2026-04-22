@@ -501,4 +501,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get passwordChangedSuccessfully => 'تم تغيير كلمة المرور بنجاح';
+
+  @override
+  String get deleteAccountConfirmation =>
+      'هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get accountDeletedSuccessfully => 'تم حذف الحساب بنجاح';
 }

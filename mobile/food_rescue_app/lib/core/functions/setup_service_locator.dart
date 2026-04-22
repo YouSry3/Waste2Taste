@@ -17,6 +17,8 @@ import '../../Features/profile/data/datasources/profile_remote_data_source.dart'
 import '../../Features/profile/data/repos/profile_repo_impl.dart';
 import '../../Features/profile/domain/usecases/edit_profile_usecase.dart';
 import '../../Features/profile/domain/usecases/change_password_usecase.dart';
+import '../../Features/profile/domain/usecases/delete_account_usecase.dart';
+
 
 import '../../Features/splash/data/repos/onboarding_repo_impl.dart';
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
@@ -96,5 +98,8 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerLazySingleton<ChangePasswordUsecase>(
     () => ChangePasswordUsecase(getIt.get<ProfileRepoImpl>()),
+  );
+  getIt.registerLazySingleton<DeleteAccountUsecase>(
+    () => DeleteAccountUsecase(getIt.get<ProfileRepoImpl>()),
   );
 }

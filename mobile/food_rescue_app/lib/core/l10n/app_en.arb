@@ -158,5 +158,9 @@
     "describeYourIssueBelow": "Describe your issue below.",
     "loginSuccess": "Login successful",
     "oldPassword": "Old Password",
-    "passwordChangedSuccessfully": "Password changed successfully"
+    "passwordChangedSuccessfully": "Password changed successfully",
+    "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "accountDeletedSuccessfully": "Account deleted successfully"
 }

@@ -163,7 +163,7 @@ abstract class AppRouter {
   static Future<void> checkToken() async {
     UserLoginKeys? keys = await getIt
         .get<FlutterSecureStorageService>()
-        .getAuthToken();
+      .getAuthToken();
     authNotifier.value = keys != null;
   }
 

@@ -6,3 +6,5 @@ abstract class UseCase<T, Param> {
 }
 
 abstract class NoParam {}
+
+class NoParamImpl extends NoParam {}
