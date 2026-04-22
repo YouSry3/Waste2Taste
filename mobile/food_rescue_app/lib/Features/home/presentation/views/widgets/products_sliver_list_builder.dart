@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
+import '../../../domain/entities/product_entity.dart';
 import '../../../../../core/utils/app_routes.dart';
 import 'custom_product_item.dart';
 

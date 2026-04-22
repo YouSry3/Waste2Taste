@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:waste2taste/Features/home/presentation/views/widgets/customer_card_bloc_selector.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
+import '../../../../../core/widgets/custom_sliver_app_bar.dart';
+import '../../../../../core/widgets/section_header.dart';
 import '/core/utils/app_routes.dart';
 import '../../../data/models/product_model.dart';
-import '../../../../../core/widgets/custom_sliver_app_bar.dart';
-import 'customer_card.dart';
 import 'products_sliver_list_builder.dart';
-import '../../../../../core/widgets/section_header.dart';
 
 class HomeViewBody extends StatelessWidget {
   const HomeViewBody({super.key});
@@ -18,11 +18,7 @@ class HomeViewBody extends StatelessWidget {
       slivers: [
         CustomSliverAppBar(
           toolbarHeight: 90,
-          widget: CustomerCard(
-            userName: 'userName',
-            location: 'location',
-            profileImageUrl: 'profileImageUrl',
-          ),
+          widget: const CustomerCardBlocSelector(),
         ),
         SliverToBoxAdapter(
           child: SectionHeader(

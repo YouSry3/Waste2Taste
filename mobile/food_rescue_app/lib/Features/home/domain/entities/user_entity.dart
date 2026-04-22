@@ -16,4 +16,16 @@ class UserEntity {
     required this.moneySpent,
     required this.moneySaved,
   });
+
+  factory UserEntity.fromJson(Map<String, dynamic> json) {
+    return UserEntity(
+      name: json['name'],
+      email: json['email'],
+      role: json['role'],
+      imageUrl: json['imageUrl'],
+      orderCount: json['orderCount'],
+      moneySpent: json['moneySpent'],
+      moneySaved: json['moneySaved'],
+    );
+  }
 }

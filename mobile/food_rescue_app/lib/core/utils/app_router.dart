@@ -5,6 +5,10 @@ import 'package:waste2taste/Features/orders/presentation/views/order_confirmatio
 import '../../Features/auth/data/models/user_login_keys.dart';
 import '../../Features/auth/domain/use_cases/send_reset_password_code_usecase.dart';
 import '../../Features/auth/presentation/manager/send_reset_password_code_cubit/send_reset_password_code_cubit.dart';
+import '../../Features/home/domain/use_cases/get_profile_usecase.dart';
+import '../../Features/home/domain/use_cases/get_user_location_usecase.dart';
+import '../../Features/home/presentation/manager/get_profile_cubit/get_profile_cubit.dart';
+import '../../Features/home/presentation/manager/get_user_location_cubit/get_user_location_cubit.dart';
 import '../../Features/home/presentation/views/home_view.dart';
 import '../../Features/auth/presentation/views/forget_password_view.dart';
 import '../../Features/auth/presentation/views/login_view.dart';
@@ -94,7 +98,20 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.home,
-        builder: (context, state) => const HomeView(),
+        builder: (context, state) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) =>
+                  GetProfileCubit(getIt.get<GetProfileUsecase>())..getProfile(),
+            ),
+            BlocProvider(
+              create: (context) =>
+                  GetUserLocationCubit(getIt.get<GetUserLocationUsecase>())
+                    ..getUserLocation(),
+            ),
+          ],
+          child: const HomeView(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.allProducts,

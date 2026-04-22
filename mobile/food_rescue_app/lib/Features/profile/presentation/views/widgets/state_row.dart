@@ -5,7 +5,16 @@ import '../../../../../core/extensions/app_localization_extention.dart';
 import 'state_item.dart';
 
 class StatesRow extends StatelessWidget {
-  const StatesRow({super.key});
+  const StatesRow({
+    super.key,
+    required this.orderCount,
+    required this.moneySpent,
+    required this.moneySaved,
+  });
+
+  final int orderCount;
+  final double moneySpent;
+  final double moneySaved;
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +34,11 @@ class StatesRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          StateItem(value: '24', label: context.loc.orders),
+          StateItem(value: orderCount.toString(), label: context.loc.orders),
           const VerticalDivider(),
-          StateItem(value: '\$180', label: context.loc.moneySpent),
+          StateItem(value: '\$${moneySpent.toStringAsFixed(0)}', label: context.loc.moneySpent),
           const VerticalDivider(),
-          StateItem(value: '\$80', label: context.loc.moneySaved),
+          StateItem(value: '\$${moneySaved.toStringAsFixed(0)}', label: context.loc.moneySaved),
         ],
       ),
     );

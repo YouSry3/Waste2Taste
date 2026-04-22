@@ -6,8 +6,7 @@ import '../../../../../core/widgets/section_header.dart';
 import 'account_auth_section.dart';
 import 'general_settings_section.dart';
 import 'my_activity_section.dart';
-import 'profile_image_with_name.dart';
-import 'state_row.dart';
+import 'user_info_section.dart';
 
 class ProfileViewBody extends StatelessWidget {
   const ProfileViewBody({super.key});
@@ -15,7 +14,7 @@ class ProfileViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      minimum: EdgeInsets.only(left: 20, right: 20),
+      minimum: const EdgeInsets.only(left: 20, right: 20),
       child: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -29,10 +28,7 @@ class ProfileViewBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 24),
-                const ProfileImagaWithName(name: 'Abdelaziz sameh'),
-                const SizedBox(height: 24),
-                const StatesRow(),
+                const UserInfoSection(),
                 const SizedBox(height: 24),
                 SectionHeader(title: context.loc.myActivity),
                 const MyActivitySection(),

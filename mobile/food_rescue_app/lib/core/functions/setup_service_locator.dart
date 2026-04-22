@@ -8,6 +8,10 @@ import 'package:waste2taste/Features/auth/domain/use_cases/reset_pass_usecase.da
 import 'package:waste2taste/Features/auth/domain/use_cases/send_reset_password_code_usecase.dart';
 import 'package:waste2taste/Features/auth/domain/use_cases/signup_usecase.dart';
 import 'package:waste2taste/Features/auth/domain/use_cases/verify_email_usecase.dart';
+import '../../Features/home/data/data_sources/home_remote_data_source.dart';
+import '../../Features/home/data/repos/home_repo_impl.dart';
+import '../../Features/home/domain/use_cases/get_profile_usecase.dart';
+import '../../Features/home/domain/use_cases/get_user_location_usecase.dart';
 import '../../Features/splash/data/repos/onboarding_repo_impl.dart';
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
 import '../database/flutter_secure_storage_service.dart';
@@ -59,5 +63,17 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerLazySingleton<LoginUsecase>(
     () => LoginUsecase(authRepo: getIt.get<AuthRepoImpl>()),
+  );
+  getIt.registerLazySingleton<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImpl(getIt.get<ApiService>()),
+  );
+  getIt.registerLazySingleton<HomeRepoImpl>(
+    () => HomeRepoImpl(homeRemoteDataSource: getIt.get<HomeRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton<GetProfileUsecase>(
+    () => GetProfileUsecase(homeRepo: getIt.get<HomeRepoImpl>()),
+  );
+  getIt.registerLazySingleton<GetUserLocationUsecase>(
+    () => GetUserLocationUsecase(locationService: getIt.get<LocationService>()),
   );
 }

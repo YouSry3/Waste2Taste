@@ -1,20 +1,20 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:waste2taste/Features/home/domain/entities/location_entity.dart';
-import '../../../../../core/functions/setup_service_locator.dart';
-import '../../../../../core/services/location_service.dart';
+import '../../../domain/entities/location_entity.dart';
+import '../../../domain/use_cases/get_user_location_usecase.dart';
 
 part 'get_user_location_state.dart';
 
 class GetUserLocationCubit extends Cubit<GetUserLocationState> {
-  GetUserLocationCubit() : super(GetUserLocationInitialState());
-  Future<void> getCurrentLocation() async {
+  GetUserLocationCubit(this.getUserLocationUsecase) : super(GetUserLocationInitialState());
+  final GetUserLocationUsecase getUserLocationUsecase;
+
+  Future<void> getUserLocation() async {
     emit(GetUserLocationLoadingState());
-    final location = await getIt.get<LocationService>().getCurrentLocation();
-    if (location == null) {
-      emit(GetUserLocationFailureState());
-    } else {
-      emit(GetUserLocationSuccessState(location: location));
-    }
+    var result = await getUserLocationUsecase.call();
+    result.fold(
+      (failure) => emit(GetUserLocationFailureState(errMessage: failure.errorMessage)),
+      (success) => emit(GetUserLocationSuccessState(locationEntity: success)),
+    );
   }
 }

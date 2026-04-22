@@ -7,14 +7,14 @@ final class GetProfileInitialState extends GetProfileState {}
 
 final class GetProfileLoadingState extends GetProfileState {}
 
-final class GetProfileFailureState extends GetProfileState {
-  final String errMessage;
-
-  GetProfileFailureState({required this.errMessage});
-}
-
 final class GetProfileSuccessState extends GetProfileState {
   final UserEntity userEntity;
 
   GetProfileSuccessState({required this.userEntity});
+}
+
+final class GetProfileFailureState extends GetProfileState {
+  final String errMessage;
+
+  GetProfileFailureState({required this.errMessage});
 }
