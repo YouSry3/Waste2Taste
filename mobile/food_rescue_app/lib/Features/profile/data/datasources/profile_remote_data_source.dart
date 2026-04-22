@@ -29,10 +29,10 @@ class ProfileRemoteDataSourceImpl extends ProfileRemoteDataSource {
     var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
 
     var requestData = requestModel.toJson();
-    // if (requestData['Image'] != null &&
-    //     !requestData['Image'].toString().startsWith('http')) {
-    //   requestData['Image'] = await MultipartFile.fromFile(requestData['Image']);
-    // }
+    if (requestData['Image'] != null &&
+        !requestData['Image'].toString().startsWith('http')) {
+      requestData['Image'] = await MultipartFile.fromFile(requestData['Image']);
+    }
 
     var formData = FormData.fromMap(requestData);
 
@@ -68,5 +68,7 @@ class ProfileRemoteDataSourceImpl extends ProfileRemoteDataSource {
       ApiUrls.deleteAccount,
       options: Options(headers: {'Authorization': 'Bearer ${tokens!.token}'}),
     );
+   
+   
   }
 }
