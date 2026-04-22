@@ -39,7 +39,7 @@ public class ProductService : IProductService
             .Where(r => r.ProductId == productId)
             .ToListAsync();
     }
-
+   
     private static string CalculateExpiresIn(DateTime expiryDate)
     {
         var timeLeft = expiryDate - DateTime.Now;
@@ -68,6 +68,7 @@ public class ProductService : IProductService
         {
             var reviews = await GetReviewsByProductIdAsync(product.Id);
             var avgRating = reviews.Any() ? reviews.Average(r => (double)r.Rating) : 0.0;
+            var totalReviews = reviews.Count;
 
             response.Add(new ProductListResponse
             {
@@ -75,10 +76,13 @@ public class ProductService : IProductService
                 Name = product.Name,
                 ImageUrl = product.ImageUrl,
                 Price = product.Price,
+                Descripcion = product.Description,
                 OriginalPrice = product.OriginalPrice,
                 DiscountPercentage = CalculateDiscountPercentage(product.OriginalPrice, product.Price),
                 ExpiresIn = CalculateExpiresIn(product.ExpiryDate),
                 Rating = Math.Round(avgRating, 1),
+                TotalReviews = totalReviews,
+                VendorId = product.VendorId,
                 VendorName = product.Vendor.Name,
                 Category = product.Category,
                 Latitude = product.Vendor.Latitude,
