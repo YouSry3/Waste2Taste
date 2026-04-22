@@ -28,8 +28,8 @@ class ProductEntity {
 
 final skeletonProducts = List.generate(
   2,
-  (_) => const ProductEntity(
-    id: '',
+  (index) => ProductEntity(
+    id: '$index',
     name: 'Loading Product Name',
     imageUrl: '',
     price: 0.0,

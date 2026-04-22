@@ -33,7 +33,9 @@ class HomeViewBody extends StatelessWidget {
         BlocBuilder<GetProductsCubit, GetProductsState>(
           builder: (context, state) {
             final List<ProductEntity> products =
-                state is GetProductsSuccessState ? state.data : skeletonProducts;
+                state is GetProductsSuccessState
+                ? state.data
+                : skeletonProducts;
             final isProductsLoading =
                 state is GetProductsInitialState ||
                 state is GetProductsLoadingState;

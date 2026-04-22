@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
@@ -5,10 +6,16 @@ import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/functions/get_chars_of_the_name.dart';
 
 class ProfileImageWidget extends StatelessWidget {
-  const ProfileImageWidget({super.key, required this.name, this.imageUrl});
+  const ProfileImageWidget({
+    super.key,
+    required this.name,
+    this.imageUrl,
+    this.pickedImage,
+  });
 
   final String name;
   final String? imageUrl;
+  final File? pickedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -24,20 +31,36 @@ class ProfileImageWidget extends StatelessWidget {
         radius: 50,
         backgroundColor: AppColors.primary,
         child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: imageUrl ?? "",
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-            errorWidget: (context, url, error) => Center(
-              child: Text(
-                getFirstCharsOfTwoStings(name),
-                style: AppTextStyles.title(
-                  context,
-                ).copyWith(fontSize: 32, color: Colors.white),
-              ),
-            ),
-          ),
+          child: pickedImage != null
+              ? Image.file(
+                  pickedImage!,
+                  fit: BoxFit.cover,
+                  width: 100,
+                  height: 100,
+                )
+              : imageUrl == null
+              ? Center(
+                  child: Text(
+                    getFirstCharsOfTwoStings(name),
+                    style: AppTextStyles.title(
+                      context,
+                    ).copyWith(fontSize: 32, color: Colors.white),
+                  ),
+                )
+              : CachedNetworkImage(
+                  imageUrl: imageUrl!,
+                  fit: BoxFit.cover,
+                  width: 100,
+                  height: 100,
+                  errorWidget: (context, url, error) => Center(
+                    child: Text(
+                      getFirstCharsOfTwoStings(name),
+                      style: AppTextStyles.title(
+                        context,
+                      ).copyWith(fontSize: 32, color: Colors.white),
+                    ),
+                  ),
+                ),
         ),
       ),
     );

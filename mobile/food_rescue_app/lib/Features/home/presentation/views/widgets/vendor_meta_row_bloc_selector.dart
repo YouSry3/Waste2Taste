@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -8,10 +7,7 @@ import '../../manager/get_user_location_cubit/get_user_location_cubit.dart';
 import 'vendor_meta_row.dart';
 
 class VendorMetaRowBlocSelector extends StatelessWidget {
-  const VendorMetaRowBlocSelector({
-    super.key,
-    required this.product,
-  });
+  const VendorMetaRowBlocSelector({super.key, required this.product});
 
   final ProductEntity product;
 

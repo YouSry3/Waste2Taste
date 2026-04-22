@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import '../../../../../core/constants/api_urls.dart';
 import '../../../../home/presentation/manager/get_profile_cubit/get_profile_cubit.dart';
 import 'profile_image_with_name.dart';
 import 'state_row.dart';
@@ -32,7 +33,10 @@ class UserInfoSection extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 24),
-              ProfileImagaWithName(name: name, imageUrl: imageUrl),
+              ProfileImagaWithName(
+                name: name,
+                imageUrl: imageUrl == null ? null : ApiUrls.baseUrl + imageUrl,
+              ),
               const SizedBox(height: 24),
               StatesRow(
                 orderCount: orderCount,

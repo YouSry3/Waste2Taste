@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import '../../../../../core/constants/api_urls.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
@@ -23,13 +24,9 @@ class CustomerCard extends StatelessWidget {
       contentPadding: const EdgeInsets.all(7),
       title: Text(
         context.loc.helloUser(userName),
-        style: AppTextStyles.title(context).copyWith(
-          // fontWeight: FontWeight.normal,
-          // color: AppColors.textGray,
-          wordSpacing: 2,
-          height: 2,
-          fontSize: 16,
-        ),
+        style: AppTextStyles.title(
+          context,
+        ).copyWith(wordSpacing: 2, height: 2, fontSize: 16),
       ),
       subtitle: Row(
         mainAxisSize: MainAxisSize.min,
@@ -49,10 +46,15 @@ class CustomerCard extends StatelessWidget {
         child: CircleAvatar(
           radius: 22,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          child: CachedNetworkImage(
-            imageUrl: profileImageUrl,
-            errorWidget: (context, url, error) =>
-                const Icon(Icons.person, color: AppColors.primary),
+          child: ClipOval(
+            child: CachedNetworkImage(
+              width: 44,
+              height: 44,
+              fit: BoxFit.cover,
+              imageUrl: ApiUrls.baseUrl + profileImageUrl,
+              errorWidget: (context, url, error) =>
+                  const Icon(Icons.person, color: AppColors.primary),
+            ),
           ),
         ),
       ),

@@ -5,10 +5,6 @@ import 'package:waste2taste/Features/orders/presentation/views/order_confirmatio
 import '../../Features/auth/data/models/user_login_keys.dart';
 import '../../Features/auth/domain/use_cases/send_reset_password_code_usecase.dart';
 import '../../Features/auth/presentation/manager/send_reset_password_code_cubit/send_reset_password_code_cubit.dart';
-import '../../Features/home/domain/use_cases/get_profile_usecase.dart';
-import '../../Features/home/domain/use_cases/get_user_location_usecase.dart';
-import '../../Features/home/presentation/manager/get_profile_cubit/get_profile_cubit.dart';
-import '../../Features/home/presentation/manager/get_user_location_cubit/get_user_location_cubit.dart';
 import '../../Features/home/presentation/views/home_view.dart';
 import '../../Features/auth/presentation/views/forget_password_view.dart';
 import '../../Features/auth/presentation/views/login_view.dart';
@@ -21,6 +17,8 @@ import '../../Features/products/presentation/views/product_details_view.dart';
 import '../../Features/orders/presentation/views/orders_view.dart';
 import '../../Features/orders/presentation/views/saved_orders_view.dart';
 import '../../Features/profile/presentation/views/edit_profile_view.dart';
+import '../../Features/profile/presentation/manager/edit_profile_cubit/edit_profile_cubit.dart';
+import '../../Features/profile/domain/usecases/edit_profile_usecase.dart';
 import '../../Features/profile/presentation/views/general_settings_view.dart';
 import '../../Features/profile/presentation/views/help_and_support_view.dart';
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
@@ -98,20 +96,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.home,
-        builder: (context, state) => MultiBlocProvider(
-          providers: [
-            BlocProvider(
-              create: (context) =>
-                  GetProfileCubit(getIt.get<GetProfileUsecase>())..getProfile(),
-            ),
-            BlocProvider(
-              create: (context) =>
-                  GetUserLocationCubit(getIt.get<GetUserLocationUsecase>())
-                    ..getUserLocation(),
-            ),
-          ],
-          child: const HomeView(),
-        ),
+        builder: (context, state) => const HomeView(),
       ),
       GoRoute(
         path: AppRoutes.allProducts,
@@ -143,7 +128,11 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.editProfileView,
-        builder: (context, state) => const EditProfileView(),
+        builder: (context, state) => BlocProvider(
+          create: (context) =>
+              EditProfileCubit(getIt.get<EditProfileUsecase>()),
+          child: const EditProfileView(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.generalSettingsView,

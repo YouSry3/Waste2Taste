@@ -1,16 +1,16 @@
 import 'package:dartz/dartz.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:waste2taste/core/functions/setup_service_locator.dart';
 import '../../Features/home/domain/entities/location_entity.dart';
-import '../database/pref_service.dart';
 import '../errors/failure.dart';
 
 class LocationService {
   Future<Either<Failure, LocationEntity>> getCurrentLocation() async {
     try {
       if (!await Geolocator.isLocationServiceEnabled()) {
-        return left(const ServerFailure(errorMessage: 'Location services are disabled.'));
+        return left(
+          const ServerFailure(errorMessage: 'Location services are disabled.'),
+        );
       }
 
       LocationPermission permission = await Geolocator.checkPermission();
@@ -19,7 +19,9 @@ class LocationService {
       }
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        return left(const ServerFailure(errorMessage: 'Location permissions are denied.'));
+        return left(
+          const ServerFailure(errorMessage: 'Location permissions are denied.'),
+        );
       }
 
       final position = await Geolocator.getCurrentPosition();
@@ -42,22 +44,30 @@ class LocationService {
       String formatAddress(Placemark? place) {
         if (place == null) return '';
         final parts = <String>[];
-        if (place.subLocality != null && place.subLocality!.isNotEmpty) parts.add(place.subLocality!);
-        if (place.locality != null && place.locality!.isNotEmpty && place.locality != place.subLocality) parts.add(place.locality!);
-        if (parts.isEmpty && place.administrativeArea != null && place.administrativeArea!.isNotEmpty) parts.add(place.administrativeArea!);
+        if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+          parts.add(place.subLocality!);
+        }
+        if (place.locality != null &&
+            place.locality!.isNotEmpty &&
+            place.locality != place.subLocality) {
+          parts.add(place.locality!);
+        }
+        if (parts.isEmpty &&
+            place.administrativeArea != null &&
+            place.administrativeArea!.isNotEmpty) {
+          parts.add(place.administrativeArea!);
+        }
         return parts.join(', ');
       }
 
-      final prefs = getIt.get<PrefsService>();
-      await prefs.setDouble('user_latitude', position.latitude);
-      await prefs.setDouble('user_longitude', position.longitude);
-
-      return right(LocationEntity(
-        latitude: position.latitude,
-        longitude: position.longitude,
-        addressEn: formatAddress(enPlace),
-        addressAr: formatAddress(arPlace),
-      ));
+      return right(
+        LocationEntity(
+          latitude: position.latitude,
+          longitude: position.longitude,
+          addressEn: formatAddress(enPlace),
+          addressAr: formatAddress(arPlace),
+        ),
+      );
     } catch (e) {
       return left(ServerFailure(errorMessage: e.toString()));
     }

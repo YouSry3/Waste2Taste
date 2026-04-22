@@ -10,6 +10,7 @@ import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/utils/custom_snack_bar.dart';
 import '../../../../../core/utils/translator.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
+import '../../../../home/presentation/manager/get_user_location_cubit/get_user_location_cubit.dart';
 
 class LoginBlocConsumer extends StatelessWidget {
   const LoginBlocConsumer({
@@ -27,7 +28,7 @@ class LoginBlocConsumer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         var currentLocal = Localizations.localeOf(context);
         if (state is LoginFailureState) {
           translateMessage(state.errMessage, currentLocal.languageCode).then((
@@ -47,8 +48,8 @@ class LoginBlocConsumer extends StatelessWidget {
             message: context.loc.loginSuccess,
             type: SnackBarType.success,
           );
+          await context.read<GetUserLocationCubit>().getUserLocation();
           AppRouter.login();
-          // GoRouter.of(context).pushReplacement(AppRoutes.homeNavigationBar);
         }
       },
       builder: (context, state) {

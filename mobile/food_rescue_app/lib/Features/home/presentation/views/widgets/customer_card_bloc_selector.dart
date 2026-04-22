@@ -35,14 +35,15 @@ class CustomerCardBlocSelector extends StatelessWidget {
         return lang == 'en'
             ? state.locationEntity.addressEn
             : state.locationEntity.addressAr;
+      } else if (state is GetUserLocationFailureState) {
+        return 'Location unavailable';
       }
       return 'Locating...';
     });
 
-    final isLocating = location == 'Locating...';
-
+ 
     return Skeletonizer(
-      enabled: isProfileLoading || isLocating,
+      enabled: isProfileLoading,
       child: CustomerCard(
         userName: userName,
         location: location,
