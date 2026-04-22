@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:waste2taste/Features/home/data/models/product_model.dart';
 import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import 'discount_page.dart';
 import 'expiry_badge.dart';

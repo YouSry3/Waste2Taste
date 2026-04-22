@@ -3,8 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../functions/setup_service_locator.dart';
 import '../../Features/home/domain/use_cases/get_profile_usecase.dart';
 import '../../Features/home/domain/use_cases/get_user_location_usecase.dart';
+import '../../Features/home/domain/use_cases/get_products_usecase.dart';
 import '../../Features/home/presentation/manager/get_profile_cubit/get_profile_cubit.dart';
 import '../../Features/home/presentation/manager/get_user_location_cubit/get_user_location_cubit.dart';
+import '../../Features/home/presentation/manager/get_products_cubit/get_products_cubit.dart';
 import '../../Features/home/presentation/views/home_view.dart';
 import '../../Features/map/presentation/views/map_view.dart';
 import '../../Features/orders/presentation/views/orders_view.dart';
@@ -41,6 +43,10 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
           create: (context) =>
               GetUserLocationCubit(getIt.get<GetUserLocationUsecase>())
                 ..getUserLocation(),
+        ),
+        BlocProvider(
+          create: (context) =>
+              GetProductsCubit(getIt.get<GetProductsUsecase>())..getProducts(),
         ),
       ],
       child: Scaffold(

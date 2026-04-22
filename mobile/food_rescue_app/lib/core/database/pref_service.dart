@@ -21,6 +21,14 @@ class PrefsService {
     return _instance.getString(key);
   }
 
+  Future<void> setDouble(String key, double value) async {
+    await _instance.setDouble(key, value);
+  }
+
+  double? getDouble(String key) {
+    return _instance.getDouble(key);
+  }
+
   Future<bool> removeData({required String key}) async {
     return await _instance.remove(key);
   }

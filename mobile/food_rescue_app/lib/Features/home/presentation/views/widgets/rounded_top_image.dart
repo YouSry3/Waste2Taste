@@ -21,8 +21,12 @@ class RoundedTopImage extends StatelessWidget {
           height: 180,
           width: double.infinity,
           fit: BoxFit.cover,
+          memCacheHeight: 400,
+          memCacheWidth: 400,
+          fadeInCurve: Curves.linear,
           fadeInDuration: const Duration(milliseconds: 400),
           fadeOutDuration: const Duration(milliseconds: 200),
+          errorWidget: (context, url, error) => const SizedBox.shrink(),
         ),
       ),
     );

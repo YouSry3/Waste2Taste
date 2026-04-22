@@ -1,7 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:waste2taste/core/functions/setup_service_locator.dart';
 import '../../Features/home/domain/entities/location_entity.dart';
+import '../database/pref_service.dart';
 import '../errors/failure.dart';
 
 class LocationService {
@@ -45,6 +47,10 @@ class LocationService {
         if (parts.isEmpty && place.administrativeArea != null && place.administrativeArea!.isNotEmpty) parts.add(place.administrativeArea!);
         return parts.join(', ');
       }
+
+      final prefs = getIt.get<PrefsService>();
+      await prefs.setDouble('user_latitude', position.latitude);
+      await prefs.setDouble('user_longitude', position.longitude);
 
       return right(LocationEntity(
         latitude: position.latitude,

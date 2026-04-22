@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
-
-import '../../../../home/data/models/product_model.dart';
 import 'description_section.dart';
 import 'location_section.dart';
 import '../../../../home/presentation/views/widgets/price_section.dart';

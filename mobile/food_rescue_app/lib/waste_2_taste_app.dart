@@ -45,4 +45,3 @@ class Waste2TasteApp extends StatelessWidget {
     );
   }
 }
-

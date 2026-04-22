@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import '../../../../../core/constants/app_text_styles.dart';
-import '../../../data/models/product_model.dart';
 import 'vendor_card.dart';
 
 class ProductInfoSection extends StatelessWidget {

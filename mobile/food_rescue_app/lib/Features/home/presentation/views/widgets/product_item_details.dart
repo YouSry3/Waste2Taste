@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
-import 'package:waste2taste/core/utils/map_utils.dart';
-import '../../../data/models/product_model.dart';
 import 'price_row.dart';
 import 'product_title_row.dart';
-import 'vendor_meta_row.dart';
+import 'vendor_meta_row_bloc_selector.dart';
 
 class ProductItemDetails extends StatelessWidget {
   const ProductItemDetails({super.key, required this.product});
@@ -20,13 +17,7 @@ class ProductItemDetails extends StatelessWidget {
         children: [
           ProductTitleRow(title: product.name, rating: product.rating),
           const SizedBox(height: 8),
-          VendorMetaRow(
-            vendorName: product.vendorName,
-            distance: MapUtils.calculateDistance(
-              LatLng(product.longitude, product.latitude),
-              LatLng(product.longitude, product.latitude),
-            ).toString(),
-          ),
+          VendorMetaRowBlocSelector(product: product),
           const SizedBox(height: 16),
           PricingRow(
             price: product.price,

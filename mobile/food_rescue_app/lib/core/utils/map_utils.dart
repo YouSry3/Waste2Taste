@@ -43,4 +43,9 @@ class MapUtils {
   static double _toRadians(double degree) {
     return degree * math.pi / 180;
   }
+
+  static String formatDistance(double km) {
+    if (km < 1) return "${(km * 1000).toStringAsFixed(0)} m";
+    return "${km.toStringAsFixed(1)} km";
+  }
 }

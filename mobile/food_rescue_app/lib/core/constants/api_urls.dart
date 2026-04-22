@@ -9,4 +9,5 @@ abstract class ApiUrls {
   static const verifyEmail = "$baseUrl${ApiEndPoints.verifyEmailEndPoint}";
   static const resetPassword = "$baseUrl${ApiEndPoints.resetPasswordEndPoint}";
   static const profile = "$baseUrl${ApiEndPoints.profileEndPoint}";
+  static const productsUrl = "$baseUrl${ApiEndPoints.productsEndPoint}";
 }

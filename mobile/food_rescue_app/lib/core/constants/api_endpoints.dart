@@ -5,4 +5,5 @@ abstract class ApiEndPoints {
   static const verifyEmailEndPoint = "/Auth/verify-reset-code";
   static const resetPasswordEndPoint = "/Auth/reset-password";
   static const profileEndPoint = "/User/Profile";
+  static const productsEndPoint = "/Products";
 }

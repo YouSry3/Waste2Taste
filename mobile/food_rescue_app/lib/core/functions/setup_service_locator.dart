@@ -12,6 +12,7 @@ import '../../Features/home/data/data_sources/home_remote_data_source.dart';
 import '../../Features/home/data/repos/home_repo_impl.dart';
 import '../../Features/home/domain/use_cases/get_profile_usecase.dart';
 import '../../Features/home/domain/use_cases/get_user_location_usecase.dart';
+import '../../Features/home/domain/use_cases/get_products_usecase.dart';
 import '../../Features/splash/data/repos/onboarding_repo_impl.dart';
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
 import '../database/flutter_secure_storage_service.dart';
@@ -75,5 +76,8 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerLazySingleton<GetUserLocationUsecase>(
     () => GetUserLocationUsecase(locationService: getIt.get<LocationService>()),
+  );
+  getIt.registerLazySingleton<GetProductsUsecase>(
+    () => GetProductsUsecase(homeRepo: getIt.get<HomeRepoImpl>()),
   );
 }

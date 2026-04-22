@@ -1,13 +1,16 @@
 import 'package:dio/dio.dart';
+import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import 'package:waste2taste/Features/home/domain/entities/user_entity.dart';
 import 'package:waste2taste/core/constants/api_urls.dart';
 import '../../../../core/database/flutter_secure_storage_service.dart';
 import '../../../../core/functions/setup_service_locator.dart';
 import '../models/user_model.dart';
+import '../models/product_model.dart';
 import '../../../../core/services/api_service.dart';
 
 abstract class HomeRemoteDataSource {
   Future<UserEntity> getProfile();
+  Future<List<ProductEntity>> getProducts();
 }
 
 class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
@@ -23,5 +26,18 @@ class HomeRemoteDataSourceImpl extends HomeRemoteDataSource {
     );
     var data = response.data as Map<String, dynamic>;
     return UserModel.fromJson(data);
+  }
+
+  @override
+  Future<List<ProductEntity>> getProducts() async {
+    var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
+    var response = await _apiService.get(
+      ApiUrls.productsUrl,
+      options: Options(headers: {'Authorization': 'Bearer ${tokens!.token}'}),
+    );
+    var data = response.data as List;
+    return data
+        .map((e) => ProductModel.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 }

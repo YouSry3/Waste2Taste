@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
-import '../../../data/models/product_model.dart';
 import 'custom_card_widget.dart';
 import 'details_price_row.dart';
 import 'saving_bannner.dart';
