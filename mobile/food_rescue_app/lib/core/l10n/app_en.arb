@@ -156,5 +156,7 @@
     "reportThisVendor": "Report This Vendor",
     "reportVendor": "Report Vendor",
     "describeYourIssueBelow": "Describe your issue below.",
-    "loginSuccess": "Login successful"
+    "loginSuccess": "Login successful",
+    "oldPassword": "Old Password",
+    "passwordChangedSuccessfully": "Password changed successfully"
 }

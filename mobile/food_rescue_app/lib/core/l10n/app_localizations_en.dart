@@ -495,4 +495,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginSuccess => 'Login successful';
+
+  @override
+  String get oldPassword => 'Old Password';
+
+  @override
+  String get passwordChangedSuccessfully => 'Password changed successfully';
 }

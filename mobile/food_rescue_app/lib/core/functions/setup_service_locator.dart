@@ -16,6 +16,8 @@ import '../../Features/home/domain/use_cases/get_products_usecase.dart';
 import '../../Features/profile/data/datasources/profile_remote_data_source.dart';
 import '../../Features/profile/data/repos/profile_repo_impl.dart';
 import '../../Features/profile/domain/usecases/edit_profile_usecase.dart';
+import '../../Features/profile/domain/usecases/change_password_usecase.dart';
+
 import '../../Features/splash/data/repos/onboarding_repo_impl.dart';
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
 import '../database/flutter_secure_storage_service.dart';
@@ -91,5 +93,8 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerLazySingleton<EditProfileUsecase>(
     () => EditProfileUsecase(profileRepo: getIt.get<ProfileRepoImpl>()),
+  );
+  getIt.registerLazySingleton<ChangePasswordUsecase>(
+    () => ChangePasswordUsecase(getIt.get<ProfileRepoImpl>()),
   );
 }

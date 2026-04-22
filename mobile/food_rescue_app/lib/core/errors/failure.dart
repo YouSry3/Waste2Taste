@@ -43,7 +43,9 @@ class ServerFailure extends Failure {
     int statusCode = response.statusCode!;
     dynamic data = response.data;
     if (statusCode == 400 || statusCode == 401 || statusCode == 403) {
-      return ServerFailure(errorMessage: data['description']);
+      return ServerFailure(
+        errorMessage: data['description'] ?? data['errors']['description'],
+      );
     } else if (statusCode == 404) {
       return ServerFailure(
         errorMessage: 'Your request not found, Please try again later.',

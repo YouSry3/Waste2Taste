@@ -495,4 +495,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get loginSuccess => 'تم تسجيل الدخول بنجاح';
+
+  @override
+  String get oldPassword => 'كلمة المرور القديمة';
+
+  @override
+  String get passwordChangedSuccessfully => 'تم تغيير كلمة المرور بنجاح';
 }

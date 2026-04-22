@@ -21,6 +21,10 @@ import '../../Features/profile/presentation/manager/edit_profile_cubit/edit_prof
 import '../../Features/profile/domain/usecases/edit_profile_usecase.dart';
 import '../../Features/profile/presentation/views/general_settings_view.dart';
 import '../../Features/profile/presentation/views/help_and_support_view.dart';
+import '../../Features/profile/presentation/views/change_password_view.dart';
+import '../../Features/profile/presentation/manager/change_password_cubit/change_password_cubit.dart';
+import '../../Features/profile/domain/usecases/change_password_usecase.dart';
+
 import '../../Features/splash/domain/repos/onboarding_repo.dart';
 import '../../Features/splash/presentation/manager/onboarding_cubit.dart';
 import '../../Features/splash/presentation/views/onboarding_view.dart';
@@ -145,6 +149,14 @@ abstract class AppRouter {
       GoRoute(
         path: AppRoutes.reportVendorView,
         builder: (context, state) => const ReportVendorView(),
+      ),
+      GoRoute(
+        path: AppRoutes.changePasswordView,
+        builder: (context, state) => BlocProvider(
+          create: (context) =>
+              ChangePasswordCubit(getIt.get<ChangePasswordUsecase>()),
+          child: const ChangePasswordView(),
+        ),
       ),
     ],
   );

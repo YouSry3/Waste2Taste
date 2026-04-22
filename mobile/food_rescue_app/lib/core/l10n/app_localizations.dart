@@ -1039,6 +1039,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login successful'**
   String get loginSuccess;
+
+  /// No description provided for @oldPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Old Password'**
+  String get oldPassword;
+
+  /// No description provided for @passwordChangedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed successfully'**
+  String get passwordChangedSuccessfully;
 }
 
 class _AppLocalizationsDelegate
