@@ -33,7 +33,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wwwroot\documents\health-certs\" />
+    <Folder Include="wwwroot\documents\licenses\" />
     <Folder Include="wwwroot\images\" />
+    <Folder Include="wwwroot\images\products\" />
   </ItemGroup>
 
 </Project>

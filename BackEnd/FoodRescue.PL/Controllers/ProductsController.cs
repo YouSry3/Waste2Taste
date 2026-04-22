@@ -1,6 +1,7 @@
 ﻿using FoodRescue.BLL.Contract.Products;
 using FoodRescue.BLL.Services.Products;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodRescue.PL.Controllers;
@@ -17,8 +18,22 @@ public class ProductsController : ControllerBase
         _service = service;
     }
 
+    /// <summary>
+    /// Get all products with optional name filter
+    /// </summary>
+    /// <remarks>
+    /// Returns a list of all active products with their details including category, 
+    /// vendor information, pricing, and location data.
+    /// </remarks>
+    /// <param name="name">Optional product name filter</param>
+    /// <returns>List of products with category information</returns>
+    /// <response code="200">Products retrieved successfully with category data</response>
+    /// <response code="400">Invalid request parameters</response>
     [HttpGet]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(IEnumerable<ProductListResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [Produces("application/json")]
     public async Task<IActionResult> GetAll([FromQuery] string? name)
     {
         var result = await _service.GetAllAsync(name);

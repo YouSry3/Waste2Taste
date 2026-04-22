@@ -80,7 +80,7 @@ public class ProductService : IProductService
                 ExpiresIn = CalculateExpiresIn(product.ExpiryDate),
                 Rating = Math.Round(avgRating, 1),
                 VendorName = product.Vendor.Name,
-
+                Category = product.Category,
                 Latitude = product.Vendor.Latitude,
                 Longitude = product.Vendor.Longitude
             });
