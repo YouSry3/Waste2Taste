@@ -25,12 +25,19 @@ namespace FoodRescue.BLL.Services.Reviews
         // 1️⃣ Get all reviews for one product
         public async Task<Result<List<ReviewResponse>>> GetReviewsByProductId(Guid productId)
         {
-            
+
             var reviews = await _context.Reviews
                 .Where(r => r.ProductId == productId)
                 .Include(r => r.User)
                 .OrderByDescending(r => r.CreatedAt)
-                .Select(r => r.Adapt<ReviewResponse>())
+                .Select(r => new ReviewResponse
+                {
+                    Id = r.Id,
+                    Rating = r.Rating,
+                    Comment = r.Comment,
+                    User = r.User.Adapt<InfoUser>(),
+                    CreatedAt = r.CreatedAt
+                })
                 .ToListAsync();
 
 

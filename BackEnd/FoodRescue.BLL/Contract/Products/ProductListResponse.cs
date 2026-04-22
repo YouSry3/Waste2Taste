@@ -13,4 +13,5 @@ public class ProductListResponse
     public string VendorName { get; set; } = null!;
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    public string? Category { get; set; }
 }
