@@ -12,6 +12,7 @@ class ProductModel extends ProductEntity {
     required super.expiresIn,
     required super.rating,
     required super.vendorName,
+    required super.totalReviews,
     required super.latitude,
     required super.longitude,
     required super.vendorId,
@@ -30,10 +31,11 @@ class ProductModel extends ProductEntity {
       expiresIn: json['expiresIn'] ?? '',
       rating: (json['rating'] ?? 0).toDouble(),
       vendorName: json['vendorName'] ?? '',
+      totalReviews: json['totalReviews'] ?? 0,
       latitude: (json['latitude'] ?? 0).toDouble(),
       longitude: (json['longitude'] ?? 0).toDouble(),
       vendorId: json['vendorId'] ?? '',
-      description: json['description'] ?? '',
+      description: json['descripcion'] ?? 'No description',
       category: json['category'] ?? '',
     );
   }
@@ -54,4 +56,3 @@ class ProductModel extends ProductEntity {
     };
   }
 }
-

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
-import 'package:waste2taste/Features/home/domain/entities/user_entity.dart';
+import '../../domain/entities/product_entity.dart';
+import '../../domain/entities/user_entity.dart';
 import 'package:waste2taste/core/constants/api_urls.dart';
 import '../../../../core/database/flutter_secure_storage_service.dart';
 import '../../../../core/functions/setup_service_locator.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-
 import '../../../../../core/extensions/app_localization_extention.dart';
 
 class ReviewsAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -20,7 +20,7 @@ class ReviewsAppBar extends StatelessWidget implements PreferredSizeWidget {
           isArabic ? LucideIcons.arrowRight : LucideIcons.arrowLeft,
           color: Theme.of(context).colorScheme.onSurface,
         ),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () => GoRouter.of(context).pop(),
       ),
     );
   }

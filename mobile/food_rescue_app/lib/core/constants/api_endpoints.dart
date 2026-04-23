@@ -9,4 +9,7 @@ abstract class ApiEndPoints {
   static const editProfileEndPoint = "/User/Profile";
   static const changePasswordEndPoint = "/User/profile/change-password";
   static const deleteAccountEndPoint = "/user/delete";
+  static const getProductReviewsEndPoint = "/Reviews/product";
+  static const addReviewEndPoint = "/Reviews/Add";
+  static const deleteReviewEndPoint = "/Reviews";
 }

@@ -1075,6 +1075,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account deleted successfully'**
   String get accountDeletedSuccessfully;
+
+  /// No description provided for @pleaseRateProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Please rate the product'**
+  String get pleaseRateProduct;
+
+  /// No description provided for @pleaseWriteComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Please write a comment'**
+  String get pleaseWriteComment;
+
+  /// No description provided for @deleteReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Review'**
+  String get deleteReview;
+
+  /// No description provided for @deleteReviewConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this review?'**
+  String get deleteReviewConfirmation;
+
+  /// No description provided for @logOutConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get logOutConfirmation;
+
+  /// No description provided for @chooseLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Language'**
+  String get chooseLanguage;
 }
 
 class _AppLocalizationsDelegate

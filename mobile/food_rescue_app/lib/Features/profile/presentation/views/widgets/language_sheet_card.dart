@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class LanguageSheetCard extends StatelessWidget {
   final String title;
   final String subtitle;
-  final String emoji;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -11,7 +10,6 @@ class LanguageSheetCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.subtitle,
-    required this.emoji,
     required this.isSelected,
     required this.onTap,
   });
@@ -49,10 +47,7 @@ class LanguageSheetCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Text(emoji, style: const TextStyle(fontSize: 26)),
-
               const SizedBox(width: 12),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

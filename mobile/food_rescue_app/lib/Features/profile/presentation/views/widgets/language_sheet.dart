@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:waste2taste/core/cubits/localization_cubit/localization_cubit.dart';
+import '../../../../../core/extensions/app_localization_extention.dart';
 import 'language_sheet_card.dart';
 
 class LanguageSheet extends StatelessWidget {
@@ -29,7 +30,7 @@ class LanguageSheet extends StatelessWidget {
           const SizedBox(height: 20),
 
           Text(
-            "🌐 Choose Language",
+            context.loc.chooseLanguage,
             style: Theme.of(
               context,
             ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -40,7 +41,6 @@ class LanguageSheet extends StatelessWidget {
           LanguageSheetCard(
             title: "English",
             subtitle: "Continue in English",
-            emoji: "🇺🇸",
             isSelected: locale == 'en',
             onTap: () {
               context.read<LocalizationCubit>().changeLanguage('en');
@@ -53,7 +53,6 @@ class LanguageSheet extends StatelessWidget {
           LanguageSheetCard(
             title: "العربية",
             subtitle: "تابع باللغة العربية",
-            emoji: "🇪🇬",
             isSelected: locale == 'ar',
             onTap: () async {
               context.read<LocalizationCubit>().changeLanguage('ar');

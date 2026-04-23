@@ -4,9 +4,9 @@ import 'package:waste2taste/core/utils/app_routes.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
-import '../../../../home/data/models/product_model.dart';
-import '../../../../home/presentation/views/widgets/image_header_widget_for_product_details.dart';
-import 'product_details_widget.dart';
+import 'package:waste2taste/Features/home/data/models/product_model.dart';
+import 'package:waste2taste/Features/home/presentation/views/widgets/image_header_widget_for_product_details.dart';
+import 'package:waste2taste/Features/products/presentation/views/widgets/product_details_widget.dart';
 
 class ProductDetailsViewBody extends StatelessWidget {
   const ProductDetailsViewBody({super.key});

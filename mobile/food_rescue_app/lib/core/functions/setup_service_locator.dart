@@ -8,25 +8,30 @@ import 'package:waste2taste/Features/auth/domain/use_cases/reset_pass_usecase.da
 import 'package:waste2taste/Features/auth/domain/use_cases/send_reset_password_code_usecase.dart';
 import 'package:waste2taste/Features/auth/domain/use_cases/signup_usecase.dart';
 import 'package:waste2taste/Features/auth/domain/use_cases/verify_email_usecase.dart';
-import '../../Features/home/data/data_sources/home_remote_data_source.dart';
-import '../../Features/home/data/repos/home_repo_impl.dart';
-import '../../Features/home/domain/use_cases/get_profile_usecase.dart';
-import '../../Features/home/domain/use_cases/get_user_location_usecase.dart';
-import '../../Features/home/domain/use_cases/get_products_usecase.dart';
-import '../../Features/profile/data/datasources/profile_remote_data_source.dart';
-import '../../Features/profile/data/repos/profile_repo_impl.dart';
-import '../../Features/profile/domain/usecases/edit_profile_usecase.dart';
-import '../../Features/profile/domain/usecases/change_password_usecase.dart';
-import '../../Features/profile/domain/usecases/delete_account_usecase.dart';
-
-
-import '../../Features/splash/data/repos/onboarding_repo_impl.dart';
-import '../../Features/splash/domain/repos/onboarding_repo.dart';
-import '../database/flutter_secure_storage_service.dart';
-import '../database/pref_service.dart';
-import '../services/api_service.dart';
-import '../cubits/theme_cubit/theme_cubit.dart';
-import '../services/location_service.dart';
+import 'package:waste2taste/Features/home/data/data_sources/home_remote_data_source.dart';
+import 'package:waste2taste/Features/home/data/repos/home_repo_impl.dart';
+import 'package:waste2taste/Features/home/domain/use_cases/get_profile_usecase.dart';
+import 'package:waste2taste/Features/home/domain/use_cases/get_user_location_usecase.dart';
+import 'package:waste2taste/Features/home/domain/use_cases/get_products_usecase.dart';
+import 'package:waste2taste/Features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:waste2taste/Features/profile/data/repos/profile_repo_impl.dart';
+import 'package:waste2taste/Features/profile/domain/usecases/edit_profile_usecase.dart';
+import 'package:waste2taste/Features/profile/domain/usecases/change_password_usecase.dart';
+import 'package:waste2taste/Features/profile/domain/usecases/delete_account_usecase.dart';
+import 'package:waste2taste/Features/products/data/data_sources/product_remote_data_source.dart';
+import 'package:waste2taste/Features/products/data/repos/product_repo_impl.dart';
+import 'package:waste2taste/Features/products/domain/use_cases/get_product_reviews_usecase.dart';
+import 'package:waste2taste/Features/products/domain/use_cases/add_review_usecase.dart';
+import 'package:waste2taste/Features/products/domain/use_cases/delete_review_usecase.dart';
+import 'package:waste2taste/Features/products/presentation/manager/add_review_cubit/add_review_cubit.dart';
+import 'package:waste2taste/Features/products/presentation/manager/delete_review_cubit/delete_review_cubit.dart';
+import 'package:waste2taste/Features/splash/data/repos/onboarding_repo_impl.dart';
+import 'package:waste2taste/Features/splash/domain/repos/onboarding_repo.dart';
+import 'package:waste2taste/core/database/flutter_secure_storage_service.dart';
+import 'package:waste2taste/core/database/pref_service.dart';
+import 'package:waste2taste/core/services/api_service.dart';
+import 'package:waste2taste/core/cubits/theme_cubit/theme_cubit.dart';
+import 'package:waste2taste/core/services/location_service.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -39,7 +44,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<LocationService>(() => LocationService());
 
   getIt.registerLazySingleton<FlutterSecureStorage>(
-    () => FlutterSecureStorage(),
+    () => const FlutterSecureStorage(),
   );
   getIt.registerLazySingleton<FlutterSecureStorageService>(
     () => FlutterSecureStorageServiceImpl(
@@ -91,7 +96,9 @@ Future<void> setupServiceLocator() async {
     () => ProfileRemoteDataSourceImpl(getIt.get<ApiService>()),
   );
   getIt.registerLazySingleton<ProfileRepoImpl>(
-    () => ProfileRepoImpl(profileRemoteDataSource: getIt.get<ProfileRemoteDataSource>()),
+    () => ProfileRepoImpl(
+      profileRemoteDataSource: getIt.get<ProfileRemoteDataSource>(),
+    ),
   );
   getIt.registerLazySingleton<EditProfileUsecase>(
     () => EditProfileUsecase(profileRepo: getIt.get<ProfileRepoImpl>()),
@@ -101,5 +108,29 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerLazySingleton<DeleteAccountUsecase>(
     () => DeleteAccountUsecase(getIt.get<ProfileRepoImpl>()),
+  );
+
+  getIt.registerLazySingleton<ProductRemoteDataSource>(
+    () => ProductRemoteDataSourceImpl(getIt.get<ApiService>()),
+  );
+  getIt.registerLazySingleton<ProductRepoImpl>(
+    () => ProductRepoImpl(
+      productRemoteDataSource: getIt.get<ProductRemoteDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<GetProductReviewsUsecase>(
+    () => GetProductReviewsUsecase(productRepo: getIt.get<ProductRepoImpl>()),
+  );
+  getIt.registerLazySingleton<AddReviewUseCase>(
+    () => AddReviewUseCase(productRepo: getIt.get<ProductRepoImpl>()),
+  );
+  getIt.registerLazySingleton<DeleteReviewUseCase>(
+    () => DeleteReviewUseCase(productRepo: getIt.get<ProductRepoImpl>()),
+  );
+  getIt.registerFactory<AddReviewCubit>(
+    () => AddReviewCubit(addReviewUseCase: getIt.get<AddReviewUseCase>()),
+  );
+  getIt.registerFactory<DeleteReviewCubit>(
+    () => DeleteReviewCubit(deleteReviewUseCase: getIt.get<DeleteReviewUseCase>()),
   );
 }

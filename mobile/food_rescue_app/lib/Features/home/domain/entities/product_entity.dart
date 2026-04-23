@@ -7,6 +7,7 @@ class ProductEntity {
   final int discountPercentage;
   final String expiresIn;
   final double rating;
+  final int totalReviews;
   final String vendorId;
   final String vendorName;
   final double latitude;
@@ -28,6 +29,7 @@ class ProductEntity {
     required this.longitude,
     required this.vendorId,
     required this.description,
+    required this.totalReviews,
     this.category,
   });
 }
@@ -49,5 +51,6 @@ final skeletonProducts = List.generate(
     vendorId: '$index',
     description: 'description',
     category: 'category',
+    totalReviews: 0,
   ),
 );

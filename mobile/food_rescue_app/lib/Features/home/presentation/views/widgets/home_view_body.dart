@@ -27,7 +27,12 @@ class HomeViewBody extends StatelessWidget {
         SliverToBoxAdapter(
           child: SectionHeader(
             title: context.loc.nearbyDeals,
-            onTap: () => GoRouter.of(context).push(AppRoutes.allProducts),
+            onTap: () async {
+              final result = await GoRouter.of(context).push(AppRoutes.allProducts);
+              if (result == true && context.mounted) {
+                context.read<GetProductsCubit>().getProducts();
+              }
+            },
           ),
         ),
         BlocBuilder<GetProductsCubit, GetProductsState>(
@@ -42,7 +47,12 @@ class HomeViewBody extends StatelessWidget {
 
             return Skeletonizer.sliver(
               enabled: isProductsLoading,
-              child: ProductsSliverListBuilder(products: products),
+              child: ProductsSliverListBuilder(
+                products: products,
+                onChanged: () {
+                  // Home screen doesn't need to return a value, but we handle it here
+                },
+              ),
             );
           },
         ),

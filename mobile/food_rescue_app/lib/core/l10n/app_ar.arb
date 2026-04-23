@@ -161,5 +161,11 @@
     "deleteAccountConfirmation": "هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
     "cancel": "إلغاء",
     "delete": "حذف",
-    "accountDeletedSuccessfully": "تم حذف الحساب بنجاح"
+    "accountDeletedSuccessfully": "تم حذف الحساب بنجاح",
+    "pleaseRateProduct": "الرجاء تقييم المنتج",
+    "pleaseWriteComment": "الرجاء كتابة تعليق",
+    "deleteReview": "حذف التقييم",
+    "deleteReviewConfirmation": "هل أنت متأكد أنك تريد حذف هذا التقييم؟",
+    "logOutConfirmation": "هل أنت متأكد من تسجيل الخروج؟",
+    "chooseLanguage": "اختر اللغة"
 }

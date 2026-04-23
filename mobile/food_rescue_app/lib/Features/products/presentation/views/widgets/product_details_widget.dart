@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
+import 'package:waste2taste/Features/products/presentation/views/widgets/reviews_section_bloc_builder.dart';
 import 'description_section.dart';
 import 'location_section.dart';
-import '../../../../home/presentation/views/widgets/price_section.dart';
-import '../../../../home/presentation/views/widgets/product_info_section.dart';
-import 'reviews_section.dart';
+import 'package:waste2taste/Features/home/presentation/views/widgets/price_section.dart';
+import 'package:waste2taste/Features/home/presentation/views/widgets/product_info_section.dart';
 
 class ProductDetailsWidget extends StatelessWidget {
   const ProductDetailsWidget({super.key, required this.product});
@@ -19,7 +19,7 @@ class ProductDetailsWidget extends StatelessWidget {
         children: [
           ProductInfoSection(product: product),
           const SizedBox(height: 16),
-          ReviewsSection(rating: product.rating),
+          ReviewsSectionBlocBuilder(product: product),
           const SizedBox(height: 24),
           DescriptionSection(description: product.description),
           const SizedBox(height: 24),
@@ -31,3 +31,4 @@ class ProductDetailsWidget extends StatelessWidget {
     );
   }
 }
+

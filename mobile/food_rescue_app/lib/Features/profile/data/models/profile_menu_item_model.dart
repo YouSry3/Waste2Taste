@@ -63,9 +63,35 @@ final List<ProfileMenuItemModel> accountAuth = [
     icon: LucideIcons.logOut,
     label: (context) => context.loc.logOut,
     color: Colors.red,
-    onTap: (context) async {
-      await getIt.get<FlutterSecureStorageService>().clearAuthToken();
-      AppRouter.logout();
+    onTap: (context) {
+      showDialog(
+        context: context,
+        builder: (dialogContext) {
+          return AlertDialog(
+            title: Text(context.loc.logOut),
+            content: Text(context.loc.logOutConfirmation),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(context.loc.cancel),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(dialogContext);
+                  await getIt
+                      .get<FlutterSecureStorageService>()
+                      .clearAuthToken();
+                  AppRouter.logout();
+                },
+                child: Text(
+                  context.loc.logOut,
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          );
+        },
+      );
     },
   ),
 ];

@@ -514,4 +514,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountDeletedSuccessfully => 'Account deleted successfully';
+
+  @override
+  String get pleaseRateProduct => 'Please rate the product';
+
+  @override
+  String get pleaseWriteComment => 'Please write a comment';
+
+  @override
+  String get deleteReview => 'Delete Review';
+
+  @override
+  String get deleteReviewConfirmation =>
+      'Are you sure you want to delete this review?';
+
+  @override
+  String get logOutConfirmation => 'Are you sure you want to log out?';
+
+  @override
+  String get chooseLanguage => 'Choose Language';
 }

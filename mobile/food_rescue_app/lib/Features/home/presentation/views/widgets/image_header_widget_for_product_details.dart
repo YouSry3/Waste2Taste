@@ -7,7 +7,10 @@ import 'circle_icon_button.dart';
 import 'product_image_header.dart';
 
 class ImageHeaderWidgetForProductDetails extends StatelessWidget {
-  const ImageHeaderWidgetForProductDetails({super.key, required this.product});
+  const ImageHeaderWidgetForProductDetails({
+    super.key,
+    required this.product,
+  });
 
   final ProductEntity product;
 

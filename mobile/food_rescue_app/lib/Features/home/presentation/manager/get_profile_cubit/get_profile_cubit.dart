@@ -13,7 +13,8 @@ class GetProfileCubit extends Cubit<GetProfileState> {
     emit(GetProfileLoadingState());
     var result = await getProfileUsecase.call();
     result.fold(
-      (failure) => emit(GetProfileFailureState(errMessage: failure.errorMessage)),
+      (failure) =>
+          emit(GetProfileFailureState(errMessage: failure.errorMessage)),
       (success) => emit(GetProfileSuccessState(userEntity: success)),
     );
   }

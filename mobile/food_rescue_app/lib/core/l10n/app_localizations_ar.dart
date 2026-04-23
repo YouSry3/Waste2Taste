@@ -514,4 +514,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accountDeletedSuccessfully => 'تم حذف الحساب بنجاح';
+
+  @override
+  String get pleaseRateProduct => 'الرجاء تقييم المنتج';
+
+  @override
+  String get pleaseWriteComment => 'الرجاء كتابة تعليق';
+
+  @override
+  String get deleteReview => 'حذف التقييم';
+
+  @override
+  String get deleteReviewConfirmation =>
+      'هل أنت متأكد أنك تريد حذف هذا التقييم؟';
+
+  @override
+  String get logOutConfirmation => 'هل أنت متأكد من تسجيل الخروج؟';
+
+  @override
+  String get chooseLanguage => 'اختر اللغة';
 }
