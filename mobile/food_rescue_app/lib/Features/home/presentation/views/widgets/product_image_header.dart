@@ -36,9 +36,7 @@ class ProductImageHeader extends StatelessWidget {
           top: farFromTop,
           right: 16,
           bottom: farFromBottom,
-          child: DiscountBadge(
-            discountPercentage: model.discountPercentage.toString(),
-          ),
+          child: DiscountBadge(discountPercentage: model.discountPercentage),
         ),
       ],
     );

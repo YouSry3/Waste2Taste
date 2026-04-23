@@ -7,8 +7,9 @@ import '../../../../../core/extensions/app_localization_extention.dart';
 import 'custom_card_widget.dart';
 
 class VendorCard extends StatelessWidget {
-  const VendorCard({super.key, required this.vendorName});
+  const VendorCard({super.key, required this.vendorName, required this.vendorId});
   final String vendorName;
+  final String vendorId;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,7 @@ class VendorCard extends StatelessWidget {
         trailing: PopupMenuButton<String>(
           onSelected: (value) {
             if (value == 'report') {
-              GoRouter.of(context).push(AppRoutes.reportVendorView);
+              GoRouter.of(context).push(AppRoutes.reportVendorView,extra: vendorId);
             }
           },
           itemBuilder: (context) => [

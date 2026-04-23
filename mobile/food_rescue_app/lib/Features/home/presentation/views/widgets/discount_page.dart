@@ -5,15 +5,17 @@ import 'pill_badge.dart';
 
 class DiscountBadge extends StatelessWidget {
   const DiscountBadge({super.key, required this.discountPercentage});
-  final String discountPercentage;
+  final int discountPercentage;
 
   @override
   Widget build(BuildContext context) {
     return PillBadge(
       color: AppColors.secondary,
       child: Text(
-        "-$discountPercentage",
-        style: AppTextStyles.label(context).copyWith(color: Colors.white, fontSize: 14),
+        "-$discountPercentage%",
+        style: AppTextStyles.label(
+          context,
+        ).copyWith(color: Colors.white, fontSize: 14),
       ),
     );
   }

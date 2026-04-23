@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
@@ -32,6 +33,7 @@ class _ReportVendorViewBodyState extends State<ReportVendorViewBody> {
 
   @override
   Widget build(BuildContext context) {
+    final vendorId = GoRouterState.of(context).extra as String;
     return CustomScrollView(
       slivers: [
         CustomSliverAppBar(

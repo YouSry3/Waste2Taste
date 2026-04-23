@@ -68,7 +68,5 @@ class ProfileRemoteDataSourceImpl extends ProfileRemoteDataSource {
       ApiUrls.deleteAccount,
       options: Options(headers: {'Authorization': 'Bearer ${tokens!.token}'}),
     );
-   
-   
   }
 }

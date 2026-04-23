@@ -7,9 +7,12 @@ class ProductEntity {
   final int discountPercentage;
   final String expiresIn;
   final double rating;
+  final String vendorId;
   final String vendorName;
   final double latitude;
   final double longitude;
+  final String description;
+  final String? category;
 
   const ProductEntity({
     required this.id,
@@ -23,6 +26,9 @@ class ProductEntity {
     required this.vendorName,
     required this.latitude,
     required this.longitude,
+    required this.vendorId,
+    required this.description,
+    this.category,
   });
 }
 
@@ -40,5 +46,8 @@ final skeletonProducts = List.generate(
     vendorName: 'Loading Vendor',
     latitude: 0.0,
     longitude: 0.0,
+    vendorId: '$index',
+    description: 'description',
+    category: 'category',
   ),
 );

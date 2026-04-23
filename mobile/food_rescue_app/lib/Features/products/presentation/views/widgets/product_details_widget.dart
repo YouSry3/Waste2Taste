@@ -21,7 +21,7 @@ class ProductDetailsWidget extends StatelessWidget {
           const SizedBox(height: 16),
           ReviewsSection(rating: product.rating),
           const SizedBox(height: 24),
-          DescriptionSection(description: product.name),
+          DescriptionSection(description: product.description),
           const SizedBox(height: 24),
           PriceSection(product: product),
           const SizedBox(height: 24),

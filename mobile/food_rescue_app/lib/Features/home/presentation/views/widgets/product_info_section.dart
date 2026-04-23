@@ -14,7 +14,7 @@ class ProductInfoSection extends StatelessWidget {
       children: [
         Text(product.name, style: AppTextStyles.title(context)),
         const SizedBox(height: 8),
-        VendorCard(vendorName: product.vendorName),
+        VendorCard(vendorName: product.vendorName, vendorId: product.vendorId),
       ],
     );
   }

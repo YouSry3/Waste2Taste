@@ -1,5 +1,4 @@
 import 'package:waste2taste/core/constants/api_urls.dart';
-
 import '../../domain/entities/product_entity.dart';
 
 class ProductModel extends ProductEntity {
@@ -15,6 +14,9 @@ class ProductModel extends ProductEntity {
     required super.vendorName,
     required super.latitude,
     required super.longitude,
+    required super.vendorId,
+    required super.description,
+    super.category,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -30,6 +32,9 @@ class ProductModel extends ProductEntity {
       vendorName: json['vendorName'] ?? '',
       latitude: (json['latitude'] ?? 0).toDouble(),
       longitude: (json['longitude'] ?? 0).toDouble(),
+      vendorId: json['vendorId'] ?? '',
+      description: json['description'] ?? '',
+      category: json['category'] ?? '',
     );
   }
 
