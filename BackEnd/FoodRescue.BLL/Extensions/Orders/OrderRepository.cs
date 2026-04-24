@@ -1,4 +1,5 @@
-﻿using FoodRescue.DAL.Context;
+﻿using FoodRescue.BLL.Contract.Orders.info;
+using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,14 +22,25 @@ namespace FoodRescue.BLL.Extensions.Orders
             return await GetOrderByIdAsync(order.Id);
         }
 
-        public async Task<List<Order>> GetOrdersByCustomerAsync(Guid customerId)
+        public async Task<List<CustomerOrderDto>> GetOrdersByCustomerAsync(Guid customerId)
         {
             return await _context.Orders
                 .AsNoTracking()
-                .Include(o => o.Product)
-                .Include(o => o.Customer)
                 .Where(o => o.CustomerId == customerId)
                 .OrderByDescending(o => o.CreatedAt)
+                .Select(o => new CustomerOrderDto
+                {
+                    OrderNumber = o.Id.ToString().Substring(0, 6), // or custom number
+                    Status = o.Status.ToString(),
+
+                    ProductName = o.Product.Name,
+                    VendorName = o.Product.Vendor.Name,
+                    ImageUrl = o.Product.ImageUrl,
+
+                    Price = o.Product.Price,
+
+                    PickupTime = o.CreatedAt // or o.PickupTime if you have it
+                })
                 .ToListAsync();
         }
 

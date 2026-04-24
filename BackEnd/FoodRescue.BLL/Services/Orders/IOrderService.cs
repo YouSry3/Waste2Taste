@@ -1,5 +1,6 @@
 ﻿
 using FoodRescue.BLL.Contract.Orders.Create;
+using FoodRescue.BLL.Contract.Orders.info;
 using FoodRescue.DAL.Entities;
 
 namespace FoodRescue.BLL.Services.Orders
@@ -8,7 +9,7 @@ namespace FoodRescue.BLL.Services.Orders
     {
         Task<Result<OrderResponse>> CreateOrderAsync(OrderRequest request, Guid userId);
         Task<Order?> GetOrderByIdAsync(Guid id);  //  Guid not int
-        Task<List<Order>> GetOrdersByCustomerAsync(Guid customerId);
+        Task<List<CustomerOrderDto>> GetOrdersByCustomerAsync(Guid customerId);
         Task<List<Order>> GetOrdersByVendorAsync(Guid vendorId);
         Task<Order?> UpdateOrderStatusAsync(Guid id, string status);  // Guid not int
     }

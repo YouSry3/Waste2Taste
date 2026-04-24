@@ -5,6 +5,7 @@ global using FoodRescue.BLL.Extensions.Products;
 global using FoodRescue.BLL.Extensions.Users;
 global using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Contract.Orders.Create;
+using FoodRescue.BLL.Contract.Orders.info;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.DAL.Entities;
 
@@ -83,7 +84,7 @@ namespace FoodRescue.BLL.Services.Orders
             return order;
         }
 
-        public async Task<List<Order>> GetOrdersByCustomerAsync(Guid customerId)
+        public async Task<List<CustomerOrderDto>> GetOrdersByCustomerAsync(Guid customerId)
         {
             if (customerId == Guid.Empty)
                 throw new ArgumentException("Invalid customer ID.");
