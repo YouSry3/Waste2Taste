@@ -237,26 +237,15 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
         // ==============================
         // Users List
         // ==============================
-        public async Task<PagedResult<UserListDto>> GetUsersAsync(UserFilter filter)
+        public async Task<PagedResult<UserListDto>> GetUsersAsync()
         {
             var query = _context.Users.AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(filter.Search))
-                query = query.Where(u => u.Name.Contains(filter.Search));
-
-            if (!string.IsNullOrWhiteSpace(filter.Status))
-            {
-                if (filter.Status == "Active")
-                    query = query.Where(u => u.IsActive);
-                else if (filter.Status == "Inactive")
-                    query = query.Where(u => !u.IsActive);
-            }
 
             var totalCount = await query.CountAsync();
 
             var users = await query
-                .Skip((filter.Page - 1) * filter.PageSize)
-                .Take(filter.PageSize)
+                .Skip(0)
+                .Take(totalCount)
                 .Select(u => new UserListDto
                 {
                     Id = u.Id,
@@ -278,8 +267,8 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
             {
                 Items = users,
                 TotalCount = totalCount,
-                Page = filter.Page,
-                PageSize = filter.PageSize
+                Page = 1,
+                PageSize = totalCount
             };
         }
     }

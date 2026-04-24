@@ -36,6 +36,6 @@ namespace FoodRescue.DAL.Extensions.Dashboard
 
         Task<List<UserSummaryDto>> GetTopSpendersAsync(int top);
 
-        Task<PagedResult<UserListDto>> GetUsersAsync(UserFilter filter);
+        Task<PagedResult<UserListDto>> GetUsersAsync();
     }
 }

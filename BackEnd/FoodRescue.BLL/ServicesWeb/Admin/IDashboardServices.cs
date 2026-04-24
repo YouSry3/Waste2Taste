@@ -20,7 +20,7 @@ namespace FoodRescue.BLL.ServicesWeb.Admin
 
         Task<Result<DashboardOverviewDto>> GetUserOverViewAsync();
         Task<Result<List<UserSummaryDto>>> GetTopSpendersAsync(int top);
-        Task<Result<PagedResult<UserListDto>>> GetUsersAsync(UserFilter filter);
+        Task<Result<PagedResult<UserListDto>>> GetUsersAsync();
 
 
 

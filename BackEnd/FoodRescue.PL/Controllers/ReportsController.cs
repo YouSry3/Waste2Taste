@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace FoodRescue.PL.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     [Authorize]
     public class ReportsController(IReportsService reportsService, IUserRepository userRepository) : ControllerBase
@@ -21,7 +21,7 @@ namespace FoodRescue.PL.Controllers
         /// Get all reports (Admin only)
         /// </summary>
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> GetAllReports()
@@ -90,17 +90,15 @@ namespace FoodRescue.PL.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
+        [Authorize(Roles ="customer")]
         public async Task<IActionResult> CreateReport([FromBody] CreateReportDto dto)
         {
-            var userId = GetCurrentUserId();
-            if (userId == Guid.Empty)
-                return Unauthorized();
-
-            var user = await _userRepository.GetByIdAsync(userId);
+            
+            var user = await _userRepository.GetByIdAsync(GetCurrentUserId());
             if (user == null)
                 return NotFound("User not found");
 
-            var result = await _reportsService.CreateReportAsync(dto, userId, user.Name);
+            var result = await _reportsService.CreateReportAsync(dto, GetCurrentUserId(), user.Name);
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
@@ -111,7 +109,7 @@ namespace FoodRescue.PL.Controllers
         /// Update report status (Admin only)
         /// </summary>
         [HttpPut("{id}/status")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(401)]
@@ -128,7 +126,7 @@ namespace FoodRescue.PL.Controllers
         /// Add response to report
         /// </summary>
         [HttpPost("{id}/response")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(401)]
@@ -156,7 +154,7 @@ namespace FoodRescue.PL.Controllers
         /// Get report statistics
         /// </summary>
         [HttpGet("stats/overview")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> GetStats()
@@ -195,7 +193,7 @@ namespace FoodRescue.PL.Controllers
         }
 
         [HttpPut("legacy/{id}/toggle-status")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateReportStatusLegacy(Guid id, [FromBody] ReportStatusRequest statusRequest)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

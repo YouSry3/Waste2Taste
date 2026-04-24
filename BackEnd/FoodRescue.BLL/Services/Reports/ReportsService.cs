@@ -13,11 +13,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodRescue.BLL.Services.Reports
 {
-    public class ReportsService(CompanyDbContext context, IReportRepository reportRepository) : IReportsService
+    public class ReportsService(CompanyDbContext context, 
+                                IReportRepository reportRepository,
+                                IProductRepository productRepository) : IReportsService
     {
         private readonly CompanyDbContext _context = context;
         private readonly IReportRepository _reportRepository = reportRepository;
-
+        private readonly IProductRepository _productRepository = productRepository;
+        
         // Get Operations
         public async Task<Result<IEnumerable<ReportListDto>>> GetAllReportsAsync()
         {
@@ -57,6 +60,11 @@ namespace FoodRescue.BLL.Services.Reports
             if (string.IsNullOrEmpty(dto.IssueType) || string.IsNullOrEmpty(dto.Description))
                 return Result.Failure<ReportDetailDto>(new Error("INVALID_DATA", "Issue type and description are required"));
 
+            var productExists = await _productRepository.ExistsAsync(dto.ProductId);
+
+            if (!productExists)
+                return Result.Failure<ReportDetailDto>(
+                    new Error("INVALID_PRODUCT", "Product does not exist"));
             // Generate report code
             var reportCode = await _reportRepository.GenerateReportCodeAsync();
 

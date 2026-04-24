@@ -118,17 +118,11 @@ namespace FoodRescue.BLL.ServicesWeb.Admin
         // ============================
         // Users List
         // ============================
-        public async Task<Result<PagedResult<UserListDto>>> GetUsersAsync(UserFilter filter)
+        public async Task<Result<PagedResult<UserListDto>>> GetUsersAsync()
         {
             try
             {
-                if (filter.Page <= 0)
-                    filter.Page = 1;
-
-                if (filter.PageSize <= 0)
-                    filter.PageSize = 10;
-
-                var users = await _dashboardRepo.GetUsersAsync(filter);
+                var users = await _dashboardRepo.GetUsersAsync();
 
                 return Result.Success(users);
             }
@@ -138,7 +132,6 @@ namespace FoodRescue.BLL.ServicesWeb.Admin
                     DashboardAdminErrors.ExternalServiceError("Server Error", ex.Message));
             }
         }
-
         // ===================================================
         // Private Helpers
         // ===================================================

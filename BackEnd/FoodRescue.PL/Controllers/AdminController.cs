@@ -152,9 +152,9 @@ namespace FoodRescue.PL.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [Produces("application/json")]
-        public async Task<IActionResult> GetUsers([FromBody] UserFilter filter)
+        public async Task<IActionResult> GetUsers()
         {
-            var result = await _dashboardServices.GetUsersAsync(filter);
+            var result = await _dashboardServices.GetUsersAsync();
 
             if (!result.IsSuccess)
                 return BadRequest(result.Error);
