@@ -86,7 +86,51 @@ public class ProductService : IProductService
                 VendorName = product.Vendor.Name,
                 Category = product.Category,
                 Latitude = product.Vendor.Latitude,
-                Longitude = product.Vendor.Longitude
+                Longitude = product.Vendor.Longitude,
+                IsFavorite = false
+            });
+        }
+
+        return Result.Success(response.AsEnumerable());
+    }
+
+    public async Task<Result<IEnumerable<ProductListResponse>>> GetAllAsync(string? name, Guid? userId)
+    {
+        var products = await _productRepository.GetActiveAsync(name);
+        var response = new List<ProductListResponse>();
+
+        // Get user's favorite product IDs if userId is provided
+        var favoriteProductIds = userId.HasValue
+            ? (await _context.Favorites
+                .Where(f => f.UserId == userId.Value)
+                .Select(f => f.ProductId)
+                .ToListAsync())
+            : new List<Guid>();
+
+        foreach (var product in products)
+        {
+            var reviews = await GetReviewsByProductIdAsync(product.Id);
+            var avgRating = reviews.Any() ? reviews.Average(r => (double)r.Rating) : 0.0;
+            var totalReviews = reviews.Count;
+
+            response.Add(new ProductListResponse
+            {
+                Id = product.Id,
+                Name = product.Name,
+                ImageUrl = product.ImageUrl,
+                Price = product.Price,
+                Descripcion = product.Description,
+                OriginalPrice = product.OriginalPrice,
+                DiscountPercentage = CalculateDiscountPercentage(product.OriginalPrice, product.Price),
+                ExpiresIn = CalculateExpiresIn(product.ExpiryDate),
+                Rating = Math.Round(avgRating, 1),
+                TotalReviews = totalReviews,
+                VendorId = product.VendorId,
+                VendorName = product.Vendor.Name,
+                Category = product.Category,
+                Latitude = product.Vendor.Latitude,
+                Longitude = product.Vendor.Longitude,
+                IsFavorite = favoriteProductIds.Contains(product.Id)
             });
         }
 

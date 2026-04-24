@@ -6,6 +6,7 @@ using FoodRescue.BLL.Extensions.Dashboard;
 using FoodRescue.BLL.Extensions.Dashboard.AnalyticsDashboardTab;
 using FoodRescue.BLL.Extensions.Dashboard.ListingDashboardTab;
 using FoodRescue.BLL.Extensions.Dashboard.OrderDashboardTab;
+using FoodRescue.BLL.Extensions.Favorites;
 using FoodRescue.BLL.Extensions.Reports;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.BLL.Extensions.Vendors.MapsterConfiguration;
@@ -13,6 +14,7 @@ using FoodRescue.BLL.Repositorys.Dashboard;
 using FoodRescue.BLL.Services.AnalyticsDashboardTab;
 using FoodRescue.BLL.Services.Authentication.AuthServices;
 using FoodRescue.BLL.Services.Authentication.Email_Service;
+using FoodRescue.BLL.Services.Favorites;
 using FoodRescue.BLL.Services.FileStorage;
 using FoodRescue.BLL.Services.JWT;
 using FoodRescue.BLL.Services.ListingDashboardTab;
@@ -146,6 +148,8 @@ namespace FoodRescue.PL
             services.AddScoped<IVendorAnalyticsRepository, VendorAnalyticsRepository>();
             services.AddScoped<IVendorAnalyticsService, VendorAnalyticsService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
+            services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+            services.AddScoped<IFavoriteService, FavoriteService>();
 
             VendorMapsterConfig.RegisterVendorMappings();
 

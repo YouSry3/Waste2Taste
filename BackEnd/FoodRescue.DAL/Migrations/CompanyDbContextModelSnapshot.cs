@@ -87,6 +87,33 @@ namespace FoodRescue.DAL.Migrations
                     b.ToTable("Donations", (string)null);
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Favorite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId", "ProductId")
+                        .IsUnique();
+
+                    b.ToTable("Favorites");
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.Order", b =>
                 {
                     b.Property<Guid>("Id")
@@ -600,6 +627,25 @@ namespace FoodRescue.DAL.Migrations
                     b.Navigation("Vendor");
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Favorite", b =>
+                {
+                    b.HasOne("FoodRescue.DAL.Entities.Product", "Product")
+                        .WithMany("Favorites")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FoodRescue.DAL.Entities.User", "User")
+                        .WithMany("Favorites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.Order", b =>
                 {
                     b.HasOne("FoodRescue.DAL.Entities.User", "Customer")
@@ -731,6 +777,8 @@ namespace FoodRescue.DAL.Migrations
                 {
                     b.Navigation("AISpoileRequest");
 
+                    b.Navigation("Favorites");
+
                     b.Navigation("Orders");
 
                     b.Navigation("Reviews");
@@ -743,6 +791,8 @@ namespace FoodRescue.DAL.Migrations
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.User", b =>
                 {
+                    b.Navigation("Favorites");
+
                     b.Navigation("Orders");
 
                     b.Navigation("Reviews");

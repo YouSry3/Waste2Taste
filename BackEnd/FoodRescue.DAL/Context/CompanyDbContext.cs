@@ -23,6 +23,7 @@ namespace FoodRescue.DAL.Context
         public DbSet<VendorRequest> VendorRequests { get; set; }
         public DbSet<AISpoileRequest> AISpoileRequests { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Favorite> Favorites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +32,7 @@ namespace FoodRescue.DAL.Context
             modelBuilder.ApplyConfiguration(new PasswordResetTokenConfiguration());
             modelBuilder.ApplyConfiguration(new VendorConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            modelBuilder.ApplyConfiguration(new FavoriteConfiguration());
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.Customer)

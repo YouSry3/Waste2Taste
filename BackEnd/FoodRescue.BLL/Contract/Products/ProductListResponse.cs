@@ -17,4 +17,5 @@ public class ProductListResponse
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     public string? Category { get; set; }
+    public bool IsFavorite { get; set; } = false;
 }

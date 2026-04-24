@@ -1,8 +1,10 @@
 ﻿using FoodRescue.BLL.Contract.Products;
 using FoodRescue.BLL.Services.Products;
+using FoodRescue.BLL.Services.Favorites;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FoodRescue.PL.Controllers;
 
@@ -12,10 +14,12 @@ namespace FoodRescue.PL.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _service;
+    private readonly IFavoriteService _favoriteService;
 
-    public ProductsController(IProductService service)
+    public ProductsController(IProductService service, IFavoriteService favoriteService)
     {
         _service = service;
+        _favoriteService = favoriteService;
     }
 
     /// <summary>
@@ -23,7 +27,7 @@ public class ProductsController : ControllerBase
     /// </summary>
     /// <remarks>
     /// Returns a list of all active products with their details including category, 
-    /// vendor information, pricing, and location data.
+    /// vendor information, pricing, and location data. Includes IsFavorite flag for authenticated users.
     /// </remarks>
     /// <param name="name">Optional product name filter</param>
     /// <returns>List of products with category information</returns>
@@ -36,7 +40,15 @@ public class ProductsController : ControllerBase
     [Produces("application/json")]
     public async Task<IActionResult> GetAll([FromQuery] string? name)
     {
-        var result = await _service.GetAllAsync(name);
+        // Try to get current user ID if authenticated
+        Guid? userId = null;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var parsedUserId))
+        {
+            userId = parsedUserId;
+        }
+
+        var result = await _service.GetAllAsync(name, userId);
         if (result.IsFailure) return BadRequest(result.Error);
         return Ok(result.Value);
     }
@@ -102,5 +114,68 @@ public class ProductsController : ControllerBase
         var result = await _service.MarkAsExpiredAsync(id);
         if (result.IsFailure) return NotFound(result.Error);
         return Ok(new { message = "Product marked as expired" });
+    }
+
+    /// <summary>
+    /// Toggle favorite status for a product
+    /// </summary>
+    /// <remarks>
+    /// If the product is already favorited by the current user, it will be removed.
+    /// If not favorited, it will be added to favorites.
+    /// </remarks>
+    /// <param name="productId">The product ID to toggle favorite</param>
+    /// <returns>Message indicating if favorite was added or removed</returns>
+    /// <response code="200">Favorite toggled successfully</response>
+    /// <response code="401">Unauthorized - user not authenticated</response>
+    /// <response code="404">Product not found</response>
+    [HttpPost("{productId:guid}/favorite")]
+    [Authorize(Roles ="customer")]
+    [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ToggleFavorite(Guid productId)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized(new { message = "User not authenticated" });
+        }
+
+        var result = await _favoriteService.ToggleFavoriteAsync(userId, productId);
+        if (result.IsFailure)
+        {
+            if (result.Error.code == "ProductNotFound")
+                return NotFound(result.Error);
+            return BadRequest(result.Error);
+        }
+
+        return Ok(new { message = result.Value });
+    }
+
+    /// <summary>
+    /// Get all products favorited by the current user
+    /// </summary>
+    /// <remarks>
+    /// Returns a list of all products that the current user has added to favorites.
+    /// </remarks>
+    /// <returns>List of favorited products</returns>
+    /// <response code="200">Favorites retrieved successfully</response>
+    /// <response code="401">Unauthorized - user not authenticated</response>
+    [HttpGet("my-favorites")]
+    [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<ProductListResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [Produces("application/json")]
+    public async Task<IActionResult> GetMyFavorites()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        {
+            return Unauthorized(new { message = "User not authenticated" });
+        }
+
+        var result = await _favoriteService.GetUserFavoritesAsync(userId);
+        if (result.IsFailure) return BadRequest(result.Error);
+        return Ok(result.Value);
     }
 }

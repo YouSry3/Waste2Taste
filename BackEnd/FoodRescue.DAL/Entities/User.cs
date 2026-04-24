@@ -26,5 +26,6 @@
 
         public ICollection<Review> Reviews { get; set; }
         public ICollection<Order> Orders { get; set; }
+        public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
     }
 }

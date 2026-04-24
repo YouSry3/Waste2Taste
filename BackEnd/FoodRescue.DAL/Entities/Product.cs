@@ -29,6 +29,9 @@ public class Product
 
     // One-to-One relationship with AI spoilage detection result
     public AISpoileRequest? AISpoileRequest { get; set; }
+
+    // 🔴 NEW: One-to-Many relationship (Product can be favorited by many Users)
+    public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
 }
 
 
