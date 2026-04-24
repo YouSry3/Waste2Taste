@@ -28,8 +28,7 @@ class Waste2TasteApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) =>
-              GetProfileCubit(getIt.get<GetProfileUsecase>())
-                ..getProfile(),
+              GetProfileCubit(getIt.get<GetProfileUsecase>())..getProfile(),
         ),
       ],
       child: BlocBuilder<LocalizationCubit, LocalizationState>(

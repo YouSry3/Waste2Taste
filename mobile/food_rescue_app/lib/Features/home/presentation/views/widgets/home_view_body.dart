@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:waste2taste/Features/home/presentation/views/widgets/customer_card_bloc_selector.dart';
+import 'package:waste2taste/Features/home/presentation/views/widgets/customer_card_bloc_builder.dart';
 import '../../../domain/entities/product_entity.dart';
 import '../../manager/get_products_cubit/get_products_cubit.dart';
 import '../../manager/get_products_cubit/get_products_state.dart';
@@ -22,13 +22,15 @@ class HomeViewBody extends StatelessWidget {
       slivers: [
         CustomSliverAppBar(
           toolbarHeight: 90,
-          widget: const CustomerCardBlocSelector(),
+          widget: const CustomerCardBlocBuilder(),
         ),
         SliverToBoxAdapter(
           child: SectionHeader(
             title: context.loc.nearbyDeals,
             onTap: () async {
-              final result = await GoRouter.of(context).push(AppRoutes.allProducts);
+              final result = await GoRouter.of(
+                context,
+              ).push(AppRoutes.allProducts);
               if (result == true && context.mounted) {
                 context.read<GetProductsCubit>().getProducts();
               }

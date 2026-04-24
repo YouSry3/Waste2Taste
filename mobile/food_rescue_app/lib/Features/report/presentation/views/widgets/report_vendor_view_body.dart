@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
-import '../../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../../core/widgets/custom_greeting_section.dart';
 import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import '../../../../../core/widgets/profile_text_field.dart';
+import 'report_vendor_button_bloc_consumer.dart';
 
 class ReportVendorViewBody extends StatefulWidget {
   const ReportVendorViewBody({super.key});
@@ -17,6 +17,7 @@ class ReportVendorViewBody extends StatefulWidget {
 class _ReportVendorViewBodyState extends State<ReportVendorViewBody> {
   late TextEditingController _subjectController;
   late TextEditingController _descriptionController;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     _subjectController = TextEditingController();
@@ -44,34 +45,51 @@ class _ReportVendorViewBodyState extends State<ReportVendorViewBody> {
         ),
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsetsGeometry.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 32),
-                CustomGreetingSection(
-                  title: context.loc.howCanWeHelpYou,
-                  subtitle: context.loc.describeYourIssueBelow,
-                ),
-                const SizedBox(height: 40),
-                ProfileTextField(
-                  label: context.loc.subject,
-                  controller: _subjectController,
-                  hintText: context.loc.brieflyDescribeTheIssue,
-                ),
-                const SizedBox(height: 24),
-                ProfileTextField(
-                  label: context.loc.description,
-                  controller: _descriptionController,
-                  hintText: context.loc.provideMoreDetails,
-                  maxLines: 4,
-                ),
-                const SizedBox(height: 32),
-                CustomElevatedButton(
-                  text: context.loc.submitReport,
-                  onPressed: () {},
-                ),
-              ],
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 32),
+                  CustomGreetingSection(
+                    title: context.loc.howCanWeHelpYou,
+                    subtitle: context.loc.describeYourIssueBelow,
+                  ),
+                  const SizedBox(height: 40),
+                  ProfileTextField(
+                    label: context.loc.subject,
+                    controller: _subjectController,
+                    hintText: context.loc.brieflyDescribeTheIssue,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return context.loc.pleaseEnterSubject;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  ProfileTextField(
+                    label: context.loc.description,
+                    controller: _descriptionController,
+                    hintText: context.loc.provideMoreDetails,
+                    maxLines: 4,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return context.loc.pleaseEnterDescription;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 32),
+                  ReportVendorButtonBlocConsumer(
+                    formKey: _formKey,
+                    vendorId: vendorId,
+                    subjectController: _subjectController,
+                    descriptionController: _descriptionController,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

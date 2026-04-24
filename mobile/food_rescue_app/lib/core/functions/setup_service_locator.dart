@@ -32,6 +32,10 @@ import 'package:waste2taste/core/database/pref_service.dart';
 import 'package:waste2taste/core/services/api_service.dart';
 import 'package:waste2taste/core/cubits/theme_cubit/theme_cubit.dart';
 import 'package:waste2taste/core/services/location_service.dart';
+import 'package:waste2taste/Features/report/data/data_sources/report_remote_data_source.dart';
+import 'package:waste2taste/Features/report/data/repos/report_repo_impl.dart';
+import 'package:waste2taste/Features/report/domain/use_cases/report_vendor_usecase.dart';
+import 'package:waste2taste/Features/report/presentation/manager/report_vendor_cubit/report_vendor_cubit.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -132,5 +136,19 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerFactory<DeleteReviewCubit>(
     () => DeleteReviewCubit(deleteReviewUseCase: getIt.get<DeleteReviewUseCase>()),
+  );
+  getIt.registerLazySingleton<ReportRemoteDataSource>(
+    () => ReportRemoteDataSourceImpl(getIt.get<ApiService>()),
+  );
+  getIt.registerLazySingleton<ReportRepoImpl>(
+    () => ReportRepoImpl(
+      reportRemoteDataSource: getIt.get<ReportRemoteDataSource>(),
+    ),
+  );
+  getIt.registerLazySingleton<ReportVendorUsecase>(
+    () => ReportVendorUsecase(reportRepo: getIt.get<ReportRepoImpl>()),
+  );
+  getIt.registerFactory<ReportVendorCubit>(
+    () => ReportVendorCubit(getIt.get<ReportVendorUsecase>()),
   );
 }

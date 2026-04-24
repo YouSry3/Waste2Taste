@@ -43,12 +43,14 @@ class LoginBlocConsumer extends StatelessWidget {
             }
           });
         } else if (state is LoginSuccessState) {
-          CustomSnackBar.show(
-            context: context,
-            message: context.loc.loginSuccess,
-            type: SnackBarType.success,
-          );
           await context.read<GetUserLocationCubit>().getUserLocation();
+          if (context.mounted) {
+            CustomSnackBar.show(
+              context: context,
+              message: context.loc.loginSuccess,
+              type: SnackBarType.success,
+            );
+          }
           AppRouter.login();
         }
       },

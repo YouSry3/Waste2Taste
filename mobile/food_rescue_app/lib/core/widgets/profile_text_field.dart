@@ -10,6 +10,7 @@ class ProfileTextField extends StatelessWidget {
   final String? hintText;
   final bool obscureText;
   final int? maxLines;
+  final String? Function(String?)? validator;
 
   const ProfileTextField({
     super.key,
@@ -19,6 +20,7 @@ class ProfileTextField extends StatelessWidget {
     this.hintText,
     this.obscureText = false,
     this.maxLines = 1,
+    this.validator,
   });
 
   @override
@@ -33,7 +35,7 @@ class ProfileTextField extends StatelessWidget {
           initialValue: initialValue,
           controller: controller,
           obscureText: obscureText,
-
+          validator: validator,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: AppTextStyles.subtitle(context).copyWith(fontSize: 15),

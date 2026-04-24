@@ -1106,6 +1106,24 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to log out?'**
   String get logOutConfirmation;
 
+  /// No description provided for @reportSubmittedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted successfully'**
+  String get reportSubmittedSuccessfully;
+
+  /// No description provided for @pleaseEnterSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a subject'**
+  String get pleaseEnterSubject;
+
+  /// No description provided for @pleaseEnterDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a description'**
+  String get pleaseEnterDescription;
+
   /// No description provided for @chooseLanguage.
   ///
   /// In en, this message translates to:

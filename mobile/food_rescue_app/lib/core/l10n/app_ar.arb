@@ -167,5 +167,8 @@
     "deleteReview": "حذف التقييم",
     "deleteReviewConfirmation": "هل أنت متأكد أنك تريد حذف هذا التقييم؟",
     "logOutConfirmation": "هل أنت متأكد من تسجيل الخروج؟",
+    "reportSubmittedSuccessfully": "تم إرسال التقرير بنجاح",
+    "pleaseEnterSubject": "يرجى إدخال الموضوع",
+    "pleaseEnterDescription": "يرجى إدخال الوصف",
     "chooseLanguage": "اختر اللغة"
 }

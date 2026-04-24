@@ -532,5 +532,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get logOutConfirmation => 'هل أنت متأكد من تسجيل الخروج؟';
 
   @override
+  String get reportSubmittedSuccessfully => 'تم إرسال التقرير بنجاح';
+
+  @override
+  String get pleaseEnterSubject => 'يرجى إدخال الموضوع';
+
+  @override
+  String get pleaseEnterDescription => 'يرجى إدخال الوصف';
+
+  @override
   String get chooseLanguage => 'اختر اللغة';
 }
