@@ -22,12 +22,15 @@ export const API_CONFIG = {
       LISTINGS: "/admin/listings",
       ORDERS: "/admin/orders",
       VENDORS: "/admin/vendors",
-      USERS: "/admin/users",
+      USERS: "/Admin/Users",
+      USERS_TABLE: "/Admin/Users-Table",
+      USERS_OVERVIEW: "/Admin/Users-OverView",
       MAP: "/admin/vendors/map",
       MODERATION: {
         LISTINGS: "/admin/moderation/listings",
         REPORTS: "/admin/moderation/reports",
         VENDOR_REQUESTS: "/admin/moderation/vendor-requests",
+        SUMMARY: "/Admin/moderation/summary",
       },
     },
     VENDOR: {

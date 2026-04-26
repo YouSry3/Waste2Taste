@@ -36,21 +36,21 @@ export const validatePhone = (phone: string): boolean => {
 export const validateForm = (formData: any): Record<string, string> => {
   const errors: Record<string, string> = {};
 
-  if (!formData.name?.trim()) errors.name = "Name is required";
+  if (!formData.fullName?.trim()) errors.fullName = "Full name is required";
   if (!formData.email?.trim()) {
     errors.email = "Email is required";
   } else if (!validateEmail(formData.email)) {
     errors.email = "Invalid email format";
   }
-  if (!formData.phone?.trim()) {
-    errors.phone = "Phone is required";
-  } else if (!validatePhone(formData.phone)) {
-    errors.phone = "Invalid phone format (555) 123-4567";
+  if (!formData.phoneNumber?.trim()) {
+    errors.phoneNumber = "Phone is required";
+  } else if (!validatePhone(formData.phoneNumber)) {
+    errors.phoneNumber = "Invalid phone format (555) 123-4567";
   }
-  if (!formData.orders?.trim()) {
-    errors.orders = "Orders is required";
-  } else if (isNaN(Number(formData.orders)) || Number(formData.orders) < 0) {
-    errors.orders = "Orders must be a positive number";
+  if (!formData.ordersCount?.trim()) {
+    errors.ordersCount = "Orders count is required";
+  } else if (isNaN(Number(formData.ordersCount)) || Number(formData.ordersCount) < 0) {
+    errors.ordersCount = "Orders count must be a positive number";
   }
   if (!formData.totalSpent?.trim()) {
     errors.totalSpent = "Total spent is required";
@@ -60,15 +60,15 @@ export const validateForm = (formData: any): Record<string, string> => {
   ) {
     errors.totalSpent = "Total spent must be a positive number";
   }
-  if (!formData.lastOrder?.trim()) {
-    errors.lastOrder = "Last order date is required";
+  if (!formData.lastOrderDate?.trim()) {
+    errors.lastOrderDate = "Last order date is required";
   }
 
   return errors;
 };
 
 export const validateBulkAction = (
-  userIds: number[],
+  userIds: string[],
   action: string,
 ): string | null => {
   if (userIds.length === 0) {

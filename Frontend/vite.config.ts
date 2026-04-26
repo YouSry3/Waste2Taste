@@ -2,11 +2,127 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite"; // <-- ADD THIS IMPORT
+import http from "node:http";
+import https from "node:https";
+import type { IncomingMessage, ServerResponse } from "node:http";
+
+const USERS_TABLE_PROXY_PATH = "/__internal/admin/users-table";
+const USERS_TABLE_TARGET = new URL(
+  "/Admin/Users-Table",
+  process.env.VITE_API_BASE_URL || "http://localhost:5199",
+);
+
+const readRequestBody = (req: IncomingMessage): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+
+    req.on("data", (chunk) => {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    });
+
+    req.on("end", () => {
+      resolve(Buffer.concat(chunks).toString("utf8"));
+    });
+
+    req.on("error", reject);
+  });
+
+const sendJson = (
+  res: ServerResponse,
+  statusCode: number,
+  payload: Record<string, unknown>,
+) => {
+  res.statusCode = statusCode;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(payload));
+};
+
+const proxyUsersTableRequest = async (
+  req: IncomingMessage,
+  res: ServerResponse,
+) => {
+  try {
+    const rawBody = await readRequestBody(req);
+    const requestBody = rawBody || "{}";
+
+    try {
+      JSON.parse(requestBody);
+    } catch {
+      sendJson(res, 400, {
+        message: "Users-Table proxy received invalid JSON.",
+      });
+      return;
+    }
+
+    const transport = USERS_TABLE_TARGET.protocol === "https:" ? https : http;
+    const proxyRequest = transport.request(
+      {
+        protocol: USERS_TABLE_TARGET.protocol,
+        hostname: USERS_TABLE_TARGET.hostname,
+        port: USERS_TABLE_TARGET.port,
+        method: "GET",
+        path: `${USERS_TABLE_TARGET.pathname}${USERS_TABLE_TARGET.search}`,
+        headers: {
+          Accept: req.headers.accept || "application/json",
+          Authorization: req.headers.authorization || "",
+          Cookie: req.headers.cookie || "",
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(requestBody),
+        },
+      },
+      (proxyResponse) => {
+        res.statusCode = proxyResponse.statusCode || 502;
+
+        Object.entries(proxyResponse.headers).forEach(([headerName, headerValue]) => {
+          if (headerValue !== undefined) {
+            res.setHeader(headerName, headerValue);
+          }
+        });
+
+        proxyResponse.pipe(res);
+      },
+    );
+
+    proxyRequest.on("error", (error) => {
+      if (!res.headersSent) {
+        sendJson(res, 502, {
+          message: "Failed to proxy Users-Table request.",
+          errors: [error.message],
+        });
+      }
+    });
+
+    proxyRequest.write(requestBody);
+    proxyRequest.end();
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Unexpected proxy error.";
+
+    if (!res.headersSent) {
+      sendJson(res, 500, {
+        message,
+      });
+    }
+  }
+};
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    {
+      name: "users-table-dev-proxy",
+      configureServer(server) {
+        server.middlewares.use(async (req, res, next) => {
+          if (req.url !== USERS_TABLE_PROXY_PATH || req.method !== "POST") {
+            next();
+            return;
+          }
+
+          await proxyUsersTableRequest(req, res);
+        });
+      },
+    },
   ],
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx", ".json"],

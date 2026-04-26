@@ -80,6 +80,13 @@ export interface CustomerReport {
   status: ReportStatus;
 }
 
+export interface ModerationSummary {
+  listingsToReviewCount: number;
+  pendingVendorRequestsCount: number;
+  openCustomerReportsCount: number;
+  totalItemsForModeration: number;
+}
+
 // New comprehensive ModerationAction interface
 export interface ModerationAction {
   id: number;

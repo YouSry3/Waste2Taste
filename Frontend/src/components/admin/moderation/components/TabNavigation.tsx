@@ -1,9 +1,15 @@
 import React from "react";
-import { Listing, VendorRequest, CustomerReport } from "../types";
+import {
+  Listing,
+  VendorRequest,
+  CustomerReport,
+  ModerationSummary,
+} from "../types";
 
 interface TabNavigationProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  summary?: ModerationSummary | null;
   listings: Listing[];
   vendorRequests: VendorRequest[];
   customerReports: CustomerReport[];
@@ -12,10 +18,15 @@ interface TabNavigationProps {
 export function TabNavigation({
   activeTab,
   setActiveTab,
+  summary,
   listings,
   vendorRequests,
   customerReports,
 }: TabNavigationProps) {
+  const pendingListingsCount = summary?.listingsToReviewCount ?? 0;
+  const pendingVendorsCount = summary?.pendingVendorRequestsCount ?? 0;
+  const openReportsCount = summary?.openCustomerReportsCount ?? 0;
+
   return (
     <div className="flex space-x-2 mb-6">
       <button
@@ -27,11 +38,11 @@ export function TabNavigation({
         }`}
       >
         Listing Moderation
-        {listings.filter((l) => l.status === "pending").length > 0 && (
+        {pendingListingsCount > 0 && (
           <span
             className={`ml-2 px-2 py-1 text-xs rounded-full ${activeTab === "listings" ? "bg-orange-600" : "bg-orange-100 text-orange-800"}`}
           >
-            {listings.filter((l) => l.status === "pending").length}
+            {pendingListingsCount}
           </span>
         )}
       </button>
@@ -45,11 +56,11 @@ export function TabNavigation({
         }`}
       >
         Vendor Requests
-        {vendorRequests.filter((v) => v.status === "pending").length > 0 && (
+        {pendingVendorsCount > 0 && (
           <span
             className={`ml-2 px-2 py-1 text-xs rounded-full ${activeTab === "vendors" ? "bg-orange-600" : "bg-orange-100 text-orange-800"}`}
           >
-            {vendorRequests.filter((v) => v.status === "pending").length}
+            {pendingVendorsCount}
           </span>
         )}
       </button>
@@ -63,12 +74,11 @@ export function TabNavigation({
         }`}
       >
         Customer Reports
-        {customerReports.filter((r) => r.status === "under_review").length >
-          0 && (
+        {openReportsCount > 0 && (
           <span
             className={`ml-2 px-2 py-1 text-xs rounded-full ${activeTab === "reports" ? "bg-orange-600" : "bg-orange-100 text-orange-800"}`}
           >
-            {customerReports.filter((r) => r.status === "under_review").length}
+            {openReportsCount}
           </span>
         )}
       </button>

@@ -39,26 +39,26 @@ export function ViewUserDialog({
             <div className="flex gap-3 flex-1">
               <Avatar className="h-16 w-16">
                 <AvatarFallback className="bg-green-100 text-green-700 text-xl font-semibold">
-                  {getInitials(user.name)}
+                  {getInitials(user.fullName)}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h4 className="text-lg font-semibold">{user.name}</h4>
+                <h4 className="text-lg font-semibold">{user.fullName}</h4>
                 <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
                   <Calendar className="h-3 w-3" />
-                  Joined {user.joined}
+                  Joined {new Date(user.joinedAt).toLocaleDateString()}
                 </p>
               </div>
             </div>
             <Badge
               className={`h-fit cursor-pointer ${
-                user.status === "Active"
+                user.isActive
                   ? "bg-green-100 text-green-700 hover:bg-green-200"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
               onClick={() => onToggleStatus(user)}
             >
-              {user.status}
+              {user.isActive ? "Active" : "Inactive"}
             </Badge>
           </div>
 
@@ -82,10 +82,10 @@ export function ViewUserDialog({
               <div>
                 <p className="text-xs text-gray-500">Phone</p>
                 <a
-                  href={`tel:${user.phone}`}
+                  href={`tel:${user.phoneNumber}`}
                   className="text-sm hover:text-green-600"
                 >
-                  {user.phone}
+                  {user.phoneNumber}
                 </a>
               </div>
             </div>
@@ -96,19 +96,21 @@ export function ViewUserDialog({
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-gray-50 p-3 rounded-lg">
               <p className="text-xs text-gray-500">Total Orders</p>
-              <p className="text-lg font-semibold">{user.orders}</p>
+              <p className="text-lg font-semibold">{user.ordersCount}</p>
             </div>
             <div className="bg-green-50 p-3 rounded-lg">
               <p className="text-xs text-gray-500">Total Spent</p>
               <p className="text-lg font-semibold text-green-600">
-                {user.totalSpent}
+                ${typeof user.totalSpent === 'number' && !isNaN(user.totalSpent) ? user.totalSpent.toFixed(2) : '0.00'}
               </p>
             </div>
           </div>
 
           <div className="bg-gray-50 p-3 rounded-lg">
             <p className="text-xs text-gray-500">Last Order</p>
-            <p className="text-sm font-medium">{user.lastOrder}</p>
+            <p className="text-sm font-medium">
+              {user.lastOrderDate ? new Date(user.lastOrderDate).toLocaleDateString() : 'Never'}
+            </p>
           </div>
 
           <div className="flex gap-2 pt-4">

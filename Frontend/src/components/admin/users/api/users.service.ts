@@ -6,7 +6,7 @@ Add caching, data transformation, and business rules here.
 */
 
 import { usersApi } from "./users.api";
-import { User, UserFormData } from "../types";
+import { User, UserFormData, UsersOverview, UsersApiResponse } from "../types";
 import type { UsersQueryParams, BulkActionRequest } from "./users.types";
 
 export class UsersService {
@@ -22,7 +22,8 @@ export class UsersService {
     }
 
     try {
-      const users = await usersApi.fetchUsers(params);
+      const response: UsersApiResponse = await usersApi.fetchUsers(params);
+      const users = response.items;
 
       // Cache the result
       this.cache.set(cacheKey, users);
@@ -35,7 +36,7 @@ export class UsersService {
     }
   }
 
-  async getUserById(id: number): Promise<User> {
+  async getUserById(id: string): Promise<User> {
     try {
       return await usersApi.fetchUserById(id);
     } catch (error) {
@@ -67,7 +68,7 @@ export class UsersService {
     }
   }
 
-  async updateUser(id: number, formData: UserFormData): Promise<User> {
+  async updateUser(id: string, formData: UserFormData): Promise<User> {
     try {
       // Transform form data to API format
       const userData = {
@@ -90,7 +91,7 @@ export class UsersService {
     }
   }
 
-  async toggleUserStatus(id: number): Promise<User> {
+  async toggleUserStatus(id: string): Promise<User> {
     try {
       // First get current user to know current status
       const user = await this.getUserById(id);
@@ -124,7 +125,7 @@ export class UsersService {
     }
   }
 
-  async deleteUser(id: number): Promise<void> {
+  async deleteUser(id: string): Promise<void> {
     try {
       await usersApi.deleteUser(id);
 
@@ -133,6 +134,15 @@ export class UsersService {
     } catch (error) {
       console.error(`Failed to delete user ${id}:`, error);
       throw new Error("Unable to delete user. Please try again.");
+    }
+  }
+
+  async getUsersOverview(): Promise<UsersOverview> {
+    try {
+      return await usersApi.fetchUsersOverview();
+    } catch (error) {
+      console.error("Failed to fetch users overview:", error);
+      throw new Error("Unable to load users overview. Please try again.");
     }
   }
 

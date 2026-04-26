@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { useUsers } from "./hooks/useUsers";
 import { useUserForm } from "./hooks/useUserForm";
 import { useSortFilter } from "./hooks/useSortFilter";
 import { useBulkActions } from "./hooks/useBulkActions";
+import { User } from "./types";
 import { useExport } from "./hooks/useExport";
+import { useUsersOverview } from "./hooks/useUsersOverview";
 import { UserStats } from "./components/UserStats";
 import { UserFilters } from "./components/UserFilters";
 import { TopSpenders } from "./components/TopSpenders";
@@ -19,19 +21,33 @@ import { Button } from "../../../components/ui/button";
 import { Download } from "lucide-react";
 
 export function UsersView() {
-  const { users, addUser, updateUser, toggleStatus, deleteUsers } = useUsers();
-  const { formData, formErrors, handleInputChange, validateForm, resetForm } =
-    useUserForm();
   const {
     searchTerm,
     filterStatus,
     sortBy,
     sortOrder,
-    filteredAndSortedUsers,
     setSearchTerm,
     setFilterStatus,
     toggleSort,
-  } = useSortFilter(users);
+  } = useSortFilter();
+
+  const apiParams = useMemo(
+    () => ({
+      search: searchTerm,
+      status: filterStatus,
+      sortBy,
+      sortOrder,
+      page: 1,
+      pageSize: 10,
+    }),
+    [searchTerm, filterStatus, sortBy, sortOrder],
+  );
+
+  const { users, addUser, updateUser, toggleStatus, deleteUsers } = useUsers(
+    apiParams,
+  );
+  const { formData, formErrors, handleInputChange, validateForm, resetForm } =
+    useUserForm();
   const {
     selectedUsers,
     isSelectAll,
@@ -39,11 +55,12 @@ export function UsersView() {
     toggleUserSelection,
     toggleSelectAll,
     handleBulkAction,
-  } = useBulkActions(users, filteredAndSortedUsers, {
+  } = useBulkActions(users, users, {
     toggleStatus,
     deleteUsers,
   });
   const { handleExportCSV } = useExport();
+  const { overview } = useUsersOverview();
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -53,14 +70,14 @@ export function UsersView() {
   const openEditDialog = (user: User) => {
     setSelectedUser(user);
     resetForm({
-      name: user.name,
+      fullName: user.fullName,
       email: user.email,
-      phone: user.phone,
-      orders: user.orders.toString(),
-      totalSpent: user.totalSpent,
-      status: user.status,
-      joined: user.joined,
-      lastOrder: user.lastOrder,
+      phoneNumber: user.phoneNumber,
+      ordersCount: user.ordersCount.toString(),
+      totalSpent: user.totalSpent.toString(),
+      isActive: user.isActive,
+      joinedAt: user.joinedAt.split('T')[0], // Convert ISO date to date input format
+      lastOrderDate: user.lastOrderDate ? user.lastOrderDate.split('T')[0] : "",
     });
     setIsViewDialogOpen(false);
     setIsEditDialogOpen(true);
@@ -132,7 +149,11 @@ export function UsersView() {
       </div>
 
       {/* Stats */}
-      <UserStats users={users} />
+      {overview ? (
+        <UserStats overview={overview} />
+      ) : (
+        <UserStats users={users} />
+      )}
 
       {/* Bulk Actions Bar */}
       {selectedUsers.length > 0 && (
@@ -146,7 +167,11 @@ export function UsersView() {
       )}
 
       {/* Top Spenders */}
-      <TopSpenders users={users} />
+      {overview && overview.topSpenders ? (
+        <TopSpenders topSpenders={overview.topSpenders} />
+      ) : (
+        <TopSpenders users={users} />
+      )}
 
       {/* Search and Filter */}
       <UserFilters
@@ -161,7 +186,7 @@ export function UsersView() {
 
       {/* Users Table */}
       <UserTable
-        users={filteredAndSortedUsers}
+        users={users}
         selectedUsers={selectedUsers}
         isSelectAll={isSelectAll}
         onToggleSelectAll={toggleSelectAll}

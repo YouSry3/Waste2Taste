@@ -88,26 +88,26 @@ export function UserFilters({
         <div className="mt-4 border-b border-gray-200">
           <div className="flex space-x-1 justify-self-end">
             <button
-              onClick={() => onSortChange("name")}
+              onClick={() => onSortChange("fullName")}
               className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
-                sortBy === "name"
+                sortBy === "fullName"
                   ? "bg-green-600 text-white border-b-2 border-green-600"
                   : "text-gray-600 hover:text-green-600 hover:bg-green-50"
               }`}
             >
               Sort by Name{" "}
-              {sortBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortBy === "fullName" && (sortOrder === "asc" ? "↑" : "↓")}
             </button>
             <button
-              onClick={() => onSortChange("orders")}
+              onClick={() => onSortChange("ordersCount")}
               className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
-                sortBy === "orders"
+                sortBy === "ordersCount"
                   ? "bg-green-600 text-white border-b-2 border-green-600"
                   : "text-gray-600 hover:text-green-600 hover:bg-green-50"
               }`}
             >
               Sort by Orders{" "}
-              {sortBy === "orders" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortBy === "ordersCount" && (sortOrder === "asc" ? "↑" : "↓")}
             </button>
             <button
               onClick={() => onSortChange("totalSpent")}
@@ -121,15 +121,15 @@ export function UserFilters({
               {sortBy === "totalSpent" && (sortOrder === "asc" ? "↑" : "↓")}
             </button>
             <button
-              onClick={() => onSortChange("lastOrder")}
+              onClick={() => onSortChange("lastOrderDate")}
               className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-all ${
-                sortBy === "lastOrder"
+                sortBy === "lastOrderDate"
                   ? "bg-green-600 text-white border-b-2 border-green-600"
                   : "text-gray-600 hover:text-green-600 hover:bg-green-50"
               }`}
             >
               Sort by Last Order{" "}
-              {sortBy === "lastOrder" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortBy === "lastOrderDate" && (sortOrder === "asc" ? "↑" : "↓")}
             </button>
           </div>
         </div>

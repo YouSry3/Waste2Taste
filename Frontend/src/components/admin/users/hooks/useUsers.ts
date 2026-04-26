@@ -1,26 +1,26 @@
 import { useState, useCallback, useEffect } from "react"; // Add useEffect
 import toast from "react-hot-toast";
-import { User, UserFormData } from "../types";
+import { User, UserFormData, UsersQueryParams } from "../types";
 import { usersService } from "../api/users.service";
-import { initialUsers } from "../utils/constants"; // Import mock data
 
-export const useUsers = () => {
-  const [users, setUsers] = useState<User[]>(initialUsers); // Initialize with mock data
+export const useUsers = (params?: UsersQueryParams) => {
+  const [users, setUsers] = useState<User[]>([]); // Start with empty array instead of mock data
   const [isLoading, setIsLoading] = useState(false);
 
   // Add useEffect to load users on mount (optional)
   useEffect(() => {
-    loadUsers();
-  }, []);
+    loadUsers(params);
+  }, [params?.search, params?.status, params?.sortBy, params?.sortOrder, params?.page, params?.pageSize]);
 
-  const loadUsers = useCallback(async () => {
+  const loadUsers = useCallback(async (queryParams?: UsersQueryParams) => {
     try {
       setIsLoading(true);
-      const data = await usersService.getUsers();
+      const data = await usersService.getUsers(queryParams);
       setUsers(data);
     } catch (error) {
-      toast.error("Failed to load users");
-      // Keep the initial mock data if API fails
+      console.error("Failed to load users:", error);
+      toast.error("Failed to load users from API. Check console for details.");
+      setUsers([]); // Clear users on error
     } finally {
       setIsLoading(false);
     }
@@ -40,7 +40,7 @@ export const useUsers = () => {
     }
   }, []);
 
-  const updateUser = useCallback(async (id: number, formData: UserFormData) => {
+  const updateUser = useCallback(async (id: string, formData: UserFormData) => {
     try {
       setIsLoading(true);
       const updatedUser = await usersService.updateUser(id, formData);
@@ -66,7 +66,7 @@ export const useUsers = () => {
     }
   }, []);
 
-  const deleteUsers = useCallback(async (userIds: number[]) => {
+  const deleteUsers = useCallback(async (userIds: string[]) => {
     try {
       setIsLoading(true);
       await Promise.all(userIds.map((id) => usersService.deleteUser(id)));

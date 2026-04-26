@@ -26,17 +26,25 @@ import {
 } from "../../services/vendorApproval/vendorOnboardingStore";
 import {
   createVendorDocument,
-  fileToDataUrl,
   setPendingVendorApprovalEmail,
   submitVendorApprovalRequest,
 } from "../../services/vendorApproval/vendorApprovalStore";
 import { createVendorRequest } from "../../services/vendorApproval/vendorRequestService";
+import MapPicker from "./MapPicker";
 
 const requestSchema = Yup.object({
   businessName: Yup.string().required("Business name is required"),
   category: Yup.string().required("Category is required"),
   address: Yup.string().required("Business address is required"),
   phoneNumber: Yup.string().required("Phone number is required"),
+  latitude: Yup.number()
+    .nullable()
+    .typeError("Please choose a location on the map.")
+    .required("Please choose a location on the map."),
+  longitude: Yup.number()
+    .nullable()
+    .typeError("Please choose a location on the map.")
+    .required("Please choose a location on the map."),
 });
 
 const CATEGORY_OPTIONS = [
@@ -47,6 +55,15 @@ const CATEGORY_OPTIONS = [
   { value: "5", label: "Other" },
 ];
 
+type VendorRequestFormValues = {
+  businessName: string;
+  category: string;
+  address: string;
+  phoneNumber: string;
+  latitude: number | null;
+  longitude: number | null;
+};
+
 export default function VendorRequestPage() {
   const navigate = useNavigate();
   const currentUser = authService.getCurrentUser();
@@ -56,12 +73,16 @@ export default function VendorRequestPage() {
 
   const [businessLicense, setBusinessLicense] = useState<File | null>(null);
   const [healthCertificate, setHealthCertificate] = useState<File | null>(null);
-  const [formValues, setFormValues] = useState({
-    businessName: "",
-    category: "",
-    address: "",
-    phoneNumber: "",
-  });
+  const [formValues, setFormValues] = useState<VendorRequestFormValues>(() => ({
+    businessName: draft?.businessName || "",
+    category: draft?.category || "",
+    address: draft?.address || "",
+    phoneNumber: draft?.phoneNumber || "",
+    latitude:
+      typeof draft?.latitude === "number" ? draft.latitude : null,
+    longitude:
+      typeof draft?.longitude === "number" ? draft.longitude : null,
+  }));
 
   const ownerName = useMemo(
     () => currentUser?.name || draft?.ownerName || "",
@@ -85,6 +106,12 @@ export default function VendorRequestPage() {
         ?.label || formValues.category
     );
   }, [formValues.category]);
+  const hasSelectedLocation = useMemo(
+    () =>
+      typeof formValues.latitude === "number" &&
+      typeof formValues.longitude === "number",
+    [formValues.latitude, formValues.longitude],
+  );
 
   useEffect(() => {
     if (phoneNumber && !formValues.phoneNumber) {
@@ -114,6 +141,28 @@ export default function VendorRequestPage() {
     navigate,
   ]);
 
+  useEffect(() => {
+    saveVendorSignupDraft({
+      ownerName,
+      email,
+      phoneNumber: resolvedPhoneNumber,
+      businessName: formValues.businessName,
+      category: formValues.category,
+      address: formValues.address,
+      latitude: formValues.latitude,
+      longitude: formValues.longitude,
+    });
+  }, [
+    email,
+    formValues.address,
+    formValues.businessName,
+    formValues.category,
+    formValues.latitude,
+    formValues.longitude,
+    ownerName,
+    resolvedPhoneNumber,
+  ]);
+
   const requestMutation = useMutation({
     mutationFn: async () => {
       if (submitLockRef.current) {
@@ -138,6 +187,9 @@ export default function VendorRequestPage() {
       if (!resolvedPhoneNumber) {
         throw new Error("Phone number is required.");
       }
+      if (!hasSelectedLocation) {
+        throw new Error("Please choose a location on the map.");
+      }
 
       submitLockRef.current = true;
       try {
@@ -150,14 +202,11 @@ export default function VendorRequestPage() {
           phoneNumber: resolvedPhoneNumber,
           category: formValues.category,
           address: formValues.address,
+          latitude: formValues.latitude ?? 0,
+          longitude: formValues.longitude ?? 0,
           businessLicenseFile: businessLicense,
           healthCertificateFile: healthCertificate,
         });
-
-        const [businessLicenseUrl, healthCertificateUrl] = await Promise.all([
-          fileToDataUrl(businessLicense),
-          fileToDataUrl(healthCertificate),
-        ]);
 
         submitVendorApprovalRequest(
           {
@@ -167,12 +216,14 @@ export default function VendorRequestPage() {
             phone: resolvedPhoneNumber,
             address: formValues.address,
             category: selectedCategoryLabel,
+            latitude: formValues.latitude,
+            longitude: formValues.longitude,
             documents: [
-              createVendorDocument(businessLicense, businessLicenseUrl, {
+              createVendorDocument(businessLicense, {
                 kind: "business_license",
                 label: "Business License",
               }),
-              createVendorDocument(healthCertificate, healthCertificateUrl, {
+              createVendorDocument(healthCertificate, {
                 kind: "health_certificate",
                 label: "Health Certificate",
               }),
@@ -184,11 +235,11 @@ export default function VendorRequestPage() {
         authService.updateCurrentUser({
           phoneNumber: resolvedPhoneNumber,
         });
-      saveVendorSignupDraft({
-        ownerName,
-        email,
-        phoneNumber: resolvedPhoneNumber,
-      });
+        saveVendorSignupDraft({
+          ownerName,
+          email,
+          phoneNumber: resolvedPhoneNumber,
+        });
         authService.setVendorRequestState({
           vendorRequestCompleted: true,
           vendorApprovalStatus: "pending",
@@ -228,6 +279,20 @@ export default function VendorRequestPage() {
         [field]: event.target.value,
       }));
     };
+
+  const handleLocationChange = ({
+    latitude,
+    longitude,
+  }: {
+    latitude: number;
+    longitude: number;
+  }) => {
+    setFormValues((current) => ({
+      ...current,
+      latitude,
+      longitude,
+    }));
+  };
 
   const handleBackToLogin = async () => {
     setIsLeaving(true);
@@ -373,6 +438,12 @@ export default function VendorRequestPage() {
               </div>
             </div>
 
+            <MapPicker
+              latitude={formValues.latitude}
+              longitude={formValues.longitude}
+              onChange={handleLocationChange}
+            />
+
             <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-2xl border border-dashed border-green-300 bg-green-50/80 p-5">
                 <div className="flex items-center gap-3 mb-3">
@@ -424,11 +495,13 @@ export default function VendorRequestPage() {
             <Button
               type="submit"
               className="w-full bg-green-600 hover:bg-green-700 text-white"
-              disabled={requestMutation.isPending}
+              disabled={requestMutation.isPending || !hasSelectedLocation}
             >
               {requestMutation.isPending
                 ? "Submitting..."
-                : "Submit Vendor Request"}
+                : hasSelectedLocation
+                  ? "Submit Vendor Request"
+                  : "Select Location to Continue"}
             </Button>
 
             <Button

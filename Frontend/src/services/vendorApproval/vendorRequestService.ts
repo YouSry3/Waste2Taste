@@ -9,6 +9,8 @@ export interface CreateVendorRequestPayload {
   phoneNumber: string;
   category: string;
   address: string;
+  latitude: number;
+  longitude: number;
   businessLicenseFile: File;
   healthCertificateFile: File;
 }
@@ -24,11 +26,8 @@ interface VendorRequestDecisionPayload {
 }
 
 const VENDOR_REQUEST_STATUS_ENDPOINTS = [
-  "/vendorRequests/status",
   "/VendorRequests/status",
-  "/vendorRequests/me",
   "/VendorRequests/me",
-  "/vendorRequests",
   "/VendorRequests",
 ];
 
@@ -135,7 +134,7 @@ const postVendorRequestWithFallbacks = async <TResponse>(
 
 const getVendorRequestCreateEndpoint = (): string => {
   const rootBase = (API_CONFIG?.BASE_URL || "").replace(/\/api\/?$/i, "");
-  return rootBase ? `${rootBase}/vendorRequests` : "/vendorRequests";
+  return rootBase ? `${rootBase}/VendorRequests` : "/VendorRequests";
 };
 
 const normalizeId = (value: unknown): number | null => {
@@ -177,14 +176,16 @@ export const createVendorRequest = async (
   payload: CreateVendorRequestPayload,
 ): Promise<VendorRequestCreationResult> => {
   const formData = new FormData();
-  // Match the backend/Postman form field names exactly.
-  formData.append("name", payload.businessName);
-  formData.append("category", payload.category);
-  formData.append("email", payload.email);
-  formData.append("phoneNumber", payload.phoneNumber);
+  // Match the backend DTO field names exactly for reliable form binding.
+  formData.append("Name", payload.businessName);
+  formData.append("Category", payload.category);
+  formData.append("Email", payload.email);
+  formData.append("PhoneNumber", payload.phoneNumber);
   formData.append("Address", payload.address);
-  formData.append("healthCertificateFile", payload.healthCertificateFile);
-  formData.append("businessLicenseFile", payload.businessLicenseFile);
+  formData.append("Latitude", String(payload.latitude));
+  formData.append("Longitude", String(payload.longitude));
+  formData.append("HealthCertificateFile", payload.healthCertificateFile);
+  formData.append("BusinessLicenseFile", payload.businessLicenseFile);
 
   const response = await apiClient.post<unknown>(
     getVendorRequestCreateEndpoint(),
@@ -220,7 +221,6 @@ export const getVendorRequestStatus = async (): Promise<VendorApprovalStatus | n
 export const getPendingVendorRequestsForAdmin = async (): Promise<any[]> => {
   const endpoints = [
     "/VendorRequests/pending/all",
-    "/vendorRequests/pending/all",
   ];
 
   for (const endpoint of buildVendorRequestCandidates(endpoints)) {
@@ -258,7 +258,7 @@ export const rejectVendorRequest = async (
   requestId: number,
   payload?: VendorRequestDecisionPayload,
 ) => {
-  const endpoints = ["/VendorRequests/reject", "/vendorRequests/reject"];
+  const endpoints = ["/VendorRequests/reject"];
   const bodyCandidates = [
     { id: requestId, ...payload },
     { requestId, ...payload },

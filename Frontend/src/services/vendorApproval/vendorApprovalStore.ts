@@ -7,6 +7,7 @@ import {
 const VENDOR_REQUESTS_KEY = "vendorApprovalRequests";
 const PENDING_VENDOR_EMAIL_KEY = "pendingVendorApprovalEmail";
 export const VENDOR_APPROVAL_STORE_EVENT = "vendor-approval-store-updated";
+const MAX_STORED_VENDOR_REQUESTS = 25;
 
 function isBrowser() {
   return typeof window !== "undefined";
@@ -18,7 +19,9 @@ function readJson<T>(key: string, fallback: T): T {
   }
 
   try {
-    const rawValue = window.localStorage.getItem(key);
+    const rawValue =
+      window.localStorage.getItem(key) ??
+      window.sessionStorage.getItem(key);
     return rawValue ? (JSON.parse(rawValue) as T) : fallback;
   } catch (error) {
     console.error(`Failed to read localStorage key "${key}"`, error);
@@ -26,12 +29,45 @@ function readJson<T>(key: string, fallback: T): T {
   }
 }
 
+function sanitizeDocumentForStorage(document: VendorDocument): VendorDocument {
+  const nextUrl =
+    typeof document.url === "string" && document.url.startsWith("data:")
+      ? ""
+      : document.url;
+
+  return {
+    ...document,
+    url: nextUrl,
+  };
+}
+
+function sanitizeRequestsForStorage(requests: VendorApprovalRequest[]) {
+  return requests.slice(0, MAX_STORED_VENDOR_REQUESTS).map((request) => ({
+    ...request,
+    documents: request.documents.map(sanitizeDocumentForStorage),
+  }));
+}
+
 function writeJson<T>(key: string, value: T) {
   if (!isBrowser()) {
     return;
   }
 
-  window.localStorage.setItem(key, JSON.stringify(value));
+  const serializedValue = JSON.stringify(value);
+
+  try {
+    window.localStorage.setItem(key, serializedValue);
+    window.sessionStorage.removeItem(key);
+  } catch (error) {
+    try {
+      window.sessionStorage.setItem(key, serializedValue);
+    } catch (sessionError) {
+      console.error(`Failed to persist "${key}" in web storage.`, {
+        localStorageError: error,
+        sessionStorageError: sessionError,
+      });
+    }
+  }
 }
 
 function emitStoreUpdate() {
@@ -47,7 +83,7 @@ export function getStoredVendorRequests(): VendorApprovalRequest[] {
 }
 
 function saveStoredVendorRequests(requests: VendorApprovalRequest[]) {
-  writeJson(VENDOR_REQUESTS_KEY, requests);
+  writeJson(VENDOR_REQUESTS_KEY, sanitizeRequestsForStorage(requests));
   emitStoreUpdate();
 }
 
@@ -63,7 +99,16 @@ export function setPendingVendorApprovalEmail(email: string) {
     return;
   }
 
-  window.localStorage.setItem(PENDING_VENDOR_EMAIL_KEY, email);
+  try {
+    window.localStorage.setItem(PENDING_VENDOR_EMAIL_KEY, email);
+    window.sessionStorage.removeItem(PENDING_VENDOR_EMAIL_KEY);
+  } catch {
+    try {
+      window.sessionStorage.setItem(PENDING_VENDOR_EMAIL_KEY, email);
+    } catch (error) {
+      console.error("Failed to store pending vendor approval email.", error);
+    }
+  }
   emitStoreUpdate();
 }
 
@@ -72,7 +117,10 @@ export function getPendingVendorApprovalEmail() {
     return null;
   }
 
-  return window.localStorage.getItem(PENDING_VENDOR_EMAIL_KEY);
+  return (
+    window.localStorage.getItem(PENDING_VENDOR_EMAIL_KEY) ??
+    window.sessionStorage.getItem(PENDING_VENDOR_EMAIL_KEY)
+  );
 }
 
 export function clearPendingVendorApprovalEmail() {
@@ -81,6 +129,7 @@ export function clearPendingVendorApprovalEmail() {
   }
 
   window.localStorage.removeItem(PENDING_VENDOR_EMAIL_KEY);
+  window.sessionStorage.removeItem(PENDING_VENDOR_EMAIL_KEY);
   emitStoreUpdate();
 }
 
@@ -107,6 +156,8 @@ export function submitVendorApprovalRequest(
     phone: payload.phone,
     address: payload.address,
     category: payload.category,
+    latitude: payload.latitude,
+    longitude: payload.longitude,
     documents: payload.documents,
     submitted: new Date().toISOString(),
     status: "pending",
@@ -202,28 +253,10 @@ export function subscribeToVendorApprovalStore(callback: () => void) {
   };
 }
 
-export function fileToDataUrl(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        resolve(reader.result);
-        return;
-      }
-
-      reject(new Error("Unable to read file."));
-    };
-
-    reader.onerror = () => reject(reader.error ?? new Error("File read failed"));
-    reader.readAsDataURL(file);
-  });
-}
-
 export function createVendorDocument(
   file: File,
-  url: string,
   overrides: Pick<VendorDocument, "kind" | "label">,
+  url = "",
 ): VendorDocument {
   return {
     id: `${file.name}-${Date.now()}-${Math.floor(Math.random() * 1000)}`,

@@ -638,6 +638,7 @@ export function ModerationView() {
 
         {/* Stats Cards */}
         <StatsCards
+          summary={data.moderationSummary}
           listings={data.listings}
           vendorRequests={data.vendorRequests}
           customerReports={data.customerReports}
@@ -665,6 +666,7 @@ export function ModerationView() {
         <TabNavigation
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          summary={data.moderationSummary}
           listings={data.listings}
           vendorRequests={data.vendorRequests}
           customerReports={data.customerReports}

@@ -23,12 +23,16 @@ interface ListingCardProps {
   listing: Listing;
   isSelected: boolean;
   isLoading: boolean;
-  onSelect: (id: number, checked: boolean) => void;
-  onApprove: (id: number) => Promise<void> | void;
-  onReject: (id: number) => void; // Changed: This should open dialog, not actually reject
-  onRequestChanges: (id: number) => void;
+  onSelect: (id: string, checked: boolean) => void;
+  onApprove: (id: string) => Promise<void> | void;
+  onReject: (id: string) => void;
+  onRequestChanges: (id: string) => void;
   onZoomImage: (image: string) => void;
 }
+
+/* ---------------- SAFE ---------------- */
+const formatMoney = (value: number) =>
+  typeof value === "number" ? `$${value.toFixed(2)}` : "$0.00";
 
 export function ListingCard({
   listing,
@@ -40,176 +44,99 @@ export function ListingCard({
   onRequestChanges,
   onZoomImage,
 }: ListingCardProps) {
-  const [isLocalLoading, setIsLocalLoading] = useState({
+  const [loading, setLoading] = useState({
     approve: false,
-    reject: false,
   });
 
   const handleApprove = async () => {
-    setIsLocalLoading((prev) => ({ ...prev, approve: true }));
-    try {
-      await onApprove(listing.id);
-    } catch (error) {
-      console.error("Failed to approve:", error);
-    } finally {
-      setIsLocalLoading((prev) => ({ ...prev, approve: false }));
-    }
+    setLoading({ approve: true });
+    await onApprove(listing.id);
+    setLoading({ approve: false });
   };
 
-  const handleReject = () => {
-    // Just open the rejection dialog, don't try to await it
-    onReject(listing.id);
-  };
-
-  const isApproveLoading = isLoading || isLocalLoading.approve;
-  const isRejectLoading = isLoading || isLocalLoading.reject;
+  const discount =
+    listing.originalPrice > 0
+      ? Math.round(
+          ((listing.originalPrice - listing.price) / listing.originalPrice) *
+            100,
+        )
+      : 0;
 
   return (
-    <Card
-      className={`shadow-sm hover:shadow-md transition-all ${
-        listing.flagged
-          ? "border-2 border-red-400 bg-red-50/30"
-          : "border border-gray-200"
-      }`}
-    >
+    <Card className="shadow-sm hover:shadow-md transition-all border border-gray-200">
       <CardContent className="p-6">
-        {/* AI Flag Alert */}
-        {listing.flagged && listing.aiFlag && (
-          <div className="mb-6 p-4 bg-red-100 border-l-4 border-red-500 rounded-r-lg flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-red-900 mb-1">
-                🚨 AI Quality Flag: {listing.aiFlag.type}
-              </p>
-              <p className="text-xs text-red-800">
-                {listing.aiFlag.reason} • Confidence:{" "}
-                {(listing.aiFlag.confidence * 100).toFixed(0)}%
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Button className="p-2 border border-gray-300 hover:bg-gray-50 rounded-lg">
-                <ThumbsUp className="h-3 w-3" />
-              </Button>
-              <Button className="p-2 border border-gray-300 hover:bg-gray-50 rounded-lg">
-                <ThumbsDown className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
-        )}
-
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Checkbox & Image */}
-          <div className="lg:col-span-1">
-            <div className="flex items-start gap-3">
-              <Checkbox
-                checked={isSelected}
-                onCheckedChange={(checked) => onSelect(listing.id, !!checked)}
-                className="mt-1"
+          {/* IMAGE */}
+          <div className="lg:col-span-1 flex gap-3">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={(v) => onSelect(listing.id, !!v)}
+            />
+
+            <div
+              className="relative w-full aspect-square rounded-xl overflow-hidden cursor-pointer"
+              onClick={() => onZoomImage(listing.imageUrl)}
+            >
+              <ImageWithFallback
+                src={listing.imageUrl}
+                className="w-full h-full object-cover"
               />
-              <div className="relative flex-1 aspect-square rounded-xl overflow-hidden bg-gray-100 shadow-sm cursor-pointer group">
-                <ImageWithFallback
-                  src={listing.image}
-                  alt={listing.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div
-                  className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/50 transition-all duration-300"
-                  onClick={() => onZoomImage(listing.image)}
-                >
-                  <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-              </div>
             </div>
           </div>
 
-          {/* Details */}
-          <div className="lg:col-span-2 space-y-4">
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-1">
-                {listing.title}
-              </h4>
-              <p className="text-sm text-gray-600 flex items-center gap-2">
-                <Store className="h-4 w-4" />
-                {listing.vendor}
-              </p>
+          {/* DETAILS */}
+          <div className="lg:col-span-2 space-y-2">
+            <h2 className="text-lg font-bold">{listing.name}</h2>
+
+            <p className="text-sm text-gray-600">{listing.description}</p>
+
+            <p className="text-sm text-gray-500">Vendor: {listing.vendorId}</p>
+
+            <Badge>{listing.category || "Uncategorized"}</Badge>
+
+            <div className="text-sm text-gray-600">Qty: {listing.quantity}</div>
+
+            <div className="text-sm text-gray-600">
+              Expiry: {new Date(listing.expiryDate).toLocaleString()}
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-200">
-                {listing.category}
-              </Badge>
-              <span className="text-sm text-gray-400">•</span>
-              <span className="text-sm text-gray-600 font-medium">
-                {listing.quantity} bags available
+            {/* PRICE */}
+            <div className="flex gap-2 items-center pt-2">
+              <span className="line-through text-gray-400">
+                {formatMoney(listing.originalPrice)}
               </span>
-            </div>
-
-            <div className="space-y-2 text-sm bg-gray-50 p-3 rounded-lg">
-              <div className="flex items-center gap-2 text-gray-700">
-                <Clock className="h-4 w-4 text-orange-500" />
-                <span className="font-medium">Pickup Window:</span>
-                {listing.pickupTime}
-              </div>
-              <div className="flex items-center gap-2 text-gray-700">
-                <Package className="h-4 w-4 text-green-600" />
-                <span className="font-medium">Submitted:</span>
-                {listing.submitted}
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 pt-2">
-              <span className="text-lg text-gray-400 line-through">
-                {listing.originalPrice}
+              <span className="text-green-600 font-bold">
+                {formatMoney(listing.price)}
               </span>
-              <span className="text-2xl font-bold text-green-600">
-                {listing.price}
-              </span>
-              <Badge variant="outline" className="text-xs">
-                {(
-                  ((parseFloat(listing.originalPrice.slice(1)) -
-                    parseFloat(listing.price.slice(1))) /
-                    parseFloat(listing.originalPrice.slice(1))) *
-                  100
-                ).toFixed(0)}
-                % off
-              </Badge>
+              <Badge>{discount}% OFF</Badge>
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="lg:col-span-1 flex flex-col gap-2">
+          {/* ACTIONS */}
+          <div className="flex flex-col gap-2">
             <Button
               onClick={handleApprove}
-              disabled={isApproveLoading}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors duration-200"
+              disabled={loading.approve || isLoading}
+              className="bg-green-600 text-white"
             >
-              {isApproveLoading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Approving...
-                </>
+              {loading.approve ? (
+                <Loader2 className="animate-spin" />
               ) : (
-                <>
-                  <CheckCircle className="h-4 w-4" />
-                  Approve & Publish
-                </>
+                <CheckCircle />
               )}
+              Approve
             </Button>
+
             <Button
-              onClick={handleReject}
-              disabled={isRejectLoading}
-             
-              className="w-full bg-red-600 text-white"
+              onClick={() => onReject(listing.id)}
+              className="bg-red-600 text-white"
             >
-              <XCircle className="h-4 w-4 mr-2" />
-              Reject Listing
+              <XCircle />
+              Reject
             </Button>
-          
-            <Button
-              onClick={() => onRequestChanges(listing.id)} // Make sure this passes the ID
-              className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
-            >
-              <Flag className="h-4 w-4" />
+
+            <Button onClick={() => onRequestChanges(listing.id)}>
+              <Flag />
               Request Changes
             </Button>
           </div>

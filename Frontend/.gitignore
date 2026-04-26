@@ -1,54 +1,43 @@
-## Build Folders ##
-bin/
-obj/
-out/
+# =========================
+# FRONTEND (React / Vite)
+# =========================
+Frontend/node_modules/
+Frontend/build/
+Frontend/dist/
 
-## User-Specific Files ##
-*.user
-*.rsuser
-*.suo
-*.userosscache
+# =========================
+# BACKEND (.NET)
+# =========================
+BackEnd/**/bin/
+BackEnd/**/obj/
 
-## IDE Directories ##
+# =========================
+# ENV FILES
+# =========================
+BackEnd/FoodRescue.PL/appsettings.Development.json
+BackEnd/FoodRescue.PL/appsettings.Local.json
+*.env
+.env.local
+
+# =========================
+# UPLOADED FILES (CRITICAL)
+# =========================
+BackEnd/FoodRescue.PL/wwwroot/documents/
+BackEnd/FoodRescue.PL/wwwroot/images/
+
+# =========================
+# IDE / SYSTEM
+# =========================
 .vs/
 .vscode/
+Thumbs.db
 
-## Logs ##
+# =========================
+# LOGS
+# =========================
 *.log
 
-## Environment Files ##
-appsettings.Development.json
-appsettings.Local.json
-appsettings.*.json
-*.env
-
-## Sensitive Keys ##
-secrets.json
-
-## Publish Artifacts ##
-/publish/
-/dist/
-## If you want to keep the folder but ignore image files only
-wwwroot/images/*.jpg
-wwwroot/images/*.png
-wwwroot/images/*.jpeg
-
-## Auto Generated ##
-Generated/
-*.designer.cs
-*.g.cs
-*.generated.cs
-
-## Packages ##
-*.nupkg
-packages/
+# =========================
+# PACKAGES
+# =========================
 node_modules/
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-## Other ##
-Thumbs.db
-*.db
-*.sqlite
-*.bak

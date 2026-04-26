@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Listing,
   VendorRequest,
   CustomerReport,
   ModerationAction,
+  ModerationSummary,
   RejectRequest,
   ChangeRequest,
   WarningRequest,
@@ -28,7 +29,9 @@ import {
   VendorApprovalRequest,
   VendorDocument,
 } from "../../../../types/vendorApproval";
-import { API_CONFIG } from "../../../../services/api/apiConfig";
+import { apiClient } from "../../../../services/api/apiClient";
+import { API_CONFIG, ApiResponse } from "../../../../services/api/apiConfig";
+import { usePendingListings, useApproveListing, useRejectListing } from "./usePendingListings";
 
 function mapStoredVendorRequest(request: VendorApprovalRequest): VendorRequest {
   return {
@@ -239,7 +242,7 @@ const extractLegacyDocumentUrls = (request: any) => {
 };
 
 const isPendingVendorRequest = (request: VendorRequest) =>
-  request.status === "pending";
+  request.status === "Pending";
 
 const dedupeVendorRequestsById = (requests: VendorRequest[]) => {
   const seen = new Set<number>();
@@ -339,7 +342,16 @@ export function useModerationData() {
   const [customerReports, setCustomerReports] = useState<CustomerReport[]>(
     initialCustomerReports,
   );
+  const [moderationSummary, setModerationSummary] = useState<ModerationSummary | null>(null);
   const [activityLog, setActivityLog] = useState<ModerationAction[]>([]);
+
+  const {
+    data: pendingListingsFromApi,
+    isLoading: listingsLoading,
+  } = usePendingListings();
+
+  const approveListingMutation = useApproveListing();
+  const rejectListingMutation = useRejectListing();
 
   const {
     data: pendingVendorRequestsFromApi,
@@ -349,14 +361,47 @@ export function useModerationData() {
     queryFn: async () => {
       const vendorRequestsFromApi = await getPendingVendorRequestsForAdmin();
       return vendorRequestsFromApi
-        .map((request, index) => mapApiVendorRequest(request, index))
-        .filter(isPendingVendorRequest);
+        .map((request, index) => mapApiVendorRequest(request, index));
     },
     enabled: !isDemoMode,
     refetchInterval: 15000,
     refetchOnWindowFocus: true,
     retry: 1,
   });
+
+  const {
+    data: moderationSummaryFromApi,
+  } = useQuery({
+    queryKey: ["moderation", "summary"],
+    queryFn: async () => {
+      const response = await apiClient.get<unknown>(
+        API_CONFIG.ENDPOINTS.ADMIN.MODERATION.SUMMARY,
+      );
+      const payload = response.data as any;
+
+      if (payload?.data && typeof payload.data === "object") {
+        return payload.data as ModerationSummary;
+      }
+
+      if (payload && typeof payload === "object") {
+        return payload as ModerationSummary;
+      }
+
+      throw new Error("Invalid moderation summary response");
+    },
+    enabled: true,
+    refetchInterval: 15000,
+    refetchOnWindowFocus: true,
+    retry: 1,
+  });
+
+  useEffect(() => {
+    if (isDemoMode || !moderationSummaryFromApi) {
+      return;
+    }
+
+    setModerationSummary(moderationSummaryFromApi);
+  }, [isDemoMode, moderationSummaryFromApi]);
 
   useEffect(() => {
     if (!isDemoMode) {
@@ -378,10 +423,18 @@ export function useModerationData() {
 
     setVendorRequests(
       dedupeVendorRequestsById(
-        pendingVendorRequestsFromApi.filter(isPendingVendorRequest),
+        pendingVendorRequestsFromApi,
       ),
     );
   }, [isDemoMode, pendingVendorRequestsFromApi]);
+
+  useEffect(() => {
+    if (isDemoMode || !pendingListingsFromApi) {
+      return;
+    }
+
+    setListings(pendingListingsFromApi);
+  }, [isDemoMode, pendingListingsFromApi]);
 
   const addToActivityLog = (action: Omit<ModerationAction, "id">) => {
     setActivityLog((prev) => [
@@ -421,11 +474,13 @@ export function useModerationData() {
   // Listing actions with mock implementations
   const handleApproveListing = async (id: number) => {
     try {
-      // TODO: Replace with actual API call when backend is ready
-      await mockMutation("approveListing", id);
+      // Optimistically remove from UI
+      const queryClient = useQueryClient();
+      queryClient.setQueryData(['pendingListings'], (oldData: Listing[] | undefined) => 
+        oldData ? oldData.filter((l) => l.id !== id) : []
+      );
 
-      // REMOVE listing from list (not just update status)
-      setListings((prev) => prev.filter((l) => l.id !== id));
+      await approveListingMutation.mutateAsync(id);
 
       addToActivityLog({
         moderatorName: "Admin",
@@ -435,11 +490,12 @@ export function useModerationData() {
         timestamp: new Date().toISOString(),
       });
 
-      toast.success(`Listing approved successfully!`);
       return { success: true };
     } catch (error) {
+      // Rollback on error
+      const queryClient = useQueryClient();
+      queryClient.invalidateQueries({ queryKey: ['pendingListings'] });
       console.error("Failed to approve listing:", error);
-      toast.error("Failed to approve listing");
       return { success: false, error };
     }
   };
@@ -881,6 +937,9 @@ export function useModerationData() {
       window.open(mailtoLink, "_blank");
       toast.success(`Opening email client to contact ${vendor.ownerName}`);
     },
+
+    // Moderation summary counts (backend-driven)
+    moderationSummary,
 
     // Helper functions for your existing code (to maintain compatibility)
     handleViewDocuments: (documents: string[]) => {

@@ -84,7 +84,7 @@ export function VendorsView() {
 
       <VendorStats stats={stats} />
 
-      {topPerformers.length > 0 && <TopPerformers vendors={topPerformers} />}
+      <TopPerformers vendors={topPerformers} />
 
       <VendorFilters
         searchTerm={searchTerm}
@@ -106,6 +106,8 @@ export function VendorsView() {
       <div className="mb-4">
         <p className="text-sm text-gray-500">
           Showing {filteredVendors.length} of {vendors.length} vendor
+
+          
           {vendors.length !== 1 ? "s" : ""}
         </p>
       </div>

@@ -1,26 +1,26 @@
 export const generateCSV = (users: any[]): string => {
   const headers = [
     "ID",
-    "Name",
+    "Full Name",
     "Email",
-    "Phone",
-    "Orders",
+    "Phone Number",
+    "Orders Count",
     "Total Spent",
     "Status",
-    "Joined",
-    "Last Order",
+    "Joined At",
+    "Last Order Date",
   ];
 
   const csvData = users.map((u) => [
-    u.id,
-    u.name,
-    u.email,
-    u.phone,
-    u.orders,
-    u.totalSpent,
-    u.status,
-    u.joined,
-    u.lastOrder,
+    u?.id || "",
+    u?.fullName || "",
+    u?.email || "",
+    u?.phoneNumber || "",
+    u?.ordersCount || 0,
+    u?.totalSpent || 0,
+    u?.isActive ? "Active" : "Inactive",
+    u?.joinedAt || "",
+    u?.lastOrderDate || "Never",
   ]);
 
   const csv = [
@@ -47,11 +47,20 @@ export const filterUsers = (
   filterStatus: string,
 ): any[] => {
   return users.filter((user) => {
+    // Add null checks to prevent errors when fields are undefined
+    const fullName = user?.fullName?.toLowerCase() || "";
+    const email = user?.email?.toLowerCase() || "";
+    const search = searchTerm.toLowerCase();
+
     const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      fullName.includes(search) ||
+      email.includes(search);
+
     const matchesStatus =
-      filterStatus === "all" || user.status.toLowerCase() === filterStatus;
+      filterStatus === "all" ||
+      (filterStatus === "active" && user?.isActive) ||
+      (filterStatus === "inactive" && !user?.isActive);
+
     return matchesSearch && matchesStatus;
   });
 };
@@ -65,21 +74,21 @@ export const sortUsers = (
     let aVal: any, bVal: any;
 
     switch (sortBy) {
-      case "name":
-        aVal = a.name.toLowerCase();
-        bVal = b.name.toLowerCase();
+      case "fullName":
+        aVal = a?.fullName?.toLowerCase() || "";
+        bVal = b?.fullName?.toLowerCase() || "";
         break;
-      case "orders":
-        aVal = a.orders;
-        bVal = b.orders;
+      case "ordersCount":
+        aVal = a?.ordersCount || 0;
+        bVal = b?.ordersCount || 0;
         break;
       case "totalSpent":
-        aVal = parseFloat(a.totalSpent.replace(/[$,]/g, ""));
-        bVal = parseFloat(b.totalSpent.replace(/[$,]/g, ""));
+        aVal = a?.totalSpent || 0;
+        bVal = b?.totalSpent || 0;
         break;
-      case "lastOrder":
-        aVal = a.lastOrder === "N/A" ? 0 : new Date(a.lastOrder).getTime();
-        bVal = b.lastOrder === "N/A" ? 0 : new Date(b.lastOrder).getTime();
+      case "lastOrderDate":
+        aVal = a?.lastOrderDate ? new Date(a.lastOrderDate).getTime() : 0;
+        bVal = b?.lastOrderDate ? new Date(b.lastOrderDate).getTime() : 0;
         break;
       default:
         return 0;

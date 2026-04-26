@@ -185,11 +185,79 @@ export class AuthService {
     // Debug: Log the raw response to see what structure we're getting
     console.log("🔍 Raw API Response:", JSON.stringify(data, null, 2));
 
-    // ASP.NET Core typically returns flat structure or nested user object
-    const sourceUser = data?.user ?? data ?? {};
-    const token = data?.token || data?.accessToken || "";
+    // Many backends wrap responses like: { success: true, data: { token, user, ... } }
+    // Some may even wrap twice; unwrap defensively.
+    const unwrap = (value: any) => {
+      if (
+        value &&
+        typeof value === "object" &&
+        "data" in value &&
+        (value as any).data != null
+      ) {
+        return (value as any).data;
+      }
+      return value;
+    };
+
+    const level1 = unwrap(data);
+    const payload = unwrap(level1);
+
+    const normalizeToken = (value: unknown): string => {
+      if (typeof value !== "string") return "";
+      const trimmed = value.trim();
+      if (!trimmed) return "";
+      if (trimmed.toLowerCase().startsWith("bearer ")) {
+        return trimmed.slice("bearer ".length).trim();
+      }
+      return trimmed;
+    };
+
+    const token = normalizeToken(
+      payload?.token ??
+        payload?.Token ??
+        payload?.accessToken ??
+        payload?.AccessToken ??
+        level1?.token ??
+        level1?.Token ??
+        level1?.accessToken ??
+        level1?.AccessToken ??
+        data?.token ??
+        data?.Token ??
+        data?.accessToken ??
+        data?.AccessToken ??
+        "",
+    );
+
     const expiration =
-      data?.expiration || data?.expiresAt || new Date().toISOString();
+      payload?.expiration ??
+      payload?.Expiration ??
+      payload?.expiresAt ??
+      payload?.ExpiresAt ??
+      payload?.expireAt ??
+      payload?.ExpireAt ??
+      level1?.expiration ??
+      level1?.Expiration ??
+      level1?.expiresAt ??
+      level1?.ExpiresAt ??
+      level1?.expireAt ??
+      level1?.ExpireAt ??
+      data?.expiration ??
+      data?.Expiration ??
+      data?.expiresAt ??
+      data?.ExpiresAt ??
+      data?.expireAt ??
+      data?.ExpireAt ??
+      new Date().toISOString();
+
+    // ASP.NET Core typically returns flat structure or nested user object
+    const sourceUser =
+      payload?.user ?? level1?.user ?? data?.user ?? payload ?? level1 ?? data ?? {};
+
+    if (!token) {
+      throw new Error(
+        "Login response did not include an access token. Check backend response shape (expected token in `data.token`).",
+      );
+    }
 
     console.log("🔍 User object:", sourceUser);
     console.log("🔍 Data keys:", Object.keys(data));
@@ -200,11 +268,17 @@ export class AuthService {
     // Use role field from backend as fallback
     const typeValue =
       sourceUser?.type ??
+      sourceUser?.Type ??
       data?.type ??
+      data?.Type ??
       sourceUser?.userType ??
+      sourceUser?.UserType ??
       data?.userType ??
+      data?.UserType ??
       sourceUser?.role ??
-      data?.role;
+      sourceUser?.Role ??
+      data?.role ??
+      data?.Role;
 
     console.log("🔍 Found type value:", typeValue);
 
@@ -220,8 +294,26 @@ export class AuthService {
     }
 
     // Fallback: check roles array
-    if (!panelType && (sourceUser?.roles || data?.roles)) {
-      const roles = sourceUser?.roles || data?.roles;
+    if (
+      !panelType &&
+      (sourceUser?.roles ||
+        sourceUser?.Roles ||
+        data?.roles ||
+        data?.Roles ||
+        sourceUser?.role ||
+        sourceUser?.Role ||
+        data?.role ||
+        data?.Role)
+    ) {
+      const roles =
+        sourceUser?.roles ??
+        sourceUser?.Roles ??
+        data?.roles ??
+        data?.Roles ??
+        sourceUser?.role ??
+        sourceUser?.Role ??
+        data?.role ??
+        data?.Role;
       const firstRole = Array.isArray(roles) ? roles[0] : roles;
       if (firstRole) {
         const normalized = firstRole.toString().toLowerCase();
@@ -238,7 +330,16 @@ export class AuthService {
     console.log("✅ Final panelType:", panelType);
 
     // Extract roles array
-    let roles = sourceUser?.roles ?? data?.roles ?? [];
+    let roles =
+      sourceUser?.roles ??
+      sourceUser?.Roles ??
+      data?.roles ??
+      data?.Roles ??
+      sourceUser?.role ??
+      sourceUser?.Role ??
+      data?.role ??
+      data?.Role ??
+      [];
     if (!Array.isArray(roles)) {
       roles = [roles];
     }
@@ -289,27 +390,49 @@ export class AuthService {
       user: {
         id:
           sourceUser?.id ||
+          sourceUser?.Id ||
           sourceUser?.userId ||
+          sourceUser?.UserId ||
           data?.id ||
+          data?.Id ||
           data?.userId ||
+          data?.UserId ||
           sourceUser?.email ||
+          sourceUser?.Email ||
           data?.email ||
+          data?.Email ||
           "",
-        email: sourceUser?.email || data?.email || "",
+        email:
+          sourceUser?.email ||
+          sourceUser?.Email ||
+          data?.email ||
+          data?.Email ||
+          "",
         name:
           sourceUser?.name ||
+          sourceUser?.Name ||
           sourceUser?.fullName ||
+          sourceUser?.FullName ||
           sourceUser?.userName ||
+          sourceUser?.UserName ||
           data?.name ||
+          data?.Name ||
           sourceUser?.email?.split("@")[0] ||
+          sourceUser?.Email?.split("@")[0] ||
+          data?.email?.split("@")[0] ||
+          data?.Email?.split("@")[0] ||
           "",
         panelType,
         roles,
         phoneNumber:
           sourceUser?.phoneNumber ??
+          sourceUser?.PhoneNumber ??
           sourceUser?.phone ??
+          sourceUser?.Phone ??
           data?.phoneNumber ??
-          data?.phone,
+          data?.PhoneNumber ??
+          data?.phone ??
+          data?.Phone,
         vendorRequestCompleted,
         vendorApprovalStatus,
       },
@@ -329,7 +452,6 @@ export class AuthService {
     const normalizedLogin = this.normalizeLoginResponse(loginResponse);
 
     setAuthToken(normalizedLogin.token);
-    localStorage.setItem("authToken", normalizedLogin.token);
     localStorage.setItem("user", JSON.stringify(normalizedLogin.user));
     localStorage.setItem("panelType", normalizedLogin.user.panelType);
 

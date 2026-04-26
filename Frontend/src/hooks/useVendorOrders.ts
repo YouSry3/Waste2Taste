@@ -354,7 +354,7 @@ const getErrorStatus = (error: unknown): number | undefined => {
 };
 
 const fetchVendorOrders = async (): Promise<VendorOrdersDashboardData> => {
-  const response = await apiClient.get<unknown>("/dashboard/orders");
+  const response = await apiClient.get<unknown>("/api/dashboard/orders");
   // Diagnostics: log headers and a small preview of the response to help
   // identify parsing/content-type issues reported as SyntaxError in the browser.
   try {

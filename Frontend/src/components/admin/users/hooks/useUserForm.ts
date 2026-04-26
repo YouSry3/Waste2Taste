@@ -6,14 +6,14 @@ import { validateForm } from "../utils/validators";
 
 export const useUserForm = (initialData?: Partial<UserFormData>) => {
   const [formData, setFormData] = useState<UserFormData>({
-    name: "",
+    fullName: "",
     email: "",
-    phone: "",
-    orders: "0",
+    phoneNumber: "",
+    ordersCount: "0",
     totalSpent: "0.00",
-    status: "Active",
-    joined: new Date().toISOString().split("T")[0],
-    lastOrder: "",
+    isActive: true,
+    joinedAt: new Date().toISOString().split("T")[0],
+    lastOrderDate: "",
     ...initialData,
   });
 
@@ -21,13 +21,19 @@ export const useUserForm = (initialData?: Partial<UserFormData>) => {
 
   const handleInputChange = useCallback(
     (field: string, value: string) => {
-      if (field === "phone") {
-        value = formatPhoneNumber(value);
+      let processedValue: any = value;
+
+      if (field === "phoneNumber") {
+        processedValue = formatPhoneNumber(value);
       }
       if (field === "totalSpent") {
-        value = formatCurrency(value);
+        processedValue = formatCurrency(value);
       }
-      setFormData((prev) => ({ ...prev, [field]: value }));
+      if (field === "isActive") {
+        processedValue = value === "true";
+      }
+
+      setFormData((prev) => ({ ...prev, [field]: processedValue }));
 
       // Clear error for this field if it exists
       if (formErrors[field]) {
@@ -49,14 +55,14 @@ export const useUserForm = (initialData?: Partial<UserFormData>) => {
 
   const resetForm = useCallback((data?: Partial<UserFormData>) => {
     setFormData({
-      name: "",
+      fullName: "",
       email: "",
-      phone: "",
-      orders: "0",
+      phoneNumber: "",
+      ordersCount: "0",
       totalSpent: "0.00",
-      status: "Active",
-      joined: new Date().toISOString().split("T")[0],
-      lastOrder: "",
+      isActive: true,
+      joinedAt: new Date().toISOString().split("T")[0],
+      lastOrderDate: "",
       ...data,
     });
     setFormErrors({});

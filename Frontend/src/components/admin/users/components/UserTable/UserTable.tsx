@@ -11,10 +11,10 @@ import { UserTableRow } from "./UserTableRow";
 
 interface UserTableProps {
   users: User[];
-  selectedUsers: number[];
+  selectedUsers: string[];
   isSelectAll: boolean;
   onToggleSelectAll: () => void;
-  onToggleUserSelection: (userId: number) => void;
+  onToggleUserSelection: (userId: string) => void;
   onViewUser: (user: User) => void;
   onToggleStatus: (user: User) => void;
 }

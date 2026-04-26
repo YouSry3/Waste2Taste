@@ -4,7 +4,7 @@ import { usersService } from "../api/users.service";
 
 interface BulkActionsProps {
   toggleStatus: (user: User) => void;
-  deleteUsers: (userIds: number[]) => void;
+  deleteUsers: (userIds: string[]) => void;
 }
 
 export const useBulkActions = (
@@ -12,11 +12,11 @@ export const useBulkActions = (
   filteredUsers: User[],
   actions: BulkActionsProps,
 ) => {
-  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [isBulkActionLoading, setIsBulkActionLoading] = useState(false);
 
-  const toggleUserSelection = useCallback((userId: number) => {
+  const toggleUserSelection = useCallback((userId: string) => {
     setSelectedUsers((prev) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)

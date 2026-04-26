@@ -49,7 +49,7 @@ export function UserTableRow({
           <div className="relative">
             <Avatar className="h-10 w-10">
               <AvatarFallback className="bg-green-100 text-green-700 font-semibold">
-                {getInitials(user.name)}
+                {getInitials(user.fullName)}
               </AvatarFallback>
             </Avatar>
             {isSelected && (
@@ -61,10 +61,10 @@ export function UserTableRow({
             )}
           </div>
           <div>
-            <div className="font-medium">{user.name}</div>
+            <div className="font-medium">{user.fullName}</div>
             <div className="text-xs text-gray-500 flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              Joined {user.joined}
+              Joined {new Date(user.joinedAt).toLocaleDateString()}
             </div>
           </div>
         </div>
@@ -79,8 +79,8 @@ export function UserTableRow({
           </div>
           <div className="flex items-center gap-1">
             <Phone className="h-3 w-3 text-gray-400" />
-            <a href={`tel:${user.phone}`} className="hover:text-green-600">
-              {user.phone}
+            <a href={`tel:${user.phoneNumber}`} className="hover:text-green-600">
+              {user.phoneNumber}
             </a>
           </div>
         </div>
@@ -88,25 +88,29 @@ export function UserTableRow({
       <td className="py-3 px-4">
         <div className="flex items-center gap-1">
           <ShoppingBag className="h-4 w-4 text-gray-400" />
-          <span className="font-medium">{user.orders}</span>
+          <span className="font-medium">{user.ordersCount}</span>
         </div>
       </td>
       <td className="py-3 px-4">
-        <span className="font-semibold text-green-600">{user.totalSpent}</span>
+        <span className="font-semibold text-green-600">
+          ${typeof user.totalSpent === 'number' && !isNaN(user.totalSpent) ? user.totalSpent.toFixed(2) : '0.00'}
+        </span>
       </td>
       <td className="py-3 px-4">
-        <span className="text-sm text-gray-600">{user.lastOrder}</span>
+        <span className="text-sm text-gray-600">
+          {user.lastOrderDate ? new Date(user.lastOrderDate).toLocaleDateString() : 'Never'}
+        </span>
       </td>
       <td className="py-3 px-4">
         <Badge
           className={`cursor-pointer transition-all ${
-            user.status === "Active"
+            user.isActive
               ? "bg-green-100 text-green-700 hover:bg-green-200"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           } ${isSelected ? "ring-2 ring-green-300 ring-offset-1" : ""}`}
           onClick={onToggleStatus}
         >
-          {user.status}
+          {user.isActive ? "Active" : "Inactive"}
         </Badge>
       </td>
       <td className="py-3 px-4">

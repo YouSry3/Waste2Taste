@@ -46,7 +46,7 @@ export interface UpdateUserDto extends Partial<CreateUserDto> {}
 
 export interface BulkActionRequest {
   action: "activate" | "deactivate" | "delete";
-  userIds: number[];
+  userIds: string[];
 }
 
 export interface UsersQueryParams {

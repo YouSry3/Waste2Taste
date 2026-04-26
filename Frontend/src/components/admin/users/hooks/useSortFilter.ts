@@ -1,11 +1,10 @@
-import { useState, useMemo } from "react";
-import { User, SortField, SortOrder } from "../types";
-import { filterUsers, sortUsers } from "../utils/helpers";
+import { useState } from "react";
+import { SortField, SortOrder } from "../types";
 
-export const useSortFilter = (users: User[]) => {
+export const useSortFilter = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [sortBy, setSortBy] = useState<SortField>("name");
+  const [sortBy, setSortBy] = useState<SortField>("fullName");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
   const toggleSort = (field: SortField) => {
@@ -17,17 +16,11 @@ export const useSortFilter = (users: User[]) => {
     }
   };
 
-  const filteredAndSortedUsers = useMemo(() => {
-    const filtered = filterUsers(users, searchTerm, filterStatus);
-    return sortUsers(filtered, sortBy, sortOrder);
-  }, [users, searchTerm, filterStatus, sortBy, sortOrder]);
-
   return {
     searchTerm,
     filterStatus,
     sortBy,
     sortOrder,
-    filteredAndSortedUsers,
     setSearchTerm,
     setFilterStatus,
     toggleSort,

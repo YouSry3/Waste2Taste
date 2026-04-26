@@ -26,12 +26,12 @@ export function UserForm({
         <Label className="text-sm font-medium">Full Name *</Label>
         <Input
           placeholder="Enter full name"
-          value={formData.name}
-          onChange={(e) => onInputChange("name", e.target.value)}
-          className={`mt-1 ${formErrors.name ? "border-red-500" : ""}`}
+          value={formData.fullName}
+          onChange={(e) => onInputChange("fullName", e.target.value)}
+          className={`mt-1 ${formErrors.fullName ? "border-red-500" : ""}`}
         />
-        {formErrors.name && (
-          <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>
+        {formErrors.fullName && (
+          <p className="text-red-500 text-xs mt-1">{formErrors.fullName}</p>
         )}
       </div>
 
@@ -54,13 +54,13 @@ export function UserForm({
         <Input
           type="tel"
           placeholder="(555) 123-4567"
-          value={formData.phone}
-          onChange={(e) => onInputChange("phone", e.target.value)}
-          className={`mt-1 ${formErrors.phone ? "border-red-500" : ""}`}
+          value={formData.phoneNumber}
+          onChange={(e) => onInputChange("phoneNumber", e.target.value)}
+          className={`mt-1 ${formErrors.phoneNumber ? "border-red-500" : ""}`}
           maxLength={14}
         />
-        {formErrors.phone && (
-          <p className="text-red-500 text-xs mt-1">{formErrors.phone}</p>
+        {formErrors.phoneNumber && (
+          <p className="text-red-500 text-xs mt-1">{formErrors.phoneNumber}</p>
         )}
       </div>
 
@@ -70,13 +70,13 @@ export function UserForm({
           <Input
             type="number"
             placeholder="0"
-            value={formData.orders}
-            onChange={(e) => onInputChange("orders", e.target.value)}
-            className={`mt-1 ${formErrors.orders ? "border-red-500" : ""}`}
+            value={formData.ordersCount}
+            onChange={(e) => onInputChange("ordersCount", e.target.value)}
+            className={`mt-1 ${formErrors.ordersCount ? "border-red-500" : ""}`}
             min="0"
           />
-          {formErrors.orders && (
-            <p className="text-red-500 text-xs mt-1">{formErrors.orders}</p>
+          {formErrors.ordersCount && (
+            <p className="text-red-500 text-xs mt-1">{formErrors.ordersCount}</p>
           )}
         </div>
 
@@ -98,8 +98,8 @@ export function UserForm({
         <div>
           <Label className="text-sm font-medium">Status</Label>
           <select
-            value={formData.status}
-            onChange={(e) => onInputChange("status", e.target.value)}
+            value={formData.isActive ? "Active" : "Inactive"}
+            onChange={(e) => onInputChange("isActive", e.target.value === "Active" ? "true" : "false")}
             className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
           >
             <option value="Active">Active</option>
@@ -111,8 +111,8 @@ export function UserForm({
           <Label className="text-sm font-medium">Joined Date</Label>
           <Input
             type="date"
-            value={formData.joined}
-            onChange={(e) => onInputChange("joined", e.target.value)}
+            value={formData.joinedAt}
+            onChange={(e) => onInputChange("joinedAt", e.target.value)}
             className="mt-1"
           />
         </div>
@@ -122,12 +122,12 @@ export function UserForm({
         <Label className="text-sm font-medium">Last Order Date *</Label>
         <Input
           type="date"
-          value={formData.lastOrder}
-          onChange={(e) => onInputChange("lastOrder", e.target.value)}
-          className={`mt-1 ${formErrors.lastOrder ? "border-red-500" : ""}`}
+          value={formData.lastOrderDate}
+          onChange={(e) => onInputChange("lastOrderDate", e.target.value)}
+          className={`mt-1 ${formErrors.lastOrderDate ? "border-red-500" : ""}`}
         />
-        {formErrors.lastOrder && (
-          <p className="text-red-500 text-xs mt-1">{formErrors.lastOrder}</p>
+        {formErrors.lastOrderDate && (
+          <p className="text-red-500 text-xs mt-1">{formErrors.lastOrderDate}</p>
         )}
       </div>
 

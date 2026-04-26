@@ -23,6 +23,8 @@ export interface VendorApprovalRequest {
   phone: string;
   address: string;
   category: string;
+  latitude?: number | null;
+  longitude?: number | null;
   submitted: string;
   documents: VendorDocument[];
   status: VendorApprovalStatus;

@@ -2,19 +2,29 @@ import React from "react";
 import { Card, CardContent } from "../../../ui/card";
 import { Badge } from "../../../ui/badge";
 import { Store, AlertTriangle, Package } from "lucide-react";
-import { Listing, VendorRequest, CustomerReport } from "../types";
+import {
+  Listing,
+  VendorRequest,
+  CustomerReport,
+  ModerationSummary,
+} from "../types";
 
 interface StatsCardsProps {
+  summary?: ModerationSummary | null;
   listings: Listing[];
   vendorRequests: VendorRequest[];
   customerReports: CustomerReport[];
 }
 
 export function StatsCards({
+  summary,
   listings,
   vendorRequests,
   customerReports,
 }: StatsCardsProps) {
+  const listingsToReviewCount = summary?.listingsToReviewCount ?? 0;
+  const pendingVendorRequestsCount = summary?.pendingVendorRequestsCount ?? 0;
+  const openCustomerReportsCount = summary?.openCustomerReportsCount ?? 0;
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
       <Card className="border-l-4 border-l-green-500 shadow-sm hover:shadow-md transition-shadow">
@@ -27,7 +37,7 @@ export function StatsCards({
           </div>
           <div className="flex items-center gap-3">
             <h3 className="text-3xl font-bold text-gray-900">
-              {listings.filter((l) => l.status === "pending").length}
+              {listingsToReviewCount}
             </h3>
             {listings.filter((l) => l.flagged && l.status === "pending")
               .length > 0 && (
@@ -52,7 +62,7 @@ export function StatsCards({
             <Store className="h-5 w-5 text-orange-500" />
           </div>
           <h3 className="text-3xl font-bold text-gray-900">
-            {vendorRequests.filter((r) => r.status === "pending").length}
+            {pendingVendorRequestsCount}
           </h3>
           <p className="text-xs text-gray-500 mt-1">Awaiting approval</p>
         </CardContent>
@@ -67,7 +77,7 @@ export function StatsCards({
             <AlertTriangle className="h-5 w-5 text-red-500" />
           </div>
           <h3 className="text-3xl font-bold text-gray-900">
-            {customerReports.filter((r) => r.status === "under_review").length}
+            {openCustomerReportsCount}
           </h3>
           <p className="text-xs text-gray-500 mt-1">Requires attention</p>
         </CardContent>

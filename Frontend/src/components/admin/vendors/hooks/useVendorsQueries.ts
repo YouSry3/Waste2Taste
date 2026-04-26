@@ -123,16 +123,16 @@ const mapApiVendorToVendor = (payload: unknown, index: number): Vendor => {
   return {
     id: toVendorId(item.id, index + 1),
     name: String(item.name ?? "Unknown Vendor"),
-    type: parseVendorType(item.type),
+    type: parseVendorType(item.type ?? "Vendor"),
     category: String(item.category ?? "General"),
     contact: String(item.contact ?? item.contactName ?? "N/A"),
     email: String(item.email ?? "N/A"),
     phone: String(item.phone ?? "N/A"),
     address: String(item.address ?? "N/A"),
-    listings: toNumber(item.listings ?? item.activeListings),
-    revenue: toMoneyString(item.revenue),
+    listings: toNumber(item.listings ?? item.activeListings ?? 0),
+    revenue: toMoneyString(item.revenue ?? 0),
     rating: toNumber(item.rating, 5),
-    status: parseVendorStatus(item.status),
+    status: parseVendorStatus(item.status ?? "Active"),
   };
 };
 

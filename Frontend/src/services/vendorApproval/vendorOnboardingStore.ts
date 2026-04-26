@@ -2,6 +2,11 @@ export interface VendorSignupDraft {
   ownerName: string;
   email: string;
   phoneNumber: string;
+  businessName?: string;
+  category?: string;
+  address?: string;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 const VENDOR_SIGNUP_DRAFT_KEY = "vendorSignupDraft";
@@ -13,7 +18,17 @@ export const saveVendorSignupDraft = (draft: VendorSignupDraft) => {
     return;
   }
 
-  window.localStorage.setItem(VENDOR_SIGNUP_DRAFT_KEY, JSON.stringify(draft));
+  const serializedDraft = JSON.stringify(draft);
+
+  try {
+    window.localStorage.setItem(VENDOR_SIGNUP_DRAFT_KEY, serializedDraft);
+  } catch {
+    try {
+      window.sessionStorage.setItem(VENDOR_SIGNUP_DRAFT_KEY, serializedDraft);
+    } catch (error) {
+      console.error("Failed to persist vendor signup draft.", error);
+    }
+  }
 };
 
 export const getVendorSignupDraft = (): VendorSignupDraft | null => {
