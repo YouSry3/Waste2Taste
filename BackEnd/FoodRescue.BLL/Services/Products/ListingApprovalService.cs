@@ -1,6 +1,8 @@
 using FoodRescue.BLL.Contract.Listings;
+using FoodRescue.BLL.Contract.Logs;
 using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
+using FoodRescue.BLL.Services.Logs;
 using FoodRescue.DAL.Consts;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
@@ -14,14 +16,18 @@ public class ListingApprovalService : IListingApprovalService
 {
     private readonly CompanyDbContext _context;
     private readonly ILogger<ListingApprovalService> _logger;
+    private readonly IActivityLogService _activityLogService;
 
-    public ListingApprovalService(CompanyDbContext context, ILogger<ListingApprovalService> logger)
+    public ListingApprovalService(CompanyDbContext context
+        , ILogger<ListingApprovalService> logger
+        , IActivityLogService activityLogService)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _activityLogService = activityLogService ?? throw new ArgumentNullException(nameof(activityLogService));
     }
 
-    public async Task<Result> ApproveListingAsync(Guid productId)
+    public async Task<Result> ApproveListingAsync(Guid productId, Guid userId)
     {
         try
         {
@@ -43,6 +49,17 @@ public class ListingApprovalService : IListingApprovalService
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Product {ProductId} approved successfully", productId);
+            await _activityLogService.WriteAsync(new CreateActivityLogDto
+            {
+                Module = "VendorRequests",
+                Action = "Approved",
+                EntityType = "Product",
+                EntityId = productId,
+                EntityName = product.Name,
+                Description = $"Approved product listing for {product.Name}",
+                OldValue = "pending",
+                NewValue = "approved"
+            }, userId, "Admin");
             return Result.Success();
         }
         catch (Exception ex)
@@ -52,7 +69,7 @@ public class ListingApprovalService : IListingApprovalService
         }
     }
 
-    public async Task<Result> RejectListingAsync(Guid productId, string rejectionReason)
+    public async Task<Result> RejectListingAsync(Guid productId, string rejectionReason, Guid userId)
     {
         try
         {
@@ -74,6 +91,17 @@ public class ListingApprovalService : IListingApprovalService
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Product {ProductId} rejected with reason: {RejectionReason}", productId, rejectionReason);
+            await _activityLogService.WriteAsync(new CreateActivityLogDto
+            {
+                Module = "VendorRequests",
+                Action = "Rejected",
+                EntityType = "Product",
+                EntityId = productId,
+                EntityName = product.Name,
+                Description = $"Rejected product listing for {product.Name}",
+                OldValue = "pending",
+                NewValue = "discontinued"
+            }, userId, "Admin");
             return Result.Success();
         }
         catch (Exception ex)

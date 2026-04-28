@@ -24,6 +24,8 @@ namespace FoodRescue.DAL.Context
         public DbSet<AISpoileRequest> AISpoileRequests { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
+        public DbSet<ActivityLog> ActivityLogs { get; set; }
+        public DbSet<SentimentAnalysis> SentimentAnalysis { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,6 +59,11 @@ namespace FoodRescue.DAL.Context
                 .WithMany()
                 .HasForeignKey(r => r.OrderId)
                 .OnDelete(DeleteBehavior.SetNull);
+            modelBuilder.Entity<ActivityLog>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             // ReportResponse Configuration
             modelBuilder.Entity<ReportResponse>()
@@ -65,11 +72,19 @@ namespace FoodRescue.DAL.Context
                 .HasForeignKey(rr => rr.ReportId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<SentimentAnalysis>()
+                .ToTable("SentimentAnalysis");
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.SentimentAnalysis)
+                .WithOne(s => s.Review)
+                .HasForeignKey<SentimentAnalysis>(s => s.ReviewId);
+        
             modelBuilder.Entity<ReportResponse>()
-                .HasOne(rr => rr.Responder)
-                .WithMany()
-                .HasForeignKey(rr => rr.ResponderId)
-                .OnDelete(DeleteBehavior.Restrict);
+                    .HasOne(rr => rr.Responder)
+                    .WithMany()
+                    .HasForeignKey(rr => rr.ResponderId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

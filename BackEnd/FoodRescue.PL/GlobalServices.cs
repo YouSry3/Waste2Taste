@@ -18,6 +18,7 @@ using FoodRescue.BLL.Services.Favorites;
 using FoodRescue.BLL.Services.FileStorage;
 using FoodRescue.BLL.Services.JWT;
 using FoodRescue.BLL.Services.ListingDashboardTab;
+using FoodRescue.BLL.Services.Logs;
 using FoodRescue.BLL.Services.OrderDashboardTab;
 using FoodRescue.BLL.Services.Orders;
 using FoodRescue.BLL.Services.Products;
@@ -36,6 +37,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace FoodRescue.PL
 {
@@ -84,7 +86,11 @@ namespace FoodRescue.PL
 
 
             services.AddJwtService(configuration);
-
+            services.AddControllers()
+          .AddJsonOptions(options =>
+          {
+              options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+          });
             // Register FluentValidation 
             services.AddControllers()
                 .AddFluentValidation(fv =>
@@ -150,6 +156,8 @@ namespace FoodRescue.PL
             services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<IFavoriteRepository, FavoriteRepository>();
             services.AddScoped<IFavoriteService, FavoriteService>();
+            services.AddScoped<IActivityLogService, ActivityLogService>();
+            services.AddHttpClient<ISentimentService, SentimentService>();
 
             VendorMapsterConfig.RegisterVendorMappings();
 

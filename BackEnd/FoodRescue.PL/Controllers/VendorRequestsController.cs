@@ -94,7 +94,7 @@ public class VendorRequestsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> ApproveVendorRequest([FromHeader] Guid vendorRequestId)
     {
-        var result = await _vendorRequestService.ApproveVendorRequestAsync(vendorRequestId);
+        var result = await _vendorRequestService.ApproveVendorRequestAsync(vendorRequestId, GetUserIdFromClaims());
 
         if (result.IsFailure)
             return BadRequest(new { Error = result.Error! });
@@ -109,7 +109,7 @@ public class VendorRequestsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> RejectVendorRequest([FromHeader] Guid vendorRequestId)
     {
-        var result = await _vendorRequestService.RejectVendorRequestAsync(vendorRequestId);
+        var result = await _vendorRequestService.RejectVendorRequestAsync(vendorRequestId, GetUserIdFromClaims());
 
         if (!result.IsSuccess)
             return BadRequest(new { Error = result.Error! });

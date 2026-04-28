@@ -1,32 +1,43 @@
-﻿using FoodRescue.BLL.Contract.Reports.Create;
-using FoodRescue.BLL.Contract.Reports.Update;
+﻿using FoodRescue.BLL.Contract.Logs;
+using FoodRescue.BLL.Contract.Reports.Create;
 using FoodRescue.BLL.Contract.Reports.Get;
 using FoodRescue.BLL.Contract.Reports.Response;
 using FoodRescue.BLL.Contract.Reports.Stats;
+using FoodRescue.BLL.Contract.Reports.Update;
 using FoodRescue.BLL.Extensions.Reports;
 using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
+using FoodRescue.BLL.Services.Logs;
+using FoodRescue.DAL.Consts;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
-using FoodRescue.DAL.Consts;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodRescue.BLL.Services.Reports
 {
     public class ReportsService(CompanyDbContext context, 
                                 IReportRepository reportRepository,
-                                IProductRepository productRepository) : IReportsService
+                                IProductRepository productRepository,
+                                IActivityLogService activityLogService
+        ) : IReportsService
     {
         private readonly CompanyDbContext _context = context;
         private readonly IReportRepository _reportRepository = reportRepository;
         private readonly IProductRepository _productRepository = productRepository;
-        
+        private readonly IActivityLogService _activityLogService = activityLogService;
+
         // Get Operations
-        public async Task<Result<IEnumerable<ReportListDto>>> GetAllReportsAsync()
+        public async Task<Result<IEnumerable<ReportListDto>>> GetAllReportsAdminAsync()
         {
             var reports = await _reportRepository.GetAllAsync();
             var dtos = reports.Select(MapToListDto).ToList();
             return Result.Success<IEnumerable<ReportListDto>>(dtos);
+        }
+        public async Task<Result<IEnumerable<ReportListVendorDto>>> GetAllReportsVendorAsync()
+        {
+            var reports = await _reportRepository.GetAllAsync();
+            var dtos = reports.Select(MapToVendorListDto).ToList();
+            return Result.Success<IEnumerable<ReportListVendorDto>>(dtos);
         }
 
         public async Task<Result<IEnumerable<ReportListDto>>> GetReportsByUserAsync(Guid userId)
@@ -91,7 +102,7 @@ namespace FoodRescue.BLL.Services.Reports
             return Result.Success(detailDto);
         }
 
-        public async Task<Result<ReportDetailDto>> UpdateReportStatusAsync(Guid reportId, UpdateReportStatusDto dto)
+        public async Task<Result<ReportDetailDto>> UpdateReportStatusAsync(Guid reportId, UpdateReportStatusDto dto, Guid userId)
         {
             var report = await _reportRepository.GetByIdAsync(reportId);
             if (report == null)
@@ -107,6 +118,17 @@ namespace FoodRescue.BLL.Services.Reports
                 report.RefundAmount = dto.RefundAmount.Value;
 
             await _reportRepository.UpdateAsync(report);
+            await _activityLogService.WriteAsync(new CreateActivityLogDto
+            {
+                Module = "Reports",
+                Action = "StatusUpdated",
+                EntityType = "Report",
+                EntityId = report.Id,
+                EntityName = report.ListingName,
+                Description = $"Updated report status to {dto.Status} for report {report.ReportCode}",
+                OldValue = null,
+                NewValue = dto.Status
+            }, userId, "Admin");
             var detailDto = MapToDetailDto(report);
             return Result.Success(detailDto);
         }
@@ -215,6 +237,21 @@ namespace FoodRescue.BLL.Services.Reports
         }
 
         // Helper Methods
+        private ReportListVendorDto MapToVendorListDto(Report report)
+        {
+            return new ReportListVendorDto
+            {
+                Id = report.Id,
+                ReportCode = report.ReportCode,
+                CustomerName = report.CustomerName,
+                ListingName = report.ListingName,
+                IssueType = report.IssueType,
+                RefundAmount = report.RefundAmount,
+                Status = report.Status,
+                Priority = report.Priority.ToString(),
+                CreatedAt = report.CreatedAt
+            };
+        }
         private ReportListDto MapToListDto(Report report)
         {
             return new ReportListDto
@@ -268,6 +305,8 @@ namespace FoodRescue.BLL.Services.Reports
             var totalHours = resolvedReports.Sum(r => (r.UpdatedAt!.Value - r.CreatedAt).TotalHours);
             return totalHours / resolvedReports.Count;
         }
+
+ 
     }
 }
 

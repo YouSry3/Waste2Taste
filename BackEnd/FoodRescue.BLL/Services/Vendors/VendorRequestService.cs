@@ -1,6 +1,8 @@
+using FoodRescue.BLL.Contract.Logs;
 using FoodRescue.BLL.Contract.VendorDashboard;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.BLL.Services.FileStorage;
+using FoodRescue.BLL.Services.Logs;
 using FoodRescue.DAL.Consts;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
@@ -15,15 +17,18 @@ public class VendorRequestService : IVendorRequestService
     private readonly CompanyDbContext _context;
     private readonly ILogger<VendorRequestService> _logger;
     private readonly IFileStorageService _fileStorage;
+    private readonly IActivityLogService _activityLogService;
 
     public VendorRequestService(
         CompanyDbContext context,
         ILogger<VendorRequestService> logger,
-        IFileStorageService fileStorage)
+        IFileStorageService fileStorage,
+        IActivityLogService activityLogService)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _fileStorage = fileStorage ?? throw new ArgumentNullException(nameof(fileStorage));
+        _activityLogService = activityLogService ?? throw new ArgumentNullException(nameof(activityLogService));
     }
 
     public async Task<Result<Guid>> CreateVendorRequestAsync(VendorDataRequest request, Guid userId)
@@ -106,7 +111,7 @@ public class VendorRequestService : IVendorRequestService
         return Result<List<VendorDataRequest>>.Success(responses);
     }
 
-    public async Task<Result> ApproveVendorRequestAsync(Guid vendorRequestId)
+    public async Task<Result> ApproveVendorRequestAsync(Guid vendorRequestId, Guid userId)
     {
         var vendorRequest = await _context.VendorRequests
             .FirstOrDefaultAsync(vr => vr.Id == vendorRequestId);
@@ -132,10 +137,21 @@ public class VendorRequestService : IVendorRequestService
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Vendor request {VendorRequestId} approved and vendor created", vendorRequestId);
+        await _activityLogService.WriteAsync(new CreateActivityLogDto
+        {
+            Module = "VendorRequests",
+            Action = "Approved",
+            EntityType = "VendorRequest",
+            EntityId = vendorRequest.Id,
+            EntityName = vendorRequest.BusinessName,
+            Description = $"Vendor request Approved for {vendorRequest.BusinessName}",
+            OldValue = "pending",
+            NewValue = vendorRequest.Status.ToString()
+        }, userId, "Admin");
         return Result.Success();
     }
 
-    public async Task<Result> RejectVendorRequestAsync(Guid vendorRequestId)
+    public async Task<Result> RejectVendorRequestAsync(Guid vendorRequestId, Guid userId)
     {
         _logger.LogInformation("Rejecting vendor request {VendorRequestId}", vendorRequestId);
 
@@ -155,6 +171,17 @@ public class VendorRequestService : IVendorRequestService
         await _context.SaveChangesAsync();
 
         _logger.LogInformation("Vendor request {VendorRequestId} rejected", vendorRequestId);
+        await _activityLogService.WriteAsync(new CreateActivityLogDto
+        {
+            Module = "VendorRequests",
+            Action = "Rejected",
+            EntityType = "VendorRequest",
+            EntityId = vendorRequest.Id,
+            EntityName = vendorRequest.BusinessName,
+            Description = $"Vendor request Rejected for {vendorRequest.BusinessName}",
+            OldValue = "pending",
+            NewValue = vendorRequest.Status.ToString()
+        }, userId, "Admin");
         return Result.Success();
     }
 
@@ -179,11 +206,15 @@ public class VendorRequestService : IVendorRequestService
     {
         return new VendorDataRequest
         {
+            Id = vendorRequest.Id,
             Name = vendorRequest.BusinessName,
             Category = vendorRequest.Category,
             Email = vendorRequest.User?.Email ?? string.Empty,
             PhoneNumber = vendorRequest.PhoneNumber,
             Address = vendorRequest.Address,
+            Status = vendorRequest.Status,
+            Latitude = vendorRequest.Latitude,
+            Longitude = vendorRequest.Longitude,
             BusinessLicenseUrl = vendorRequest.BusinessLicenseUrl,
             HealthCertificateUrl = vendorRequest.HealthCertificateUrl,
         };

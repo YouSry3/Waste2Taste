@@ -1,6 +1,8 @@
-﻿using FoodRescue.BLL.Contract.Reports.Create;
-using FoodRescue.BLL.Contract.Reports.Update;
+﻿using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
+using FoodRescue.BLL.Contract.Reports.Create;
+using FoodRescue.BLL.Contract.Reports.Get;
 using FoodRescue.BLL.Contract.Reports.Response;
+using FoodRescue.BLL.Contract.Reports.Update;
 using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Services.Reports;
 using Microsoft.AspNetCore.Authorization;
@@ -22,11 +24,27 @@ namespace FoodRescue.PL.Controllers
         /// </summary>
         [HttpGet]
         [Authorize(Roles = "admin")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(IEnumerable<ReportListDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> GetAllReports()
         {
-            var result = await _reportsService.GetAllReportsAsync();
+            var result = await _reportsService.GetAllReportsAdminAsync();
+            if (result.IsFailure)
+                return BadRequest(result.Error);
+
+            return Ok(result.Value);
+        }
+
+        /// <summary>
+        /// Get all reports (Vendor only)
+        /// </summary>
+        [HttpGet("vendor")]
+        [Authorize(Roles = "vendor")]
+        [ProducesResponseType(typeof(IEnumerable<ReportListVendorDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(401)]
+        public async Task<IActionResult> GetAllReportsVendor()
+        {
+            var result = await _reportsService.GetAllReportsVendorAsync();
             if (result.IsFailure)
                 return BadRequest(result.Error);
 
@@ -115,13 +133,17 @@ namespace FoodRescue.PL.Controllers
         [ProducesResponseType(401)]
         public async Task<IActionResult> UpdateReportStatus(Guid id, [FromBody] UpdateReportStatusDto dto)
         {
-            var result = await _reportsService.UpdateReportStatusAsync(id, dto);
+            var result = await _reportsService.UpdateReportStatusAsync(id, dto, GetUserIdFromClaims());
             if (result.IsFailure)
                 return NotFound(result.Error);
 
             return Ok(result.Value);
         }
-
+        private Guid GetUserIdFromClaims()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
+        }
         /// <summary>
         /// Add response to report
         /// </summary>

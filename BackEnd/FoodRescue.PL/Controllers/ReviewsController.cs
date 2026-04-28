@@ -14,33 +14,24 @@ namespace FoodRescue.PL.Controllers
     {
         private readonly IReviewService _reviewService = reviewService;
 
-        /// <summary>
-        /// Get all reviews for a specific product
-        /// </summary>
-        /// <remarks>
-        /// Returns a list of all reviews for the specified product including user information,
-        /// ratings, comments, and user profile images.
-        /// </remarks>
-        /// <param name="productId">The product ID to retrieve reviews for</param>
-        /// <returns>List of reviews with user profile images</returns>
-        /// <response code="200">Reviews retrieved successfully with user image information</response>
-        /// <response code="404">Product not found or no reviews exist</response>
-        [HttpGet("product")]
-        [ProducesResponseType(typeof(List<ReviewResponse>), StatusCodes.Status200OK)]
+        [HttpGet("vendor/GetReviewsWithSentiment")]
+        [ProducesResponseType(typeof(List<ReviewWithSentimentResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [Authorize(Roles = "vendor")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetReviews([FromHeader]Guid productId)
+        public async Task<IActionResult> GetReviewsWithSentiment([FromHeader]Guid vendorId)
         {
-            var result = await _reviewService.GetReviewsByProductId(productId);
-
-
+            var result = await _reviewService.GetReviewsWithSentiment(vendorId);
 
             return result.IsSuccess? 
                 Ok(result.Value):
                 NotFound(result.Error);
         }
+
+  
         // Add review
         [HttpPost("Add")]
+        [Authorize(Roles = "customer")]
         public async Task<IActionResult> AddReview([FromBody]ReviewRequest request)
         {
             // temporary (later JWT)

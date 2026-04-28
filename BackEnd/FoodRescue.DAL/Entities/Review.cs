@@ -17,6 +17,7 @@ namespace FoodRescue.DAL.Entities
         // Navigation Properties
         public User User { get; set; }
         public Product Product { get; set; }
+        public SentimentAnalysis SentimentAnalysis { get; set; }
     }
 
 
