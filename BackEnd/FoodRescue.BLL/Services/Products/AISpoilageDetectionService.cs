@@ -13,7 +13,7 @@ public class AISpoilageDetectionService : IAISpoilageDetectionService
     private readonly HttpClient _httpClient;
     private readonly CompanyDbContext _context;
     private readonly ILogger<AISpoilageDetectionService> _logger;
-    private const string AI_ENDPOINT = "https://web-production-5b666.up.railway.app/predict";
+    private const string AI_ENDPOINT = "https://web-production-ab0306.up.railway.app/predict";
 
     public AISpoilageDetectionService(
         HttpClient httpClient,

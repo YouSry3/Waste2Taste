@@ -11,14 +11,16 @@ namespace FoodRescue.BLL.Services.Reports
     public interface IReportsService
     {
         // Get Operations
-        Task<Result<IEnumerable<ReportListDto>>> GetAllReportsAsync();
+        Task<Result<IEnumerable<ReportListDto>>> GetAllReportsAdminAsync();
+        Task<Result<IEnumerable<ReportListVendorDto>>> GetAllReportsVendorAsync();
+
         Task<Result<IEnumerable<ReportListDto>>> GetReportsByUserAsync(Guid userId);
         Task<Result<ReportDetailDto>> GetReportByIdAsync(Guid id);
         Task<Result<IEnumerable<ReportListDto>>> GetFilteredReportsAsync(string? status = null, string? search = null);
 
         // Create/Update Operations
         Task<Result<ReportDetailDto>> CreateReportAsync(CreateReportDto dto, Guid userId, string userName);
-        Task<Result<ReportDetailDto>> UpdateReportStatusAsync(Guid reportId, UpdateReportStatusDto dto);
+        Task<Result<ReportDetailDto>> UpdateReportStatusAsync(Guid reportId, UpdateReportStatusDto dto, Guid userId);
         Task<Result<ReportResponseDto>> AddResponseAsync(CreateResponseDto dto, Guid responderId, string responderName);
 
         // Stats Operations

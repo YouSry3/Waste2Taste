@@ -2,6 +2,7 @@ using FoodRescue.BLL.Contract.Products.Approval;
 using FoodRescue.BLL.Services.Products;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FoodRescue.PL.Controllers;
 
@@ -46,7 +47,7 @@ public class ListingController : ControllerBase
         if (productId == Guid.Empty)
             return BadRequest(new { Error = "Product ID is required" });
 
-        var result = await _listingApprovalService.ApproveListingAsync(productId);
+        var result = await _listingApprovalService.ApproveListingAsync(productId, GetUserIdFromClaims());
 
         if (!result.IsSuccess)
             return BadRequest(new { Error = result.Error!.description });
@@ -63,12 +64,18 @@ public class ListingController : ControllerBase
         if (string.IsNullOrWhiteSpace(request.RejectionReason))
             return BadRequest(new { Error = "Rejection reason is required" });
 
-        var result = await _listingApprovalService.RejectListingAsync(request.ProductId, request.RejectionReason);
+        var result = await _listingApprovalService.RejectListingAsync(request.ProductId, request.RejectionReason, GetUserIdFromClaims());
 
         if (!result.IsSuccess)
             return BadRequest(new { Error = result.Error.description });
 
         return Ok(new { Message = "Listing rejected successfully", Data = new { ProductId = request.ProductId, Status = "Discontinued", RejectionReason = request.RejectionReason } });
+    }
+
+    private Guid GetUserIdFromClaims()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
     }
 }
 

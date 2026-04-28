@@ -1,5 +1,6 @@
 using FoodRescue.BLL.Settings;
 using FoodRescue.Hubs;
+using System.Text.Json.Serialization;
 
 
 namespace FoodRescue.PL
@@ -17,7 +18,7 @@ namespace FoodRescue.PL
             // Add services to the container.
             builder.Services.AddProjectServices(builder.Configuration, builder.Environment);
 
-
+          
 
 
             builder.Services.AddSignalR();

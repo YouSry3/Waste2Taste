@@ -58,6 +58,56 @@ namespace FoodRescue.DAL.Migrations
                     b.ToTable("AISpoileRequests", (string)null);
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.ActivityLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("EntityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("EntityName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Module")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OldValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ActivityLogs", (string)null);
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.Donation", b =>
                 {
                     b.Property<Guid>("Id")
@@ -111,7 +161,7 @@ namespace FoodRescue.DAL.Migrations
                     b.HasIndex("UserId", "ProductId")
                         .IsUnique();
 
-                    b.ToTable("Favorites");
+                    b.ToTable("Favorites", (string)null);
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Order", b =>
@@ -421,6 +471,40 @@ namespace FoodRescue.DAL.Migrations
                     b.ToTable("Reviews", (string)null);
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.SentimentAnalysis", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Excitement")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Gratitude")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("Neutral")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ReviewId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Urgency")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReviewId")
+                        .IsUnique();
+
+                    b.ToTable("SentimentAnalysis", (string)null);
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -616,6 +700,16 @@ namespace FoodRescue.DAL.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.ActivityLog", b =>
+                {
+                    b.HasOne("FoodRescue.DAL.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.Donation", b =>
                 {
                     b.HasOne("FoodRescue.DAL.Entities.Vendor", "Vendor")
@@ -751,6 +845,17 @@ namespace FoodRescue.DAL.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("FoodRescue.DAL.Entities.SentimentAnalysis", b =>
+                {
+                    b.HasOne("FoodRescue.DAL.Entities.Review", "Review")
+                        .WithOne("SentimentAnalysis")
+                        .HasForeignKey("FoodRescue.DAL.Entities.SentimentAnalysis", "ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Review");
+                });
+
             modelBuilder.Entity("FoodRescue.DAL.Entities.Vendor", b =>
                 {
                     b.HasOne("FoodRescue.DAL.Entities.User", "Owner")
@@ -787,6 +892,12 @@ namespace FoodRescue.DAL.Migrations
             modelBuilder.Entity("FoodRescue.DAL.Entities.Report", b =>
                 {
                     b.Navigation("Responses");
+                });
+
+            modelBuilder.Entity("FoodRescue.DAL.Entities.Review", b =>
+                {
+                    b.Navigation("SentimentAnalysis")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.User", b =>
