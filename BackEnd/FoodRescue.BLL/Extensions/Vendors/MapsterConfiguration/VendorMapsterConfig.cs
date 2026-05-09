@@ -9,7 +9,11 @@ public static class VendorMapsterConfig
 {
     public static void RegisterVendorMappings()
     {
-        TypeAdapterConfig<Vendor, VendorListResponse>.NewConfig();
+        TypeAdapterConfig<Vendor, VendorListResponse>.NewConfig()
+            .Map(dest => dest.Category, src => src.Category.ToString())
+            .Map(dest => dest.Email, src => src.Owner.Email)
+            .Map(dest => dest.PhoneNumber, src => src.PhoneNumber ?? string.Empty)
+            .Map(dest => dest.Status, src => "Active");
 
         //TypeAdapterConfig<Vendor, VendorDetailsResponse>.NewConfig()
         //    .Map(dest => dest.Products, src => src.Products);

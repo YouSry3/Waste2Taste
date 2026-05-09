@@ -1,6 +1,4 @@
-﻿using FoodRescue.BLL.ResultPattern;
-using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
-using FoodRescue.BLL.Contract.AdminDashbord.Users;
+﻿using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
 using FoodRescue.DAL.Context;
@@ -56,7 +54,12 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
             var endDate = DateTime.UtcNow.AddDays(-skipDays);
 
             var count = await _context.Users
-                .Where(u => u.IsActive && u.CreatedAt >= startDate && u.CreatedAt < endDate)
+                .Where(u =>
+                    u.IsActive &&
+                    u.Role != null &&
+                    u.Role.ToLower() == "customer" &&
+                    u.CreatedAt >= startDate &&
+                    u.CreatedAt < endDate)
                 .CountAsync();
 
             return Result.Success(count);
@@ -162,19 +165,56 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
         // Vendors List
         // ==============================
         public async Task<PagedResultDto<VendorListItemDto>> GetVendorsAsync(
-            int page,
-            int limit,
-            string search,
-            string sortBy,
-            string order)
+     int page,
+     int limit,
+     string search,
+     string sortBy,
+     string order)
         {
             var query = _context.Vendors.AsQueryable();
 
+            // Filter by search
             if (!string.IsNullOrWhiteSpace(search))
                 query = query.Where(v => v.Name.Contains(search));
 
+            // Get total count before pagination
             var total = await query.CountAsync();
 
+            // Apply sorting
+            var isDescending = order?.ToLower() == "desc";
+
+            query = sortBy?.ToLower() switch
+            {
+                "name" => isDescending
+                    ? query.OrderByDescending(v => v.Name)
+                    : query.OrderBy(v => v.Name),
+
+                "revenue" => isDescending
+                    ? query.OrderByDescending(v => _context.Orders
+                        .Where(o => o.Product.VendorId == v.Id)
+                        .Sum(o => (decimal?)o.TotalPrice) ?? 0)
+                    : query.OrderBy(v => _context.Orders
+                        .Where(o => o.Product.VendorId == v.Id)
+                        .Sum(o => (decimal?)o.TotalPrice) ?? 0),
+
+                "rating" => isDescending
+                    ? query.OrderByDescending(v => _context.Reviews
+                        .Where(r => r.Product.VendorId == v.Id)
+                        .Average(r => (double?)r.Rating) ?? 0)
+                    : query.OrderBy(v => _context.Reviews
+                        .Where(r => r.Product.VendorId == v.Id)
+                        .Average(r => (double?)r.Rating) ?? 0),
+
+                "listings" => isDescending
+                    ? query.OrderByDescending(v => _context.Products.Count(p => p.VendorId == v.Id))
+                    : query.OrderBy(v => _context.Products.Count(p => p.VendorId == v.Id)),
+
+                _ => isDescending
+                    ? query.OrderByDescending(v => v.Name)
+                    : query.OrderBy(v => v.Name) // Default sort by Name
+            };
+
+            // Apply pagination and projection
             var items = await query
                 .Skip((page - 1) * limit)
                 .Take(limit)
@@ -203,10 +243,18 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
         // Users Overview
         // ==============================
         public async Task<int> GetTotalUsersAsync()
-            => await _context.Users.CountAsync();
+        {
+            return await _context.Users
+                .Where(u => u.Role == "customer")  // Add this filter
+                .CountAsync();
+        }
 
         public async Task<int> GetActiveUsersAsync()
-            => await _context.Users.CountAsync(u => u.IsActive);
+        {
+            return await _context.Users
+                .Where(u => u.Role == "customer" && u.IsActive)  // Add Type filter
+                .CountAsync();
+        }
 
         public async Task<int> GetTotalOrdersAsync()
             => await _context.Orders.CountAsync();
@@ -214,24 +262,22 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
         // ==============================
         // Top Spenders
         // ==============================
+
         public async Task<List<UserSummaryDto>> GetTopSpendersAsync(int top)
         {
-            var users = await _context.Users
+            return await _context.Users
+                .Where(u => u.Role == "customer")  // Add this
+                .OrderByDescending(u => u.Orders.Sum(o => o.TotalPrice))
+                .Take(top)
                 .Select(u => new UserSummaryDto
                 {
                     Id = u.Id,
                     FullName = u.Name,
                     Initials = u.Name.Substring(0, 1).ToUpper(),
-                    TotalSpent = u.Orders.Sum(o => o.TotalPrice)
+                    TotalSpent = u.Orders.Sum(o => o.TotalPrice),
+                    Rank = 0
                 })
-                .OrderByDescending(u => u.TotalSpent)
-                .Take(top)
                 .ToListAsync();
-
-            for (int i = 0; i < users.Count; i++)
-                users[i].Rank = i + 1;
-
-            return users;
         }
 
         // ==============================
@@ -239,7 +285,9 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
         // ==============================
         public async Task<PagedResult<UserListDto>> GetUsersAsync()
         {
-            var query = _context.Users.AsQueryable();
+            var query = _context.Users
+                .Where(u => u.Role == "customer")
+                .AsQueryable();
 
             var totalCount = await query.CountAsync();
 
@@ -251,13 +299,12 @@ namespace FoodRescue.BLL.Repositorys.Dashboard
                     Id = u.Id,
                     FullName = u.Name,
                     Email = u.Email,
-                    PhoneNumber = u.PhoneNumber!,
+                    PhoneNumber = u.PhoneNumber ?? string.Empty,
                     OrdersCount = u.Orders.Count,
                     TotalSpent = u.Orders.Sum(o => o.TotalPrice),
-                    LastOrderDate = u.Orders
-                        .OrderByDescending(o => o.CreatedAt)
-                        .Select(o => o.CreatedAt)
-                        .FirstOrDefault(),
+                    LastOrderDate = u.Orders.Any()
+                        ? u.Orders.Max(o => o.CreatedAt)
+                        : (DateTime?)null,  // Returns null instead of 0001-01-01
                     IsActive = u.IsActive,
                     JoinedAt = u.CreatedAt
                 })

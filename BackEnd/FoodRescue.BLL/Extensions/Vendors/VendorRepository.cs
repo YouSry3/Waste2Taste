@@ -15,7 +15,9 @@ public class VendorRepository : IVendorRepository
 
     public async Task<List<Vendor>> GetVendorsAsync(string? name, string? status)
     {
-        var query = _context.Vendors.AsQueryable();
+        var query = _context.Vendors
+            .Include(v => v.Owner)
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(name))
             query = query.Where(v => v.Name.Contains(name));

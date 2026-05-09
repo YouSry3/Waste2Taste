@@ -59,6 +59,7 @@ const proxyUsersTableRequest = async (
         port: usersTableTarget.port,
         method: "GET",
         path: `${usersTableTarget.pathname}${usersTableTarget.search}`,
+        rejectUnauthorized: false, //  ADD THIS LINE
         headers: {
           Accept: req.headers.accept || "application/json",
           Authorization: req.headers.authorization || "",

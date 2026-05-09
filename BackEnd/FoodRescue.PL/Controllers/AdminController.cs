@@ -1,16 +1,12 @@
-﻿using FoodRescue.BLL.Contract.AdminDashbord.Users;
-using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Request;
-using FoodRescue.BLL.Contract.AdminDashbord.Users;
-using FoodRescue.BLL.Contract.AnalyticsDashboardTabDTOs;
-using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
-using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
-using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
+﻿using FoodRescue.BLL.Contract.AdminDashbord.Dashboard.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Moderation;
+using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
+using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Request;
+using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
+using FoodRescue.BLL.Services.AnalyticsDashboardTab;
 using FoodRescue.BLL.ServicesWeb.Admin;
 using FoodRescue.BLL.ServicesWeb.Admin.Moderation;
-using FoodRescue.BLL.Services.AnalyticsDashboardTab;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodRescue.PL.Controllers
@@ -90,10 +86,8 @@ namespace FoodRescue.PL.Controllers
         [HttpGet("Vendors")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(typeof(PagedResultDto<VendorListItemDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [Produces("application/json")]
-        public async Task<IActionResult> GetVendors([FromBody] VendorQueryParameters query)
+        public async Task<IActionResult> GetVendors([FromQuery] VendorQueryParameters query)  // ✅ CORRECT
         {
             var result = await _dashboardServices.GetVendorsAsync(
                 query.Page,
@@ -190,7 +184,7 @@ namespace FoodRescue.PL.Controllers
             }
         }
 
-    
+
 
     }
 }

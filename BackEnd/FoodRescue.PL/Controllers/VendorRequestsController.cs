@@ -18,7 +18,7 @@ public class VendorRequestsController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = "vendor")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
