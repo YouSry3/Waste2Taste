@@ -5,8 +5,7 @@
 // When backend is ready, replace mock functions with actual API calls.
 //
 // STEP 1: Set up environment variables in your .env file:
-// REACT_APP_API_BASE_URL=http://localhost:3000/api
-// REACT_APP_API_VERSION=v1
+// VITE_API_BASE_URL=https://localhost:5000
 //
 // STEP 2: Uncomment the actual fetch calls and remove mock implementations
 // STEP 3: Implement proper error handling and loading states
@@ -36,14 +35,14 @@
 // - Implement WebSocket for real-time updates if needed
 
 import { Vendor, VendorFormData } from "./vendors.types";
+import { API_CONFIG } from "../../../../services/api/apiConfig";
 
 // Mock delay for simulation - REMOVE IN PRODUCTION
 const simulateDelay = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
 // TODO: Replace with actual API base URL from environment variables
-const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "http://localhost:3000/api";
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 // TODO: Implement proper authentication header
 const getAuthHeaders = () => {

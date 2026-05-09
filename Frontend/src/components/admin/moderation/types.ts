@@ -12,6 +12,7 @@ export type ReportStatus =
   | "resolved"
   | "dismissed"
   | "warning_issued";
+export type ModerationId = number | string;
 
 // Moderation Action Types
 export type ModerationActionType =
@@ -54,7 +55,7 @@ export interface Listing {
 }
 
 export interface VendorRequest {
-  id: number;
+  id: ModerationId;
   businessName: string;
   ownerName: string;
   email: string;
@@ -135,7 +136,7 @@ export interface PaginatedResponse<T> {
 
 // Request Types
 export interface RejectRequest {
-  id: number;
+  id: ModerationId;
   reason: string;
   notes?: string;
 }

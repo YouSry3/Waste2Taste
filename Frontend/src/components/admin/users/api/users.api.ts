@@ -24,7 +24,7 @@ import { API_CONFIG } from "../../../../services/api/apiConfig";
 // 2. Replace these URLs with your actual API endpoint
 // 3. Add authentication headers if needed
 
-const API_BASE = "http://localhost:3000/api"; // Replace with your actual API URL
+const API_BASE = API_CONFIG.BASE_URL;
 const USERS_ENDPOINT = `${API_BASE}/users`;
 
 // Enable mock data when explicitly requested via env, or when the user is logged in using the demo token.

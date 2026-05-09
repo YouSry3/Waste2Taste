@@ -1,5 +1,5 @@
 import React from "react";
-import { VendorRequest } from "../../types";
+import { ModerationId, VendorRequest } from "../../types";
 import { Card, CardContent } from "../../../../ui/card";
 import { Badge } from "../../../../ui/badge";
 import { Checkbox } from "../../../../ui/checkbox";
@@ -21,9 +21,9 @@ interface VendorCardProps {
   vendor: VendorRequest;
   isSelected: boolean;
   isLoading: boolean;
-  onSelect: (id: number, checked: boolean) => void;
-  onApprove: (id: number) => void;
-  onReject: (id: number) => void;
+  onSelect: (id: ModerationId, checked: boolean) => void;
+  onApprove: (id: ModerationId) => void;
+  onReject: (id: ModerationId) => void;
   onViewDocuments: (documents: VendorDocument[]) => void;
   onContactApplicant: (vendor: VendorRequest) => void;
 }

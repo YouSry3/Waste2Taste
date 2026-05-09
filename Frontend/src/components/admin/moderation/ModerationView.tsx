@@ -16,7 +16,7 @@ import { WarningDialog } from "./components/dialogs/WarningDialog";
 import { DocumentViewer } from "./components/dialogs/DocumentViewer";
 import { ActivityDetailsDialog } from "./components/dialogs/ActivityDetailsDialog";
 import { ImageZoomDialog } from "./components/dialogs/ImageZoomDialog";
-import { VendorRequest, ModerationAction } from "./types";
+import { ModerationAction, ModerationId, VendorRequest } from "./types";
 import toast from "react-hot-toast";
 import { VendorDocument } from "../../../types/vendorApproval";
 
@@ -24,7 +24,7 @@ export function ModerationView() {
   // State Management
   const [activeTab, setActiveTab] = useState<string>("listings");
   const [selectedListings, setSelectedListings] = useState<number[]>([]);
-  const [selectedVendors, setSelectedVendors] = useState<number[]>([]);
+  const [selectedVendors, setSelectedVendors] = useState<ModerationId[]>([]);
   const [selectedReports, setSelectedReports] = useState<number[]>([]);
 
   // Activity Log specific filter (separate from listings filter)
@@ -151,7 +151,7 @@ export function ModerationView() {
     }
   };
 
-  const handleSelectVendor = (id: number, checked: boolean) => {
+  const handleSelectVendor = (id: ModerationId, checked: boolean) => {
     if (checked) {
       setSelectedVendors([...selectedVendors, id]);
     } else {
@@ -219,7 +219,7 @@ export function ModerationView() {
   };
 
   // Vendor Actions - Updated to be async
-  const handleApproveVendor = async (id: number) => {
+  const handleApproveVendor = async (id: ModerationId) => {
     actions.setLoading(`vendor-${id}`, true);
     try {
       await data.handleApproveVendor(id);
@@ -247,7 +247,7 @@ export function ModerationView() {
   };
 
   const handleRejectVendor = async (
-    id: number,
+    id: ModerationId,
     reason: string,
     notes: string,
   ) => {
@@ -390,7 +390,7 @@ export function ModerationView() {
     }
   };
 
-  const handleBulkApproveVendors = async (selectedVendorIds: number[]) => {
+  const handleBulkApproveVendors = async (selectedVendorIds: ModerationId[]) => {
     actions.setLoading("bulk-approve-vendors", true);
     try {
       await data.handleBulkApproveVendors(selectedVendorIds);
@@ -423,7 +423,7 @@ export function ModerationView() {
     }
   };
 
-  const handleBulkRejectVendors = async (selectedVendorIds: number[]) => {
+  const handleBulkRejectVendors = async (selectedVendorIds: ModerationId[]) => {
     actions.setLoading("bulk-reject-vendors", true);
     try {
       await data.handleBulkRejectVendors(selectedVendorIds, {

@@ -4,10 +4,10 @@
 // When backend is ready, replace mock implementations with actual API calls.
 
 import { Vendor, VendorFormData, ApiResponse } from "./vendors.types";
+import { API_CONFIG } from "../../../../services/api/apiConfig";
 
 // TODO: Replace with actual API base URL from environment variables
-const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "http://localhost:3000/api";
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 class VendorService {
   private getHeaders(): HeadersInit {

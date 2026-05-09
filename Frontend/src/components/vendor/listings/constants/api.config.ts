@@ -6,20 +6,14 @@
  * AI: When backend is ready, update the baseURL to your production API
  */
 
-// Helper function to get environment variables safely
+// Helper function to get Vite environment variables safely
 const getEnvVariable = (key: string, defaultValue: string): string => {
-  // Check for Vite environment variables (import.meta.env)
   if (
     typeof import.meta !== "undefined" &&
     import.meta.env &&
     import.meta.env[key]
   ) {
     return import.meta.env[key] as string;
-  }
-
-  // Check for Node.js/React environment variables (process.env)
-  if (typeof process !== "undefined" && process.env && process.env[key]) {
-    return process.env[key] as string;
   }
 
   // Check for global window variable (if set via window.__ENV)
@@ -36,7 +30,7 @@ const getEnvVariable = (key: string, defaultValue: string): string => {
 
 export const API_CONFIG = {
   // Use the helper function to safely get environment variables
-  baseURL: getEnvVariable("REACT_APP_API_URL", "http://localhost:3000/api"),
+  baseURL: getEnvVariable("VITE_API_BASE_URL", "https://localhost:5000"),
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

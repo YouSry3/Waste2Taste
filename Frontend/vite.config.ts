@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite"; // <-- ADD THIS IMPORT
@@ -7,10 +7,6 @@ import https from "node:https";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
 const USERS_TABLE_PROXY_PATH = "/__internal/admin/users-table";
-const USERS_TABLE_TARGET = new URL(
-  "/Admin/Users-Table",
-  process.env.VITE_API_BASE_URL || "http://localhost:5199",
-);
 
 const readRequestBody = (req: IncomingMessage): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -40,6 +36,7 @@ const sendJson = (
 const proxyUsersTableRequest = async (
   req: IncomingMessage,
   res: ServerResponse,
+  usersTableTarget: URL,
 ) => {
   try {
     const rawBody = await readRequestBody(req);
@@ -54,14 +51,14 @@ const proxyUsersTableRequest = async (
       return;
     }
 
-    const transport = USERS_TABLE_TARGET.protocol === "https:" ? https : http;
+    const transport = usersTableTarget.protocol === "https:" ? https : http;
     const proxyRequest = transport.request(
       {
-        protocol: USERS_TABLE_TARGET.protocol,
-        hostname: USERS_TABLE_TARGET.hostname,
-        port: USERS_TABLE_TARGET.port,
+        protocol: usersTableTarget.protocol,
+        hostname: usersTableTarget.hostname,
+        port: usersTableTarget.port,
         method: "GET",
-        path: `${USERS_TABLE_TARGET.pathname}${USERS_TABLE_TARGET.search}`,
+        path: `${usersTableTarget.pathname}${usersTableTarget.search}`,
         headers: {
           Accept: req.headers.accept || "application/json",
           Authorization: req.headers.authorization || "",
@@ -106,7 +103,14 @@ const proxyUsersTableRequest = async (
   }
 };
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  const usersTableTarget = new URL(
+    "/Admin/Users-Table",
+    env.VITE_API_BASE_URL || "https://localhost:5000",
+  );
+
+  return {
   plugins: [
     react(),
     tailwindcss(),
@@ -119,7 +123,7 @@ export default defineConfig({
             return;
           }
 
-          await proxyUsersTableRequest(req, res);
+          await proxyUsersTableRequest(req, res, usersTableTarget);
         });
       },
     },
@@ -177,4 +181,5 @@ export default defineConfig({
     port: 3000,
     open: true,
   },
+  };
 });

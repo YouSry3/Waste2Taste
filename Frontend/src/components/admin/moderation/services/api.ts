@@ -13,7 +13,7 @@ import {
 
 // Configure axios instance
 const API = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://localhost:5000",
   headers: {
     "Content-Type": "application/json",
   },
