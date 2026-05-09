@@ -91,14 +91,14 @@ const buildStatsData = (dashboardData: ReturnType<typeof useAdminDashboard>["dat
       trend: revenueTrend.length ? revenueTrend : buildFallbackTrend(dashboardData.summary.totalRevenue),
     },
     {
-      title: "Active Users",
+      title: "Active Customers",
       value: numberFormatter.format(dashboardData.summary.activeUsers || 0),
       change: toPercent(dashboardData.summary.userGrowthPercentage || 0),
       icon: Users,
       color: "text-blue-600",
       bgColor: "bg-blue-100",
       isPositive: (dashboardData.summary.userGrowthPercentage || 0) >= 0,
-      description: "Currently active",
+      description: "Customer role only",
       trend: usersTrend.length ? usersTrend : buildFallbackTrend(dashboardData.summary.activeUsers),
     },
     {
@@ -242,7 +242,7 @@ export function DashboardView() {
 
       {isError && (
         <div className="mb-6 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Live dashboard data is unavailable. Showing demo data.
+          Live dashboard data is unavailable.
           <Button
             variant="link"
             className="ml-2 h-auto p-0 text-amber-900"

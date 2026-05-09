@@ -70,7 +70,7 @@ export const useVendorActions = ({
       }
 
       const newVendor: Vendor = {
-        id: Math.max(...vendors.map((v) => v.id), 0) + 1,
+        id: Date.now(),
         name: vendorData.name,
         type: vendorData.type,
         category: vendorData.category,
@@ -94,7 +94,7 @@ export const useVendorActions = ({
   );
 
   const editVendor = useCallback(
-    (vendorId: number, vendorData: VendorFormData) => {
+    (vendorId: Vendor["id"], vendorData: VendorFormData) => {
       const { isValid, errors } = validateForm(vendorData);
 
       if (!isValid) {
@@ -129,7 +129,7 @@ export const useVendorActions = ({
   );
 
   const deleteVendor = useCallback(
-    (vendorId: number) => {
+    (vendorId: Vendor["id"]) => {
       const vendor = vendors.find((v) => v.id === vendorId);
       if (!vendor) return { success: false };
 

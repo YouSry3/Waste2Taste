@@ -22,8 +22,12 @@ export function StatsCards({
   vendorRequests,
   customerReports,
 }: StatsCardsProps) {
-  const listingsToReviewCount = summary?.listingsToReviewCount ?? 0;
-  const pendingVendorRequestsCount = summary?.pendingVendorRequestsCount ?? 0;
+  const listingsToReviewCount = listings.filter(
+    (listing) => listing.status === "pending",
+  ).length;
+  const pendingVendorRequestsCount = vendorRequests.filter(
+    (request) => request.status === "pending",
+  ).length;
   const openCustomerReportsCount = summary?.openCustomerReportsCount ?? 0;
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">

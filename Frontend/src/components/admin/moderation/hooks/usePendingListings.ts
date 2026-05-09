@@ -63,7 +63,15 @@ export const useApproveListing = () => {
 
   return useMutation({
     mutationFn: async (productId: string) => {
-      await apiClient.post("/Listing/approve", { productId });
+      await apiClient.post(
+        "/Listing/approve",
+        {},
+        {
+          headers: {
+            productId,
+          },
+        },
+      );
     },
     onMutate: async (productId) => {
       await queryClient.cancelQueries({ queryKey: ["pendingListings"] });
@@ -102,9 +110,8 @@ export const useRejectListing = () => {
       rejectionReason: string;
     }) => {
       await apiClient.post("/Listing/reject", {
-        productId,
-        status: 0,
-        rejectionReason,
+        ProductId: productId,
+        RejectionReason: rejectionReason,
       });
     },
     onMutate: async ({ productId }) => {

@@ -1,5 +1,5 @@
 export interface Vendor {
-  id: number;
+  id: string | number;
   name: string;
   type: "Vendor" | "NGO Partner";
   category: string;

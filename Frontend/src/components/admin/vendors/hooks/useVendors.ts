@@ -1,7 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import toast from "react-hot-toast";
 import { Vendor, VendorFormData } from "../api/vendors.types";
-import { MOCK_VENDORS } from "../constants/vendors.data";
 import {
   filterAndSortVendors,
   getTopPerformers,
@@ -11,8 +10,16 @@ import { useVendorActions } from "./useVendorActions";
 import { useVendorFilters } from "./useVendorFilters";
 import { useVendorsList, useVendorsOverview } from "./useVendorsQueries";
 
+const isDemoMode = (): boolean => {
+  const hasMockFlag = import.meta.env.VITE_ENABLE_MOCK_DATA === "true";
+  const token = localStorage.getItem("authToken");
+  return hasMockFlag || (!!token && token.startsWith("demo-token-"));
+};
+
 export const useVendors = () => {
-  const [vendors, setVendors] = useState<Vendor[]>(MOCK_VENDORS);
+  const [vendors, setVendors] = useState<Vendor[]>(() =>
+    isDemoMode() ? [] : [],
+  );
   const [hasLocalChanges, setHasLocalChanges] = useState(false);
   const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
   const [vendorToDelete, setVendorToDelete] = useState<Vendor | null>(null);
@@ -37,7 +44,7 @@ export const useVendors = () => {
     if (hasLocalChanges) return;
 
     const apiItems = listQuery.data?.items ?? [];
-    if (listQuery.source === "api") {
+    if (listQuery.source === "api" || listQuery.source === "demo") {
       setVendors(apiItems);
     }
   }, [hasLocalChanges, listQuery.data?.items, listQuery.source]);

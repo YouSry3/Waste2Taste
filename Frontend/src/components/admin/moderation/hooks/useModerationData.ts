@@ -1010,6 +1010,13 @@ function getInitialVendorRequestState() {
   return dedupeVendorRequestsById([...storedRequests, ...initialVendorRequests]);
 }
 
+const createEmptyModerationSummary = (): ModerationSummary => ({
+  listingsToReviewCount: 0,
+  pendingVendorRequestsCount: 0,
+  openCustomerReportsCount: 0,
+  totalItemsForModeration: 0,
+});
+
 const isDemoModeEnabled = () => {
   const mockFlag = import.meta.env.VITE_ENABLE_MOCK_DATA;
   if (typeof mockFlag === "string" && mockFlag.toLowerCase() === "true") {
@@ -1297,15 +1304,34 @@ function mapApiVendorRequest(request: any, index: number): VendorRequest {
 // Keep local state for now (will be replaced with queries when backend is ready)
 export function useModerationData() {
   const isDemoMode = isDemoModeEnabled();
+  const queryClient = useQueryClient();
 
-  const [listings, setListings] = useState<Listing[]>(initialPendingListings);
+  const [listings, setListings] = useState<Listing[]>(() =>
+    isDemoMode ? initialPendingListings : [],
+  );
   const [vendorRequests, setVendorRequests] = useState<VendorRequest[]>(() =>
     isDemoMode ? getInitialVendorRequestState() : [],
   );
-  const [customerReports, setCustomerReports] = useState<CustomerReport[]>(
-    initialCustomerReports,
+  const [customerReports, setCustomerReports] = useState<CustomerReport[]>(() =>
+    isDemoMode ? initialCustomerReports : [],
   );
-  const [moderationSummary, setModerationSummary] = useState<ModerationSummary | null>(null);
+  const [moderationSummary, setModerationSummary] = useState<ModerationSummary>(() =>
+    isDemoMode
+      ? {
+          listingsToReviewCount: initialPendingListings.filter(
+            (listing) => listing.status === "pending",
+          ).length,
+          pendingVendorRequestsCount: getInitialVendorRequestState().length,
+          openCustomerReportsCount: initialCustomerReports.filter(
+            (report) => report.status === "under_review",
+          ).length,
+          totalItemsForModeration:
+            initialPendingListings.filter((listing) => listing.status === "pending").length +
+            getInitialVendorRequestState().length +
+            initialCustomerReports.filter((report) => report.status === "under_review").length,
+        }
+      : createEmptyModerationSummary(),
+  );
   const [activityLog, setActivityLog] = useState<ModerationAction[]>([]);
 
   const {
@@ -1318,7 +1344,6 @@ export function useModerationData() {
 
   const {
     data: pendingVendorRequestsFromApi,
-    refetch: refetchPendingVendorRequests,
   } = useQuery({
     queryKey: ["moderation", "vendors", "pending", "all"],
     queryFn: async () => {
@@ -1352,7 +1377,7 @@ export function useModerationData() {
 
       throw new Error("Invalid moderation summary response");
     },
-    enabled: true,
+    enabled: !isDemoMode,
     refetchInterval: 15000,
     refetchOnWindowFocus: true,
     retry: 1,
@@ -1365,6 +1390,23 @@ export function useModerationData() {
 
     setModerationSummary(moderationSummaryFromApi);
   }, [isDemoMode, moderationSummaryFromApi]);
+
+  useEffect(() => {
+    if (isDemoMode) {
+      return;
+    }
+
+    setModerationSummary((current) => ({
+      ...current,
+      listingsToReviewCount: listings.filter((listing) => listing.status === "pending").length,
+      pendingVendorRequestsCount: vendorRequests.filter((request) => request.status === "pending").length,
+      openCustomerReportsCount: customerReports.filter((report) => report.status === "under_review").length,
+      totalItemsForModeration:
+        listings.filter((listing) => listing.status === "pending").length +
+        vendorRequests.filter((request) => request.status === "pending").length +
+        customerReports.filter((report) => report.status === "under_review").length,
+    }));
+  }, [isDemoMode, listings, vendorRequests, customerReports]);
 
   useEffect(() => {
     if (!isDemoMode) {
@@ -1409,6 +1451,15 @@ export function useModerationData() {
     ]);
   };
 
+  const refreshVendorModerationData = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ["moderation", "vendors", "pending", "all"],
+    });
+    await queryClient.invalidateQueries({
+      queryKey: ["moderation", "summary"],
+    });
+  };
+
 
   const syncLocalVendorStatus = (
     vendor: VendorRequest | undefined,
@@ -1425,23 +1476,20 @@ export function useModerationData() {
     }
   };
 
-  // Mock mutations for now (will be replaced with actual mutations when backend is ready)
-  const mockMutation = async (action: string, id: number, data?: any) => {
+  const runDemoMutation = async (action: string, id: number, data?: any) => {
+    if (!isDemoMode) {
+      throw new Error(`${action} is not connected to a real API endpoint yet.`);
+    }
+
     console.log(`Mock mutation: ${action} for ID ${id}`, data);
     await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
     return { success: true };
   };
 
-  // Listing actions with mock implementations
-  const handleApproveListing = async (id: number) => {
+  const handleApproveListing = async (id: ModerationId) => {
     try {
-      // Optimistically remove from UI
-      const queryClient = useQueryClient();
-      queryClient.setQueryData(['pendingListings'], (oldData: Listing[] | undefined) => 
-        oldData ? oldData.filter((l) => l.id !== id) : []
-      );
-
-      await approveListingMutation.mutateAsync(id);
+      await approveListingMutation.mutateAsync(String(id));
+      setListings((prev) => prev.filter((listing) => listing.id !== id));
 
       addToActivityLog({
         moderatorName: "Admin",
@@ -1453,18 +1501,18 @@ export function useModerationData() {
 
       return { success: true };
     } catch (error) {
-      // Rollback on error
-      const queryClient = useQueryClient();
       queryClient.invalidateQueries({ queryKey: ['pendingListings'] });
       console.error("Failed to approve listing:", error);
       return { success: false, error };
     }
   };
 
-  const handleRejectListing = async (id: number, data: RejectRequest) => {
+  const handleRejectListing = async (id: ModerationId, data: RejectRequest) => {
     try {
-      // TODO: Replace with actual API call when backend is ready
-      await mockMutation("rejectListing", id, data);
+      await rejectListingMutation.mutateAsync({
+        productId: String(id),
+        rejectionReason: `${data.reason}: ${data.notes || ""}`.trim(),
+      });
 
       // REMOVE listing from list (not just update status)
       setListings((prev) => prev.filter((l) => l.id !== id));
@@ -1489,8 +1537,7 @@ export function useModerationData() {
 
   const handleRequestChanges = async (id: number, data: ChangeRequest) => {
     try {
-      // TODO: Replace with actual API call when backend is ready
-      await mockMutation("requestChanges", id, data);
+      await runDemoMutation("requestChanges", id, data);
 
       // For request changes, we just update the status (don't remove)
       setListings((prev) =>
@@ -1527,7 +1574,7 @@ export function useModerationData() {
       syncLocalVendorStatus(vendor, "approved", "Vendor application approved");
       setVendorRequests((prev) => prev.filter((v) => v.id !== id));
       if (!isDemoMode) {
-        await refetchPendingVendorRequests();
+        void refreshVendorModerationData();
       }
 
       toast.success(`Vendor approved successfully!`);
@@ -1552,7 +1599,7 @@ export function useModerationData() {
       syncLocalVendorStatus(vendor, "rejected", rejectionNotes);
       setVendorRequests((prev) => prev.filter((v) => v.id !== id));
       if (!isDemoMode) {
-        await refetchPendingVendorRequests();
+        void refreshVendorModerationData();
       }
 
       toast.error(`Vendor application rejected`);
@@ -1568,7 +1615,7 @@ export function useModerationData() {
   const handleResolveReport = async (id: number) => {
     try {
       // TODO: Replace with actual API call when backend is ready
-      await mockMutation("resolveReport", id);
+      await runDemoMutation("resolveReport", id);
 
       setCustomerReports((prev) =>
         prev.map((r) =>
@@ -1596,7 +1643,7 @@ export function useModerationData() {
   // In useModerationData.ts, the handleDismissReport function should look like:
   const handleDismissReport = async (id: number) => {
     try {
-      await mockMutation("dismissReport", id);
+      await runDemoMutation("dismissReport", id);
 
       setCustomerReports((prev) =>
         prev.map((r) =>
@@ -1625,7 +1672,7 @@ export function useModerationData() {
   const handleIssueWarning = async (id: number, data: WarningRequest) => {
     try {
       // TODO: Replace with actual API call when backend is ready
-      await mockMutation("issueWarning", id, data);
+      await runDemoMutation("issueWarning", id, data);
 
       const report = customerReports.find((r) => r.id === id);
       addToActivityLog({
@@ -1657,7 +1704,11 @@ export function useModerationData() {
   const handleBulkApproveListings = async (ids: number[]) => {
     try {
       // TODO: Replace with actual API call when backend is ready
-      await mockMutation("bulkApproveListings", 0, { ids });
+      if (isDemoMode) {
+        await runDemoMutation("bulkApproveListings", 0, { ids });
+      } else {
+        await Promise.all(ids.map((id) => approveListingMutation.mutateAsync(String(id))));
+      }
 
       // REMOVE listings from list (not just update status)
       setListings((prev) => prev.filter((l) => !ids.includes(l.id)));
@@ -1677,7 +1728,18 @@ export function useModerationData() {
   ) => {
     try {
       // TODO: Replace with actual API call when backend is ready
-      await mockMutation("bulkRejectListings", 0, { ids, data });
+      if (isDemoMode) {
+        await runDemoMutation("bulkRejectListings", 0, { ids, data });
+      } else {
+        await Promise.all(
+          ids.map((id) =>
+            rejectListingMutation.mutateAsync({
+              productId: String(id),
+              rejectionReason: `${data.reason}: ${data.notes || ""}`.trim(),
+            }),
+          ),
+        );
+      }
 
       // REMOVE listings from list (not just update status)
       setListings((prev) => prev.filter((l) => !ids.includes(l.id)));
@@ -1708,7 +1770,7 @@ export function useModerationData() {
       );
       setVendorRequests((prev) => prev.filter((v) => !ids.includes(v.id)));
       if (!isDemoMode) {
-        await refetchPendingVendorRequests();
+        void refreshVendorModerationData();
       }
 
       toast.success(`${ids.length} vendors approved successfully!`);
@@ -1741,7 +1803,7 @@ export function useModerationData() {
       );
       setVendorRequests((prev) => prev.filter((v) => !ids.includes(v.id)));
       if (!isDemoMode) {
-        await refetchPendingVendorRequests();
+        void refreshVendorModerationData();
       }
 
       toast.error(`${ids.length} vendor applications rejected`);
@@ -1756,7 +1818,7 @@ export function useModerationData() {
   const handleBulkResolveReports = async (ids: number[]) => {
     try {
       // TODO: Replace with actual API call when backend is ready
-      await mockMutation("bulkResolveReports", 0, { ids });
+      await runDemoMutation("bulkResolveReports", 0, { ids });
 
       setCustomerReports((prev) =>
         prev.map((r) =>
@@ -1776,7 +1838,7 @@ export function useModerationData() {
   const handleBulkDismissReports = async (ids: number[]) => {
     try {
       // TODO: Replace with actual API call when backend is ready
-      await mockMutation("bulkDismissReports", 0, { ids });
+      await runDemoMutation("bulkDismissReports", 0, { ids });
 
       setCustomerReports((prev) =>
         prev.map((r) =>
@@ -1796,7 +1858,7 @@ export function useModerationData() {
   const handleClearActivityLog = async () => {
     try {
       // TODO: Replace with actual API call when backend is ready
-      await mockMutation("clearActivityLog", 0);
+      await runDemoMutation("clearActivityLog", 0);
 
       setActivityLog([]);
       toast.success(`Activity log cleared`);

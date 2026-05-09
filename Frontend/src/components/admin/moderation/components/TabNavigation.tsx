@@ -23,8 +23,12 @@ export function TabNavigation({
   vendorRequests,
   customerReports,
 }: TabNavigationProps) {
-  const pendingListingsCount = summary?.listingsToReviewCount ?? 0;
-  const pendingVendorsCount = summary?.pendingVendorRequestsCount ?? 0;
+  const pendingListingsCount = listings.filter(
+    (listing) => listing.status === "pending",
+  ).length;
+  const pendingVendorsCount = vendorRequests.filter(
+    (request) => request.status === "pending",
+  ).length;
   const openReportsCount = summary?.openCustomerReportsCount ?? 0;
 
   return (

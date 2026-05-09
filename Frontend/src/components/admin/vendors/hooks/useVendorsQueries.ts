@@ -51,7 +51,7 @@ const buildSummaryEndpointCandidates = (): string[] => {
 
 const LIST_ENDPOINT =
   (import.meta.env.VITE_ADMIN_VENDORS_LIST_ENDPOINT as string | undefined) ??
-  "/Admin/Vendors";
+  "/vendors";
 
 const isDemoMode = (): boolean => {
   const hasMockFlag = import.meta.env.VITE_ENABLE_MOCK_DATA === "true";
@@ -112,7 +112,11 @@ const parseVendorStatus = (value: unknown): Vendor["status"] => {
   return raw === "inactive" ? "Inactive" : "Active";
 };
 
-const toVendorId = (value: unknown, fallback: number): number => {
+const toVendorId = (value: unknown, fallback: number): Vendor["id"] => {
+  if (typeof value === "string" && value.trim()) {
+    return value.trim();
+  }
+
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : fallback;
 };
@@ -126,10 +130,10 @@ const mapApiVendorToVendor = (payload: unknown, index: number): Vendor => {
     type: parseVendorType(item.type ?? "Vendor"),
     category: String(item.category ?? "General"),
     contact: String(item.contact ?? item.contactName ?? "N/A"),
-    email: String(item.email ?? "N/A"),
-    phone: String(item.phone ?? "N/A"),
+    email: String(item.email ?? item.ownerEmail ?? "N/A"),
+    phone: String(item.phone ?? item.phoneNumber ?? "N/A"),
     address: String(item.address ?? "N/A"),
-    listings: toNumber(item.listings ?? item.activeListings ?? 0),
+    listings: toNumber(item.listings ?? item.activeListings ?? item.listingsCount ?? 0),
     revenue: toMoneyString(item.revenue ?? 0),
     rating: toNumber(item.rating, 5),
     status: parseVendorStatus(item.status ?? "Active"),
@@ -204,13 +208,41 @@ const normalizeSummaryPayload = (payload: unknown): VendorsSummaryResponse => {
 };
 
 const normalizeListPayload = (payload: unknown): VendorsListResponse => {
+  const payloadObject = asObject(payload);
   const raw = asObject(payload);
-  const itemsPayload = Array.isArray(raw.items) ? raw.items : [];
+  const dataPayload = payloadObject.data;
+  const valuePayload = payloadObject.value;
+  const resultValuePayload = payloadObject.Value;
+  const data = asObject(dataPayload);
+  const value = asObject(valuePayload);
+  const resultValue = asObject(resultValuePayload);
+  const listSource =
+    Array.isArray(payload)
+      ? payload
+      : Array.isArray(payloadObject.items)
+        ? payloadObject.items
+        : Array.isArray(dataPayload)
+          ? dataPayload
+          : Array.isArray(valuePayload)
+            ? valuePayload
+            : Array.isArray(resultValuePayload)
+              ? resultValuePayload
+              : Array.isArray(data.items)
+                ? data.items
+                : Array.isArray(value.items)
+                  ? value.items
+                  : Array.isArray(resultValue.items)
+                    ? resultValue.items
+                    : [];
+  const itemsPayload = listSource;
   const items = itemsPayload.map(mapApiVendorToVendor);
 
   return {
     items,
-    totalCount: toNumber(raw.totalCount, items.length),
+    totalCount: toNumber(
+      raw.totalCount ?? data.totalCount ?? value.totalCount ?? resultValue.totalCount,
+      items.length,
+    ),
   };
 };
 
@@ -311,10 +343,8 @@ export const useVendorsOverview = () => {
         const summary = await fetchSummary();
         return { data: summary, source: "api" };
       } catch (error) {
-        if (getStatusCode(error) !== 404) {
-          console.warn("Failed to fetch vendors summary. Using demo fallback.", error);
-        }
-        return { data: fallbackSummary, source: "fallback" };
+        console.error("Failed to fetch vendors summary.", error);
+        throw error;
       }
     },
     staleTime: 0,
@@ -325,8 +355,14 @@ export const useVendorsOverview = () => {
 
   return {
     ...query,
-    data: query.data?.data ?? fallbackSummary,
-    source: query.data?.source ?? "demo",
+    data: query.data?.data ?? (demoMode ? fallbackSummary : {
+      totalVendors: 0,
+      ngoPartners: 0,
+      activeListings: 0,
+      totalRevenue: 0,
+      topPerformers: [],
+    }),
+    source: query.data?.source ?? (demoMode ? "demo" : "api"),
   };
 };
 
@@ -354,21 +390,19 @@ export const useVendorsList = (page = 1, limit = 10) => {
         const list = await fetchList(page, limit);
         return { data: list, source: "api" };
       } catch (error) {
-        if (getStatusCode(error) !== 404) {
-          console.warn("Failed to fetch vendors list. Using demo fallback.", error);
-        }
-        return { data: fallbackList(page, limit), source: "fallback" };
+        console.error("Failed to fetch vendors list.", error);
+        throw error;
       }
     },
     staleTime: 5 * 60 * 1000,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
     retry: false,
   });
 
   return {
     ...query,
-    data: query.data?.data ?? fallbackList(page, limit),
-    source: query.data?.source ?? "demo",
+    data: query.data?.data ?? (demoMode ? fallbackList(page, limit) : { items: [], totalCount: 0 }),
+    source: query.data?.source ?? (demoMode ? "demo" : "api"),
   };
 };

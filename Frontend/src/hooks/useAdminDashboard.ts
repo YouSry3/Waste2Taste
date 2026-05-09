@@ -77,6 +77,21 @@ const buildDemoDashboardData = (): DashboardData => ({
   })),
 });
 
+const buildEmptyDashboardData = (): DashboardData => ({
+  summary: {
+    totalRevenue: 0,
+    activeUsers: 0,
+    vendors: 0,
+    ordersLastDays: 0,
+    revenueGrowthPercentage: 0,
+    userGrowthPercentage: 0,
+    vendorGrowthPercentage: 0,
+    orderGrowthPercentage: 0,
+  },
+  trends: [],
+  categories: [],
+});
+
 const isDashboardData = (value: unknown): value is DashboardData => {
   return !!value && typeof value === "object" && "summary" in (value as DashboardData);
 };
@@ -161,8 +176,27 @@ const fetchDashboard = async (): Promise<DashboardData> => {
 
   for (const endpoint of endpoints) {
     try {
-      const response = await apiClient.get<DashboardResponse>(endpoint);
-      return normalizeDashboardResponse(response.data);
+      const response = await apiClient.get<DashboardResponse>(endpoint, {
+        headers: {
+          days: 30,
+        },
+      });
+      const dashboard = normalizeDashboardResponse(response.data);
+
+      try {
+        const vendorsOverview = await apiClient.get("/Admin/Vendors-overview");
+        const overviewPayload = vendorsOverview.data as any;
+        const overviewData = overviewPayload?.data ?? overviewPayload;
+        const totalVendors = Number(overviewData?.totalVendors ?? dashboard.summary.vendors);
+
+        if (Number.isFinite(totalVendors)) {
+          dashboard.summary.vendors = totalVendors;
+        }
+      } catch {
+        // Keep the dashboard endpoint value if the overview endpoint is unavailable.
+      }
+
+      return dashboard;
     } catch (error) {
       lastError = error;
       if (getErrorStatus(error) === 404) {
@@ -180,6 +214,7 @@ const fetchDashboard = async (): Promise<DashboardData> => {
 export const useAdminDashboard = () => {
   const demoMode = isDemoMode();
   const demoData = buildDemoDashboardData();
+  const emptyData = buildEmptyDashboardData();
   const currentUser = authService.getCurrentUser();
   const authToken = localStorage.getItem("authToken") || "no-token";
   const queryKey = [
@@ -212,12 +247,12 @@ export const useAdminDashboard = () => {
 
   useEffect(() => {
     if (query.error) {
-      console.error("Failed to fetch admin dashboard. Falling back to demo data.", query.error);
+      console.error("Failed to fetch admin dashboard.", query.error);
     }
   }, [query.error]);
 
   return {
-    data: query.data ?? demoData,
+    data: query.data ?? (demoMode ? demoData : emptyData),
     isLoading: query.isLoading && !query.data,
     isError: query.isError,
     refetch: query.refetch,
