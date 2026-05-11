@@ -26,6 +26,17 @@ import { getVendorRequestByEmail } from "../../services/vendorApproval/vendorApp
 import { getVendorRequestStatus } from "../../services/vendorApproval/vendorRequestService";
 import { getVendorSignupDraft } from "../../services/vendorApproval/vendorOnboardingStore";
 
+
+const getUserIdFromToken = (token: string): string => {
+  try {
+    const base64Payload = token.split('.')[1];
+    const payload = JSON.parse(atob(base64Payload));
+    return payload.sub || '';
+  } catch {
+    return '';
+  }
+};
+
 interface LoginPageProps {
   onLogin: (panelType: PanelType) => void;
 }
@@ -75,27 +86,30 @@ export function LoginPage({ onLogin }: LoginPageProps) {
     }
   }, [searchParams]);
 
-  const resolveVendorAccessState = async (
-    user: LoginResponse["user"],
-  ): Promise<VendorAccessState> => {
-    if (user.panelType !== "vendor") {
-      return "approved";
-    }
+const resolveVendorAccessState = async (
+  user: LoginResponse["user"],
+): Promise<VendorAccessState> => {
+  if (user.panelType !== "vendor") return "approved";
 
-    try {
-      const backendStatus = await getVendorRequestStatus();
-      if (backendStatus) {
-        authService.setVendorRequestState({
-          vendorRequestCompleted: true,
-          vendorApprovalStatus: backendStatus,
-        });
-      }
-    } catch {
-      // Keep local auth flags when status endpoint is unavailable.
-    }
+  try {
+    const backendStatus = await getVendorRequestStatus();
+    console.log("🔍 Backend vendor status:", backendStatus);
 
-    return authService.getVendorAccessState();
-  };
+    if (backendStatus) {
+      const normalized = backendStatus.toLowerCase() as VendorAccessState;
+      authService.setVendorRequestState({
+        vendorRequestCompleted: true,
+        vendorApprovalStatus: normalized,
+      });
+      return normalized;
+    }
+  } catch (err) {
+    console.warn("Could not fetch vendor status from backend:", err);
+  }
+
+  // Backend returned null — fall back to localStorage
+  return authService.getVendorAccessState();
+};
 
   // ✅ React Query Mutation for real backend login
   const loginMutation = useMutation({
@@ -148,6 +162,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
       toast.error(errorMessage);
     },
     onSuccess: async (res: LoginResponse) => {
+      const userId = getUserIdFromToken(res.token);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("authToken", res.token);
       if (res.user.panelType === "vendor") {
         const draft = getVendorSignupDraft();
         if (

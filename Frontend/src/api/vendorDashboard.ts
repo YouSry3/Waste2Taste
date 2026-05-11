@@ -1,7 +1,8 @@
-import { apiClient } from "@/services/api/apiClient";
-import { VendorDashboardResponse } from "@/types/vendorDashboard";
+import { apiClient } from "../services/api/apiClient";
+// src/services/api/apiClient.ts
+import { VendorDashboardResponse } from "../types/vendorDashboard";
+//D:\Graduation Project\GraduationProject\Frontend\src\types\vendorDashboard.ts
 import { AxiosError } from "axios";
-
 const getErrorStatus = (error: unknown): number | undefined => {
   const axiosError = error as AxiosError;
   if (axiosError?.response?.status) {

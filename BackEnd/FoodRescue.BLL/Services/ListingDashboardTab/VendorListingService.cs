@@ -1,5 +1,6 @@
 ﻿using FoodRescue.BLL.Contract.ListingDashboardDTOs;
 using FoodRescue.BLL.Extensions.Dashboard.ListingDashboardTab;
+using FoodRescue.DAL.Consts;
 using FoodRescue.DAL.Entities;
 using FoodRescue.DAL.Models;
 
@@ -17,9 +18,15 @@ public class VendorListingService : IVendorListingService
     public async Task<Result<VendorListingListResponse>> GetListingsAsync(Guid vendorId, ListingFilter filter)
     {
         var products = await _repository.GetVendorListingsAsync(vendorId, filter);
-        var activeCount = await _repository.GetActiveListingsCountAsync(vendorId);
+        //var activeCount = await _repository.GetActiveListingsCountAsync(vendorId);
 
-        var listings = products.Select(p => MapToDto(p)).ToList();
+
+        var approvedProducts = products.Where(p => p.Status == ProductStatus.Approved).ToList();
+
+
+        //var listings = approvedProducts.Select(p => MapToDto(p)).ToList();
+        var listings = approvedProducts.Select(p => MapToDto(p)).ToList();
+        var activeCount = products.Count(p => p.Status == ProductStatus.Approved);
 
         return Result.Success(new VendorListingListResponse
         {
@@ -64,7 +71,7 @@ public class VendorListingService : IVendorListingService
     private static VendorListingDto MapToDto(Product p)
     {
         // Calculate status
-        var status = (!p.Expired && p.Quantity > 0) ? "Active" : "Sold Out";
+        var status = p.Status.ToString();
 
         // Calculate discount percentage
         var discount = p.OriginalPrice > 0

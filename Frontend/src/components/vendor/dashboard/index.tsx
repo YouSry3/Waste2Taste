@@ -29,7 +29,7 @@ import { OrderDetailsDialog } from "./components/OrderDetailsDialog";
 import { Card, CardContent } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Skeleton } from "../../ui/skeleton";
-
+import { useWeeklyPerformance } from "../dashboard/components/useWeeklyPerformance";
 const isApiModeEnabled = () => {
   const mockFlag = import.meta.env.VITE_ENABLE_MOCK_DATA;
   if (typeof mockFlag === "string" && mockFlag.toLowerCase() === "true") {
@@ -42,7 +42,8 @@ const isApiModeEnabled = () => {
 
 const mapOrderStatus = (status: string): VendorOrder["status"] => {
   const normalized = status.toLowerCase();
-  if (normalized.includes("picked")) return "Picked Up";
+  if (normalized.includes("complete")) return "Completed";  // 🔴 FIXED: was "Picked Up"
+  if (normalized.includes("picked")) return "Completed";      // 🔴 FIXED: was "Picked Up"
   if (normalized.includes("ready")) return "Ready for Pickup";
   if (normalized.includes("pending")) return "Pending Pickup";
   if (normalized.includes("progress")) return "In Progress";
@@ -141,6 +142,7 @@ function ApiErrorState({
 
 export function VendorDashboard() {
   const navigate = useNavigate();
+const { data: weeklyData, isLoading: isWeeklyLoading } = useWeeklyPerformance();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [recentOrders, setRecentOrders] =
     useState<VendorOrder[]>(initialRecentOrders);
@@ -277,38 +279,50 @@ export function VendorDashboard() {
     return apiDashboard.environmentalImpact;
   }, [apiDashboard, isApiMode]);
 
-  useEffect(() => {
-    if (!isApiMode) {
-      setRecentOrders(initialRecentOrders);
-      return;
-    }
+useEffect(() => {
+  if (!isApiMode) {
+    setRecentOrders(initialRecentOrders);
+    return;
+  }
 
-    if (!apiDashboard) return;
+  if (!apiDashboard) {
+    console.log("No apiDashboard data yet");
+    return;
+  }
 
-    const mappedOrders: VendorOrder[] = apiDashboard.recentOrders.map(
-      (order) => ({
-        id: order.orderId,
-        customer: order.customerName,
-        item: order.productName,
-        amount: `$${order.amount.toFixed(2)}`,
-        status: mapOrderStatus(order.status),
-        time: order.pickupTime,
-        timeSlot: order.pickupTime,
-        orderPlacedTime: new Date(order.pickupTime),
-        customerEmail: "",
-        customerPhone: order.customerPhone,
-        pickupAddress: order.pickupLocation,
-        paymentMethod: "N/A",
-        orderNotes: "",
-        items: [{ name: order.productName, quantity: 1, price: order.amount }],
-        subtotal: order.amount,
-        tax: 0,
-        total: order.amount,
-      }),
-    );
+  console.log("API recentOrders:", apiDashboard.recentOrders);
 
-    setRecentOrders(mappedOrders);
-  }, [apiDashboard, isApiMode]);
+  if (!apiDashboard.recentOrders || apiDashboard.recentOrders.length === 0) {
+    console.log("No recent orders in API response");
+    setRecentOrders([]);
+    return;
+  }
+
+  const mappedOrders: VendorOrder[] = apiDashboard.recentOrders.map(
+    (order, index) => ({
+      id: order.orderId || `ORD-${index}`,
+      customer: order.customerName || "Unknown",
+      item: order.productName || "Unknown",
+      amount: `$${(order.amount || 0).toFixed(2)}`,
+      status: mapOrderStatus(order.status),
+      time: order.pickupTime || "",
+      timeSlot: order.pickupTime || "",
+      orderPlacedTime: new Date(),
+      customerEmail: "",
+      customerPhone: order.customerPhone || "",
+      pickupAddress: order.pickupLocation || "",
+      paymentMethod: "N/A",
+      orderNotes: "",
+      items: [{ name: order.productName || "", quantity: 1, price: order.amount || 0 }],
+      subtotal: order.amount || 0,
+      tax: 0,
+      total: order.amount || 0,
+    }),
+  );
+
+  console.log("Mapped orders:", mappedOrders);
+  setRecentOrders(mappedOrders);
+}, [apiDashboard, isApiMode]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -441,7 +455,7 @@ export function VendorDashboard() {
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <WeeklyPerformanceCard data={weeklyData} />
+        <WeeklyPerformanceCard data={weeklyData || []} isLoading={isWeeklyLoading} />
         <InventoryStatusCard
           items={inventoryData}
           onCreateListing={navigateToCreateWithPrefilled}

@@ -19,6 +19,7 @@ import {
 } from "./components/Dialogs";
 import { Button } from "../../../components/ui/button";
 import { Download } from "lucide-react";
+import { filterUsers, sortUsers } from "./utils/helpers"; // ← ADDED
 
 export function UsersView() {
   const {
@@ -31,21 +32,15 @@ export function UsersView() {
     toggleSort,
   } = useSortFilter();
 
-  const apiParams = useMemo(
-    () => ({
-      search: searchTerm,
-      status: filterStatus,
-      sortBy,
-      sortOrder,
-      page: 1,
-      pageSize: 10,
-    }),
-    [searchTerm, filterStatus, sortBy, sortOrder],
-  );
+  // ✅ Load ALL users from API once (no search params — filtering done client-side)
+  const { users, addUser, updateUser, toggleStatus, deleteUsers } = useUsers();
 
-  const { users, addUser, updateUser, toggleStatus, deleteUsers } = useUsers(
-    apiParams,
-  );
+  // ✅ Apply client-side filter + sort
+  const filteredUsers = useMemo(() => {
+    const filtered = filterUsers(users, searchTerm, filterStatus);
+    return sortUsers(filtered, sortBy, sortOrder);
+  }, [users, searchTerm, filterStatus, sortBy, sortOrder]);
+
   const { formData, formErrors, handleInputChange, validateForm, resetForm } =
     useUserForm();
   const {
@@ -55,7 +50,7 @@ export function UsersView() {
     toggleUserSelection,
     toggleSelectAll,
     handleBulkAction,
-  } = useBulkActions(users, users, {
+  } = useBulkActions(users, filteredUsers, { // ← pass filteredUsers here
     toggleStatus,
     deleteUsers,
   });
@@ -76,8 +71,8 @@ export function UsersView() {
       ordersCount: user.ordersCount.toString(),
       totalSpent: user.totalSpent.toString(),
       isActive: user.isActive,
-      joinedAt: user.joinedAt.split('T')[0], // Convert ISO date to date input format
-      lastOrderDate: user.lastOrderDate ? user.lastOrderDate.split('T')[0] : "",
+      joinedAt: user.joinedAt.split("T")[0],
+      lastOrderDate: user.lastOrderDate ? user.lastOrderDate.split("T")[0] : "",
     });
     setIsViewDialogOpen(false);
     setIsEditDialogOpen(true);
@@ -104,20 +99,11 @@ export function UsersView() {
         position="top-right"
         toastOptions={{
           success: {
-            style: {
-              background: "#10b981",
-              color: "white",
-            },
-            iconTheme: {
-              primary: "white",
-              secondary: "#10b981",
-            },
+            style: { background: "#10b981", color: "white" },
+            iconTheme: { primary: "white", secondary: "#10b981" },
           },
           error: {
-            style: {
-              background: "#ef4444",
-              color: "white",
-            },
+            style: { background: "#ef4444", color: "white" },
           },
         }}
       />
@@ -132,7 +118,7 @@ export function UsersView() {
           <Button
             variant="outline"
             className="flex items-center gap-2 hover:bg-green-50 border-green-600 border text-green-600"
-            onClick={() => handleExportCSV(users)}
+            onClick={() => handleExportCSV(filteredUsers)} // ← export filtered
           >
             <Download className="h-4 w-4" /> Export CSV
           </Button>
@@ -159,9 +145,7 @@ export function UsersView() {
       {selectedUsers.length > 0 && (
         <BulkActions
           selectedCount={selectedUsers.length}
-          onClear={() => {
-            clearSelection();
-          }}
+          onClear={clearSelection}
           onBulkAction={handleBulkAction}
         />
       )}
@@ -184,9 +168,9 @@ export function UsersView() {
         onSortChange={toggleSort}
       />
 
-      {/* Users Table */}
+      {/* Users Table — ✅ now uses filteredUsers, not raw users */}
       <UserTable
-        users={users}
+        users={filteredUsers}
         selectedUsers={selectedUsers}
         isSelectAll={isSelectAll}
         onToggleSelectAll={toggleSelectAll}
@@ -195,7 +179,6 @@ export function UsersView() {
           setSelectedUser(user);
           setIsViewDialogOpen(true);
         }}
-        onToggleStatus={toggleStatus}
       />
 
       {/* Dialogs */}
@@ -205,19 +188,6 @@ export function UsersView() {
         onOpenChange={setIsViewDialogOpen}
         onEdit={openEditDialog}
         onToggleStatus={toggleStatus}
-      />
-
-      <EditUserDialog
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        formData={formData}
-        formErrors={formErrors}
-        onInputChange={handleInputChange}
-        onSave={handleEditUser}
-        onCancel={() => {
-          setIsEditDialogOpen(false);
-          resetForm();
-        }}
       />
     </div>
   );

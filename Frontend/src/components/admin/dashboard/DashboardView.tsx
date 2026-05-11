@@ -217,18 +217,7 @@ export function DashboardView() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-40">
-              <Calendar className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Time Range" />
-            </SelectTrigger>
-            <SelectContent className="bg-white text-black">
-              <SelectItem value="7d">Last 7 days</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="90d">Last 90 days</SelectItem>
-              <SelectItem value="1y">Last year</SelectItem>
-            </SelectContent>
-          </Select>
+         
 
           <Button
             variant="outline"

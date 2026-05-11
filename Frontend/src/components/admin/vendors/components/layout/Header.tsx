@@ -24,12 +24,7 @@ export function Header({ onAddVendor, onExport }: HeaderProps) {
           <Download className="h-4 w-4" /> Export CSV
         </Button>
 
-        <Button
-          className="bg-green-600 hover:bg-green-700 flex items-center gap-2 text-white"
-          onClick={onAddVendor}
-        >
-          <Plus className="h-4 w-4" /> Add Vendor
-        </Button>
+       
       </div>
     </div>
   );

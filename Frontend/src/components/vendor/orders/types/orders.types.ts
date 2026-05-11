@@ -27,8 +27,8 @@ export interface OrderItem {
 }
 
 export interface Order {
-  id: string;
-  orderNumber: string; // API: Use the actual field name from your backend
+  id: string;              //  Raw GUID
+  orderNumber: string;     // "ORD-XXXX" for display
   customerName: string; // API: Might be "customer.name" or "user.name"
   vendorName: string; // API: Might be "vendor.name" or "store.name"
   items: string; // API: Comma-separated or array from API

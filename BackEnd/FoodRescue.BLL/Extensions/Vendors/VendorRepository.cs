@@ -22,7 +22,7 @@ public class VendorRepository : IVendorRepository
         if (!string.IsNullOrWhiteSpace(name))
             query = query.Where(v => v.Name.Contains(name));
 
-        
+
 
         return await query.OrderBy(v => v.Name).ToListAsync();
     }
@@ -61,5 +61,13 @@ public class VendorRepository : IVendorRepository
     {
         _context.Vendors.Remove(vendor);
         await _context.SaveChangesAsync();
+    }
+
+
+    public async Task<Vendor?> GetByOwnerIdAsync(Guid ownerId)
+    {
+        return await _context.Vendors
+            .AsNoTracking()
+            .FirstOrDefaultAsync(v => v.OwnerId == ownerId);
     }
 }

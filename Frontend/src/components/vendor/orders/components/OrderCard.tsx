@@ -199,15 +199,20 @@ export const OrderCard: React.FC<OrderCardProps> = ({
 
                   {/* Status-specific actions */}
                   {(order.status === "In Progress" ||
-                    order.status === "Pending Pickup") && (
-                    <DropdownMenuItem
-                      onClick={() => onMarkAsReady(order.id)}
-                      className="cursor-pointer [&>*]:text-blue-600"
-                    >
-                      <Package className="h-4 w-4 mr-2" />
-                      Mark as Ready
-                    </DropdownMenuItem>
-                  )}
+  order.status === "Pending Pickup" ||
+  order.status === "Pending") && (   // 🔴 ADD "Pending" here
+  <Button
+    size="sm"
+    className="bg-blue-600 hover:bg-blue-700 text-white"
+    onClick={() => {
+      console.log("🔥 Mark as Ready clicked for order:", order.id);
+      onMarkAsReady(order.id);
+    }}
+  >
+    <Package className="h-4 w-4 mr-1" />
+    Mark as Ready
+  </Button>
+)}
 
                   {order.status === "Ready for Pickup" && (
                     <DropdownMenuItem

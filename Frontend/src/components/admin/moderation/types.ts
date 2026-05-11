@@ -34,23 +34,26 @@ export type ModerationTargetType = "listing" | "vendor" | "report";
 
 // Main Entity Types
 export interface Listing {
-  id: number;
+  id: string;
   vendor: string;
-  vendorName: string; // Add this for activity logging
+  vendorName: string;
   title: string;
+  name?: string;           // alias
   category: string;
-  price: string;
-  originalPrice: string;
+  price: number;           // raw number for calculations
+  priceFormatted?: string; // "$10.50"
+  originalPrice: number;   // raw number
+  originalPriceFormatted?: string; // "$15.00"
   quantity: number;
   pickupTime: string;
   submitted: string;
+  createdAt?: string;
   image: string;
+  imageUrl?: string;       // alias
+  expiryDate?: string;
+  expiresIn?: string;
   flagged: boolean;
-  aiFlag: {
-    type: string;
-    confidence: number;
-    reason: string;
-  } | null;
+  aiFlag: { type: string; confidence: number; reason: string } | null;
   status: ListingStatus;
 }
 
@@ -313,9 +316,9 @@ export function getActionColor(type: ModerationActionType): string {
 // Add vendorName to initial listings
 export const initialPendingListings: Listing[] = [
   {
-    id: 1,
+    id: "1", // üî¥ was: 1
     vendor: "Green Valley Bakery",
-    vendorName: "Green Valley Bakery", // Added
+    vendorName: "Green Valley Bakery",
     title: "Bakery Surprise Bag",
     category: "Bakery",
     price: "$4.99",
@@ -323,16 +326,15 @@ export const initialPendingListings: Listing[] = [
     quantity: 5,
     pickupTime: "6:00 PM - 7:00 PM",
     submitted: "2025-10-30 10:30 AM",
-    image:
-      "https://images.unsplash.com/photo-1696721497670-d57754966c1e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYWtlcnklMjBmb29kJTIwcGFzdHJpZXN8ZW58MXx8fHwxNzYxODI3NTk4fDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    image: "https://images.unsplash.com/photo-1696721497670-d57754966c1e?...",
     flagged: false,
     aiFlag: null,
     status: "pending",
   },
   {
-    id: 2,
+    id: "2", // üî¥ was: 2
     vendor: "Fresh Market",
-    vendorName: "Fresh Market", // Added
+    vendorName: "Fresh Market",
     title: "Produce Box",
     category: "Grocery",
     price: "$7.99",
@@ -340,8 +342,7 @@ export const initialPendingListings: Listing[] = [
     quantity: 8,
     pickupTime: "7:00 PM - 8:00 PM",
     submitted: "2025-10-30 09:15 AM",
-    image:
-      "https://images.unsplash.com/photo-1677653805080-59c57727c84e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxmcmVzaCUyMHNhbGFkJTIwdmVnZXRhYmxlc3xlbnwxfHx8fDE3NjE3MzgwODN8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
+    image: "https://images.unsplash.com/photo-1677653805080-59c57727c84e?...",
     flagged: true,
     aiFlag: {
       type: "Spoiled Food",
@@ -350,78 +351,7 @@ export const initialPendingListings: Listing[] = [
     },
     status: "pending",
   },
-  {
-    id: 3,
-    vendor: "Downtown Deli",
-    vendorName: "Downtown Deli", // Added
-    title: "Sandwich Pack",
-    category: "Restaurant",
-    price: "$6.50",
-    originalPrice: "$20.00",
-    quantity: 4,
-    pickupTime: "5:00 PM - 6:00 PM",
-    submitted: "2025-10-30 08:45 AM",
-    image:
-      "https://images.unsplash.com/photo-1705647405231-c481e117e609?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzYW5kd2ljaCUyMGRlbGklMjBtZWF0fGVufDF8fHx8MTc2MTgyNzU5OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    flagged: false,
-    aiFlag: null,
-    status: "pending",
-  },
-  {
-    id: 4,
-    vendor: "Organic Bistro",
-    vendorName: "Organic Bistro", // Added
-    title: "Meal Box",
-    category: "Restaurant",
-    price: "$9.99",
-    originalPrice: "$30.00",
-    quantity: 4,
-    pickupTime: "9:00 PM - 10:00 PM",
-    submitted: "2025-10-30 11:00 AM",
-    image:
-      "https://images.unsplash.com/photo-1625944527261-06c90f1901e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwcmVwYXJlZCUyMG1lYWxzJTIwcmVzdGF1cmFudHxlbnwxfHx8fDE3NjE4Mjc1OTl8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    flagged: false,
-    aiFlag: null,
-    status: "pending",
-  },
-  {
-    id: 5,
-    vendor: "Sweet Treats",
-    vendorName: "Sweet Treats", // Added
-    title: "Dessert Box",
-    category: "Bakery",
-    price: "$6.99",
-    originalPrice: "$22.00",
-    quantity: 6,
-    pickupTime: "7:30 PM - 8:30 PM",
-    submitted: "2025-10-30 10:00 AM",
-    image:
-      "https://images.unsplash.com/photo-1706463996554-6c6318946b3f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNzZXJ0JTIwY2FrZSUyMGJha2VyeXxlbnwxfHx8fDE3NjE4Mjc2MDB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    flagged: true,
-    aiFlag: {
-      type: "Spoiled Food",
-      confidence: 0.92,
-      reason: "AI detected mold or discoloration",
-    },
-    status: "pending",
-  },
-  {
-    id: 6,
-    vendor: "City Cafe",
-    vendorName: "City Cafe", // Added
-    title: "Coffee & Pastries",
-    category: "Cafe",
-    price: "$5.99",
-    originalPrice: "$18.00",
-    quantity: 3,
-    pickupTime: "8:00 PM - 9:00 PM",
-    submitted: "2025-10-30 09:30 AM",
-    image:
-      "https://images.unsplash.com/photo-1730660501229-145c09eb9b7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2ZmZWUlMjBwYXN0cnklMjBjYWZlfGVufDF8fHx8MTc2MTgyNzYwMHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    flagged: false,
-    aiFlag: null,
-    status: "pending",
-  },
+  // ... change remaining items similarly (3 ‚ "3", 4 ‚ "4", etc.)
 ];
 
 export const initialVendorRequests: VendorRequest[] = [

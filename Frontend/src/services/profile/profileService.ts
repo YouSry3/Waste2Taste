@@ -1,6 +1,7 @@
 // src/services/profile/profileService.ts
 import { apiClient } from "../api/apiClient";
 import { authService } from "../auth/authService";
+import { getVendorRequestByEmail } from "../vendorApproval/vendorApprovalStore";
 
 export interface UserProfile {
   id: string;
@@ -53,33 +54,30 @@ export class ProfileService {
   }
 
   // Normalize API response to match our UserProfile interface
-  private normalizeProfileResponse(data: any): UserProfile {
-    const user = authService.getCurrentUser();
+ private normalizeProfileResponse(data: any): UserProfile {
+  const user = authService.getCurrentUser();
+  // Unwrap nested response shapes: { data: {...} }, { value: {...} }, etc.
+  const d = data?.data ?? data?.value ?? data?.Value ?? data;
 
-    return {
-      id: data.id || data.userId || user?.id || "",
-      name: data.name || data.fullName || data.userName || user?.name || "",
-      email: data.email || data.emailAddress || user?.email || "",
-      phone: data.phone || data.phoneNumber || undefined,
-      address: data.address || data.businessAddress || undefined,
-      businessName:
-        data.businessName ||
-        data.companyName ||
-        data.organizationName ||
-        undefined,
-      registrationNumber:
-        data.registrationNumber || data.regNumber || undefined,
-      description:
-        data.description || data.bio || data.missionStatement || undefined,
-      panelType:
-        data.panelType ||
-        data.type ||
-        data.userType ||
-        user?.panelType ||
-        "vendor",
-      monthlyGoals: data.monthlyGoals || undefined,
-    };
-  }
+  return {
+    id: d.id ?? d.userId ?? d.vendorId ?? user?.id ?? "",
+    name: d.name ?? d.fullName ?? d.userName ?? d.displayName ?? user?.name ?? "",
+    email: d.email ?? d.emailAddress ?? d.userEmail ?? user?.email ?? "",
+    phone: d.phoneNumber ?? d.phone ?? d.mobile ?? d.contactPhone ?? undefined,
+    address: d.address ?? d.businessAddress ?? d.streetAddress ?? d.location ?? undefined,
+    businessName:
+      d.businessName ??
+      d.storeName ??
+      d.companyName ??
+      d.organizationName ??
+      d.vendorName ??
+      undefined,
+    registrationNumber: d.registrationNumber ?? d.regNumber ?? d.taxId ?? undefined,
+    description: d.description ?? d.bio ?? d.about ?? d.missionStatement ?? undefined,
+    panelType: d.panelType ?? d.type ?? d.userType ?? user?.panelType ?? "vendor",
+    monthlyGoals: d.monthlyGoals ?? undefined,
+  };
+}
 
   // Get current user profile from localStorage (immediate, no API call)
   getCurrentProfile(): UserProfile | null {
@@ -113,66 +111,61 @@ export class ProfileService {
   }
 
   // Fetch full profile from API (with all details)
-  async fetchProfile(): Promise<UserProfile> {
-    if (this.isDemoMode()) {
-      const demoProfile = this.getDemoProfile();
-      if (demoProfile) {
-        return demoProfile;
-      }
-
-      const fallbackProfile = this.getCurrentProfile();
-      if (!fallbackProfile) {
-        throw new Error("Not authenticated");
-      }
-      return fallbackProfile;
-    }
-
-    try {
-      // Try different possible endpoints
-      let response;
-
-      try {
-        // Primary endpoint
-        response = await apiClient.get("/Profile/me");
-      } catch (error: any) {
-        if (this.getErrorStatus(error) === 404) {
-          // Try alternative endpoint
-          try {
-            response = await apiClient.get("/api/Profile/me");
-          } catch (altError: any) {
-            if (this.getErrorStatus(altError) === 404) {
-              // Try another alternative
-              response = await apiClient.get("/Auth/me");
-            } else {
-              throw altError;
-            }
-          }
-        } else {
-          throw error;
-        }
-      }
-
-      console.log("✅ Profile API Response:", response.data);
-      return this.normalizeProfileResponse(response.data);
-    } catch (error: any) {
-      console.error("❌ Failed to fetch profile from API:", error);
-
-      // Fallback to localStorage user data
-      const user = authService.getCurrentUser();
-      if (!user) {
-        throw new Error("Not authenticated");
-      }
-
-      console.log("⚠️ Using fallback data from localStorage");
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        panelType: user.panelType,
-      };
-    }
+async fetchProfile(): Promise<UserProfile> {
+  if (this.isDemoMode()) {
+    const demoProfile = this.getDemoProfile();
+    if (demoProfile) return demoProfile;
+    const fallbackProfile = this.getCurrentProfile();
+    if (!fallbackProfile) throw new Error("Not authenticated");
+    return fallbackProfile;
   }
 
+  try {
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error("Not authenticated");
+
+    if (user.panelType === "vendor") {
+  const res = await apiClient.get("/User/vendors");
+  console.log("✅ GET /vendors/vendor response:", JSON.stringify(res.data));
+
+  // Response is { value: [...vendors] } — find the one matching current user's email
+  const list: any[] = res.data?.value ?? res.data?.data ?? res.data?.items ?? [];
+  const vd = list.find(
+    (v: any) => (v.email ?? v.ownerEmail ?? "").toLowerCase() === user.email.toLowerCase()
+  ) ?? list[0] ?? {};
+
+  return {
+    id: vd.id ?? user.id ?? "",
+    name: user.name ?? vd.name ?? "",           // name comes from auth token, more reliable
+    email: vd.email ?? user.email ?? "",
+    phone: vd.phoneNumber ?? vd.phone ?? undefined,
+    address: vd.address ?? vd.businessAddress ?? undefined,
+    businessName: vd.businessName ?? vd.storeName ?? vd.name ?? undefined, // API has no businessName, use name as fallback
+    registrationNumber: vd.registrationNumber ?? undefined,
+    description: vd.description ?? undefined,
+    panelType: "vendor",
+    monthlyGoals: vd.monthlyGoals ?? undefined,
+  };
+
+    } else {
+      // Admin and charity use GET /User/profile
+      const response = await apiClient.get("/User/profile");
+      console.log("✅ GET /User/profile response:", response.data);
+      return this.normalizeProfileResponse(response.data);
+    }
+
+  } catch (error: any) {
+    console.error("❌ Failed to fetch profile:", error);
+    const user = authService.getCurrentUser();
+    if (!user) throw new Error("Not authenticated");
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      panelType: user.panelType,
+    };
+  }
+}
   // Update profile
   async updateProfile(updates: Partial<UserProfile>): Promise<UserProfile> {
     if (this.isDemoMode()) {
@@ -211,18 +204,8 @@ export class ProfileService {
     }
 
     try {
-      let response;
-
-      // Try different possible endpoints
-      try {
-        response = await apiClient.put("/Profile/me", updates);
-      } catch (error: any) {
-        if (this.getErrorStatus(error) === 404) {
-          response = await apiClient.put("/api/Profile/me", updates);
-        } else {
-          throw error;
-        }
-      }
+      // Use correct endpoint: /User/profile
+      const response = await apiClient.put("/User/profile", updates);
 
       console.log("✅ Profile updated:", response.data);
 
@@ -303,49 +286,26 @@ export class ProfileService {
   }
 
   // Change password
-  async changePassword(data: {
-    currentPassword: string;
-    newPassword: string;
-  }): Promise<void> {
-    try {
-      let response;
-
-      // Try different possible endpoints
-      try {
-        response = await apiClient.post("/Profile/change-password", data);
-      } catch (error: any) {
-        if (this.getErrorStatus(error) === 404) {
-          try {
-            response = await apiClient.post(
-              "/api/Profile/change-password",
-              data,
-            );
-          } catch (altError: any) {
-            if (this.getErrorStatus(altError) === 404) {
-              response = await apiClient.post("/Auth/change-password", data);
-            } else {
-              throw altError;
-            }
-          }
-        } else {
-          throw error;
-        }
-      }
-
-      console.log("✅ Password changed successfully");
-    } catch (error: any) {
-      console.error("❌ Failed to change password:", error);
-
-      // Handle specific error cases
-      const status = this.getErrorStatus(error);
-      if (status === 400 || status === 401) {
-        throw new Error("Current password is incorrect");
-      }
-
-      const errorMessage = this.getErrorMessage(error, "Failed to change password");
-      throw new Error(errorMessage);
+async changePassword(data: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<void> {
+  try {
+    await apiClient.put("/User/profile/change-password", {
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword,
+    });
+    console.log("✅ Password changed successfully");
+  } catch (error: any) {
+    console.error("❌ Failed to change password:", error);
+    const status = this.getErrorStatus(error);
+    if (status === 400 || status === 401) {
+      throw new Error("Current password is incorrect");
     }
+    const errorMessage = this.getErrorMessage(error, "Failed to change password");
+    throw new Error(errorMessage);
   }
+}
 }
 
 export const profileService = new ProfileService();

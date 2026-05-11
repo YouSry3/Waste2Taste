@@ -113,7 +113,7 @@ const normalizeDashboardResponse = (payload: unknown): DashboardData => {
   if (!resolvedData) {
     throw new Error("Invalid dashboard response format");
   }
-
+console.log("🔍 Raw categories:", resolvedData.categories);
   return {
     summary: {
       totalRevenue: Number(resolvedData.summary?.totalRevenue ?? 0),
@@ -126,7 +126,15 @@ const normalizeDashboardResponse = (payload: unknown): DashboardData => {
       orderGrowthPercentage: Number(resolvedData.summary?.orderGrowthPercentage ?? 0),
     },
     trends: Array.isArray(resolvedData.trends) ? resolvedData.trends : [],
-    categories: Array.isArray(resolvedData.categories) ? resolvedData.categories : [],
+   categories: Array.isArray(resolvedData.categories)
+  ? resolvedData.categories.map((cat: any) => ({
+      name: cat.categoryName ?? cat.name ?? cat.category ?? "Unknown",
+      value: Number(cat.percentage ?? cat.value ?? 0),
+      listings: Number(cat.count ?? cat.listings ?? 0),
+      revenue: Number(cat.revenue ?? 0),
+      color: cat.color ?? undefined,
+    }))
+  : [],
   };
 };
 

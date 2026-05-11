@@ -33,7 +33,7 @@ export function UserTableRow({
           onClick={onToggleSelection}
           className="group focus:outline-none"
         >
-          <div
+          {/* <div
             className={`w-5 h-5 border rounded-lg flex items-center justify-center transition-all ${
               isSelected
                 ? "bg-green-600 border-green-600"
@@ -41,7 +41,7 @@ export function UserTableRow({
             }`}
           >
             {isSelected && <Check className="h-3 w-3 text-white" />}
-          </div>
+          </div> */}
         </button>
       </td>
       <td className="py-3 px-4">

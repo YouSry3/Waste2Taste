@@ -17,20 +17,31 @@ interface TopSpendersProps {
 }
 
 export function TopSpenders({ users, topSpenders }: TopSpendersProps) {
-  // Use topSpenders from overview if available
   let spendersToDisplay: TopSpenderData[] = [];
 
   if (topSpenders && topSpenders.length > 0) {
-    spendersToDisplay = topSpenders;
+    // 🔴 FIX: Ensure ranks from API are valid (1-based), re-rank if needed
+    const hasValidRanks = topSpenders.every(s => typeof s.rank === 'number' && s.rank > 0);
+    
+    if (hasValidRanks) {
+      spendersToDisplay = topSpenders;
+    } else {
+      // Re-rank if API sends 0 or invalid ranks
+      spendersToDisplay = topSpenders
+        .sort((a, b) => b.totalSpent - a.totalSpent)
+        .map((spender, index) => ({
+          ...spender,
+          rank: index + 1,
+        }));
+    }
   } else if (users && users.length > 0) {
-    // Fallback: calculate from users array
     spendersToDisplay = users
-      .map((user, index) => ({
+      .map((user) => ({
         id: user.id.toString(),
         fullName: user.fullName,
         initials: getInitials(user.fullName),
         totalSpent: user.totalSpent || 0,
-        rank: index + 1,
+        rank: 0, // placeholder, will be overwritten
       }))
       .sort((a, b) => b.totalSpent - a.totalSpent)
       .slice(0, 3)
@@ -54,7 +65,7 @@ export function TopSpenders({ users, topSpenders }: TopSpendersProps) {
               className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
             >
               <div className="text-2xl font-bold text-gray-400">
-                #{spender.rank}
+                #{spender.rank || 1}  {/* 🔴 Fallback to 1 if rank is 0/undefined */}
               </div>
               <Avatar className="h-10 w-10">
                 <AvatarFallback className="bg-green-100 text-green-700">

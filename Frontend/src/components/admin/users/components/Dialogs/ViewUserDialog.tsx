@@ -114,35 +114,8 @@ export function ViewUserDialog({
           </div>
 
           <div className="flex gap-2 pt-4">
-            <Button
-              variant="outline"
-              className="flex-1 border-green-600 text-green-600 hover:bg-green-50"
-              onClick={() => onEdit(user)}
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              className={`flex-1 ${
-                user.status === "Active"
-                  ? "border-gray-600 text-gray-600 hover:bg-gray-50"
-                  : "border-green-600 text-green-600 hover:bg-green-50"
-              }`}
-              onClick={() => onToggleStatus(user)}
-            >
-              {user.status === "Active" ? (
-                <>
-                  <Ban className="h-4 w-4 mr-2" />
-                  Deactivate
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  Activate
-                </>
-              )}
-            </Button>
+            
+            
           </div>
         </div>
       </DialogContent>

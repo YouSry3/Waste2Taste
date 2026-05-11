@@ -45,16 +45,24 @@ export const API_CONFIG = {
  * AI: Replace these endpoint paths with your actual backend routes
  */
 export const API_ENDPOINTS = {
-  LISTINGS: {
-    BASE: "/listings",
-    BY_ID: (id: number | string) => `/listings/${id}`,
-    SEARCH: "/listings/search",
-    FILTER: "/listings/filter",
-    CATEGORIES: "/listings/categories",
-    STATS: "/listings/stats",
+ LISTINGS: {
+    BASE: "/api/dashboard/listings",
+    BY_ID: (id: string) => `/api/dashboard/listings/${id}`,
+    SEARCH: "/api/dashboard/listings",
+    FILTER: "/api/dashboard/listings",
+    CATEGORIES: "/api/dashboard/listings/categories",
+    STATS: "/api/dashboard/listings/stats",
   },
-  VENDORS: "/vendors", // For vendor dropdown if needed
-  CATEGORIES: "/categories", // For categories dropdown
+
+  ORDERS: {
+    BASE: "/api/dashboard/orders",
+    BY_ID: (id: string) => `/api/dashboard/orders/${id}`,
+    UPDATE_STATUS: (id: string) => `/api/dashboard/orders/${id}/status`,
+  },
+  ANALYTICS: "/api/dashboard/analytics",
+  OVERVIEW: "/api/dashboard/overview",
+  VENDORS: "/vendors",
+  CATEGORIES: "/categories",
 };
 
 // For debugging - log the API config in development

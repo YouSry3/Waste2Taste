@@ -123,20 +123,50 @@ const toVendorId = (value: unknown, fallback: number): Vendor["id"] => {
 
 const mapApiVendorToVendor = (payload: unknown, index: number): Vendor => {
   const item = asObject(payload);
+console.log("🔍 RAW VENDOR FROM API:", JSON.stringify(item));
+  // Revenue: try every possible field name the backend might use
+  const rawRevenue =
+    item.revenue ??
+    item.totalRevenue ??
+    item.totalSales ??
+    item.sales ??
+    item.earnings ??
+    item.totalEarnings ??
+    item.revenueTotal ??
+    0;
+
+  // If revenue came back as a formatted string like "$115.50", parse it first
+  const revenueNumber =
+    typeof rawRevenue === "string"
+      ? parseFloat(rawRevenue.replace(/[$,]/g, "")) || 0
+      : toNumber(rawRevenue, 0);
 
   return {
     id: toVendorId(item.id, index + 1),
-    name: String(item.name ?? "Unknown Vendor"),
-    type: parseVendorType(item.type ?? "Vendor"),
-    category: String(item.category ?? "General"),
-    contact: String(item.contact ?? item.contactName ?? "N/A"),
-    email: String(item.email ?? item.ownerEmail ?? "N/A"),
-    phone: String(item.phone ?? item.phoneNumber ?? "N/A"),
-    address: String(item.address ?? "N/A"),
-    listings: toNumber(item.listings ?? item.activeListings ?? item.listingsCount ?? 0),
-    revenue: toMoneyString(item.revenue ?? 0),
-    rating: toNumber(item.rating, 5),
-    status: parseVendorStatus(item.status ?? "Active"),
+    name: String(item.name ?? item.businessName ?? item.vendorName ?? "Unknown Vendor"),
+    type: parseVendorType(item.type ?? item.vendorType ?? item.businessType ?? "Vendor"),
+    category: String(item.category ?? item.businessCategory ?? item.vendorCategory ?? "General"),
+    contact: String(item.contact ?? item.contactName ?? item.ownerName ?? item.contactPerson ?? "N/A"),
+    email: String(item.email ?? item.ownerEmail ?? item.contactEmail ?? item.businessEmail ?? "N/A"),
+    phone: String(item.phone ?? item.phoneNumber ?? item.contactPhone ?? item.businessPhone ?? "N/A"),
+    address: String(
+      item.address ??
+      item.businessAddress ??
+      item.location ??
+      [item.street, item.city].filter(Boolean).join(", ") ??
+      "N/A"
+    ),
+    listings: toNumber(
+      item.listings ??
+      item.activeListings ??
+      item.listingsCount ??
+      item.totalListings ??
+      item.listingCount ??
+      0
+    ),
+    revenue: toMoneyString(revenueNumber),
+    rating: toNumber(item.rating ?? item.averageRating ?? item.vendorRating ?? 5, 5),
+    status: parseVendorStatus(item.status ?? item.vendorStatus ?? item.isActive ?? "Active"),
   };
 };
 
@@ -207,40 +237,54 @@ const normalizeSummaryPayload = (payload: unknown): VendorsSummaryResponse => {
   };
 };
 
-const normalizeListPayload = (payload: unknown): VendorsListResponse => {
+const normalizeListPayload = (
+  payload: unknown,
+  revenueMap?: Map<string, number>,
+): VendorsListResponse => {
   const payloadObject = asObject(payload);
-  const raw = asObject(payload);
   const dataPayload = payloadObject.data;
   const valuePayload = payloadObject.value;
   const resultValuePayload = payloadObject.Value;
   const data = asObject(dataPayload);
   const value = asObject(valuePayload);
   const resultValue = asObject(resultValuePayload);
-  const listSource =
-    Array.isArray(payload)
-      ? payload
+
+  const listSource = Array.isArray(payload)
+    ? payload
+    : Array.isArray(valuePayload)         // ← your API wraps in "value"
+      ? valuePayload
       : Array.isArray(payloadObject.items)
         ? payloadObject.items
         : Array.isArray(dataPayload)
           ? dataPayload
-          : Array.isArray(valuePayload)
-            ? valuePayload
-            : Array.isArray(resultValuePayload)
-              ? resultValuePayload
-              : Array.isArray(data.items)
-                ? data.items
-                : Array.isArray(value.items)
-                  ? value.items
-                  : Array.isArray(resultValue.items)
-                    ? resultValue.items
-                    : [];
-  const itemsPayload = listSource;
-  const items = itemsPayload.map(mapApiVendorToVendor);
+          : Array.isArray(resultValuePayload)
+            ? resultValuePayload
+            : Array.isArray(data.items)
+              ? data.items
+              : Array.isArray(value.items)
+                ? value.items
+                : Array.isArray(resultValue.items)
+                  ? resultValue.items
+                  : [];
+
+  const raw = asObject(payload);
+  const items = listSource.map((entry, index) => {
+    const vendor = mapApiVendorToVendor(entry, index);
+    // Enrich revenue from summary topPerformers if list didn't include it
+    if (revenueMap && revenueMap.has(String(vendor.id))) {
+      const revenueNum = revenueMap.get(String(vendor.id))!;
+      return { ...vendor, revenue: toMoneyString(revenueNum) };
+    }
+    return vendor;
+  });
 
   return {
     items,
     totalCount: toNumber(
-      raw.totalCount ?? data.totalCount ?? value.totalCount ?? resultValue.totalCount,
+      raw.totalCount ??
+        data.totalCount ??
+        value.totalCount ??
+        resultValue.totalCount,
       items.length,
     ),
   };
@@ -270,6 +314,7 @@ const fetchSummary = async (): Promise<VendorsSummaryResponse> => {
 const fetchList = async (
   page: number,
   limit: number,
+  revenueMap?: Map<string, number>,
 ): Promise<VendorsListResponse> => {
   const paramCandidates: Array<Record<string, number>> = [
     { page, limit },
@@ -284,36 +329,26 @@ const fetchList = async (
       const response = await apiClient.get(LIST_ENDPOINT, {
         params,
         headers: {
-          // Some ASP.NET endpoints reject GET requests that include JSON content type.
           "Content-Type": undefined,
           Accept: "application/json",
         },
       });
-      return normalizeListPayload(response.data);
+      return normalizeListPayload(response.data, revenueMap);
     } catch (error) {
       lastError = error;
-
       const status = getStatusCode(error);
-      if (status === 415) {
-        continue;
-      }
+      if (status === 415) continue;
       throw error;
     }
   }
 
-  // Some backends expose the same list endpoint as POST with pagination body.
   try {
     const response = await apiClient.post(
       LIST_ENDPOINT,
       { page, limit, pageNumber: page, pageSize: limit },
-      {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      },
+      { headers: { Accept: "application/json", "Content-Type": "application/json" } },
     );
-    return normalizeListPayload(response.data);
+    return normalizeListPayload(response.data, revenueMap);
   } catch (error) {
     lastError = error;
   }
@@ -378,16 +413,29 @@ export const useVendorsList = (page = 1, limit = 10) => {
     queryFn: async (): Promise<QueryPayload<VendorsListResponse>> => {
       const cached =
         queryClient.getQueryData<QueryPayload<VendorsListResponse>>(queryKey);
-      if (cached) {
-        return cached;
-      }
+      if (cached) return cached;
 
       if (demoMode) {
         return { data: fallbackList(page, limit), source: "demo" };
       }
 
       try {
-        const list = await fetchList(page, limit);
+        // Build a revenue map from the summary topPerformers
+        // so we can enrich list vendors that don't have revenue
+        let revenueMap: Map<string, number> | undefined;
+        try {
+          const summary = await fetchSummary();
+          revenueMap = new Map(
+            summary.topPerformers.map((v) => [
+              String(v.id),
+              parseFloat(String(v.revenue).replace(/[$,]/g, "")) || 0,
+            ]),
+          );
+        } catch {
+          // summary failed — list will show $0.00 for non-top-performers
+        }
+
+        const list = await fetchList(page, limit, revenueMap);
         return { data: list, source: "api" };
       } catch (error) {
         console.error("Failed to fetch vendors list.", error);

@@ -1,4 +1,5 @@
 ﻿using FoodRescue.BLL.Contract.ListingDashboardDTOs;
+using FoodRescue.BLL.Extensions.Vendors; // Add this
 using FoodRescue.BLL.Services.ListingDashboardTab;
 using FoodRescue.DAL.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +14,14 @@ namespace FoodRescue.PL.Controllers;
 public class VendorListingsDashboardController : ControllerBase
 {
     private readonly IVendorListingService _listingService;
+    private readonly IVendorRepository _vendorRepo; // Add this
 
-    public VendorListingsDashboardController(IVendorListingService listingService)
+    public VendorListingsDashboardController(
+        IVendorListingService listingService,
+        IVendorRepository vendorRepo) // Add this
     {
         _listingService = listingService;
+        _vendorRepo = vendorRepo;
     }
 
     [HttpGet("listings")]
@@ -27,7 +32,7 @@ public class VendorListingsDashboardController : ControllerBase
         [FromQuery] string? category,
         [FromQuery] string? status)
     {
-        var vendorId = GetCurrentVendorId();
+        var vendorId = await GetCurrentVendorIdAsync();
 
         var filter = new ListingFilter
         {
@@ -50,7 +55,7 @@ public class VendorListingsDashboardController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<IActionResult> GetListingById(Guid productId)
     {
-        var vendorId = GetCurrentVendorId();
+        var vendorId = await GetCurrentVendorIdAsync();
         var result = await _listingService.GetListingByIdAsync(productId, vendorId);
 
         if (result.IsFailure)
@@ -67,7 +72,7 @@ public class VendorListingsDashboardController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<IActionResult> UpdateListing(Guid productId, [FromBody] UpdateListingRequest request)
     {
-        var vendorId = GetCurrentVendorId();
+        var vendorId = await GetCurrentVendorIdAsync();
         var result = await _listingService.UpdateListingAsync(productId, vendorId, request);
 
         if (result.IsFailure)
@@ -81,7 +86,7 @@ public class VendorListingsDashboardController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<IActionResult> DeleteListing(Guid productId)
     {
-        var vendorId = GetCurrentVendorId();
+        var vendorId = await GetCurrentVendorIdAsync();
         var result = await _listingService.DeleteListingAsync(productId, vendorId);
 
         if (result.IsFailure)
@@ -90,9 +95,15 @@ public class VendorListingsDashboardController : ControllerBase
         return Ok(new { success = result.Value });
     }
 
-    private Guid GetCurrentVendorId()
+    private async Task<Guid> GetCurrentVendorIdAsync()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                       ?? User.FindFirst("sub")?.Value;
+
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            return Guid.Empty;
+
+        var vendor = await _vendorRepo.GetByOwnerIdAsync(userId);
+        return vendor?.Id ?? Guid.Empty;
     }
 }

@@ -57,27 +57,7 @@ export function UserTable({
             <thead>
               <tr className="border-b">
                 <th className="text-left py-3 pe-4 ps-1 font-semibold w-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onToggleSelectAll}
-                    className={`flex items-center justify-start gap-2 transition-all ${
-                      isSelectAll
-                        ? "bg-green-50 border-green-600 text-green-600"
-                        : ""
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 border rounded flex items-center justify-center transition-all ${
-                        isSelectAll
-                          ? "bg-green-600 border-green-600"
-                          : "border-gray-300"
-                      }`}
-                    >
-                      {isSelectAll && <Check className="h-3 w-3 text-white" />}
-                    </div>
-                    Select All
-                  </Button>
+            
                 </th>
                 <th className="text-left py-3 px-4 font-semibold">User</th>
                 <th className="text-left py-3 px-4 font-semibold">Contact</th>

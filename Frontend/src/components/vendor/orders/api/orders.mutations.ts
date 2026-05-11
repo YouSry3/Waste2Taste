@@ -49,35 +49,25 @@ import autoTable from "jspdf-autotable";
  * MUTATION: Update order status
  * AI: Implement optimistic update for instant feedback
  */
-export const useUpdateOrderStatus = (
-  options?: UseMutationOptions<
-    ApiResponse<Order>,
-    Error,
-    { orderId: string; status: string }
-  >,
-) => {
+export const useUpdateOrderStatus = (options?: {
+  onSuccess?: () => void;
+  onError?: (err: unknown) => void;
+}) => {
   const queryClient = useQueryClient();
 
-  return useMutation<
-    ApiResponse<Order>,
-    Error,
-    { orderId: string; status: string }
-  >({
-    mutationFn: ({ orderId, status }) =>
+  return useMutation({
+    mutationFn: ({ orderId, status }: { orderId: string; status: string }) =>
       ordersApi.updateOrderStatus(orderId, status),
-
-    onSuccess: (data, variables) => {
-      // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.all });
-      queryClient.invalidateQueries({ queryKey: orderQueryKeys.stats() });
-
-      // TODO: Show success toast
-      console.log("Order status updated successfully:", variables.orderId);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-orders"] });
+      options?.onSuccess?.();
     },
-
-    ...options,
+    onError: (err) => {
+      options?.onError?.(err);
+    },
   });
 };
+
 
 /**
  * MUTATION: Export orders data

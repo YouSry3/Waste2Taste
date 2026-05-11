@@ -118,17 +118,7 @@ export function InventoryStatusCard({
                     Create Listing Now
                   </Button>
                 )}
-                {(item.status === "low" || item.status === "medium") && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-full mt-2 text-xs"
-                    onClick={() => onCreateListing(item)}
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    Create Listing
-                  </Button>
-                )}
+                
               </div>
             );
           })}

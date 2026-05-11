@@ -48,11 +48,11 @@ const requestSchema = Yup.object({
 });
 
 const CATEGORY_OPTIONS = [
-  { value: "1", label: "Bakery" },
-  { value: "2", label: "Restaurant" },
-  { value: "3", label: "Cafe" },
-  { value: "4", label: "Grocery" },
-  { value: "5", label: "Other" },
+  { value: "Bakery", label: "Bakery" },
+  { value: "Restaurant", label: "Restaurant" },
+  { value: "Cafe", label: "Cafe" },
+  { value: "Grocery", label: "Grocery" },
+  { value: "Other", label: "Other" },
 ];
 
 type VendorRequestFormValues = {

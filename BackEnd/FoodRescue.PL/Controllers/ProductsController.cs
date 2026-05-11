@@ -1,8 +1,7 @@
 ﻿using FoodRescue.BLL.Contract.Products;
-using FoodRescue.BLL.Services.Products;
 using FoodRescue.BLL.Services.Favorites;
+using FoodRescue.BLL.Services.Products;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -73,6 +72,7 @@ public class ProductsController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "vendor")]
+    [ProducesResponseType(typeof(IEnumerable<ProductListResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
     {
         var result = await _service.CreateAsync(request);
@@ -129,7 +129,7 @@ public class ProductsController : ControllerBase
     /// <response code="401">Unauthorized - user not authenticated</response>
     /// <response code="404">Product not found</response>
     [HttpPost("{productId:guid}/favorite")]
-    [Authorize(Roles ="customer")]
+    [Authorize(Roles = "customer")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

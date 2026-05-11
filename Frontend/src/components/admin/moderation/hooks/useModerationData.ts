@@ -1489,13 +1489,14 @@ export function useModerationData() {
   const handleApproveListing = async (id: ModerationId) => {
     try {
       await approveListingMutation.mutateAsync(String(id));
-      setListings((prev) => prev.filter((listing) => listing.id !== id));
+      // üî¥ FIXED: String comparison so string IDs match correctly
+      setListings((prev) => prev.filter((listing) => String(listing.id) !== String(id)));
 
       addToActivityLog({
         moderatorName: "Admin",
         action: "approved",
         itemType: "listing",
-        itemTitle: listings.find((l) => l.id === id)?.title || `Listing #${id}`,
+        itemTitle: listings.find((l) => String(l.id) === String(id))?.title || `Listing #${id}`,
         timestamp: new Date().toISOString(),
       });
 
@@ -1514,14 +1515,14 @@ export function useModerationData() {
         rejectionReason: `${data.reason}: ${data.notes || ""}`.trim(),
       });
 
-      // REMOVE listing from list (not just update status)
-      setListings((prev) => prev.filter((l) => l.id !== id));
+      // üî¥ FIXED: String comparison
+      setListings((prev) => prev.filter((l) => String(l.id) !== String(id)));
 
       addToActivityLog({
         moderatorName: "Admin",
         action: "rejected",
         itemType: "listing",
-        itemTitle: listings.find((l) => l.id === id)?.title || `Listing #${id}`,
+        itemTitle: listings.find((l) => String(l.id) === String(id))?.title || `Listing #${id}`,
         timestamp: new Date().toISOString(),
         notes: `${data.reason}: ${data.notes || ""}`,
       });

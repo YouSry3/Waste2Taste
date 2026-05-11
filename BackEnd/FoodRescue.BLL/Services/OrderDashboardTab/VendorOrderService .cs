@@ -63,7 +63,8 @@ public class VendorOrderService : IVendorOrderService
 
         return new VendorOrderDto
         {
-            OrderId = $"ORD-{o.Id.ToString()[..8].ToUpper()}",
+            Id = o.Id,
+            OrderId = $"ORD-{o.Id.ToString()[..8].ToUpper()}",      // Keep formatted
             Status = o.Status,
             OrderDate = o.CreatedAt,
             PickupTime = pickupTime.ToString("h:mm tt"),

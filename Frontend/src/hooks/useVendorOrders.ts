@@ -175,21 +175,35 @@ const mapOrder = (value: unknown, index: number): Order => {
   const rawItems = asArray(item.itemsList ?? item.items ?? item.products);
   const itemsList = rawItems.map(mapOrderItem).filter(Boolean);
   const orderNumber = toText(
-    item.orderNumber ?? item.orderNo ?? item.referenceNumber ?? item.code ?? item.id ?? item.orderId,
+    item.orderNumber ?? item.orderNo ?? item.orderId ?? item.referenceNumber ?? item.code ?? item.id,
     `ORD-${1000 + index}`,
   );
   const amountValue = toNumber(
     item.amountValue ??
       item.totalAmount ??
+      item.totalPrice ??        // 🔴 ADD: API sends totalPrice
       item.total ??
       item.subtotal ??
       item.amount ??
       item.price,
   );
+  
+  // 🔴 FIXED: Handle API nested objects correctly
+  const customerObj = asObject(item.customer);
+  const vendorObj = asObject(item.vendor);
+  const productObj = asObject(item.product);
+  
   const itemsText =
     itemsList.length > 0
       ? itemsList.map((entry) => entry.name).join(", ")
-      : toText(item.items ?? item.productName ?? item.itemName, "Order Items");
+      : toText(
+          item.items ?? 
+          item.productName ?? 
+          item.itemName ?? 
+          productObj.name,      // 🔴 ADD: API sends product.name
+          "Order Items",
+        );
+  
   const quantity = itemsList.length
     ? itemsList.reduce((sum, entry) => sum + entry.quantity, 0)
     : Math.max(
@@ -202,23 +216,46 @@ const mapOrder = (value: unknown, index: number): Order => {
   return {
     id: toText(item.id ?? item.orderId ?? orderNumber, `#${orderNumber}`),
     orderNumber,
+    // 🔴 FIXED: Read from nested customer object
     customerName: toText(
       item.customerName ??
         item.userName ??
-        asObject(item.user).name ??
-        asObject(item.customer).name,
+        customerObj.name ??           // API: customer.name
+        customerObj.customerName,
       "Unknown Customer",
     ),
+    customerPhone: toText(
+      item.customerPhone ??
+        item.userPhone ??
+        customerObj.phone,            // API: customer.phone
+      "N/A",
+    ),
+    // 🔴 FIXED: Read from nested vendor object
     vendorName: toText(
       item.vendorName ??
         item.storeName ??
-        asObject(item.vendor).name ??
-        item.businessName,
+        vendorObj.businessName ??     // API: vendor.businessName
+        vendorObj.name ??
+        vendorObj.vendorName,
       "Unknown Vendor",
+    ),
+    vendorPhone: toText(
+      item.vendorPhone ??
+        item.storePhone ??
+        vendorObj.phone,              // API: vendor.phone
+      "N/A",
     ),
     items: itemsText,
     quantity,
-    totalAmount: toCurrency(item.totalAmount ?? item.amount ?? item.total ?? amountValue, amountValue),
+    // 🔴 FIXED: Use totalPrice from API
+    totalAmount: toCurrency(
+      item.totalAmount ?? 
+      item.amount ?? 
+      item.totalPrice ??            // 🔴 ADD: API sends totalPrice
+      item.total ?? 
+      amountValue, 
+      amountValue,
+    ),
     amountValue,
     pickupTime: toText(
       item.pickupTime ??
@@ -229,39 +266,39 @@ const mapOrder = (value: unknown, index: number): Order => {
       "Pickup time unavailable",
     ),
     status: normalizeOrderStatus(item.status),
-    orderDate: toDisplayDate(item.orderDate ?? item.date ?? item.createdAt, toText(item.orderDate ?? item.date ?? item.createdAt, "")),
+    orderDate: toDisplayDate(
+      item.orderDate ?? item.date ?? item.createdAt,
+      toText(item.orderDate ?? item.date ?? item.createdAt, ""),
+    ),
+    // 🔴 FIXED: Read from nested vendor address
     deliveryAddress: toText(
       item.deliveryAddress ??
         item.address ??
-        item.pickupLocation ??
-        item.location,
+        item.pickupLocation ??      // API: pickupLocation
+        item.location ??
+        vendorObj.address,          // 🔴 ADD: vendor.address
       "Address unavailable",
     ),
     paymentMethod: toText(
       item.paymentMethod ?? item.payment ?? item.paymentType,
       "N/A",
     ),
-    notes: toText(item.notes ?? item.orderNotes ?? item.comment, ""),
+    notes: toText(
+      item.notes ?? 
+      item.orderNotes ?? 
+      item.comment ??
+      productObj.specialInstructions,  // 🔴 ADD: product.specialInstructions
+      "",
+    ),
     customerEmail: toText(
       item.customerEmail ??
         item.userEmail ??
         item.email ??
-        asObject(item.customer).email,
-      "N/A",
-    ),
-    customerPhone: toText(
-      item.customerPhone ??
-        item.userPhone ??
-        item.phone ??
-        asObject(item.customer).phone,
+        customerObj.email,
       "N/A",
     ),
     vendorEmail: toText(
-      item.vendorEmail ?? item.storeEmail ?? asObject(item.vendor).email,
-      "N/A",
-    ),
-    vendorPhone: toText(
-      item.vendorPhone ?? item.storePhone ?? asObject(item.vendor).phone,
+      item.vendorEmail ?? item.storeEmail ?? vendorObj.email,
       "N/A",
     ),
     itemsList: itemsList.length > 0 ? itemsList : undefined,
@@ -270,10 +307,12 @@ const mapOrder = (value: unknown, index: number): Order => {
       toText(item.createdAt ?? item.created_at ?? item.orderDate ?? item.date, ""),
     ),
     updatedAt: toDisplayDateTime(item.updatedAt ?? item.updated_at, ""),
-    pickedUpAt: toDisplayDateTime(item.pickedUpAt ?? item.picked_up_at ?? item.completedAt, ""),
+    pickedUpAt: toDisplayDateTime(
+      item.pickedUpAt ?? item.picked_up_at ?? item.completedAt,
+      "",
+    ),
   };
 };
-
 const getNumber = (
   source: Record<string, unknown>,
   key: string,
@@ -322,12 +361,8 @@ const normalizeResponse = (
     orders,
     stats: {
       totalRevenue: getNumber(statsSource, "totalRevenue", derivedRevenue),
-      readyForPickup: getNumber(statsSource, "readyForPickup", derivedReady),
-      pendingPickups: getNumber(
-        statsSource,
-        "pendingPickup",
-        getNumber(statsSource, "pendingPickups", derivedPending),
-      ),
+      readyForPickup: derivedReady, // Always use derived count
+      pendingPickups: derivedPending, // Always use derived count
       completedToday: derivedCompletedToday,
       avgOrderValue: getNumber(
         statsSource,
@@ -401,6 +436,7 @@ export const useVendorOrdersDashboard = () => {
     staleTime: 0,
     refetchOnMount: "always",
     refetchOnWindowFocus: true,
+    refetchInterval: 10000, // Poll every 10 seconds for new pending orders
     retry: (failureCount, error) => {
       const status = getErrorStatus(error);
       if (status === 401 || status === 404) {

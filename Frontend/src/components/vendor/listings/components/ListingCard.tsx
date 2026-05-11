@@ -71,19 +71,19 @@ export function ListingCard({
         </div>
 
         <div className="flex items-center justify-between mb-4 pb-4 border-b">
-          <div>
-            <p className="text-sm text-gray-500 line-through">
-              ${listing.originalPrice.toFixed(2)}
-            </p>
-            <p className="text-green-600 font-semibold text-lg">
-              ${listing.salePrice.toFixed(2)}
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-500">Available</p>
-            <p className="font-medium text-lg">{listing.quantity} bags</p>
-          </div>
-        </div>
+  <div>
+    <p className="text-sm text-gray-500 line-through">
+      ${(listing.originalPrice ?? 0).toFixed(2)}
+    </p>
+    <p className="text-green-600 font-semibold text-lg">
+      ${(listing.salePrice ?? listing.price ?? 0).toFixed(2)}
+    </p>
+  </div>
+  <div className="text-right">
+    <p className="text-sm text-gray-500">Available</p>
+    <p className="font-medium text-lg">{(listing.quantity ?? 0)} bags</p>
+  </div>
+</div>
 
         <div className="flex gap-2">
           <Button

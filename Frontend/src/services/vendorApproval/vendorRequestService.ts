@@ -376,6 +376,7 @@
 import { apiClient } from "../api/apiClient";
 import { API_CONFIG } from "../api/apiConfig";
 import { VendorApprovalStatus } from "../auth/authService";
+// D:\Graduation Project\GraduationProject\Frontend\src\services\auth\authService.ts
 
 export interface CreateVendorRequestPayload {
   ownerName: string;
@@ -411,13 +412,9 @@ const VENDOR_REQUEST_STATUS_ENDPOINTS = [
 const normalizeStatus = (value: unknown): VendorApprovalStatus | null => {
   if (typeof value !== "string") return null;
   const normalized = value.trim().toLowerCase();
-  if (
-    normalized === "pending" ||
-    normalized === "approved" ||
-    normalized === "rejected"
-  ) {
-    return normalized;
-  }
+  if (normalized === "pending") return "pending";
+  if (normalized === "approved" || normalized === "active") return "approved"; // ← ADD "active"
+  if (normalized === "rejected") return "rejected";
   return null;
 };
 
@@ -485,7 +482,6 @@ export const extractVendorRequestId = (payload: any): number | null => {
 };
 
 // ─── Create vendor request ────────────────────────────────────────────────────
-
 export const createVendorRequest = async (
   payload: CreateVendorRequestPayload,
 ): Promise<VendorRequestCreationResult> => {
@@ -501,31 +497,77 @@ export const createVendorRequest = async (
   formData.append("BusinessLicenseFile", payload.businessLicenseFile);
 
   const response = await apiClient.post<unknown>("/VendorRequests", formData);
+  const requestId = extractVendorRequestId(response.data);
 
-  return {
-    requestId: extractVendorRequestId(response.data),
-    data: response.data,
-  };
+  // ← Save so getVendorRequestStatus can use it later
+  if (requestId) {
+    localStorage.setItem("vendorRequestId", String(requestId));
+  }
+
+  return { requestId, data: response.data };
 };
+// export const createVendorRequest = async (
+//   payload: CreateVendorRequestPayload,
+// ): Promise<VendorRequestCreationResult> => {
+//   const formData = new FormData();
+//   formData.append("Name", payload.businessName);
+//   formData.append("Category", payload.category);
+//   formData.append("Email", payload.email);
+//   formData.append("PhoneNumber", payload.phoneNumber);
+//   formData.append("Address", payload.address);
+//   formData.append("Latitude", String(payload.latitude));
+//   formData.append("Longitude", String(payload.longitude));
+//   formData.append("HealthCertificateFile", payload.healthCertificateFile);
+//   formData.append("BusinessLicenseFile", payload.businessLicenseFile);
+
+//   const response = await apiClient.post<unknown>("/VendorRequests", formData);
+
+//   return {
+//     requestId: extractVendorRequestId(response.data),
+//     data: response.data,
+//   };
+// };
 
 // ─── Get vendor request status ────────────────────────────────────────────────
 
-export const getVendorRequestStatus =
-  async (): Promise<VendorApprovalStatus | null> => {
-    for (const endpoint of VENDOR_REQUEST_STATUS_ENDPOINTS) {
-      try {
-        const response = await apiClient.get(endpoint);
-        const status = tryReadStatus(response.data);
-        if (status) return status;
-      } catch (error: any) {
-        const statusCode = getErrorStatusCode(error);
-        if (statusCode === 404) continue;
-        throw error;
-      }
-    }
-    return null;
-  };
+export const getVendorRequestStatus = async (): Promise<VendorApprovalStatus | null> => {
+  try {
+    // Check /vendors list — match by email — "Active" status means approved
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const email = user?.email?.toLowerCase();
 
+    const res = await apiClient.get("/vendors");
+    const list: any[] =
+      res.data?.value ?? res.data?.data ?? res.data?.items ??
+      (Array.isArray(res.data) ? res.data : []);
+
+    const myVendor = list.find(
+      (v: any) => (v.email ?? "").toLowerCase() === email
+    );
+
+    console.log("🔍 Found vendor in /vendors list:", myVendor);
+
+    if (myVendor) {
+      return normalizeStatus(myVendor.status);
+    }
+
+    // Fallback: try by stored requestId
+    const storedRequestId = localStorage.getItem("vendorRequestId");
+    if (storedRequestId) {
+      const response = await apiClient.get(`/VendorRequests/${storedRequestId}`);
+      const payload = response.data?.value ?? response.data?.data ?? response.data;
+      const status = normalizeStatus(
+        payload?.status ?? payload?.approvalStatus ?? payload?.requestStatus
+      );
+      if (status) return status;
+    }
+
+    return null;
+  } catch (error: any) {
+    console.warn("getVendorRequestStatus failed:", error?.message);
+    return null;
+  }
+};
 // ─── Get pending vendor requests for admin ────────────────────────────────────
 
 export const getPendingVendorRequestsForAdmin = async (): Promise<any[]> => {

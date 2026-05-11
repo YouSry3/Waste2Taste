@@ -8,6 +8,12 @@ public interface IVendorRepository
     Task<Vendor?> GetVendorByIdAsync(Guid id);
     Task<Vendor?> GetByIdAsync(Guid id);
     Task<Vendor?> GetVendorWithProductsAsync(Guid id);
+
+
+    Task<Vendor?> GetByOwnerIdAsync(Guid ownerId);
+
+
+
     Task AddAsync(Vendor vendor);
     Task UpdateAsync(Vendor vendor);
     Task DeleteAsync(Vendor vendor);

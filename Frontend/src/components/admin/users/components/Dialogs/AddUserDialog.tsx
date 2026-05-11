@@ -39,9 +39,7 @@ export function AddUserDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2">
-          <UserPlus className="h-4 w-4" /> Add User
-        </Button>
+        
       </DialogTrigger>
       <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
         <DialogHeader>

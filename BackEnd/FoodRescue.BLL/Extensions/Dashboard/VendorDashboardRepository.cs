@@ -1,4 +1,5 @@
-﻿using FoodRescue.DAL.Context;
+﻿using FoodRescue.DAL.Consts;
+using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using FoodRescue.DAL.Models;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,8 @@ public class VendorDashboardRepository : IVendorDashboardRepository
             .CountAsync(p => p.VendorId == vendorId
                           && !p.Expired
                           && p.Quantity > 0
-                          && p.ExpiryDate > DateTime.Now);
+                          && p.ExpiryDate > DateTime.Now
+                          && p.Status == ProductStatus.Approved);
     }
 
     public async Task<decimal> GetTotalRevenueAsync(Guid vendorId, int days)

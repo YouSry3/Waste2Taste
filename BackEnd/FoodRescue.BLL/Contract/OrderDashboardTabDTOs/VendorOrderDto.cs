@@ -2,7 +2,8 @@
 
 public class VendorOrderDto
 {
-    public string OrderId { get; set; } = null!;
+    public Guid Id { get; set; }              //  Raw GUID for API calls
+    public string OrderId { get; set; } = null!;  // Formatted "ORD-XXXX" for display
     public string Status { get; set; } = null!;
     public DateTime OrderDate { get; set; }
     public string PickupTime { get; set; } = null!;

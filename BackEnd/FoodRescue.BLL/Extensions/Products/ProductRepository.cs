@@ -1,4 +1,5 @@
-﻿using FoodRescue.DAL.Context;
+﻿using FoodRescue.DAL.Consts;
+using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,7 +22,7 @@ public class ProductRepository : IProductRepository
             .Where(p => p.ExpiryDate > DateTime.Now
                      && p.Quantity > 0
                      && !p.Expired
-                     );
+                     && p.Status == ProductStatus.Approved);
 
         if (!string.IsNullOrEmpty(name))
             query = query.Where(p => p.Name.Contains(name));
@@ -36,7 +37,7 @@ public class ProductRepository : IProductRepository
         return await _context.Products
             .AsNoTracking()
             .Include(p => p.Vendor)
-            .Where(p => p.VendorId == vendorId)
+            .Where(p => p.VendorId == vendorId && p.Status == ProductStatus.Approved)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
     }

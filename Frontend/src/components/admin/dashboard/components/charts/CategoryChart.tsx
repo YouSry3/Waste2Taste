@@ -16,6 +16,7 @@ interface CategoryChartProps {
 }
 
 export function CategoryChart({ data }: CategoryChartProps) {
+  console.log("🔍 Category data:", data);
   return (
     <Card className="overflow-hidden">
       <CardHeader>

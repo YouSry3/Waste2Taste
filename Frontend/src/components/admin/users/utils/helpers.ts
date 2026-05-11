@@ -47,14 +47,15 @@ export const filterUsers = (
   filterStatus: string,
 ): any[] => {
   return users.filter((user) => {
-    // Add null checks to prevent errors when fields are undefined
     const fullName = user?.fullName?.toLowerCase() || "";
     const email = user?.email?.toLowerCase() || "";
+    const phoneNumber = user?.phoneNumber?.toLowerCase() || ""; // ← ADDED
     const search = searchTerm.toLowerCase();
 
     const matchesSearch =
       fullName.includes(search) ||
-      email.includes(search);
+      email.includes(search) ||
+      phoneNumber.includes(search); // ← ADDED
 
     const matchesStatus =
       filterStatus === "all" ||

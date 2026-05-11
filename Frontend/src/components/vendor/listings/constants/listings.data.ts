@@ -39,16 +39,14 @@ export const initialListings: Listing[] = [
 ];
 
 // Add this export - statusColors was missing
-export const statusColors: Record<
-  string,
-  "default" | "secondary" | "destructive"
-> = {
-  Active: "default",
+export const statusColors: Record<string, string> = {
+  Approved: "default",      // 🔴 ADD
+  Active: "default",        // keep for fallback
+  Pending: "secondary",     // 🔴 ADD
+  Rejected: "destructive",  // 🔴 ADD
+  Discontinued: "outline",  // 🔴 ADD
   "Sold Out": "destructive",
-  Expired: "destructive",
-  Pending: "secondary",
 };
-
 export const formFields = [
   { label: "Vendor", key: "vendor", placeholder: "e.g. Green Valley Bakery" },
   { label: "Title", key: "title", placeholder: "e.g. Bakery Surprise Bag" },

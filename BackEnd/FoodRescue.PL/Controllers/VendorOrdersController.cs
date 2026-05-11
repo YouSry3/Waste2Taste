@@ -1,4 +1,5 @@
 ﻿using FoodRescue.BLL.Contract.OrderDashboardTabDTOs;
+using FoodRescue.BLL.Extensions.Vendors; // Add this
 using FoodRescue.BLL.Services.OrderDashboardTab;
 using FoodRescue.DAL.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +14,14 @@ namespace FoodRescue.PL.Controllers;
 public class VendorOrdersController : ControllerBase
 {
     private readonly IVendorOrderService _orderService;
+    private readonly IVendorRepository _vendorRepo; // Add this
 
-    public VendorOrdersController(IVendorOrderService orderService)
+    public VendorOrdersController(
+        IVendorOrderService orderService,
+        IVendorRepository vendorRepo) // Add this
     {
         _orderService = orderService;
+        _vendorRepo = vendorRepo;
     }
 
     [HttpGet("orders")]
@@ -31,7 +36,7 @@ public class VendorOrdersController : ControllerBase
         [FromQuery] DateTime? toDate,
         [FromQuery] string sortBy = "NewestFirst")
     {
-        var vendorId = GetCurrentVendorId();
+        var vendorId = await GetCurrentVendorIdAsync();
 
         var filter = new OrderFilter
         {
@@ -58,7 +63,7 @@ public class VendorOrdersController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<IActionResult> GetOrderById(Guid orderId)
     {
-        var vendorId = GetCurrentVendorId();
+        var vendorId = await GetCurrentVendorIdAsync();
         var result = await _orderService.GetOrderByIdAsync(orderId, vendorId);
 
         if (result.IsFailure)
@@ -75,7 +80,7 @@ public class VendorOrdersController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<IActionResult> UpdateStatus(Guid orderId, [FromBody] UpdateOrderStatusRequest request)
     {
-        var vendorId = GetCurrentVendorId();
+        var vendorId = await GetCurrentVendorIdAsync();
         var result = await _orderService.UpdateOrderStatusAsync(orderId, vendorId, request.Status);
 
         if (result.IsFailure)
@@ -84,9 +89,15 @@ public class VendorOrdersController : ControllerBase
         return Ok(new { success = result.Value });
     }
 
-    private Guid GetCurrentVendorId()
+    private async Task<Guid> GetCurrentVendorIdAsync()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                       ?? User.FindFirst("sub")?.Value;
+
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            return Guid.Empty;
+
+        var vendor = await _vendorRepo.GetByOwnerIdAsync(userId);
+        return vendor?.Id ?? Guid.Empty;
     }
 }

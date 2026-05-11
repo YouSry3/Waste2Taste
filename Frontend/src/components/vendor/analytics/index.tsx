@@ -171,13 +171,13 @@ export function VendorAnalytics() {
 
       <RevenueTrendCard data={analytics.revenueTrend} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 mb-6">
         <SalesByTypeCard data={analytics.salesByType} />
-        <PeakPickupHoursCard
+        {/* <PeakPickupHoursCard
           data={analytics.peakHours}
           peakTime={analytics.peakTime}
           peakOrders={analytics.peakOrders}
-        />
+        /> */}
       </div>
 
       <WeeklyComparisonCard data={analytics.weeklyComparison} />

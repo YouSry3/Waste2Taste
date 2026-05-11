@@ -1,4 +1,5 @@
 ﻿using FoodRescue.BLL.Contract.AnalyticsDashboardTabDTOs;
+using FoodRescue.BLL.Extensions.Vendors; // Add this
 using FoodRescue.BLL.Services.AnalyticsDashboardTab;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,14 @@ namespace FoodRescue.PL.Controllers;
 public class VendorAnalyticsController : ControllerBase
 {
     private readonly IVendorAnalyticsService _analyticsService;
+    private readonly IVendorRepository _vendorRepo; // Add this
 
-    public VendorAnalyticsController(IVendorAnalyticsService analyticsService)
+    public VendorAnalyticsController(
+        IVendorAnalyticsService analyticsService,
+        IVendorRepository vendorRepo) // Add this
     {
         _analyticsService = analyticsService;
+        _vendorRepo = vendorRepo;
     }
 
     [HttpGet("analytics")]
@@ -23,7 +28,7 @@ public class VendorAnalyticsController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<IActionResult> GetAnalytics([FromQuery] string period = "month")
     {
-        var vendorId = GetCurrentVendorId();
+        var vendorId = await GetCurrentVendorIdAsync();
         var result = await _analyticsService.GetAnalyticsAsync(vendorId, period);
 
         if (result.IsFailure)
@@ -32,9 +37,15 @@ public class VendorAnalyticsController : ControllerBase
         return Ok(result.Value);
     }
 
-    private Guid GetCurrentVendorId()
+    private async Task<Guid> GetCurrentVendorIdAsync()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                       ?? User.FindFirst("sub")?.Value;
+
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            return Guid.Empty;
+
+        var vendor = await _vendorRepo.GetByOwnerIdAsync(userId);
+        return vendor?.Id ?? Guid.Empty;
     }
 }

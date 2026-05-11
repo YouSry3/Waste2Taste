@@ -1,4 +1,5 @@
 ﻿using FoodRescue.BLL.Contract.VendorDashboard;
+using FoodRescue.BLL.Extensions.Vendors; // Add this
 using FoodRescue.BLL.ServicesWeb.VendorDashboard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,17 +14,20 @@ namespace FoodRescue.PL.Controllers;
 public class VendorDashboardController : ControllerBase
 {
     private readonly IVendorDashboardService _dashboardService;
+    private readonly IVendorRepository _vendorRepo; // Add this
 
-    public VendorDashboardController(IVendorDashboardService dashboardService)
+    public VendorDashboardController(
+        IVendorDashboardService dashboardService,
+        IVendorRepository vendorRepo) // Add this
     {
         _dashboardService = dashboardService;
+        _vendorRepo = vendorRepo;
     }
 
     [HttpGet("overview")]
-    //[Authorize(Roles ="admin")]
     public async Task<IActionResult> GetOverview()
     {
-        var vendorId = GetCurrentVendorId();
+        var vendorId = await GetCurrentVendorIdAsync(); // Changed to async
         if (vendorId == Guid.Empty)
             return Unauthorized();
 
@@ -35,9 +39,16 @@ public class VendorDashboardController : ControllerBase
         return Ok(result.Value);
     }
 
-    private Guid GetCurrentVendorId()
+    // FIXED: Lookup VendorId by OwnerId (UserId from JWT)
+    private async Task<Guid> GetCurrentVendorIdAsync()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return Guid.TryParse(userIdClaim, out var userId) ? userId : Guid.Empty;
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                       ?? User.FindFirst("sub")?.Value;
+
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            return Guid.Empty;
+
+        var vendor = await _vendorRepo.GetByOwnerIdAsync(userId);
+        return vendor?.Id ?? Guid.Empty;
     }
 }
