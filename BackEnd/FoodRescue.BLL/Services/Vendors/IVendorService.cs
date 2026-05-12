@@ -1,5 +1,4 @@
-﻿using FoodRescue.BLL.ResultPattern;
-using FoodRescue.BLL.Contract.Vendors;
+﻿using FoodRescue.BLL.Contract.Vendors;
 
 namespace FoodRescue.BLL.Services.Vendors;
 
@@ -11,4 +10,5 @@ public interface IVendorService
     Task<Result> UpdateVendorAsync(Guid id, UpdateVendorRequest dto);
     Task<Result> DeleteVendorAsync(Guid id);
     Task<Result<List<VendorProductResponse>>> GetVendorProductsAsync(Guid vendorId);
+    Task<Result<bool>> ToggleBlockVendorAsync(Guid id);
 }

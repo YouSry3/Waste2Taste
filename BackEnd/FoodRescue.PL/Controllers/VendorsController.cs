@@ -27,12 +27,12 @@ public class VendorsController : ControllerBase
 
     // GET /vendors/{id}
     [HttpGet("vendor")]
-    public async Task<IActionResult> GetById([FromHeader]Guid id)
+    public async Task<IActionResult> GetById([FromHeader] Guid id)
     {
         var result = await _vendorService.GetVendorByIdAsync(id);
-         return
-            result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
-            
+        return
+           result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+
     }
 
 
@@ -41,11 +41,11 @@ public class VendorsController : ControllerBase
     [HttpPost("create")]
     [Authorize(Roles = "admin")]
     //[Authorize]
-    public async Task<IActionResult> Create([FromBody]CreateVendorRequest dto)
+    public async Task<IActionResult> Create([FromBody] CreateVendorRequest dto)
     {
         var result = await _vendorService.CreateVendorAsync(dto);
 
-        return result.IsSuccess? 
+        return result.IsSuccess ?
               Ok(new { Id = result.Value })
             : Unauthorized(result.Error);
     }
@@ -69,7 +69,7 @@ public class VendorsController : ControllerBase
 
     // DELETE /vendors/{id}
     [HttpDelete()]
-    public async Task<IActionResult> Delete([FromHeader]Guid id)
+    public async Task<IActionResult> Delete([FromHeader] Guid id)
     {
         var result = await _vendorService.DeleteVendorAsync(id);
 
@@ -88,5 +88,19 @@ public class VendorsController : ControllerBase
     {
         var products = await _vendorService.GetVendorProductsAsync(id);
         return Ok(products);
+    }
+
+
+
+
+
+    [HttpPut("{id:guid}/block")]
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> ToggleBlock(Guid id)
+    {
+        var result = await _vendorService.ToggleBlockVendorAsync(id);
+        if (result.IsFailure)
+            return NotFound(new { code = result.Error!.code, message = result.Error.description });
+        return Ok(new { isActive = result.Value });
     }
 }

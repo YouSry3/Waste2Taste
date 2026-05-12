@@ -124,7 +124,7 @@ const toVendorId = (value: unknown, fallback: number): Vendor["id"] => {
 
 const mapApiVendorToVendor = (payload: unknown, index: number): Vendor => {
   const item = asObject(payload);
-console.log("🔍 RAW VENDOR FROM API:", JSON.stringify(item));
+// console.log("🔍 RAW VENDOR FROM API:", JSON.stringify(item));
   // Revenue: try every possible field name the backend might use
   const rawRevenue =
     item.revenue ??
@@ -168,6 +168,7 @@ console.log("🔍 RAW VENDOR FROM API:", JSON.stringify(item));
     revenue: toMoneyString(revenueNumber),
     rating: toNumber(item.rating ?? item.averageRating ?? item.vendorRating ?? 5, 5),
     status: parseVendorStatus(item.status ?? item.vendorStatus ?? item.isActive ?? "Active"),
+    isBlocked: item.isActive === false || item.isBlocked === true,
   };
 };
 

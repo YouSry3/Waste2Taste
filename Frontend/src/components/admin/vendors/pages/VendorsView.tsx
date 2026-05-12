@@ -37,6 +37,8 @@ export function VendorsView() {
     handleEditVendor,
     handleDeleteVendor,
     handleToggleStatus,
+    handleToggleBlock,
+    isBlocking,
     handleExportCSV,
     toggleSort,
     resetFilters,
@@ -106,8 +108,6 @@ export function VendorsView() {
       <div className="mb-4">
         <p className="text-sm text-gray-500">
           Showing {filteredVendors.length} of {vendors.length} vendor
-
-          
           {vendors.length !== 1 ? "s" : ""}
         </p>
       </div>
@@ -125,6 +125,8 @@ export function VendorsView() {
                 setIsDialogOpen(true);
               }}
               onToggleStatus={() => handleToggleStatus(vendor)}
+              onToggleBlock={() => handleToggleBlock(vendor)} // ← ADD
+              isBlocking={isBlocking} // ← ADD
             />
           ))}
         </div>

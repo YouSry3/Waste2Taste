@@ -1,12 +1,6 @@
-﻿using FluentEmail.Core;
-using FoodRescue.DAL.Context;
+﻿using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoodRescue.BLL.Extensions.Users
 {
@@ -39,6 +33,7 @@ namespace FoodRescue.BLL.Extensions.Users
         public async Task UpdateAsync(User user)
         {
             _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
 
         public async Task SaveChangesAsync()
@@ -56,7 +51,7 @@ namespace FoodRescue.BLL.Extensions.Users
             var Result = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
             if (Result != null && Result.Role.ToLower() == "admin")
-            
+
                 return true;
 
             return false;
@@ -92,12 +87,12 @@ namespace FoodRescue.BLL.Extensions.Users
 
         public async Task DeleteAsync(User user)
         {
-             _context.Users.Remove(user);
-             await _context.SaveChangesAsync();
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
 
         }
 
-     
+
 
 
         //public async Task<int> CountOrders(Guid userId)

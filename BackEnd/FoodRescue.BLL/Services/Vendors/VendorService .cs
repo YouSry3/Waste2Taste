@@ -1,11 +1,8 @@
-﻿using FoodRescue.BLL.ResultPattern;
-using FoodRescue.BLL.Contract.Vendors;
-using FoodRescue.BLL.Extensions.Users;
+﻿using FoodRescue.BLL.Contract.Vendors;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.DAL.Entities;
 using Mapster;
-using System.Security.Claims;
 
 namespace FoodRescue.BLL.Services.Vendors;
 
@@ -17,8 +14,12 @@ public class VendorService(IVendorRepository vendorRepository, IUserRepository u
     public async Task<Result<List<VendorListResponse>>> GetVendorsAsync(string? name, string? status)
     {
         var vendors = await _vendorRepository.GetVendorsAsync(name, status);
-        var response = vendors.Adapt<List<VendorListResponse>>();
-
+        var response = vendors.Select(v =>
+        {
+            var dto = v.Adapt<VendorListResponse>();
+            dto.IsBlocked = v.Owner != null && !v.Owner.IsActive;
+            return dto;
+        }).ToList();
         return Result.Success(response);
     }
 
@@ -35,15 +36,15 @@ public class VendorService(IVendorRepository vendorRepository, IUserRepository u
 
     public async Task<Result<Guid>> CreateVendorAsync(CreateVendorRequest dto)
     {
-        
+
         //can you check Authorization here? Vendor must be created by a Vendor user
         var isVendor = await _userRepository.IsVendor(dto.OwnerId);
 
-       
+
         if (!isVendor)
             return Result.Failure<Guid>(VendorErrors.OwnerMustBeVendor(dto.OwnerId));
 
-        
+
         var vendor = dto.Adapt<Vendor>();
         vendor.Id = Guid.NewGuid();
         vendor.CreatedAt = DateTime.UtcNow;
@@ -95,5 +96,21 @@ public class VendorService(IVendorRepository vendorRepository, IUserRepository u
 
         var response = vendor.Products.Adapt<List<VendorProductResponse>>();
         return Result.Success(response);
+    }
+
+    public async Task<Result<bool>> ToggleBlockVendorAsync(Guid id)
+    {
+        var vendor = await _vendorRepository.GetVendorByIdAsync(id);
+        if (vendor is null)
+            return Result.Failure<bool>(VendorErrors.NotFound);
+
+        var owner = await _userRepository.GetByIdAsync(vendor.OwnerId);
+        if (owner is null)
+            return Result.Failure<bool>(new Error("NOT_FOUND", "Vendor owner not found"));
+
+        owner.IsActive = !owner.IsActive;
+        await _userRepository.UpdateAsync(owner);
+
+        return Result.Success(owner.IsActive);
     }
 }
