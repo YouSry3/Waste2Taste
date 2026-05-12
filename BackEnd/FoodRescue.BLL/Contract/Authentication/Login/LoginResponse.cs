@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FoodRescue.BLL.Contract.Authentication.Login
+﻿namespace FoodRescue.BLL.Contract.Authentication.Login
 {
     public record LoginResponse(
+        Guid Id,
         string Name,
         string Email,
         string Role,
@@ -14,5 +9,6 @@ namespace FoodRescue.BLL.Contract.Authentication.Login
         int ExpireAt,
         string RefreshToken,
         string? ImageUrl);
-    
+
+
 }

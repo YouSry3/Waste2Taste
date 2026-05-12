@@ -81,6 +81,7 @@ namespace FoodRescue.BLL.Extensions.Users
         public async Task<List<Order>> GetUserOrdersAsync(Guid userId)
         {
             return await _context.Orders
+                .Include(o => o.Product)
                 .Where(o => o.CustomerId == userId)
                 .ToListAsync();
         }
@@ -95,16 +96,6 @@ namespace FoodRescue.BLL.Extensions.Users
 
 
 
-        //public async Task<int> CountOrders(Guid userId)
-        //{
-        //  return  _context.Orders
-        //    .Count(o => o.UserId == userId);
-        //}
-
-        //Task IUserRepository.CountOrders(Guid userId)
-        //{
-        //    return CountOrders(userId);
-        //}
     }
 
 }

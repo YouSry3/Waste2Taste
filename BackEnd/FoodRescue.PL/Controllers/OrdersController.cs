@@ -1,9 +1,4 @@
-
-﻿using FoodRescue.BLL.ResultPattern;
-using FoodRescue.BLL.Contract.Orders.Create;
 using FoodRescue.BLL.Contract.Orders.Update;
-
-using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.BLL.Services.Orders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,9 +21,9 @@ namespace FoodRescue.PL.Controllers
         [HttpPost]
 
         [Authorize(Roles = "customer")]
-       public async Task<IActionResult> CreateOrder([FromBody] OrderRequest order)
+        public async Task<IActionResult> CreateOrder([FromBody] OrderRequest order)
         {
-           
+
             var result = await _orderservice.CreateOrderAsync(order, Guid.Parse(
         User.FindFirst(ClaimTypes.NameIdentifier)!.Value
     ));
@@ -44,13 +39,13 @@ namespace FoodRescue.PL.Controllers
         public async Task<IActionResult> GetMyOrders()
         {
 
-                var orders = await _orderservice.GetOrdersByCustomerAsync(Guid.Parse(
-                    User.FindFirst(ClaimTypes.NameIdentifier)!.Value
-                ));
-                return Ok(orders);
-         }
-           
- 
+            var orders = await _orderservice.GetOrdersByCustomerAsync(Guid.Parse(
+                User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+            ));
+            return Ok(orders);
+        }
+
+
 
 
 
@@ -169,13 +164,13 @@ namespace FoodRescue.PL.Controllers
         }
 
         [HttpGet("admin/all")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetAllOrders()
         {
             try
             {
                 // يمكنك إضافة method جديدة في Service للـ Admin
-                // var orders = await _service.GetAllOrdersAsync();
+                //var orders = await _service.GetAllOrdersAsync();
                 return Ok(new { message = "This endpoint needs implementation in service layer." });
             }
             catch (Exception ex)

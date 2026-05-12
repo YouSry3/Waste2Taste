@@ -1,21 +1,16 @@
 ﻿using FluentEmail.Core;
-using FoodRescue.BLL.Contract.Authentication;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.CheckCode;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.UpdatePassword;
 using FoodRescue.BLL.Contract.Authentication.Login;
 using FoodRescue.BLL.Contract.Authentication.RefreshToken;
 using FoodRescue.BLL.Contract.Authentication.Register;
-using FoodRescue.BLL.Extensions.Users;
-using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.BLL.Services.Authentication.Email_Service;
 using FoodRescue.BLL.Services.JWT;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Mapster;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace FoodRescue.BLL.Services.Authentication.AuthServices
@@ -63,6 +58,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                         (
                              // Assuming LoginResponse has settable properties for these fields.
                              // Replace these property names with the actual property names in LoginResponse.
+                             user.Id,
                              user.Name,
                              user.Email!,
                              user.Role,
@@ -70,7 +66,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                             ExpiresIn,
                             refreshToken,
                             user.ImageUrl
-                            
+
 
                         ));
         }
@@ -220,9 +216,9 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
         }
 
 
-        public async Task<Result<RefreshResponse>> RefreshTokenAsync(RefreshTokenRequest request,Guid userId, CancellationToken cancellationToken = default)
+        public async Task<Result<RefreshResponse>> RefreshTokenAsync(RefreshTokenRequest request, Guid userId, CancellationToken cancellationToken = default)
         {
-        
+
 
             // Step 2: Get principal from expired token
             ClaimsPrincipal principal;
@@ -235,12 +231,12 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                 return Result.Failure<RefreshResponse>(UserErrors.InvalidAccessToken);
             }
 
-            
+
 
             if (userId == Guid.Empty)
                 return Result.Failure<RefreshResponse>(UserErrors.InvalidTokenData);
 
-            
+
 
             var user = await UserRepository.GetByIdAsync(userId);
 
