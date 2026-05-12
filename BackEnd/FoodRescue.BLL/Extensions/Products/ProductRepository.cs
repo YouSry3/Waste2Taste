@@ -19,10 +19,12 @@ public class ProductRepository : IProductRepository
         var query = _context.Products
             .AsNoTracking()
             .Include(p => p.Vendor)
+             .ThenInclude(v => v.Owner)
             .Where(p => p.ExpiryDate > DateTime.Now
                      && p.Quantity > 0
                      && !p.Expired
-                     && p.Status == ProductStatus.Approved);
+                     && p.Status == ProductStatus.Approved
+                     && p.Vendor.Owner.IsActive);
 
         if (!string.IsNullOrEmpty(name))
             query = query.Where(p => p.Name.Contains(name));
@@ -37,7 +39,10 @@ public class ProductRepository : IProductRepository
         return await _context.Products
             .AsNoTracking()
             .Include(p => p.Vendor)
-            .Where(p => p.VendorId == vendorId && p.Status == ProductStatus.Approved)
+                .ThenInclude(v => v.Owner)
+            .Where(p => p.VendorId == vendorId
+            && p.Status == ProductStatus.Approved
+            && p.Vendor.Owner.IsActive)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
     }
