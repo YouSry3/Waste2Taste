@@ -1,4 +1,4 @@
-using FoodRescue.DAL.Context;
+﻿using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +25,7 @@ namespace FoodRescue.BLL.Extensions.Reports
             return await _context.Reports
                 .Include(r => r.User)
                 .Include(r => r.Product)
+                    .ThenInclude(p => p.Vendor)   // ← ADD THIS
                 .Include(r => r.Responses)
                 .OrderByDescending(r => r.CreatedAt)
                 .ToListAsync();

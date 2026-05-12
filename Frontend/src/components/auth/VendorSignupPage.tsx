@@ -67,7 +67,7 @@ export default function VendorSignupPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center px-4 sm:px-6 py-6 sm:py-0">
       <Toaster position="top-center" />
       <motion.div
         className="w-full max-w-2xl"
@@ -75,15 +75,15 @@ export default function VendorSignupPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45, ease: "easeOut" }}
       >
-        <Card className="w-full p-8 shadow-xl">
-          <div className="text-center mb-8">
-            <div className="inline-flex h-16 w-16 rounded-2xl bg-green-600 items-center justify-center mb-4">
-              <Store className="h-10 w-10 text-white" />
+        <Card className="w-full p-6 sm:p-8 lg:p-10 shadow-xl">
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="inline-flex h-12 sm:h-16 w-12 sm:w-16 rounded-2xl bg-green-600 items-center justify-center mb-3 sm:mb-4">
+              <Store className="h-7 sm:h-10 w-7 sm:w-10 text-white" />
             </div>
-            <h1 className="mb-2 font-semibold text-2xl">
+            <h1 className="mb-2 font-semibold text-xl sm:text-2xl lg:text-3xl">
               Vendor Signup - Step 1
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Create your account first, then complete the vendor request form.
             </p>
           </div>
@@ -99,9 +99,9 @@ export default function VendorSignupPage() {
             onSubmit={(values) => registerMutation.mutate(values)}
           >
             {({ errors, touched }) => (
-              <Form className="space-y-6">
+              <Form className="space-y-4 sm:space-y-6">
                 <div>
-                  <Label htmlFor="ownerName">Full Name</Label>
+                  <Label htmlFor="ownerName" className="text-sm sm:text-base">Full Name</Label>
                   <div className="relative mt-2">
                     <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Field
@@ -109,18 +109,18 @@ export default function VendorSignupPage() {
                       id="ownerName"
                       name="ownerName"
                       placeholder="Owner full name"
-                      className={`pl-10 ${touched.ownerName && errors.ownerName ? "border-red-500" : "border-gray-300"}`}
+                      className={`pl-10 text-sm sm:text-base ${touched.ownerName && errors.ownerName ? "border-red-500" : "border-gray-300"}`}
                     />
                   </div>
                   {touched.ownerName && errors.ownerName && (
-                    <p className="mt-1 text-xs text-red-500">
+                    <p className="mt-1 text-xs sm:text-sm text-red-500">
                       {errors.ownerName}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
                   <div className="relative mt-2">
                     <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Field
@@ -129,16 +129,16 @@ export default function VendorSignupPage() {
                       name="email"
                       type="email"
                       placeholder="vendor@example.com"
-                      className={`pl-10 ${touched.email && errors.email ? "border-red-500" : "border-gray-300"}`}
+                      className={`pl-10 text-sm sm:text-base ${touched.email && errors.email ? "border-red-500" : "border-gray-300"}`}
                     />
                   </div>
                   {touched.email && errors.email && (
-                    <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+                    <p className="mt-1 text-xs sm:text-sm text-red-500">{errors.email}</p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="phoneNumber">Phone Number</Label>
+                  <Label htmlFor="phoneNumber" className="text-sm sm:text-base">Phone Number</Label>
                   <div className="relative mt-2">
                     <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Field
@@ -146,18 +146,18 @@ export default function VendorSignupPage() {
                       id="phoneNumber"
                       name="phoneNumber"
                       placeholder="e.g. +201234567890"
-                      className={`pl-10 ${touched.phoneNumber && errors.phoneNumber ? "border-red-500" : "border-gray-300"}`}
+                      className={`pl-10 text-sm sm:text-base ${touched.phoneNumber && errors.phoneNumber ? "border-red-500" : "border-gray-300"}`}
                     />
                   </div>
                   {touched.phoneNumber && errors.phoneNumber && (
-                    <p className="mt-1 text-xs text-red-500">
+                    <p className="mt-1 text-xs sm:text-sm text-red-500">
                       {errors.phoneNumber}
                     </p>
                   )}
                 </div>
 
                 <div>
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
                   <div className="relative mt-2">
                     <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                     <Field
@@ -166,7 +166,7 @@ export default function VendorSignupPage() {
                       name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Choose a password"
-                      className={`pl-10 pr-10 ${touched.password && errors.password ? "border-red-500" : "border-gray-300"}`}
+                      className={`pl-10 pr-10 text-sm sm:text-base ${touched.password && errors.password ? "border-red-500" : "border-gray-300"}`}
                     />
                     <motion.button
                       type="button"
@@ -184,7 +184,7 @@ export default function VendorSignupPage() {
                     </motion.button>
                   </div>
                   {touched.password && errors.password && (
-                    <p className="mt-1 text-xs text-red-500">
+                    <p className="mt-1 text-xs sm:text-sm text-red-500">
                       {errors.password}
                     </p>
                   )}
@@ -192,7 +192,7 @@ export default function VendorSignupPage() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white text-sm sm:text-base py-2 sm:py-3"
                   disabled={registerMutation.isPending}
                 >
                   {registerMutation.isPending
@@ -200,14 +200,14 @@ export default function VendorSignupPage() {
                     : "Continue to Step 2"}
                 </Button>
 
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-2 sm:gap-3 grid-cols-1 sm:grid-cols-2">
                   <Link to="/" className="w-full">
-                    <Button type="button" variant="outline" className="w-full">
+                    <Button type="button" variant="outline" className="w-full text-sm sm:text-base py-2 sm:py-3">
                       Back to Login
                     </Button>
                   </Link>
                   <Link to="/signup" className="w-full">
-                    <Button type="button" variant="outline" className="w-full">
+                    <Button type="button" variant="outline" className="w-full text-sm sm:text-base py-2 sm:py-3">
                       Choose Another Signup
                     </Button>
                   </Link>

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../services/api/apiClient";
 import { authService } from "../services/auth/authService";
+import { DEFAULT_QUERY_OPTIONS } from "../config/queryConfig";
 import type {
   Order,
   OrderItem,
@@ -433,10 +434,7 @@ export const useVendorOrdersDashboard = () => {
   return useQuery({
     queryKey,
     queryFn: fetchVendorOrders,
-    staleTime: 0,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
-    refetchInterval: 10000, // Poll every 10 seconds for new pending orders
+    ...DEFAULT_QUERY_OPTIONS,
     retry: (failureCount, error) => {
       const status = getErrorStatus(error);
       if (status === 401 || status === 404) {

@@ -126,13 +126,7 @@ export function VendorDialog({
           )}
 
           <div className="flex gap-2 pt-4">
-            <Button
-              className="flex-1 border-green-600 text-green-600 hover:bg-green-50 hover:text-green-700"
-              onClick={onEdit}
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
+            
             <Button
               className="flex-1 border-red-600 text-red-600 hover:text-red-700 hover:bg-red-50"
               onClick={onDelete}

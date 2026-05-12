@@ -5,8 +5,6 @@ using FoodRescue.BLL.Contract.Reports.Response;
 using FoodRescue.BLL.Contract.Reports.Stats;
 using FoodRescue.BLL.Contract.Reports.Update;
 using FoodRescue.BLL.Extensions.Reports;
-using FoodRescue.BLL.ResultPattern;
-using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.BLL.Services.Logs;
 using FoodRescue.DAL.Consts;
 using FoodRescue.DAL.Context;
@@ -15,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodRescue.BLL.Services.Reports
 {
-    public class ReportsService(CompanyDbContext context, 
+    public class ReportsService(CompanyDbContext context,
                                 IReportRepository reportRepository,
                                 IProductRepository productRepository,
                                 IActivityLogService activityLogService
@@ -260,7 +258,9 @@ namespace FoodRescue.BLL.Services.Reports
                 ReportCode = report.ReportCode,
                 CustomerName = report.CustomerName,
                 ListingName = report.ListingName,
+                VendorName = report.Product?.Vendor?.Name ?? "—",
                 IssueType = report.IssueType,
+                Description = report.Description,  // ← ADD
                 Status = report.Status,
                 Priority = report.Priority.ToString(),
                 CreatedAt = report.CreatedAt,
@@ -306,7 +306,7 @@ namespace FoodRescue.BLL.Services.Reports
             return totalHours / resolvedReports.Count;
         }
 
- 
+
     }
 }
 

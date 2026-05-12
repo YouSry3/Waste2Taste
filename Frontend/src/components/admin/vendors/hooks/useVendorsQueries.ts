@@ -2,6 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/services/api/apiClient";
 import { API_CONFIG } from "@/services/api/apiConfig";
 import { authService } from "@/services/auth/authService";
+import { DEFAULT_QUERY_OPTIONS } from "@/config/queryConfig";
 import { MOCK_VENDORS } from "../constants/vendors.data";
 import type { Vendor } from "../api/vendors.types";
 
@@ -382,10 +383,7 @@ export const useVendorsOverview = () => {
         throw error;
       }
     },
-    staleTime: 0,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
-    retry: false,
+    ...DEFAULT_QUERY_OPTIONS,
   });
 
   return {
@@ -442,10 +440,7 @@ export const useVendorsList = (page = 1, limit = 10) => {
         throw error;
       }
     },
-    staleTime: 5 * 60 * 1000,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
-    retry: false,
+    ...DEFAULT_QUERY_OPTIONS,
   });
 
   return {

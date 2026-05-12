@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../services/api/apiClient";
 import { API_CONFIG } from "../services/api/apiConfig";
 import { authService } from "../services/auth/authService";
+import { DEFAULT_QUERY_OPTIONS } from "../config/queryConfig";
 
 type RawSection = Record<string, unknown> & {
   labels?: unknown[];
@@ -376,9 +377,6 @@ export const useVendorAnalytics = () => {
   return useQuery({
     queryKey,
     queryFn: fetchVendorAnalytics,
-    staleTime: 0,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
-    retry: 1,
+    ...DEFAULT_QUERY_OPTIONS,
   });
 };

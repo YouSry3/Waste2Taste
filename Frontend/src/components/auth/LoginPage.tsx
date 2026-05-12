@@ -267,7 +267,7 @@ const resolveVendorAccessState = async (
   const isLoading = loginMutation.isPending || loginMutation.isLoading;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center px-4 sm:px-6 py-6 sm:py-0">
       <Toaster position="top-center" />
       <motion.div
         className="w-full max-w-2xl"
@@ -275,15 +275,15 @@ const resolveVendorAccessState = async (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <Card className="w-full max-w-2xl p-8 shadow-xl">
-          <div className="text-center mb-8">
-            <div className="inline-flex h-16 w-16 rounded-2xl bg-green-600 items-center justify-center mb-4">
-              <Store className="h-10 w-10 text-white" />
+        <Card className="w-full p-6 sm:p-8 lg:p-10 shadow-xl">
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="inline-flex h-12 sm:h-16 w-12 sm:w-16 rounded-2xl bg-green-600 items-center justify-center mb-3 sm:mb-4">
+              <Store className="h-7 sm:h-10 w-7 sm:w-10 text-white" />
             </div>
-            <h1 className="mb-2 font-semibold text-2xl">
+            <h1 className="mb-2 font-semibold text-xl sm:text-2xl lg:text-3xl">
               Waste2Taste
             </h1>
-            <p className="text-gray-600">Sign in to access your panel</p>
+            <p className="text-sm sm:text-base text-gray-600">Sign in to access your panel</p>
           </div>
 
           <Formik
@@ -292,9 +292,9 @@ const resolveVendorAccessState = async (
             onSubmit={handleSubmit}
           >
             {({ errors, touched }) => (
-              <Form className="space-y-6">
+              <Form className="space-y-4 sm:space-y-6">
                 {/* Demo toggle */}
-                <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-blue-50 border border-blue-200 rounded-lg p-3 sm:p-4">
                   <div>
                     <p className="text-sm font-medium text-gray-700">
                       Demo Mode
@@ -310,6 +310,7 @@ const resolveVendorAccessState = async (
                     variant={useDemo ? "default" : "outline"}
                     size="sm"
                     onClick={() => setUseDemo(!useDemo)}
+                    className="w-full sm:w-auto"
                   >
                     {useDemo ? "Switch to API" : "Switch to Demo"}
                   </Button>
@@ -317,7 +318,7 @@ const resolveVendorAccessState = async (
 
                 {/* Email */}
                 <div>
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
                   <div className="relative mt-2">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Field
@@ -326,17 +327,17 @@ const resolveVendorAccessState = async (
                       name="email"
                       type="email"
                       placeholder="your.email@example.com"
-                      className={`pl-10 border ${touched.email && errors?.email ? "border-red-500" : "border-gray-300"}`}
+                      className={`pl-10 border text-sm sm:text-base ${touched.email && errors?.email ? "border-red-500" : "border-gray-300"}`}
                     />
                   </div>
                   {touched.email && errors?.email && (
-                    <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                    <p className="text-red-500 text-xs sm:text-sm mt-1">{errors.email}</p>
                   )}
                 </div>
 
                 {/* Password */}
                 <div>
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-sm sm:text-base">Password</Label>
                   <div className="relative mt-2">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Field
@@ -345,7 +346,7 @@ const resolveVendorAccessState = async (
                       name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder={useDemo ? "Any password" : "Enter password"}
-                      className={`pl-10 pr-10 border ${touched.password && errors?.password ? "border-red-500" : "border-gray-300"}`}
+                      className={`pl-10 pr-10 border text-sm sm:text-base ${touched.password && errors?.password ? "border-red-500" : "border-gray-300"}`}
                     />
                     <motion.button
                       type="button"
@@ -365,7 +366,7 @@ const resolveVendorAccessState = async (
                     </motion.button>
                   </div>
                   {touched.password && errors?.password && (
-                    <p className="text-red-500 text-xs mt-1">
+                    <p className="text-red-500 text-xs sm:text-sm mt-1">
                       {errors.password}
                     </p>
                   )}
@@ -375,7 +376,7 @@ const resolveVendorAccessState = async (
                     <button
                       type="button"
                       onClick={() => navigate("/reset-password")}
-                      className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline transition-colors duration-200"
+                      className="text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline transition-colors duration-200"
                     >
                       Forgot your password?
                     </button>
@@ -384,12 +385,12 @@ const resolveVendorAccessState = async (
 
                 {/* Panel selection */}
                 <div className="w-full">
-                  <Label className="mb-3 block">Select Panel Type</Label>
+                  <Label className="mb-3 block text-sm sm:text-base">Select Panel Type</Label>
                   <RadioGroup
                     value={selectedPanel}
                     onValueChange={(v) => setSelectedPanel(v as PanelType)}
                   >
-                    <div className="flex flex-col w-full space-y-3">
+                    <div className="flex flex-col w-full space-y-2 sm:space-y-3">
                       {PANEL_OPTIONS.map((opt) => {
                         const Icon = opt.icon;
                         const active = selectedPanel === opt.value;
@@ -400,7 +401,7 @@ const resolveVendorAccessState = async (
                             className="w-full"
                           >
                             <motion.div
-                              className={`flex items-center space-x-3 rounded-lg border-2 p-4 cursor-pointer transition-all w-full ${active ? "border-green-600 bg-green-50 shadow-sm scale-[1.01]" : "border-gray-200 hover:border-gray-300"}`}
+                              className={`flex items-start sm:items-center gap-3 rounded-lg border-2 p-3 sm:p-4 cursor-pointer transition-all w-full ${active ? "border-green-600 bg-green-50 shadow-sm scale-[1.01]" : "border-gray-200 hover:border-gray-300"}`}
                               whileHover={{ scale: 1.02 }}
                               whileTap={{ scale: 0.98 }}
                             >
@@ -409,13 +410,13 @@ const resolveVendorAccessState = async (
                                 value={opt.value}
                               />
                               <div
-                                className={`h-12 w-12 rounded-lg ${opt.bg} flex items-center justify-center`}
+                                className={`h-10 sm:h-12 w-10 sm:w-12 rounded-lg ${opt.bg} flex items-center justify-center flex-shrink-0`}
                               >
-                                <Icon className={`h-6 w-6 ${opt.color}`} />
+                                <Icon className={`h-5 sm:h-6 w-5 sm:w-6 ${opt.color}`} />
                               </div>
-                              <div className="flex-1">
-                                <p className="font-medium">{opt.label}</p>
-                                <p className="text-sm text-gray-500 mt-1">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium text-sm sm:text-base">{opt.label}</p>
+                                <p className="text-xs sm:text-sm text-gray-500 mt-0.5 sm:mt-1">
                                   {opt.description}
                                 </p>
                               </div>
@@ -435,7 +436,7 @@ const resolveVendorAccessState = async (
                 >
                   <Button
                     type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    className="w-full bg-green-600 hover:bg-green-700 text-white text-sm sm:text-base py-2 sm:py-3"
                     disabled={isLoading}
                   >
                     {isLoading ? "Signing In..." : "Sign In"}
@@ -448,7 +449,7 @@ const resolveVendorAccessState = async (
                 >
                   <Button
                     type="button"
-                    className="w-full border hover:bg-green-700 hover:text-white"
+                    className="w-full border hover:bg-green-700 hover:text-white text-sm sm:text-base py-2 sm:py-3"
                     onClick={() => {
                       if (selectedPanel === "vendor") {
                         navigate("/signup/vendor");

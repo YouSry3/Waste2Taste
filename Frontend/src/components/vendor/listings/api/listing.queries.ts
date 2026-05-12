@@ -83,6 +83,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { listingApi } from "./listing.api";
+import { DEFAULT_QUERY_OPTIONS } from "../../../../config/queryConfig";
 
 export const listingQueryKeys = {
   all: ["listings"] as const,
@@ -94,7 +95,7 @@ export const useVendorListings = () => {
   return useQuery({
     queryKey: listingQueryKeys.vendorListings,
     queryFn: listingApi.getVendorListings,
-    staleTime: 2 * 60 * 1000,
+    ...DEFAULT_QUERY_OPTIONS,
   });
 };
 
@@ -102,6 +103,6 @@ export const usePendingListings = () => {
   return useQuery({
     queryKey: listingQueryKeys.pending,
     queryFn: listingApi.getPendingListings,
-    staleTime: 1 * 60 * 1000,
+    ...DEFAULT_QUERY_OPTIONS,
   });
 };

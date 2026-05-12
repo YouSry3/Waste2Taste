@@ -7,6 +7,7 @@ import {
   BarChart3,
   ShoppingBag,
   FileWarning,
+  X,
 } from "lucide-react";
 import {
   Sidebar,
@@ -68,27 +69,34 @@ export function VendorSidebar() {
   const currentView =
     menuItems.find((item) => currentPath.includes(item.id))?.id || "dashboard";
 
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
+
   return (
-    <Sidebar>
+    <Sidebar className="hidden md:flex fixed md:relative h-screen md:h-auto z-40 md:z-0">
       <SidebarHeader className="border-b px-6 py-4">
-        <div>
-          <h2 className="font-semibold">Vendor Panel</h2>
-          <p className="text-sm text-gray-500">Green Valley Bakery</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="font-semibold text-base md:text-lg">Vendor Panel</h2>
+            <p className="text-xs md:text-sm text-gray-500">Green Valley Bakery</p>
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs md:text-sm">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
-                    onClick={() => navigate(item.path)}
+                    onClick={() => handleNavigate(item.path)}
                     isActive={currentView === item.id}
+                    className="text-sm md:text-base"
                   >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.label}</span>
+                    <item.icon className="h-4 w-4 md:h-5 md:w-5" />
+                    <span className="hidden sm:inline">{item.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

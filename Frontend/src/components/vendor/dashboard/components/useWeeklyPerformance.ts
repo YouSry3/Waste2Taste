@@ -1,6 +1,7 @@
 // src/hooks/useWeeklyPerformance.ts
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../../../services/api/apiClient";
+import { DEFAULT_QUERY_OPTIONS } from "../../../../config/queryConfig";
 //D:\Graduation Project\GraduationProject\Frontend\src\services\api\apiClient.ts
 export interface WeeklyDataItem {
   day: string;
@@ -57,6 +58,6 @@ export const useWeeklyPerformance = () => {
   return useQuery({
     queryKey: ["weekly-performance"],
     queryFn: fetchWeeklyPerformance,
-    staleTime: 5 * 60 * 1000,
+    ...DEFAULT_QUERY_OPTIONS,
   });
 };

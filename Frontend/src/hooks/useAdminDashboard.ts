@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../services/api/apiClient";
 import { API_CONFIG } from "../services/api/apiConfig";
 import { authService } from "../services/auth/authService";
+import { DEFAULT_QUERY_OPTIONS } from "../config/queryConfig";
 import { statsData } from "../components/admin/dashboard/constants/statsData";
 import { monthlyData } from "../components/admin/dashboard/constants/monthlyData";
 import { categoryData } from "../components/admin/dashboard/constants/categoryData";
@@ -241,9 +242,7 @@ export const useAdminDashboard = () => {
 
       return fetchDashboard();
     },
-    staleTime: 0,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
+    ...DEFAULT_QUERY_OPTIONS,
     retry: (failureCount, error) => {
       const status = getErrorStatus(error);
       if (status === 404) {

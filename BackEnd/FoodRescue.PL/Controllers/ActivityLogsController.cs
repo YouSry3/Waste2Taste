@@ -1,4 +1,5 @@
-﻿using FoodRescue.BLL.Services.Logs;
+﻿using FoodRescue.BLL.Contract.Products;
+using FoodRescue.BLL.Services.Logs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,7 @@ public class ActivityLogsController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<ProductListResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
         var data = await _logService.GetAllAsync();

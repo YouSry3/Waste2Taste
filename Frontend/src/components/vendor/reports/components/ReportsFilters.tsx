@@ -3,14 +3,12 @@ import { Button } from "../../../ui/button";
 import { Card, CardContent } from "../../../ui/card";
 import { Input } from "../../../ui/input";
 import { ReportStatus } from "../types";
-
 interface ReportsFiltersProps {
   searchQuery: string;
   filterStatus: ReportStatus | "all";
   onSearchChange: (value: string) => void;
   onFilterChange: (value: ReportStatus | "all") => void;
 }
-
 export function ReportsFilters({
   searchQuery,
   filterStatus,
@@ -30,7 +28,6 @@ export function ReportsFilters({
               onChange={(event) => onSearchChange(event.target.value)}
             />
           </div>
-
           <div className="flex gap-2">
             <Button
               variant={filterStatus === "all" ? "default" : "outline"}
@@ -86,3 +83,6 @@ export function ReportsFilters({
     </Card>
   );
 }
+
+
+

@@ -1,7 +1,4 @@
-﻿using FoodRescue.BLL.ResultPattern;
-using Microsoft.AspNetCore.Http;
-
-namespace FoodRescue.BLL.ResultPattern.TypeErrors;
+﻿namespace FoodRescue.BLL.ResultPattern.TypeErrors;
 
 public static class ProductErrors
 {
@@ -14,4 +11,7 @@ public static class ProductErrors
     // 🔴 ADD THIS:
     public static Error InvalidDiscount => new("Product.InvalidDiscount", "Discount percentage cannot exceed 100%.");
     public static Error UnvalidStatus => new("Product.UnvalidStatus", "this status must be 'approved'");
+    public static readonly Error NotYetExpired = new Error(
+    "Product.NotYetExpired",
+    "Product expiry date has not passed yet.");
 }

@@ -201,40 +201,39 @@ export function DashboardView() {
   const mappedCategoryData = useMemo(() => buildCategoryChartData(data, dataSource), [data, dataSource]);
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+      <div className="flex flex-col gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div>
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-            <Badge variant="outline" className={sourceBadge.className}>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900">Dashboard</h1>
+            <Badge variant="outline" className={`${sourceBadge.className} text-xs sm:text-sm`}>
               Data source: {sourceBadge.label}
             </Badge>
           </div>
-          <p className="text-gray-500">
+          <p className="text-sm sm:text-base text-gray-500 mt-2">
             Overview of your food rescue marketplace
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-         
-
+        <div className="flex items-center gap-2 sm:gap-3">
           <Button
             variant="outline"
-            className="flex items-center gap-2 border-green-600 text-green-600 hover:bg-green-50"
+            className="flex items-center gap-2 border-green-600 text-green-600 hover:bg-green-50 text-xs sm:text-sm py-2 sm:py-3"
           >
-            <Download className="h-4 w-4" />
-            Export Report
+            <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden xs:inline">Export Report</span>
+            <span className="inline xs:hidden">Export</span>
           </Button>
         </div>
       </div>
 
       {isError && (
-        <div className="mb-6 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <div className="mb-4 sm:mb-6 rounded-md border border-amber-300 bg-amber-50 px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm text-amber-900">
           Live dashboard data is unavailable.
           <Button
             variant="link"
-            className="ml-2 h-auto p-0 text-amber-900"
+            className="ml-2 h-auto p-0 text-amber-900 text-xs sm:text-sm"
             onClick={() => void refetch()}
           >
             Retry
@@ -243,14 +242,14 @@ export function DashboardView() {
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {mappedStats.map((stat) => (
           <StatsCard key={stat.title} stat={stat} />
         ))}
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <RevenueChart
           data={mappedMonthlyData}
           isLoading={isLoading}

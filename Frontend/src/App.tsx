@@ -45,6 +45,7 @@ import { VendorListingsProvider } from "./components/vendor/listings/context/Lis
 type PanelType = "admin" | "vendor" | "charity";
 
 export default function App() {
+  console.log(JSON.parse(localStorage.getItem("user")))
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return authService.isAuthenticated();

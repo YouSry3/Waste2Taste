@@ -6,8 +6,13 @@ import "./styles/globals.css"; // This imports your CSS
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { DEFAULT_QUERY_OPTIONS } from "./config/queryConfig";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: DEFAULT_QUERY_OPTIONS,
+  },
+});
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>

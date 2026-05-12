@@ -29,24 +29,24 @@ const recentVerifications = [
 
 export function CharityDashboard() {
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1>Dashboard</h1>
-        <p className="text-gray-500">Manage assisted user verifications and free food distribution</p>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">Dashboard</h1>
+        <p className="text-sm sm:text-base text-gray-500">Manage assisted user verifications and free food distribution</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {statsData.map((stat) => (
           <Card key={stat.title}>
-            <CardContent className="p-6">
-              <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-lg ${stat.bgColor}`}>
-                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                <div className={`p-2 sm:p-3 rounded-lg ${stat.bgColor} flex-shrink-0`}>
+                  <stat.icon className={`h-5 sm:h-6 w-5 sm:w-6 ${stat.color}`} />
                 </div>
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">{stat.title}</p>
-                  <h3>{stat.value}</h3>
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-gray-500 mb-1">{stat.title}</p>
+                  <h3 className="text-lg sm:text-2xl font-bold">{stat.value}</h3>
                 </div>
               </div>
             </CardContent>
@@ -55,49 +55,51 @@ export function CharityDashboard() {
       </div>
 
       {/* Chart */}
-      <Card className="mb-8">
+      <Card className="mb-6 sm:mb-8">
         <CardHeader>
-          <CardTitle>Growth Overview</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">Growth Overview</CardTitle>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={monthlyData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="users" stroke="#3b82f6" strokeWidth={2} name="Approved Users" />
-              <Line type="monotone" dataKey="items" stroke="#10b981" strokeWidth={2} name="Items Distributed" />
-            </LineChart>
-          </ResponsiveContainer>
+        <CardContent className="p-4 sm:p-6">
+          <div className="w-full h-64 sm:h-80 lg:h-96">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={monthlyData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="users" stroke="#3b82f6" strokeWidth={2} name="Approved Users" />
+                <Line type="monotone" dataKey="items" stroke="#10b981" strokeWidth={2} name="Items Distributed" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
       {/* Recent Verifications */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Recent Verification Requests</CardTitle>
-            <Button variant="outline" size="sm">View All</Button>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <CardTitle className="text-lg sm:text-xl">Recent Verification Requests</CardTitle>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">View All</Button>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
+        <CardContent className="p-4 sm:p-6">
+          <div className="w-full overflow-x-auto">
+            <table className="w-full text-sm">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-3 px-4">Name</th>
-                  <th className="text-left py-3 px-4">Reason</th>
-                  <th className="text-left py-3 px-4">Submitted</th>
-                  <th className="text-left py-3 px-4">Status</th>
-                  <th className="text-left py-3 px-4">Actions</th>
+                  <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold">Name</th>
+                  <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold hidden sm:table-cell">Reason</th>
+                  <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold hidden md:table-cell">Submitted</th>
+                  <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold">Status</th>
+                  <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-semibold">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {recentVerifications.map((request) => (
                   <tr key={request.id} className="border-b hover:bg-gray-50">
-                    <td className="py-3 px-4">{request.name}</td>
+                    <td className="py-3 px-2 sm:px-4 text-xs sm:text-sm">{request.name}</td>
                     <td className="py-3 px-4">{request.reason}</td>
                     <td className="py-3 px-4">{request.submitted}</td>
                     <td className="py-3 px-4">

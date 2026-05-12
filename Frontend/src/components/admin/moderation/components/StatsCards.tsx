@@ -28,7 +28,9 @@ export function StatsCards({
   const pendingVendorRequestsCount = vendorRequests.filter(
     (request) => request.status === "pending",
   ).length;
-  const openCustomerReportsCount = summary?.openCustomerReportsCount ?? 0;
+  const openCustomerReportsCount = customerReports.filter(
+  (r) => r.status === "under_review"
+).length;
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8">
       <Card className="border-l-4 border-l-green-500 shadow-sm hover:shadow-md transition-shadow">

@@ -26,16 +26,16 @@ const menuItems = [
 
 export function CharitySidebar({ currentView, onViewChange }: CharitySidebarProps) {
   return (
-    <Sidebar>
+    <Sidebar className="hidden md:flex fixed md:relative h-screen md:h-auto z-40 md:z-0">
       <SidebarHeader className="border-b px-6 py-4">
         <div>
-          <h2>Charity Panel</h2>
-          <p className="text-sm text-gray-500">Community Food Bank</p>
+          <h2 className="font-semibold text-base md:text-lg">Charity Panel</h2>
+          <p className="text-xs md:text-sm text-gray-500">Community Food Bank</p>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs md:text-sm">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -43,9 +43,10 @@ export function CharitySidebar({ currentView, onViewChange }: CharitySidebarProp
                   <SidebarMenuButton
                     onClick={() => onViewChange(item.id as any)}
                     isActive={currentView === item.id}
+                    className="text-sm md:text-base"
                   >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.label}</span>
+                    <item.icon className="h-4 w-4 md:h-5 md:w-5" />
+                    <span className="hidden sm:inline">{item.label}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
