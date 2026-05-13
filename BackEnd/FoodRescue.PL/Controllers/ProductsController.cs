@@ -100,6 +100,7 @@ public class ProductsController : ControllerBase
 
     [HttpPatch("{id:guid}/stock")]
     [Authorize(Roles = "vendor")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> UpdateStock(Guid id, [FromQuery] int quantity)
     {
         var result = await _service.UpdateStockAsync(id, quantity);

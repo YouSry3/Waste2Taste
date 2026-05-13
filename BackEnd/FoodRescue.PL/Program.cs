@@ -1,6 +1,5 @@
 using FoodRescue.BLL.Settings;
 using FoodRescue.Hubs;
-using System.Text.Json.Serialization;
 
 
 namespace FoodRescue.PL
@@ -18,12 +17,17 @@ namespace FoodRescue.PL
             // Add services to the container.
             builder.Services.AddProjectServices(builder.Configuration, builder.Environment);
 
-          
+
 
 
             builder.Services.AddSignalR();
 
-
+            builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

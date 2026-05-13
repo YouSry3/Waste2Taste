@@ -33,13 +33,14 @@ namespace FoodRescue.BLL.Extensions.Orders
                 {
                     OrderNumber = o.Id.ToString().Substring(0, 6), // or custom number
                     Status = o.Status.ToString(),
-
-                    ProductName = o.Product.Name,
+                    VendorId = o.Product.Vendor.Id,
                     VendorName = o.Product.Vendor.Name,
+                    Latitude = o.Product.Vendor.Latitude,
+                    Longitude = o.Product.Vendor.Longitude,
+                    OrderId = o.Id,
+                    ProductName = o.Product.Name,
                     ImageUrl = o.Product.ImageUrl,
-
                     Price = o.Product.Price,
-
                     PickupTime = o.CreatedAt // or o.PickupTime if you have it
                 })
                 .ToListAsync();

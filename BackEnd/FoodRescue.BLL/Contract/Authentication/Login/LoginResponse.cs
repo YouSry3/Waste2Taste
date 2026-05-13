@@ -1,7 +1,9 @@
 ﻿namespace FoodRescue.BLL.Contract.Authentication.Login
 {
     public record LoginResponse(
-        Guid Id,
+
+        Guid Id,    
+
         string Name,
         string Email,
         string Role,

@@ -93,7 +93,7 @@ namespace FoodRescue.PL.Controllers
 
         // FIXED: Changed int to Guid, added :guid constraint
         [HttpPut("{id:guid}/status")]
-        [Authorize(Roles = "Vendor,Admin")]
+        [Authorize(Roles = "admin,vendor")]
         public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] UpdateStatusRequest request)
         {
             try
@@ -142,7 +142,7 @@ namespace FoodRescue.PL.Controllers
         }
 
         [HttpGet("vendor/orders")]
-        [Authorize(Roles = "Vendor")]
+        [Authorize(Roles = "vendor")]
         public async Task<IActionResult> GetVendorOrders()
         {
             try

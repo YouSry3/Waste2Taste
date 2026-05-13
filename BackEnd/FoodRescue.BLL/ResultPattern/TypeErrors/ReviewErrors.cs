@@ -2,6 +2,7 @@
 {
     public class ReviewErrors
     {
+
         public static Error ReviewsNotFound(Guid Productid) => new("Reviews.NotFound", $"Not Found Any reviews with Product Id :{Productid}");
         public static Error OnlyCustomersCanAddReviews(Guid Userid) => new("Reviews.OnlyCustomersCanAddReviews", $"Only Customers Can Add Reviews , User Id :{Userid}");
         public static Error MustPurchaseBeforeReview(Guid userId) =>
@@ -9,5 +10,6 @@
 
         public static Error AlreadyReviewed(Guid userId) =>
             new("ALREADY_REVIEWED", $"User {userId} has already reviewed this product.");
+
     }
 }

@@ -24,6 +24,7 @@ using FoodRescue.BLL.Services.Orders;
 using FoodRescue.BLL.Services.Products;
 using FoodRescue.BLL.Services.Reports;
 using FoodRescue.BLL.Services.Reviews;
+using FoodRescue.BLL.Services.Support;
 using FoodRescue.BLL.Services.UserServices;
 using FoodRescue.BLL.Services.Vendors;
 using FoodRescue.BLL.ServicesWeb.Admin;
@@ -128,6 +129,7 @@ namespace FoodRescue.PL
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IReviewService, ReviewService>();
             services.AddScoped<EmailService>();
+            services.AddScoped<SupportService>();
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IUserService, UserService>();

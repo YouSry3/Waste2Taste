@@ -51,6 +51,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
             await _Context.RefreshTokens.AddAsync(refreshTokenEntity);
             await _Context.SaveChangesAsync();
 
+
             // Fetch vendor ID if user is a vendor
             Guid? vendorId = null;
             if (user.Role.ToLower() == "vendor")
@@ -59,6 +60,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                     .FirstOrDefaultAsync(v => v.OwnerId == user.Id, cancellationToken);
                 vendorId = vendor?.Id;
             }
+
 
             return Result.Success(new LoginResponse(
                 user.Id,
