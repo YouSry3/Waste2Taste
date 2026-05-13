@@ -16,7 +16,7 @@ class ProductReviewsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final extra = GoRouterState.of(context).extra as Map<String, dynamic>;
-    final productId = extra['productId'] as String;
+    final vendorId = extra['vendorId'] as String;
     final existingCubit = extra['getReviewsCubit'] as GetProductReviewsCubit?;
 
     return MultiBlocProvider(
@@ -25,9 +25,9 @@ class ProductReviewsView extends StatelessWidget {
           BlocProvider.value(value: existingCubit)
         else
           BlocProvider(
-            create: (context) => GetProductReviewsCubit(
-              getIt.get<GetProductReviewsUsecase>(),
-            )..getProductReviews(productId),
+            create: (context) =>
+                GetProductReviewsCubit(getIt.get<GetProductReviewsUsecase>())
+                  ..getProductReviews(vendorId),
           ),
         BlocProvider(create: (context) => getIt.get<AddReviewCubit>()),
         BlocProvider(create: (context) => getIt.get<DeleteReviewCubit>()),

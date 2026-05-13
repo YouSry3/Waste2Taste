@@ -16,7 +16,7 @@ class ProductDetailsView extends StatelessWidget {
     return BlocProvider(
       create: (context) => GetProductReviewsCubit(
         getIt.get<GetProductReviewsUsecase>(),
-      )..getProductReviews(product.id),
+      )..getProductReviews(product.vendorId),
       child: const Scaffold(
         body: ProductDetailsViewBody(),
       ),

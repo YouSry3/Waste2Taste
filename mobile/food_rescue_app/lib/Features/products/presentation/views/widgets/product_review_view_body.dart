@@ -32,12 +32,14 @@ class ProductReviewsViewBody extends StatelessWidget {
             }
           },
         ),
+
         BlocListener<DeleteReviewCubit, DeleteReviewState>(
           listener: (context, state) {
             if (state is DeleteReviewSuccess) {
               context.read<GetProductReviewsCubit>().deleteReviewLocally(
                 state.reviewId,
               );
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
@@ -55,16 +57,52 @@ class ProductReviewsViewBody extends StatelessWidget {
           },
         ),
       ],
+
       child: BlocBuilder<GetProductReviewsCubit, GetProductReviewsState>(
         builder: (context, state) {
           final bool isLoading = state is GetProductReviewsLoading;
+
           final List<ReviewEntity> reviews = state is GetProductReviewsSuccess
               ? state.reviews
               : dummyReviews;
 
+          if (state is GetProductReviewsFailure) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 60, color: Colors.red),
+                  const SizedBox(height: 12),
+                  Text(state.errorMessage, textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      _refreshReviews(context);
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            );
+          }
+          if (state is GetProductReviewsSuccess && reviews.isEmpty) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.reviews_outlined, size: 60, color: Colors.grey),
+                  SizedBox(height: 12),
+                  Text(
+                    'No reviews yet',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ],
+              ),
+            );
+          }
+
           double averageRating = 0.0;
           int totalCount = reviews.length;
-
           if (state is GetProductReviewsSuccess && reviews.isNotEmpty) {
             double sum = 0.0;
             for (var review in reviews) {
@@ -97,7 +135,7 @@ class ProductReviewsViewBody extends StatelessWidget {
 
   void _refreshReviews(BuildContext context) {
     final extra = GoRouterState.of(context).extra as Map<String, dynamic>;
-    final productId = extra['productId'] as String;
-    context.read<GetProductReviewsCubit>().getProductReviews(productId);
+    final vendorId = extra['vendorId'] as String;
+    context.read<GetProductReviewsCubit>().getProductReviews(vendorId);
   }
 }

@@ -8,12 +8,14 @@ import 'package:waste2taste/Features/home/data/models/product_model.dart';
 import 'package:waste2taste/Features/home/presentation/views/widgets/image_header_widget_for_product_details.dart';
 import 'package:waste2taste/Features/products/presentation/views/widgets/product_details_widget.dart';
 
+import '../../../../home/domain/entities/product_entity.dart';
+
 class ProductDetailsViewBody extends StatelessWidget {
   const ProductDetailsViewBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final product = GoRouterState.of(context).extra as ProductModel;
+    final product = GoRouterState.of(context).extra as ProductEntity;
     return Stack(
       children: [
         CustomScrollView(

@@ -17,6 +17,7 @@ class FlutterSecureStorageServiceImpl extends FlutterSecureStorageService {
   static const _tokenKey = 'token';
   static const _refreshTokenKey = 'refreshToken';
   static const _expireAtKey = 'expireAt';
+  static const _userIdKey = 'userId';
 
   @override
   Future<void> saveAuthToken(UserLoginKeys userLoginKeys) async {
@@ -29,6 +30,7 @@ class FlutterSecureStorageServiceImpl extends FlutterSecureStorageService {
       key: _refreshTokenKey,
       value: userLoginKeys.refreshToken,
     );
+    await storage.write(key: _userIdKey, value: userLoginKeys.userId);
   }
 
   @override
@@ -36,13 +38,18 @@ class FlutterSecureStorageServiceImpl extends FlutterSecureStorageService {
     final token = await storage.read(key: _tokenKey);
     final refreshToken = await storage.read(key: _refreshTokenKey);
     final expireAt = await storage.read(key: _expireAtKey);
-    if (token == null || refreshToken == null || expireAt == null) {
+    final userId = await storage.read(key: _userIdKey);
+    if (token == null ||
+        refreshToken == null ||
+        expireAt == null ||
+        userId == null) {
       return null;
     }
     return UserLoginKeys(
       token: token,
       refreshToken: refreshToken,
       expireAt: DateTime.parse(expireAt),
+      userId: userId,
     );
   }
 
@@ -51,6 +58,7 @@ class FlutterSecureStorageServiceImpl extends FlutterSecureStorageService {
     await storage.delete(key: _tokenKey);
     await storage.delete(key: _refreshTokenKey);
     await storage.delete(key: _expireAtKey);
+    await storage.delete(key: _userIdKey);
     debugPrint("deleted:::::::::::::::::::");
   }
 }

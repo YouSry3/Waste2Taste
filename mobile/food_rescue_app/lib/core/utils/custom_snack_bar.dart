@@ -6,6 +6,7 @@ abstract class CustomSnackBar {
   static void show({
     required BuildContext context,
     required String message,
+    EdgeInsetsGeometry? margin,
     SnackBarType type = SnackBarType.info,
   }) {
     Color bgColor;
@@ -34,6 +35,7 @@ abstract class CustomSnackBar {
       backgroundColor: Colors.transparent,
       elevation: 0,
       duration: const Duration(seconds: 3),
+      margin: margin,
       content: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(

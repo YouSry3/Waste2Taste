@@ -28,6 +28,7 @@ class ReviewsSectionBlocBuilder extends StatelessWidget {
         return ReviewsSection(
           rating: updatedRating ?? product.rating,
           totalReviews: updatedTotalReviews ?? product.totalReviews,
+          vendorId: product.vendorId,
           productId: product.id,
         );
       },

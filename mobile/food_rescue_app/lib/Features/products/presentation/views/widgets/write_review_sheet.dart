@@ -4,7 +4,6 @@ import 'package:load_it/load_it.dart';
 import 'package:waste2taste/core/constants/app_colors.dart';
 import 'package:waste2taste/core/constants/app_text_styles.dart';
 import 'package:waste2taste/core/extensions/app_localization_extention.dart';
-import 'package:waste2taste/core/utils/custom_snack_bar.dart';
 import 'package:waste2taste/core/utils/translator.dart';
 import 'package:waste2taste/core/widgets/custom_elevated_button.dart';
 import 'package:waste2taste/Features/home/presentation/views/widgets/rating_stars.dart';
@@ -15,6 +14,7 @@ import 'package:waste2taste/Features/products/presentation/views/widgets/review_
 import 'package:waste2taste/Features/products/presentation/views/widgets/review_container.dart';
 import 'package:waste2taste/Features/home/presentation/views/widgets/sheet_handle.dart';
 import 'package:waste2taste/Features/home/presentation/views/widgets/sheet_header.dart';
+import '../../../../../core/utils/custom_material_banner.dart';
 
 class WriteReviewSheet extends StatefulWidget {
   final String productId;
@@ -45,18 +45,18 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
             translatedMessage,
           ) {
             if (context.mounted) {
-              CustomSnackBar.show(
+              CustomMaterialBanner.show(
                 context: context,
                 message: translatedMessage,
-                type: SnackBarType.info,
+                type: MaterialBannerType.info,
               );
             }
           });
         } else if (state is AddReviewSuccess) {
-          CustomSnackBar.show(
+          CustomMaterialBanner.show(
             context: context,
             message: state.response.message,
-            type: SnackBarType.success,
+            type: MaterialBannerType.success,
           );
 
           if (context.mounted) {
@@ -92,16 +92,16 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
                           );
                           context.read<AddReviewCubit>().addReview(review);
                         } else if (_rating.value == 0) {
-                          CustomSnackBar.show(
+                          CustomMaterialBanner.show(
                             context: context,
                             message: context.loc.pleaseRateProduct,
-                            type: SnackBarType.info,
+                            type: MaterialBannerType.info,
                           );
                         } else {
-                          CustomSnackBar.show(
+                          CustomMaterialBanner.show(
                             context: context,
                             message: context.loc.pleaseWriteComment,
-                            type: SnackBarType.info,
+                            type: MaterialBannerType.info,
                           );
                         }
                       },
