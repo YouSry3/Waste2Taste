@@ -51,21 +51,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
             await _Context.RefreshTokens.AddAsync(refreshTokenEntity);
             await _Context.SaveChangesAsync();
 
-<<<<<<< HEAD
-            return Result.Success(new LoginResponse
-                        (
-                             // Assuming LoginResponse has settable properties for these fields.
-                             // Replace these property names with the actual property names in LoginResponse.
-                                 user.Id,
-                             user.Name,
-                             user.Email!,
-                             user.Role,
-                            Token,
-                            ExpiresIn,
-                            refreshToken,
-                            user.ImageUrl
-                            
-=======
+
             // Fetch vendor ID if user is a vendor
             Guid? vendorId = null;
             if (user.Role.ToLower() == "vendor")
@@ -74,7 +60,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                     .FirstOrDefaultAsync(v => v.OwnerId == user.Id, cancellationToken);
                 vendorId = vendor?.Id;
             }
->>>>>>> 0b53e5a9bd434d76452ce4933fe42fa5c6ae7fb1
+
 
             return Result.Success(new LoginResponse(
                 user.Id,
