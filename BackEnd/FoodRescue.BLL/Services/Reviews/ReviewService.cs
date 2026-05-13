@@ -1,19 +1,10 @@
-﻿using Azure.Core;
-using FoodRescue.BLL.ResultPattern;
+﻿using FoodRescue.BLL.Contract.Reviews;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
-using FoodRescue.BLL.Contract.Reviews;
-using FoodRescue.BLL.Extensions.Users;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Mapster;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FoodRescue.BLL.Services.Reviews
 {
@@ -79,14 +70,30 @@ namespace FoodRescue.BLL.Services.Reviews
                 .ToListAsync();
 
 
-            return reviews.IsNullOrEmpty()?
-                Result.Failure<List<ReviewResponse>>(ReviewErrors.ReviewsNotFound(productId)):
-                Result.Success( reviews);
+            return reviews.IsNullOrEmpty() ?
+                Result.Failure<List<ReviewResponse>>(ReviewErrors.ReviewsNotFound(productId)) :
+                Result.Success(reviews);
         }
 
         public async Task<Result> AddReviewAsync(Guid userId, ReviewRequest request)
         {
-          
+            // 1. Check if customer has a completed order for this product
+            var hasCompletedOrder = await _context.Orders
+                .AnyAsync(o => o.CustomerId == userId
+                            && o.ProductId == request.ProductId
+                            && o.Status.ToLower() == "completed");
+
+            if (!hasCompletedOrder)
+                return Result.Failure(ReviewErrors.MustPurchaseBeforeReview(userId));
+
+            // 2. Check if customer already reviewed this product
+            var alreadyReviewed = await _context.Reviews
+                .AnyAsync(r => r.UserId == userId && r.ProductId == request.ProductId);
+
+            if (alreadyReviewed)
+                return Result.Failure(ReviewErrors.AlreadyReviewed(userId));
+
+            // 3. Create review
             var review = new Review
             {
                 UserId = userId,
@@ -99,10 +106,10 @@ namespace FoodRescue.BLL.Services.Reviews
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync();
 
-            // 2. Call AI
+            // 4. Call AI sentiment analysis
             var sentiment = await _sentimentService.AnalyzeText(request.Comment);
 
-            // 3. Save Sentiment
+            // 5. Save sentiment
             var analysis = new SentimentAnalysis
             {
                 ReviewId = review.Id,
@@ -116,10 +123,8 @@ namespace FoodRescue.BLL.Services.Reviews
             _context.SentimentAnalysis.Add(analysis);
             await _context.SaveChangesAsync();
 
-
             return Result.Success();
         }
-
         public async Task<Result> DeleteReviewAsync(int reviewId, Guid userId)
         {
             var isCustomer = await _userRepository.IsCustomer(userId);
@@ -138,6 +143,6 @@ namespace FoodRescue.BLL.Services.Reviews
             return Result.Success();
         }
 
-        
+
     }
 }

@@ -17,7 +17,6 @@ class CustomFloatingActionButtom extends StatelessWidget {
       onPressed: () {
         final extra = GoRouterState.of(context).extra as Map<String, dynamic>;
         final productId = extra['productId'] as String;
-
         final addReviewCubit = context.read<AddReviewCubit>();
 
         showModalBottomSheet(

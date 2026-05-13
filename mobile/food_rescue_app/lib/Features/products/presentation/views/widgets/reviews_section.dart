@@ -13,10 +13,12 @@ class ReviewsSection extends StatelessWidget {
     super.key,
     required this.rating,
     required this.totalReviews,
+    required this.vendorId,
     required this.productId,
   });
   final double rating;
   final int totalReviews;
+  final String vendorId;
   final String productId;
 
   @override
@@ -25,10 +27,7 @@ class ReviewsSection extends StatelessWidget {
       children: [
         const Icon(LucideIcons.star, size: 16, color: AppColors.secondary),
         const SizedBox(width: 4),
-        Text(
-          rating.toStringAsFixed(1),
-          style: AppTextStyles.label(context),
-        ),
+        Text(rating.toStringAsFixed(1), style: AppTextStyles.label(context)),
         const SizedBox(width: 6),
         TextButton(
           style: TextButton.styleFrom(padding: EdgeInsets.zero),
@@ -39,8 +38,9 @@ class ReviewsSection extends StatelessWidget {
               extra: {
                 'rating': rating,
                 'totalReviews': totalReviews,
-                'productId': productId,
+                'vendorId': vendorId,
                 'getReviewsCubit': getReviewsCubit,
+                'productId': productId,
               },
             );
           },

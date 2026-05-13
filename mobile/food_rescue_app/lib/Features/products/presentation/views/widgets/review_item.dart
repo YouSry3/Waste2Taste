@@ -6,7 +6,7 @@ import 'review_user_info.dart';
 
 class ReviewItem extends StatelessWidget {
   final ReviewEntity review;
-
+  
   const ReviewItem({super.key, required this.review});
 
   @override
@@ -31,7 +31,7 @@ class ReviewItem extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ReviewUserInfo(review: review),
+          ReviewUserInfo(review: review ),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(12),

@@ -69,11 +69,25 @@ namespace FoodRescue.BLL.Services.Reports
             if (string.IsNullOrEmpty(dto.IssueType) || string.IsNullOrEmpty(dto.Description))
                 return Result.Failure<ReportDetailDto>(new Error("INVALID_DATA", "Issue type and description are required"));
 
-            var productExists = await _productRepository.ExistsAsync(dto.ProductId);
+            // Fetch order to get ProductId and ListingName
+            var order = await _context.Orders
+                .Include(o => o.Product)
+                .FirstOrDefaultAsync(o => o.Id == dto.OrderId);
 
+            if (order == null)
+                return Result.Failure<ReportDetailDto>(new Error("INVALID_ORDER", "Order not found"));
+
+            // Verify this order belongs to the current user
+            if (order.CustomerId != userId)
+                return Result.Failure<ReportDetailDto>(new Error("UNAUTHORIZED", "You can only report your own orders"));
+
+            var productId = order.ProductId;
+            var listingName = order.Product?.Name ?? "Unknown Product";
+
+            var productExists = await _productRepository.ExistsAsync(productId);
             if (!productExists)
-                return Result.Failure<ReportDetailDto>(
-                    new Error("INVALID_PRODUCT", "Product does not exist"));
+                return Result.Failure<ReportDetailDto>(new Error("INVALID_PRODUCT", "Product does not exist"));
+
             // Generate report code
             var reportCode = await _reportRepository.GenerateReportCodeAsync();
 
@@ -84,8 +98,8 @@ namespace FoodRescue.BLL.Services.Reports
                 CustomerName = userName,
                 UserId = userId,
                 OrderId = dto.OrderId,
-                ProductId = dto.ProductId,
-                ListingName = dto.ListingName,
+                ProductId = productId,
+                ListingName = listingName,
                 IssueType = dto.IssueType,
                 Description = dto.Description,
                 Status = "Pending",

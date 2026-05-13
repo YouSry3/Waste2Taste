@@ -13,6 +13,7 @@ class ProductEntity {
   final double latitude;
   final double longitude;
   final String description;
+  final bool isFavorite;
   final String? category;
 
   const ProductEntity({
@@ -30,6 +31,7 @@ class ProductEntity {
     required this.vendorId,
     required this.description,
     required this.totalReviews,
+    required this.isFavorite,
     this.category,
   });
 }
@@ -51,6 +53,7 @@ final skeletonProducts = List.generate(
     vendorId: '$index',
     description: 'description',
     category: 'category',
+    isFavorite: false,
     totalReviews: 0,
   ),
 );

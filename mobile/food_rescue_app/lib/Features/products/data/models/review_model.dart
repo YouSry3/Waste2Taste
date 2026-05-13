@@ -6,6 +6,7 @@ class ReviewModel extends ReviewEntity {
     required super.rating,
     required super.comment,
     required super.userName,
+    required super.userId,
     super.userImageUrl,
     required super.createdAt,
   });
@@ -17,6 +18,7 @@ class ReviewModel extends ReviewEntity {
       rating: (json['rating'] ?? 0).toDouble(),
       comment: json['comment'] ?? '',
       userName: user['name'] ?? '',
+      userId: user['id'] ?? '',
       userImageUrl: user['imageUrl'],
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
     );

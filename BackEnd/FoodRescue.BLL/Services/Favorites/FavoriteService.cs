@@ -1,10 +1,7 @@
 using FoodRescue.BLL.Contract.Products;
 using FoodRescue.BLL.Extensions.Favorites;
-using FoodRescue.BLL.Extensions.Products;
-using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.DAL.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace FoodRescue.BLL.Services.Favorites;
@@ -33,6 +30,10 @@ public class FavoriteService : IFavoriteService
             var product = await _productRepository.GetByIdAsync(productId);
             if (product == null)
                 return Result.Failure<string>(ProductErrors.NotFound);
+
+            // Check if vendor is blocked
+            if (product.Vendor?.Owner?.IsActive == false)
+                return Result.Failure<string>(new Error("FavoriteError", "Cannot favorite a product from a blocked vendor"));
 
             // Check if favorite already exists
             var existingFavorite = await _favoriteRepository.GetByUserAndProductAsync(userId, productId);

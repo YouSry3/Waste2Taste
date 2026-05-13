@@ -55,39 +55,7 @@ export function ReportBulkActions({
               )}
             </button>
 
-            {/* Destructive Action - Dismiss All Reports */}
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <button
-                  disabled={loading}
-                  className="px-3 sm:px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs sm:text-sm font-medium rounded-lg flex items-center justify-center sm:justify-start gap-2 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
-                >
-                  <XCircle className="h-4 w-4" />
-                  <span className="hidden xs:inline">Dismiss All</span>
-                  <span className="inline xs:hidden">Dismiss</span>
-                </button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="mx-4 sm:mx-0">
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-lg sm:text-xl">
-                    Dismiss {selectedCount} reports?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription className="text-sm sm:text-base">
-                    This will dismiss all selected reports as invalid. This
-                    action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
-                  <AlertDialogCancel className="text-sm sm:text-base">Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base"
-                    onClick={onDismissAll}
-                  >
-                    Dismiss All
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+          
 
             <button
               onClick={onClearSelection}

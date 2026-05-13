@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 
 abstract class Failure {
@@ -48,7 +50,7 @@ class ServerFailure extends Failure {
       );
     } else if (statusCode == 404) {
       return ServerFailure(
-        errorMessage: 'Your request not found, Please try again later.',
+        errorMessage: data['description'] ?? data['errors']['description'],
       );
     } else if (statusCode == 500) {
       return ServerFailure(

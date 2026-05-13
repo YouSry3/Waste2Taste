@@ -7,16 +7,25 @@ import 'package:waste2taste/core/functions/setup_service_locator.dart';
 import 'widgets/product_details_view_body.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:waste2taste/Features/orders/presentation/manager/reserve_order_cubit/reserve_order_cubit.dart';
+
 class ProductDetailsView extends StatelessWidget {
   const ProductDetailsView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final product = GoRouterState.of(context).extra as ProductEntity;
-    return BlocProvider(
-      create: (context) => GetProductReviewsCubit(
-        getIt.get<GetProductReviewsUsecase>(),
-      )..getProductReviews(product.id),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => GetProductReviewsCubit(
+            getIt.get<GetProductReviewsUsecase>(),
+          )..getProductReviews(product.vendorId),
+        ),
+        BlocProvider(
+          create: (context) => getIt.get<ReserveOrderCubit>(),
+        ),
+      ],
       child: const Scaffold(
         body: ProductDetailsViewBody(),
       ),

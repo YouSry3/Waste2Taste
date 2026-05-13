@@ -1,21 +1,16 @@
 ﻿using FluentEmail.Core;
-using FoodRescue.BLL.Contract.Authentication;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.CheckCode;
 using FoodRescue.BLL.Contract.Authentication.ForgetPassword.UpdatePassword;
 using FoodRescue.BLL.Contract.Authentication.Login;
 using FoodRescue.BLL.Contract.Authentication.RefreshToken;
 using FoodRescue.BLL.Contract.Authentication.Register;
-using FoodRescue.BLL.Extensions.Users;
-using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.BLL.Services.Authentication.Email_Service;
 using FoodRescue.BLL.Services.JWT;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Mapster;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace FoodRescue.BLL.Services.Authentication.AuthServices
@@ -41,13 +36,10 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
             if (user == null || user.Password != request.Password)
                 return Result.Failure<LoginResponse>(UserErrors.InValidCredentials);
 
-            //Generate Token
             var (Token, ExpiresIn) = _JwtProvider.GenerateToken(user);
-
 
             var refreshToken = _JwtProvider.GenerateRefreshToken();
 
-            // 💾 Save Refresh Token in RefreshTokens table
             var refreshTokenEntity = new RefreshToken
             {
                 Token = refreshToken,
@@ -59,6 +51,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
             await _Context.RefreshTokens.AddAsync(refreshTokenEntity);
             await _Context.SaveChangesAsync();
 
+<<<<<<< HEAD
             return Result.Success(new LoginResponse
                         (
                              // Assuming LoginResponse has settable properties for these fields.
@@ -72,8 +65,28 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                             refreshToken,
                             user.ImageUrl
                             
+=======
+            // Fetch vendor ID if user is a vendor
+            Guid? vendorId = null;
+            if (user.Role.ToLower() == "vendor")
+            {
+                var vendor = await _Context.Vendors
+                    .FirstOrDefaultAsync(v => v.OwnerId == user.Id, cancellationToken);
+                vendorId = vendor?.Id;
+            }
+>>>>>>> 0b53e5a9bd434d76452ce4933fe42fa5c6ae7fb1
 
-                        ));
+            return Result.Success(new LoginResponse(
+                user.Id,
+                user.Name,
+                user.Email!,
+                user.Role,
+                Token,
+                ExpiresIn,
+                refreshToken,
+                user.ImageUrl,
+                vendorId   // ← ADD
+            ));
         }
 
         public async Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
@@ -221,9 +234,9 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
         }
 
 
-        public async Task<Result<RefreshResponse>> RefreshTokenAsync(RefreshTokenRequest request,Guid userId, CancellationToken cancellationToken = default)
+        public async Task<Result<RefreshResponse>> RefreshTokenAsync(RefreshTokenRequest request, Guid userId, CancellationToken cancellationToken = default)
         {
-        
+
 
             // Step 2: Get principal from expired token
             ClaimsPrincipal principal;
@@ -236,12 +249,12 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                 return Result.Failure<RefreshResponse>(UserErrors.InvalidAccessToken);
             }
 
-            
+
 
             if (userId == Guid.Empty)
                 return Result.Failure<RefreshResponse>(UserErrors.InvalidTokenData);
 
-            
+
 
             var user = await UserRepository.GetByIdAsync(userId);
 

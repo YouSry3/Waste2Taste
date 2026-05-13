@@ -5,6 +5,7 @@ class ReviewEntity extends Equatable {
   final double rating;
   final String comment;
   final String userName;
+  final String userId;
   final String? userImageUrl;
   final DateTime createdAt;
 
@@ -13,6 +14,7 @@ class ReviewEntity extends Equatable {
     required this.rating,
     required this.comment,
     required this.userName,
+    required this.userId,
     this.userImageUrl,
     required this.createdAt,
   });
@@ -23,6 +25,7 @@ class ReviewEntity extends Equatable {
     rating,
     comment,
     userName,
+    userId,
     userImageUrl,
     createdAt,
   ];
@@ -35,6 +38,7 @@ final List<ReviewEntity> dummyReviews = List.generate(
     rating: 5,
     comment: 'This is a placeholder review for skeleton loading states.',
     userName: 'User Name',
+    userId: index.toString(),
     createdAt: DateTime.now(),
   ),
 );

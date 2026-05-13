@@ -8,7 +8,7 @@ import 'package:waste2taste/Features/products/data/models/add_review_response_mo
 import 'package:waste2taste/Features/products/data/models/review_model.dart';
 
 abstract class ProductRemoteDataSource {
-  Future<List<ReviewModel>> getProductReviews(String productId);
+  Future<List<ReviewModel>> getProductReviews(String vendorId);
   Future<AddReviewResponseModel> addReview(AddReviewModel review);
   Future<void> deleteReview(int reviewId);
 }
@@ -19,13 +19,13 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   ProductRemoteDataSourceImpl(this.apiService);
 
   @override
-  Future<List<ReviewModel>> getProductReviews(String productId) async {
+  Future<List<ReviewModel>> getProductReviews(String vendorId) async {
     var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
     final response = await apiService.get(
-      ApiUrls.getProductReviews,
+      ApiUrls.getReviews,
       options: Options(
         headers: {
-          'productId': productId,
+          'vendorId': vendorId,
           "Authorization": "Bearer ${tokens!.token}",
         },
       ),
@@ -44,9 +44,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     final response = await apiService.post(
       ApiUrls.addReview,
       data: review.toJson(),
-      options: Options(
-        headers: {"Authorization": "Bearer ${tokens!.token}"},
-      ),
+      options: Options(headers: {"Authorization": "Bearer ${tokens!.token}"}),
     );
     return AddReviewResponseModel.fromJson(response.data);
   }
@@ -56,9 +54,7 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
     await apiService.delete(
       "${ApiUrls.deleteReview}/$reviewId",
-      options: Options(
-        headers: {"Authorization": "Bearer ${tokens!.token}"},
-      ),
+      options: Options(headers: {"Authorization": "Bearer ${tokens!.token}"}),
     );
   }
 }

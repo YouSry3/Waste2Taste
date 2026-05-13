@@ -5,7 +5,7 @@ import 'package:waste2taste/Features/products/data/models/add_review_response_mo
 import 'package:waste2taste/Features/products/domain/entities/review_entity.dart';
 
 abstract class ProductRepo {
-  Future<Either<Failure, List<ReviewEntity>>> getProductReviews(String productId);
+  Future<Either<Failure, List<ReviewEntity>>> getProductReviews(String vendorId);
   Future<Either<Failure, AddReviewResponseModel>> addReview(AddReviewModel review);
   Future<Either<Failure, void>> deleteReview(int reviewId);
 }
