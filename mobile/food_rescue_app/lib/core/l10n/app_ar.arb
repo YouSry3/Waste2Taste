@@ -187,5 +187,6 @@
     "filter": "تصفية",
     "maxPrice": "أقصى سعر",
     "maxDistance": "أقصى مسافة",
-    "apply": "تطبيق"
+    "apply": "تطبيق",
+    "noReviewsYet": "لا يوجد تقييمات"
 }

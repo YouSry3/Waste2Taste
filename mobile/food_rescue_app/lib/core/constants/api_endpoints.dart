@@ -17,5 +17,6 @@ abstract class ApiEndPoints {
   static const reserveOrderEndPoint = "/orders";
   static const myOrdersEndPoint = "/Orders/my-orders";
   static const myFavoritesEndPoint = "/products/my-favorites";
+  static String getProductByIdEndPoint(String productId) => "/products/$productId";
   static const sendSupportEndPoint = "/support/send";
 }

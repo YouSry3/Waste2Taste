@@ -32,7 +32,7 @@ class ProductModel extends ProductEntity {
       expiresIn: json['expiresIn'] ?? '',
       rating: (json['rating'] ?? 0).toDouble(),
       vendorName: json['vendorName'] ?? '',
-      totalReviews: json['totalReviews'] ?? 0,
+      totalReviews: json['totalReviews'] ?? json['reviewCount'] ?? 0,
       latitude: (json['latitude'] ?? 0).toDouble(),
       longitude: (json['longitude'] ?? 0).toDouble(),
       vendorId: json['vendorId'] ?? '',

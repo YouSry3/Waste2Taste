@@ -11,6 +11,9 @@ import 'package:waste2taste/Features/products/presentation/manager/delete_review
 import 'package:waste2taste/Features/products/presentation/manager/delete_review_cubit/delete_review_state.dart';
 import 'package:waste2taste/Features/products/presentation/views/widgets/review_item.dart';
 import 'package:waste2taste/Features/products/presentation/views/widgets/reviews_header.dart';
+import 'package:waste2taste/core/utils/custom_snack_bar.dart';
+
+import '../../../../../core/extensions/app_localization_extention.dart';
 
 class ProductReviewsViewBody extends StatelessWidget {
   const ProductReviewsViewBody({super.key});
@@ -40,18 +43,16 @@ class ProductReviewsViewBody extends StatelessWidget {
                 state.reviewId,
               );
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.green,
-                ),
+              CustomSnackBar.show(
+                context: context,
+                message: state.message,
+                type: SnackBarType.success,
               );
             } else if (state is DeleteReviewFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage),
-                  backgroundColor: Colors.red,
-                ),
+              CustomSnackBar.show(
+                context: context,
+                message: state.errorMessage,
+                type: SnackBarType.error,
               );
             }
           },
@@ -86,15 +87,19 @@ class ProductReviewsViewBody extends StatelessWidget {
             );
           }
           if (state is GetProductReviewsSuccess && reviews.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.reviews_outlined, size: 60, color: Colors.grey),
-                  SizedBox(height: 12),
+                  const Icon(
+                    Icons.reviews_outlined,
+                    size: 60,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(height: 12),
                   Text(
-                    'No reviews yet',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                    context.loc.noReviewsYet,
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ],
               ),

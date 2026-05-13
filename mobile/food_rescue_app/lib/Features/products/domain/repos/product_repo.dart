@@ -11,4 +11,5 @@ abstract class ProductRepo {
   Future<Either<Failure, void>> deleteReview(int reviewId);
   Future<Either<Failure, void>> toggleFavorite(String productId);
   Future<Either<Failure, List<ProductEntity>>> getFavoriteProducts();
+  Future<Either<Failure, ProductEntity>> getProductById(String productId);
 }

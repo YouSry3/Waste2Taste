@@ -21,5 +21,6 @@ abstract class ApiUrls {
   static const reserveOrderUrl = "$baseUrl${ApiEndPoints.reserveOrderEndPoint}";
   static const myOrdersUrl = "$baseUrl${ApiEndPoints.myOrdersEndPoint}";
   static const myFavoritesUrl = "$baseUrl${ApiEndPoints.myFavoritesEndPoint}";
+  static String getProductByIdUrl(String productId) => "$baseUrl${ApiEndPoints.getProductByIdEndPoint(productId)}";
   static const sendSupport = "$baseUrl${ApiEndPoints.sendSupportEndPoint}";
 }

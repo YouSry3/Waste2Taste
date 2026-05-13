@@ -34,8 +34,7 @@ abstract class CustomMaterialBanner {
     }
 
     final messenger = ScaffoldMessenger.of(context);
-
-    messenger.hideCurrentMaterialBanner();
+    messenger.clearMaterialBanners();
 
     final materialBanner = MaterialBanner(
       backgroundColor: Colors.transparent,
@@ -91,7 +90,7 @@ abstract class CustomMaterialBanner {
 
                   GestureDetector(
                     onTap: () {
-                      messenger.hideCurrentMaterialBanner();
+                      messenger.clearMaterialBanners();
                     },
 
                     child: const Icon(
@@ -111,11 +110,8 @@ abstract class CustomMaterialBanner {
     );
 
     messenger.showMaterialBanner(materialBanner);
-
     Future.delayed(const Duration(seconds: 3), () {
-      if (context.mounted) {
-        messenger.hideCurrentMaterialBanner();
-      }
+      messenger.clearMaterialBanners();
     });
   }
 }

@@ -83,4 +83,17 @@ class ProductRepoImpl implements ProductRepo {
       return Left(ServerFailure(errorMessage: e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, ProductEntity>> getProductById(String productId) async {
+    try {
+      final product = await productRemoteDataSource.getProductById(productId);
+      return Right(product);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioException(e));
+      }
+      return Left(ServerFailure(errorMessage: e.toString()));
+    }
+  }
 }

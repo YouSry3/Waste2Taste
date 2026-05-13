@@ -188,5 +188,6 @@
     "filter": "Filter",
     "maxPrice": "Maximum Price",
     "maxDistance": "Maximum Distance",
-    "apply": "Apply"
+    "apply": "Apply",
+    "noReviewsYet": "No reviews yet"
 }

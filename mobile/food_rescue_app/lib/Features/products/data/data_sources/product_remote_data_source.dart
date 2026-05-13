@@ -14,6 +14,7 @@ abstract class ProductRemoteDataSource {
   Future<void> deleteReview(int reviewId);
   Future<void> toggleFavorite(String productId);
   Future<List<ProductModel>> getFavoriteProducts();
+  Future<ProductModel> getProductById(String productId);
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -83,5 +84,15 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       products.add(ProductModel.fromJson(item));
     }
     return products;
+  }
+
+  @override
+  Future<ProductModel> getProductById(String productId) async {
+    var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
+    final response = await apiService.get(
+      ApiUrls.getProductByIdUrl(productId),
+      options: Options(headers: {"Authorization": "Bearer ${tokens!.token}"}),
+    );
+    return ProductModel.fromJson(response.data);
   }
 }

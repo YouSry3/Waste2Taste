@@ -30,8 +30,10 @@ import 'package:waste2taste/Features/products/presentation/manager/add_review_cu
 import 'package:waste2taste/Features/products/presentation/manager/delete_review_cubit/delete_review_cubit.dart';
 import 'package:waste2taste/Features/products/domain/use_cases/toggle_favorite_usecase.dart';
 import 'package:waste2taste/Features/products/domain/use_cases/get_favorite_products_usecase.dart';
+import 'package:waste2taste/Features/products/domain/use_cases/get_product_by_id_usecase.dart';
 import 'package:waste2taste/Features/products/presentation/manager/get_favorite_products_cubit/get_favorite_products_cubit.dart';
 import 'package:waste2taste/Features/products/presentation/manager/toggle_favorite_cubit/toggle_favorite_cubit.dart';
+import 'package:waste2taste/Features/products/presentation/manager/get_product_by_id_cubit/get_product_by_id_cubit.dart';
 import 'package:waste2taste/Features/splash/data/repos/onboarding_repo_impl.dart';
 import 'package:waste2taste/Features/splash/domain/repos/onboarding_repo.dart';
 import 'package:waste2taste/core/database/flutter_secure_storage_service.dart';
@@ -160,8 +162,14 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<GetFavoriteProductsUsecase>(
     () => GetFavoriteProductsUsecase(productRepo: getIt.get<ProductRepoImpl>()),
   );
+  getIt.registerLazySingleton<GetProductByIdUsecase>(
+    () => GetProductByIdUsecase(getIt.get<ProductRepoImpl>()),
+  );
   getIt.registerFactory<AddReviewCubit>(
     () => AddReviewCubit(addReviewUseCase: getIt.get<AddReviewUseCase>()),
+  );
+  getIt.registerFactory<GetProductByIdCubit>(
+    () => GetProductByIdCubit(getIt.get<GetProductByIdUsecase>()),
   );
   getIt.registerFactory<DeleteReviewCubit>(
     () => DeleteReviewCubit(deleteReviewUseCase: getIt.get<DeleteReviewUseCase>()),
