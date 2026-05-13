@@ -63,6 +63,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
                         (
                              // Assuming LoginResponse has settable properties for these fields.
                              // Replace these property names with the actual property names in LoginResponse.
+                                 user.Id,
                              user.Name,
                              user.Email!,
                              user.Role,

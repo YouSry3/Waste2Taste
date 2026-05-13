@@ -14,6 +14,21 @@ namespace FoodRescue.PL.Controllers
     {
         private readonly IReviewService _reviewService = reviewService;
 
+        [HttpGet("product/{productId}")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(List<ReviewResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetReviewsByProductId([FromRoute] Guid productId)
+        {
+            var result = await _reviewService.GetReviewsByProductId(productId);
+
+            return result.IsSuccess
+                ? Ok(result.Value)
+                : NotFound(result.Error);
+        }
+
+
         [HttpGet("vendor/GetReviewsWithSentiment")]
         [ProducesResponseType(typeof(List<ReviewWithSentimentResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

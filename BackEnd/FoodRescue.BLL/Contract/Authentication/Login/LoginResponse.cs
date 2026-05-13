@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace FoodRescue.BLL.Contract.Authentication.Login
 {
     public record LoginResponse(
+        Guid Id,    
         string Name,
         string Email,
         string Role,
