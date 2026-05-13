@@ -51,6 +51,8 @@ public class ProductRepository : IProductRepository
     {
         return await _context.Products
             .AsTracking()
+            .Include(p => p.Vendor)
+                .ThenInclude(v => v.Owner)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
