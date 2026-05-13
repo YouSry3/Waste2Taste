@@ -15,16 +15,18 @@ class ReportVendorButtonBlocConsumer extends StatelessWidget {
   const ReportVendorButtonBlocConsumer({
     super.key,
     required GlobalKey<FormState> formKey,
-    required this.vendorId,
-    required TextEditingController subjectController,
+    required this.orderId,
+    required TextEditingController issueType,
+    required this.priority,
     required TextEditingController descriptionController,
   }) : _formKey = formKey,
-       _subjectController = subjectController,
+       _issueType = issueType,
        _descriptionController = descriptionController;
 
   final GlobalKey<FormState> _formKey;
-  final String vendorId;
-  final TextEditingController _subjectController;
+  final String orderId;
+  final TextEditingController _issueType;
+  final String priority;
   final TextEditingController _descriptionController;
 
   @override
@@ -63,9 +65,10 @@ class ReportVendorButtonBlocConsumer extends StatelessWidget {
             if (_formKey.currentState!.validate()) {
               context.read<ReportVendorCubit>().reportVendor(
                 request: ReportVendorRequest(
-                  vendorId: vendorId,
-                  type: _subjectController.text.trim(),
+                  orderId: orderId,
+                  issueType: _issueType.text.trim(),
                   description: _descriptionController.text.trim(),
+                  priority: priority,
                 ),
               );
             }

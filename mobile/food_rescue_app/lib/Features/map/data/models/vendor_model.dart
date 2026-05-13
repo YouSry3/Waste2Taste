@@ -7,6 +7,7 @@ class VendorModel {
   final double latitude;
   final double longitude;
   final String address;
+  final int productCount;
 
   const VendorModel({
     required this.id,
@@ -17,38 +18,6 @@ class VendorModel {
     required this.latitude,
     required this.longitude,
     required this.address,
+    this.productCount = 0,
   });
 }
-
-final List<VendorModel> mapVendors = [
-  const VendorModel(
-    id: "1",
-    name: "Green Market",
-    imageUrl: "https://via.placeholder.com/150",
-    rating: 4.5,
-    reviewCount: 100,
-    latitude: 30.2583,
-    longitude: 31.1695,
-    address: "123 Green St",
-  ),
-  const VendorModel(
-    id: "2",
-    name: "Daily Bakery",
-    imageUrl: "https://via.placeholder.com/150",
-    rating: 4.8,
-    reviewCount: 200,
-    latitude: 30.2564,
-    longitude: 31.1672,
-    address: "456 Bread Ln",
-  ),
-  const VendorModel(
-    id: "3",
-    name: "Cairo",
-    imageUrl: "https://via.placeholder.com/150",
-    rating: 4.2,
-    reviewCount: 50,
-    latitude: 30.033333,
-    longitude: 31.233334,
-    address: "789 Fruit Blvd",
-  ),
-];

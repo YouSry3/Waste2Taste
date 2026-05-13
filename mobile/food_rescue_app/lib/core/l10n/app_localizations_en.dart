@@ -542,4 +542,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseLanguage => 'Choose Language';
+
+  @override
+  String get openingVendorLocation => 'Opening vendor location...';
+
+  @override
+  String get vendorProducts => 'Vendor Products';
+
+  @override
+  String productsAvailable(Object count) {
+    return '$count products available';
+  }
+
+  @override
+  String get issueType => 'Issue Type';
+
+  @override
+  String get priority => 'Priority';
+
+  @override
+  String get low => 'Low';
+
+  @override
+  String get medium => 'Medium';
+
+  @override
+  String get high => 'High';
+
+  @override
+  String get pleaseSelectIssueType => 'Please select an issue type';
+
+  @override
+  String get pleaseSelectPriority => 'Please select a priority';
+
+  @override
+  String get removedFromFavorites => 'Removed from favorites';
+
+  @override
+  String get addedToFavorites => 'Added to favorites';
+
+  @override
+  String get noSavedOffers => 'You haven\'t saved any offers yet.';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get maxPrice => 'Maximum Price';
+
+  @override
+  String get maxDistance => 'Maximum Distance';
+
+  @override
+  String get apply => 'Apply';
 }

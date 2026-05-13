@@ -20,6 +20,10 @@ class OrderImage extends StatelessWidget {
           color: Colors.grey[100],
           child: const Icon(LucideIcons.image, color: Colors.grey),
         ),
+        errorWidget: (_, _, _) => Container(
+          color: Colors.grey[100],
+          child: const Icon(LucideIcons.image, color: Colors.grey),
+        ),
       ),
     );
   }

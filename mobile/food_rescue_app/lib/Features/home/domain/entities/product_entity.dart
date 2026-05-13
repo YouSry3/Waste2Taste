@@ -34,6 +34,44 @@ class ProductEntity {
     required this.isFavorite,
     this.category,
   });
+
+  ProductEntity copyWith({
+    String? id,
+    String? name,
+    String? imageUrl,
+    double? price,
+    double? originalPrice,
+    int? discountPercentage,
+    String? expiresIn,
+    double? rating,
+    int? totalReviews,
+    String? vendorId,
+    String? vendorName,
+    double? latitude,
+    double? longitude,
+    String? description,
+    bool? isFavorite,
+    String? category,
+  }) {
+    return ProductEntity(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      imageUrl: imageUrl ?? this.imageUrl,
+      price: price ?? this.price,
+      originalPrice: originalPrice ?? this.originalPrice,
+      discountPercentage: discountPercentage ?? this.discountPercentage,
+      expiresIn: expiresIn ?? this.expiresIn,
+      rating: rating ?? this.rating,
+      totalReviews: totalReviews ?? this.totalReviews,
+      vendorId: vendorId ?? this.vendorId,
+      vendorName: vendorName ?? this.vendorName,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      description: description ?? this.description,
+      isFavorite: isFavorite ?? this.isFavorite,
+      category: category ?? this.category,
+    );
+  }
 }
 
 final skeletonProducts = List.generate(

@@ -171,5 +171,22 @@
     "reportSubmittedSuccessfully": "Report submitted successfully",
     "pleaseEnterSubject": "Please enter a subject",
     "pleaseEnterDescription": "Please enter a description",
-    "chooseLanguage": "Choose Language"
+    "chooseLanguage": "Choose Language",
+    "openingVendorLocation": "Opening vendor location...",
+    "vendorProducts": "Vendor Products",
+    "productsAvailable": "{count} products available",
+    "issueType": "Issue Type",
+    "priority": "Priority",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "pleaseSelectIssueType": "Please select an issue type",
+    "pleaseSelectPriority": "Please select a priority",
+    "removedFromFavorites": "Removed from favorites",
+    "addedToFavorites": "Added to favorites",
+    "noSavedOffers": "You haven't saved any offers yet.",
+    "filter": "Filter",
+    "maxPrice": "Maximum Price",
+    "maxDistance": "Maximum Distance",
+    "apply": "Apply"
 }

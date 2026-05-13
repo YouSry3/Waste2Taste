@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../functions/setup_service_locator.dart';
-import '../../Features/home/domain/use_cases/get_products_usecase.dart';
 import '../../Features/home/presentation/manager/get_products_cubit/get_products_cubit.dart';
 import '../../Features/home/presentation/views/home_view.dart';
 import '../../Features/map/presentation/views/map_view.dart';
@@ -29,17 +28,13 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          GetProductsCubit(getIt.get<GetProductsUsecase>())..getProducts(),
-      child: Scaffold(
-        body: IndexedStack(index: _currentIndex, children: _pages),
-        bottomNavigationBar: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: CustomNavBar(
-            currentIndex: _currentIndex,
-            onTap: (index) => setState(() => _currentIndex = index),
-          ),
+    return Scaffold(
+      body: IndexedStack(index: _currentIndex, children: _pages),
+      bottomNavigationBar: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: CustomNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
         ),
       ),
     );

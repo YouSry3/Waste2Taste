@@ -5,7 +5,16 @@ import 'search_leading_icon.dart';
 import 'search_text_filed.dart';
 
 class HomeSearchBar extends StatelessWidget {
-  const HomeSearchBar({super.key});
+  const HomeSearchBar({
+    super.key,
+    this.onSearchChanged,
+    this.onFilterPressed,
+    this.searchController,
+  });
+
+  final Function(String)? onSearchChanged;
+  final VoidCallback? onFilterPressed;
+  final TextEditingController? searchController;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +26,14 @@ class HomeSearchBar extends StatelessWidget {
             children: [
               const SearchLeadingIcon(),
               const SizedBox(width: 16),
-              Expanded(child: SearchTextField()),
+              Expanded(
+                child: SearchTextField(
+                  onChanged: onSearchChanged,
+                  controller: searchController,
+                ),
+              ),
               const VerticalDivider(endIndent: 12, indent: 12, thickness: 1.5),
-              const FilterButton(),
+              FilterButton(onPressed: onFilterPressed),
             ],
           ),
         ),

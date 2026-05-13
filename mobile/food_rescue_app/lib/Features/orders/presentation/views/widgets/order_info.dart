@@ -14,7 +14,7 @@ class OrderInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          order.itemTitle,
+          order.productName,
           style: AppTextStyles.body(context).copyWith(fontSize: 18),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -27,10 +27,9 @@ class OrderInfo extends StatelessWidget {
             Expanded(
               child: Text(
                 order.vendorName,
-                style: AppTextStyles.body(context).copyWith(
-                  fontSize: 13,
-                  color: AppColors.textGray,
-                ),
+                style: AppTextStyles.body(
+                  context,
+                ).copyWith(fontSize: 13, color: AppColors.textGray),
                 overflow: TextOverflow.ellipsis,
               ),
             ),

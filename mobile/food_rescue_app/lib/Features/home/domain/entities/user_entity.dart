@@ -1,4 +1,5 @@
 class UserEntity {
+  final String id;
   final String name;
   final String email;
   final String role;
@@ -8,6 +9,7 @@ class UserEntity {
   final double moneySaved;
 
   const UserEntity({
+    required this.id,
     required this.name,
     required this.email,
     required this.role,
@@ -19,6 +21,7 @@ class UserEntity {
 
   factory UserEntity.fromJson(Map<String, dynamic> json) {
     return UserEntity(
+      id: json['id'],
       name: json['name'],
       email: json['email'],
       role: json['role'],

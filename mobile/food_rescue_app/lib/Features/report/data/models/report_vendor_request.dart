@@ -1,19 +1,22 @@
 class ReportVendorRequest {
-  final String vendorId;
-  final String type;
+  final String orderId;
+  final String issueType;
   final String description;
+  final String priority;
 
   ReportVendorRequest({
-    required this.vendorId,
-    required this.type,
+    required this.orderId,
+    required this.issueType,
     required this.description,
+    required this.priority,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'vendorId': vendorId,
-      'type': type,
+      'orderId': orderId,
+      'issueType': issueType,
       'description': description,
+      'priority': priority,
     };
   }
 }

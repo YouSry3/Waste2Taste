@@ -6,8 +6,6 @@ class OrderConfirmationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: OrderConfirmationViewBody(),
-    );
+    return const Scaffold(body: OrderConfirmationViewBody());
   }
 }

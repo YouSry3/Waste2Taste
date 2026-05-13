@@ -5,6 +5,7 @@ import '../../domain/repos/order_repo.dart';
 import '../data_sources/order_remote_data_source.dart';
 import '../models/reserve_order_request_model.dart';
 import '../models/reserve_order_response_model.dart';
+import '../models/order_model.dart';
 
 class OrderRepoImpl extends OrderRepo {
   final OrderRemoteDataSource orderRemoteDataSource;
@@ -17,6 +18,20 @@ class OrderRepoImpl extends OrderRepo {
   ) async {
     try {
       var result = await orderRemoteDataSource.reserveOrder(requestModel);
+      return Right(result);
+    } catch (e) {
+      if (e is DioException) {
+        return left(ServerFailure.fromDioException(e));
+      } else {
+        return left(ServerFailure(errorMessage: e.toString()));
+      }
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<OrderModel>>> getMyOrders() async {
+    try {
+      var result = await orderRemoteDataSource.getMyOrders();
       return Right(result);
     } catch (e) {
       if (e is DioException) {

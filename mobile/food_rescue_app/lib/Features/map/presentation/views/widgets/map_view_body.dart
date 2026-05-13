@@ -14,8 +14,14 @@ import 'vendor_bottom_panel.dart';
 class MapViewBody extends StatefulWidget {
   final LatLng? initialLocation;
   final String? targetVendorId;
+  final List<VendorModel> vendors;
 
-  const MapViewBody({super.key, this.initialLocation, this.targetVendorId});
+  const MapViewBody({
+    super.key,
+    this.initialLocation,
+    this.targetVendorId,
+    this.vendors = const [],
+  });
 
   @override
   State<MapViewBody> createState() => _MapViewBodyState();
@@ -45,6 +51,15 @@ class _MapViewBodyState extends State<MapViewBody> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadMapStyle();
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant MapViewBody oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Rebuild markers and vendor list when vendors change
+    if (widget.vendors != oldWidget.vendors && _currentLocation != null) {
+      _rebuildVendorData(_currentLocation!);
+    }
   }
 
   @override
@@ -110,29 +125,35 @@ class _MapViewBodyState extends State<MapViewBody> {
       }
 
       final newLocation = LatLng(lat, lng);
-
-      final vendors = _buildSortedVendors(newLocation);
-      final markers = _buildMarkers(newLocation);
-      final circles = _buildCircle(newLocation);
+      _rebuildVendorData(newLocation);
 
       setState(() {
         _currentLocation = newLocation;
-        _sortedVendors = vendors;
-
-        _markers
-          ..clear()
-          ..addAll(markers);
-
-        _circles
-          ..clear()
-          ..addAll(circles);
-
         _isLoadingLocation = false;
       });
     } catch (e) {
       if (!mounted) return;
       _setError("Error getting location");
     }
+  }
+
+  void _rebuildVendorData(LatLng location) {
+    final vendors = _buildSortedVendors(location);
+    final markers = _buildMarkers(location);
+    final circles = _buildCircle(location);
+
+    setState(() {
+      _currentLocation = location;
+      _sortedVendors = vendors;
+
+      _markers
+        ..clear()
+        ..addAll(markers);
+
+      _circles
+        ..clear()
+        ..addAll(circles);
+    });
   }
 
   void _setError(String message) {
@@ -145,8 +166,8 @@ class _MapViewBodyState extends State<MapViewBody> {
   }
 
   List<VendorDistance> _buildSortedVendors(LatLng location) {
-    final list = List<VendorDistance>.generate(mapVendors.length, (i) {
-      final v = mapVendors[i];
+    final list = List<VendorDistance>.generate(widget.vendors.length, (i) {
+      final v = widget.vendors[i];
       final dist = MapUtils.calculateDistance(
         location,
         LatLng(v.latitude, v.longitude),
@@ -184,7 +205,7 @@ class _MapViewBodyState extends State<MapViewBody> {
       );
     }
 
-    for (final v in mapVendors) {
+    for (final v in widget.vendors) {
       if (widget.targetVendorId != null && v.id == widget.targetVendorId) {
         continue;
       }
@@ -197,7 +218,7 @@ class _MapViewBodyState extends State<MapViewBody> {
           position: position,
           infoWindow: InfoWindow(
             title: v.name,
-            snippet: "Tap to get directions",
+            snippet: "${v.productCount} products available",
             onTap: () => MapUtils.openMaps(context, position),
           ),
           icon: BitmapDescriptor.defaultMarkerWithHue(

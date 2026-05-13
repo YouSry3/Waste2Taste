@@ -14,7 +14,12 @@ class ProductInfoSection extends StatelessWidget {
       children: [
         Text(product.name, style: AppTextStyles.title(context)),
         const SizedBox(height: 8),
-        VendorCard(vendorName: product.vendorName, vendorId: product.vendorId),
+        VendorCard(
+          vendorName: product.vendorName,
+          vendorId: product.vendorId,
+          latitude: product.latitude,
+          longitude: product.longitude,
+        ),
       ],
     );
   }

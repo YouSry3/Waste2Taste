@@ -542,4 +542,57 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chooseLanguage => 'اختر اللغة';
+
+  @override
+  String get openingVendorLocation => 'فتح موقع البائع...';
+
+  @override
+  String get vendorProducts => 'منتجات البائع';
+
+  @override
+  String productsAvailable(Object count) {
+    return '$count منتجات متاحة';
+  }
+
+  @override
+  String get issueType => 'نوع المشكلة';
+
+  @override
+  String get priority => 'الأهمية';
+
+  @override
+  String get low => 'منخفضة';
+
+  @override
+  String get medium => 'متوسطة';
+
+  @override
+  String get high => 'عالية';
+
+  @override
+  String get pleaseSelectIssueType => 'يرجى اختيار نوع المشكلة';
+
+  @override
+  String get pleaseSelectPriority => 'يرجى اختيار الأهمية';
+
+  @override
+  String get removedFromFavorites => 'تم الحذف من المفضلة';
+
+  @override
+  String get addedToFavorites => 'تم الإضافة للمفضلة';
+
+  @override
+  String get noSavedOffers => 'لم تقم بحفظ أي عروض بعد.';
+
+  @override
+  String get filter => 'تصفية';
+
+  @override
+  String get maxPrice => 'أقصى سعر';
+
+  @override
+  String get maxDistance => 'أقصى مسافة';
+
+  @override
+  String get apply => 'تطبيق';
 }

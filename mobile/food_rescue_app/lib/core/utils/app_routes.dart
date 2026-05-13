@@ -20,4 +20,5 @@ abstract class AppRoutes {
   static const String helpAndSupportView = '/helpAndSupportView';
   static const String reportVendorView = '/reportVendorView';
   static const String changePasswordView = '/changePasswordView';
+  static const String vendorProductsView = '/vendorProductsView';
 }

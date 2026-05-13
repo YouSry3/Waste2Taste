@@ -1129,6 +1129,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose Language'**
   String get chooseLanguage;
+
+  /// No description provided for @openingVendorLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening vendor location...'**
+  String get openingVendorLocation;
+
+  /// No description provided for @vendorProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor Products'**
+  String get vendorProducts;
+
+  /// No description provided for @productsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} products available'**
+  String productsAvailable(Object count);
+
+  /// No description provided for @issueType.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue Type'**
+  String get issueType;
+
+  /// No description provided for @priority.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get priority;
+
+  /// No description provided for @low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get low;
+
+  /// No description provided for @medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get medium;
+
+  /// No description provided for @high.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get high;
+
+  /// No description provided for @pleaseSelectIssueType.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an issue type'**
+  String get pleaseSelectIssueType;
+
+  /// No description provided for @pleaseSelectPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a priority'**
+  String get pleaseSelectPriority;
+
+  /// No description provided for @removedFromFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from favorites'**
+  String get removedFromFavorites;
+
+  /// No description provided for @addedToFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to favorites'**
+  String get addedToFavorites;
+
+  /// No description provided for @noSavedOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t saved any offers yet.'**
+  String get noSavedOffers;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
+  /// No description provided for @maxPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum Price'**
+  String get maxPrice;
+
+  /// No description provided for @maxDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum Distance'**
+  String get maxDistance;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
 }
 
 class _AppLocalizationsDelegate

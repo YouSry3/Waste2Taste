@@ -170,5 +170,22 @@
     "reportSubmittedSuccessfully": "تم إرسال التقرير بنجاح",
     "pleaseEnterSubject": "يرجى إدخال الموضوع",
     "pleaseEnterDescription": "يرجى إدخال الوصف",
-    "chooseLanguage": "اختر اللغة"
+    "chooseLanguage": "اختر اللغة",
+    "openingVendorLocation": "فتح موقع البائع...",
+    "vendorProducts": "منتجات البائع",
+    "productsAvailable": "{count} منتجات متاحة",
+    "issueType": "نوع المشكلة",
+    "priority": "الأهمية",
+    "low": "منخفضة",
+    "medium": "متوسطة",
+    "high": "عالية",
+    "pleaseSelectIssueType": "يرجى اختيار نوع المشكلة",
+    "pleaseSelectPriority": "يرجى اختيار الأهمية",
+    "removedFromFavorites": "تم الحذف من المفضلة",
+    "addedToFavorites": "تم الإضافة للمفضلة",
+    "noSavedOffers": "لم تقم بحفظ أي عروض بعد.",
+    "filter": "تصفية",
+    "maxPrice": "أقصى سعر",
+    "maxDistance": "أقصى مسافة",
+    "apply": "تطبيق"
 }

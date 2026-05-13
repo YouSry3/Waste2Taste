@@ -30,6 +30,7 @@ import '../../Features/splash/presentation/manager/onboarding_cubit.dart';
 import '../../Features/splash/presentation/views/onboarding_view.dart';
 import '../../Features/splash/presentation/views/splash_view.dart';
 import '../../Features/report/presentation/views/report_vendor_view.dart';
+import '../../Features/map/presentation/views/vendor_products_view.dart';
 import '../database/flutter_secure_storage_service.dart';
 import '../functions/setup_service_locator.dart';
 import '../widgets/custom_bottom_navigation_bar.dart';
@@ -157,6 +158,10 @@ abstract class AppRouter {
               ChangePasswordCubit(getIt.get<ChangePasswordUsecase>()),
           child: const ChangePasswordView(),
         ),
+      ),
+      GoRoute(
+        path: AppRoutes.vendorProductsView,
+        builder: (context, state) => const VendorProductsView(),
       ),
     ],
   );

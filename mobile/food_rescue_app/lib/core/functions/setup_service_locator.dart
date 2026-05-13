@@ -13,11 +13,14 @@ import 'package:waste2taste/Features/home/data/repos/home_repo_impl.dart';
 import 'package:waste2taste/Features/home/domain/use_cases/get_profile_usecase.dart';
 import 'package:waste2taste/Features/home/domain/use_cases/get_user_location_usecase.dart';
 import 'package:waste2taste/Features/home/domain/use_cases/get_products_usecase.dart';
+import 'package:waste2taste/Features/home/presentation/manager/get_products_cubit/get_products_cubit.dart';
 import 'package:waste2taste/Features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:waste2taste/Features/profile/data/repos/profile_repo_impl.dart';
 import 'package:waste2taste/Features/profile/domain/usecases/edit_profile_usecase.dart';
 import 'package:waste2taste/Features/profile/domain/usecases/change_password_usecase.dart';
 import 'package:waste2taste/Features/profile/domain/usecases/delete_account_usecase.dart';
+import 'package:waste2taste/Features/profile/domain/usecases/send_support_request_usecase.dart';
+import 'package:waste2taste/Features/profile/presentation/manager/send_support_request_cubit/send_support_request_cubit.dart';
 import 'package:waste2taste/Features/products/data/data_sources/product_remote_data_source.dart';
 import 'package:waste2taste/Features/products/data/repos/product_repo_impl.dart';
 import 'package:waste2taste/Features/products/domain/use_cases/get_product_reviews_usecase.dart';
@@ -25,6 +28,10 @@ import 'package:waste2taste/Features/products/domain/use_cases/add_review_usecas
 import 'package:waste2taste/Features/products/domain/use_cases/delete_review_usecase.dart';
 import 'package:waste2taste/Features/products/presentation/manager/add_review_cubit/add_review_cubit.dart';
 import 'package:waste2taste/Features/products/presentation/manager/delete_review_cubit/delete_review_cubit.dart';
+import 'package:waste2taste/Features/products/domain/use_cases/toggle_favorite_usecase.dart';
+import 'package:waste2taste/Features/products/domain/use_cases/get_favorite_products_usecase.dart';
+import 'package:waste2taste/Features/products/presentation/manager/get_favorite_products_cubit/get_favorite_products_cubit.dart';
+import 'package:waste2taste/Features/products/presentation/manager/toggle_favorite_cubit/toggle_favorite_cubit.dart';
 import 'package:waste2taste/Features/splash/data/repos/onboarding_repo_impl.dart';
 import 'package:waste2taste/Features/splash/domain/repos/onboarding_repo.dart';
 import 'package:waste2taste/core/database/flutter_secure_storage_service.dart';
@@ -40,7 +47,9 @@ import 'package:waste2taste/Features/report/presentation/manager/report_vendor_c
 import 'package:waste2taste/Features/orders/data/data_sources/order_remote_data_source.dart';
 import 'package:waste2taste/Features/orders/data/repos/order_repo_impl.dart';
 import 'package:waste2taste/Features/orders/domain/use_cases/reserve_order_usecase.dart';
+import 'package:waste2taste/Features/orders/domain/use_cases/get_my_orders_usecase.dart';
 import 'package:waste2taste/Features/orders/presentation/manager/reserve_order_cubit/reserve_order_cubit.dart';
+import 'package:waste2taste/Features/orders/presentation/manager/get_my_orders_cubit/get_my_orders_cubit.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -101,6 +110,9 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<GetProductsUsecase>(
     () => GetProductsUsecase(homeRepo: getIt.get<HomeRepoImpl>()),
   );
+  getIt.registerLazySingleton<GetProductsCubit>(
+    () => GetProductsCubit(getIt.get<GetProductsUsecase>()),
+  );
   getIt.registerLazySingleton<ProfileRemoteDataSource>(
     () => ProfileRemoteDataSourceImpl(getIt.get<ApiService>()),
   );
@@ -117,6 +129,12 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerLazySingleton<DeleteAccountUsecase>(
     () => DeleteAccountUsecase(getIt.get<ProfileRepoImpl>()),
+  );
+  getIt.registerLazySingleton<SendSupportRequestUsecase>(
+    () => SendSupportRequestUsecase(getIt.get<ProfileRepoImpl>()),
+  );
+  getIt.registerFactory<SendSupportRequestCubit>(
+    () => SendSupportRequestCubit(getIt.get<SendSupportRequestUsecase>()),
   );
 
   getIt.registerLazySingleton<ProductRemoteDataSource>(
@@ -136,11 +154,23 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<DeleteReviewUseCase>(
     () => DeleteReviewUseCase(productRepo: getIt.get<ProductRepoImpl>()),
   );
+  getIt.registerLazySingleton<ToggleFavoriteUsecase>(
+    () => ToggleFavoriteUsecase(productRepo: getIt.get<ProductRepoImpl>()),
+  );
+  getIt.registerLazySingleton<GetFavoriteProductsUsecase>(
+    () => GetFavoriteProductsUsecase(productRepo: getIt.get<ProductRepoImpl>()),
+  );
   getIt.registerFactory<AddReviewCubit>(
     () => AddReviewCubit(addReviewUseCase: getIt.get<AddReviewUseCase>()),
   );
   getIt.registerFactory<DeleteReviewCubit>(
     () => DeleteReviewCubit(deleteReviewUseCase: getIt.get<DeleteReviewUseCase>()),
+  );
+  getIt.registerFactory<ToggleFavoriteCubit>(
+    () => ToggleFavoriteCubit(getIt.get<ToggleFavoriteUsecase>()),
+  );
+  getIt.registerFactory<GetFavoriteProductsCubit>(
+    () => GetFavoriteProductsCubit(getIt.get<GetFavoriteProductsUsecase>()),
   );
   getIt.registerLazySingleton<ReportRemoteDataSource>(
     () => ReportRemoteDataSourceImpl(getIt.get<ApiService>()),
@@ -166,7 +196,13 @@ Future<void> setupServiceLocator() async {
   getIt.registerLazySingleton<ReserveOrderUseCase>(
     () => ReserveOrderUseCase(orderRepo: getIt.get<OrderRepoImpl>()),
   );
+  getIt.registerLazySingleton<GetMyOrdersUseCase>(
+    () => GetMyOrdersUseCase(orderRepo: getIt.get<OrderRepoImpl>()),
+  );
   getIt.registerFactory<ReserveOrderCubit>(
     () => ReserveOrderCubit(reserveOrderUseCase: getIt.get<ReserveOrderUseCase>()),
+  );
+  getIt.registerFactory<GetMyOrdersCubit>(
+    () => GetMyOrdersCubit(getIt.get<GetMyOrdersUseCase>()),
   );
 }

@@ -9,6 +9,7 @@ import '../datasources/profile_remote_data_source.dart';
 import '../models/edit_profile_request_model.dart';
 import '../models/edit_profile_response_model.dart';
 import '../models/change_password_request_model.dart';
+import '../models/support_request_model.dart';
 
 
 class ProfileRepoImpl extends ProfileRepo {
@@ -53,6 +54,22 @@ class ProfileRepoImpl extends ProfileRepo {
     try {
       await profileRemoteDataSource.deleteAccount();
       return Right(NoParamImpl());
+    } catch (e) {
+      if (e is DioException) {
+        return left(ServerFailure.fromDioException(e));
+      } else {
+        return left(ServerFailure(errorMessage: e.toString()));
+      }
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> sendSupportRequest(
+    SupportRequestModel requestModel,
+  ) async {
+    try {
+      await profileRemoteDataSource.sendSupportRequest(requestModel);
+      return const Right(null);
     } catch (e) {
       if (e is DioException) {
         return left(ServerFailure.fromDioException(e));

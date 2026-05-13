@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:waste2taste/core/errors/failure.dart';
+import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import 'package:waste2taste/Features/products/domain/entities/review_entity.dart';
 import 'package:waste2taste/Features/products/domain/repos/product_repo.dart';
 import 'package:waste2taste/Features/products/data/data_sources/product_remote_data_source.dart';
@@ -49,6 +50,32 @@ class ProductRepoImpl implements ProductRepo {
     try {
       await productRemoteDataSource.deleteReview(reviewId);
       return const Right(null);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioException(e));
+      }
+      return Left(ServerFailure(errorMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> toggleFavorite(String productId) async {
+    try {
+      await productRemoteDataSource.toggleFavorite(productId);
+      return const Right(null);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioException(e));
+      }
+      return Left(ServerFailure(errorMessage: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ProductEntity>>> getFavoriteProducts() async {
+    try {
+      final products = await productRemoteDataSource.getFavoriteProducts();
+      return Right(products);
     } catch (e) {
       if (e is DioException) {
         return Left(ServerFailure.fromDioException(e));

@@ -3,6 +3,7 @@ import 'package:waste2taste/core/constants/api_urls.dart';
 import 'package:waste2taste/core/database/flutter_secure_storage_service.dart';
 import 'package:waste2taste/core/functions/setup_service_locator.dart';
 import 'package:waste2taste/core/services/api_service.dart';
+import 'package:waste2taste/Features/home/data/models/product_model.dart';
 import 'package:waste2taste/Features/products/data/models/add_review_model.dart';
 import 'package:waste2taste/Features/products/data/models/add_review_response_model.dart';
 import 'package:waste2taste/Features/products/data/models/review_model.dart';
@@ -11,6 +12,8 @@ abstract class ProductRemoteDataSource {
   Future<List<ReviewModel>> getProductReviews(String vendorId);
   Future<AddReviewResponseModel> addReview(AddReviewModel review);
   Future<void> deleteReview(int reviewId);
+  Future<void> toggleFavorite(String productId);
+  Future<List<ProductModel>> getFavoriteProducts();
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -56,5 +59,29 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       "${ApiUrls.deleteReview}/$reviewId",
       options: Options(headers: {"Authorization": "Bearer ${tokens!.token}"}),
     );
+  }
+
+  @override
+  Future<void> toggleFavorite(String productId) async {
+    var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
+    await apiService.post(
+      "${ApiUrls.productsUrl}/$productId/favorite",
+      options: Options(headers: {"Authorization": "Bearer ${tokens!.token}"}),
+    );
+  }
+
+  @override
+  Future<List<ProductModel>> getFavoriteProducts() async {
+    var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
+    final response = await apiService.get(
+      ApiUrls.myFavoritesUrl,
+      options: Options(headers: {"Authorization": "Bearer ${tokens!.token}"}),
+    );
+
+    List<ProductModel> products = [];
+    for (var item in response.data) {
+      products.add(ProductModel.fromJson(item));
+    }
+    return products;
   }
 }

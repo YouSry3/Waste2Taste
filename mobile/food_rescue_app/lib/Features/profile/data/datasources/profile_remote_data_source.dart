@@ -7,6 +7,7 @@ import '../models/edit_profile_request_model.dart';
 import '../models/edit_profile_response_model.dart';
 import '../models/change_password_request_model.dart';
 import '../models/change_password_response_model.dart';
+import '../models/support_request_model.dart';
 
 abstract class ProfileRemoteDataSource {
   Future<EditProfileResponseModel> editProfile(
@@ -16,6 +17,7 @@ abstract class ProfileRemoteDataSource {
     ChangePasswordRequestModel requestModel,
   );
   Future<void> deleteAccount();
+  Future<void> sendSupportRequest(SupportRequestModel requestModel);
 }
 
 class ProfileRemoteDataSourceImpl extends ProfileRemoteDataSource {
@@ -66,6 +68,17 @@ class ProfileRemoteDataSourceImpl extends ProfileRemoteDataSource {
 
     await _apiService.delete(
       ApiUrls.deleteAccount,
+      options: Options(headers: {'Authorization': 'Bearer ${tokens!.token}'}),
+    );
+  }
+
+  @override
+  Future<void> sendSupportRequest(SupportRequestModel requestModel) async {
+    var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
+
+    await _apiService.post(
+      ApiUrls.sendSupport,
+      data: requestModel.toJson(),
       options: Options(headers: {'Authorization': 'Bearer ${tokens!.token}'}),
     );
   }

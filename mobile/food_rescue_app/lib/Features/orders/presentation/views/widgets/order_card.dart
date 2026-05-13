@@ -37,19 +37,18 @@ class OrderCard extends StatelessWidget {
               ),
             ],
           ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(24),
-            onTap: () {},
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                OrderHeader(orderId: order.id, statusConfig: statusConfig),
-                OrderContent(order: order),
-                isActive
-                    ? ActiveOrderFooter(pickupTime: order.pickupTime)
-                    : PastOrderFooter(order: order),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              OrderHeader(
+                orderId: order.orderNumber,
+                statusConfig: statusConfig,
+              ),
+              OrderContent(order: order),
+              isActive
+                  ? ActiveOrderFooter(order: order)
+                  : PastOrderFooter(order: order),
+            ],
           ),
         )
         .animate(autoPlay: true)

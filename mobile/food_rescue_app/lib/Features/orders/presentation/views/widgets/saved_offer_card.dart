@@ -28,7 +28,7 @@ class SavedOfferCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    order.itemTitle,
+                    order.productName,
                     style: AppTextStyles.title(context).copyWith(fontSize: 16),
                   ),
                   Text(
@@ -54,7 +54,7 @@ class SavedOfferCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                order.orderDate,
+                order.pickupTime,
                 style: AppTextStyles.body(context).copyWith(
                   color: Colors.red,
                   fontSize: 12,

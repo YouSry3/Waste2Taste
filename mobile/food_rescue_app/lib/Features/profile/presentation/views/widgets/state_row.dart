@@ -36,9 +36,15 @@ class StatesRow extends StatelessWidget {
         children: [
           StateItem(value: orderCount.toString(), label: context.loc.orders),
           const VerticalDivider(),
-          StateItem(value: '\$${moneySpent.toStringAsFixed(0)}', label: context.loc.moneySpent),
+          StateItem(
+            value: '\$${moneySpent.toStringAsFixed(0)}',
+            label: context.loc.moneySpent,
+          ),
           const VerticalDivider(),
-          StateItem(value: '\$${moneySaved.toStringAsFixed(0)}', label: context.loc.moneySaved),
+          StateItem(
+            value: '\$${moneySaved.toStringAsFixed(0)}',
+            label: context.loc.moneySaved,
+          ),
         ],
       ),
     );

@@ -21,12 +21,12 @@ class ReviewUserInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileState = context.watch<GetProfileCubit>().state;
-    String? currentUserName;
+    String? currentUserId;
     if (profileState is GetProfileSuccessState) {
-      currentUserName = profileState.userEntity.name;
+      currentUserId = profileState.userEntity.id;
     }
 
-    final bool isOwner = currentUserName == review.userName;
+    final bool isOwner = currentUserId == review.userId;
 
     return Row(
       children: [
