@@ -455,6 +455,14 @@ export class AuthService {
     localStorage.setItem("user", JSON.stringify(normalizedLogin.user));
     localStorage.setItem("panelType", normalizedLogin.user.panelType);
 
+    // Store vendorId for vendor API calls (e.g. reviews)
+const rawData = loginResponse as any;
+const vendorId = rawData?.vendorId ?? rawData?.VendorId ?? null;
+if (vendorId) {
+  localStorage.setItem("vendorId", vendorId);
+} else {
+  localStorage.removeItem("vendorId");
+}
     return normalizedLogin;
   }
 

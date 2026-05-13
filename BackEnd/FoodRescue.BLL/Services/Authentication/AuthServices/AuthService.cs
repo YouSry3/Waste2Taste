@@ -36,13 +36,10 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
             if (user == null || user.Password != request.Password)
                 return Result.Failure<LoginResponse>(UserErrors.InValidCredentials);
 
-            //Generate Token
             var (Token, ExpiresIn) = _JwtProvider.GenerateToken(user);
-
 
             var refreshToken = _JwtProvider.GenerateRefreshToken();
 
-            // 💾 Save Refresh Token in RefreshTokens table
             var refreshTokenEntity = new RefreshToken
             {
                 Token = refreshToken,
@@ -54,21 +51,26 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
             await _Context.RefreshTokens.AddAsync(refreshTokenEntity);
             await _Context.SaveChangesAsync();
 
-            return Result.Success(new LoginResponse
-                        (
-                             // Assuming LoginResponse has settable properties for these fields.
-                             // Replace these property names with the actual property names in LoginResponse.
-                             user.Id,
-                             user.Name,
-                             user.Email!,
-                             user.Role,
-                            Token,
-                            ExpiresIn,
-                            refreshToken,
-                            user.ImageUrl
+            // Fetch vendor ID if user is a vendor
+            Guid? vendorId = null;
+            if (user.Role.ToLower() == "vendor")
+            {
+                var vendor = await _Context.Vendors
+                    .FirstOrDefaultAsync(v => v.OwnerId == user.Id, cancellationToken);
+                vendorId = vendor?.Id;
+            }
 
-
-                        ));
+            return Result.Success(new LoginResponse(
+                user.Id,
+                user.Name,
+                user.Email!,
+                user.Role,
+                Token,
+                ExpiresIn,
+                refreshToken,
+                user.ImageUrl,
+                vendorId   // ← ADD
+            ));
         }
 
         public async Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)

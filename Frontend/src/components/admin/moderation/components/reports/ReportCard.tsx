@@ -435,40 +435,7 @@ export function ReportCard({
                   )}
                 </button>
 
-                {/* Dismiss */}
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <button className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200">
-                      <Archive className="h-4 w-4" />
-                      Dismiss
-                    </button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Dismiss Report #{report.orderId}?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This will mark the report as dismissed and remove it from the review
-                        queue. This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-gray-600 hover:bg-gray-700 text-white"
-                        onClick={() => onDismiss(report.id)}
-                      >
-                        {loadingStates[`report-${report.id}`] ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Dismissing...
-                          </>
-                        ) : (
-                          "Dismiss Report"
-                        )}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+            
               </>
             )}
           </div>

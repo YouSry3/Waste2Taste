@@ -1,4 +1,5 @@
-﻿using FoodRescue.BLL.Contract.Orders.info;
+﻿using FoodRescue.BLL.Contract.Orders;
+using FoodRescue.BLL.Contract.Orders.info;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +81,30 @@ namespace FoodRescue.BLL.Extensions.Orders
             await _context.SaveChangesAsync();
 
             return await GetOrderByIdAsync(id);
+        }
+
+        public async Task<List<AdminOrderDto>> GetAllOrdersAsync()
+        {
+            return await _context.Orders
+        .AsNoTracking()
+        .OrderByDescending(o => o.CreatedAt)
+        .Select(o => new AdminOrderDto
+        {
+            Id = o.Id,
+            Status = o.Status,
+            TotalPrice = o.TotalPrice,
+            CreatedAt = o.CreatedAt,
+            PickupTime = o.PickupTime,
+            CustomerId = o.CustomerId,
+            CustomerName = o.Customer.Name,
+            CustomerEmail = o.Customer.Email,
+            ProductId = o.ProductId,
+            ProductName = o.Product.Name,
+            ProductImageUrl = o.Product.ImageUrl,
+            VendorId = o.Product.VendorId,
+            VendorName = o.Product.Vendor.Name
+        })
+        .ToListAsync();
         }
     }
 }

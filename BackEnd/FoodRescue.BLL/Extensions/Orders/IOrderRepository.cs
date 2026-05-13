@@ -1,6 +1,6 @@
-﻿using FoodRescue.BLL.Contract.Orders.info;
+﻿using FoodRescue.BLL.Contract.Orders;
+using FoodRescue.BLL.Contract.Orders.info;
 using FoodRescue.DAL.Entities;
-
 namespace FoodRescue.BLL.Extensions.Orders
 {
     public interface IOrderRepository
@@ -10,5 +10,6 @@ namespace FoodRescue.BLL.Extensions.Orders
         Task<List<Order>> GetOrdersByVendorAsync(Guid vendorId);
         Task<Order?> GetOrderByIdAsync(Guid id);  //  Guid not int
         Task<Order?> UpdateOrderStatusAsync(Guid id, string status);  //  Guid not int
+        Task<List<AdminOrderDto>> GetAllOrdersAsync();
     }
 }

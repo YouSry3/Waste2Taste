@@ -1,9 +1,8 @@
-﻿
-
-global using FoodRescue.BLL.Extensions.Orders;
+﻿global using FoodRescue.BLL.Extensions.Orders;
 global using FoodRescue.BLL.Extensions.Products;
 global using FoodRescue.BLL.Extensions.Users;
 global using FoodRescue.BLL.ResultPattern;
+using FoodRescue.BLL.Contract.Orders;
 using FoodRescue.BLL.Contract.Orders.Create;
 using FoodRescue.BLL.Contract.Orders.info;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
@@ -106,6 +105,10 @@ namespace FoodRescue.BLL.Services.Orders
                 throw new ArgumentException("Status cannot be empty.");
 
             return await _orderRepo.UpdateOrderStatusAsync(id, status);
+        }
+        public async Task<List<AdminOrderDto>> GetAllOrdersAsync()
+        {
+            return await _orderRepo.GetAllOrdersAsync();
         }
     }
 }

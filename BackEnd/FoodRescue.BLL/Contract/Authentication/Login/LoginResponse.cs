@@ -8,7 +8,6 @@
         string Token,
         int ExpireAt,
         string RefreshToken,
-        string? ImageUrl);
-
-
+        string? ImageUrl,
+        Guid? VendorId);  // ← ADD
 }

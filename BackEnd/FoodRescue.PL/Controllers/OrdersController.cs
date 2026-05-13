@@ -169,9 +169,8 @@ namespace FoodRescue.PL.Controllers
         {
             try
             {
-                // يمكنك إضافة method جديدة في Service للـ Admin
-                //var orders = await _service.GetAllOrdersAsync();
-                return Ok(new { message = "This endpoint needs implementation in service layer." });
+                var orders = await _orderservice.GetAllOrdersAsync();
+                return Ok(orders);
             }
             catch (Exception ex)
             {
