@@ -7,10 +7,7 @@ import 'circle_icon_button.dart';
 import 'product_image_header.dart';
 
 class ImageHeaderWidgetForProductDetails extends StatelessWidget {
-  const ImageHeaderWidgetForProductDetails({
-    super.key,
-    required this.product,
-  });
+  const ImageHeaderWidgetForProductDetails({super.key, required this.product});
 
   final ProductEntity product;
 
@@ -37,8 +34,10 @@ class ImageHeaderWidgetForProductDetails extends StatelessWidget {
               ),
               const Spacer(),
               CircleIconButton(
-                icon: LucideIcons.heart,
-                color: AppColors.accent,
+                icon: Icons.favorite,
+                color: product.isFavorite
+                    ? AppColors.accent
+                    : AppColors.textGrayDark,
                 onPressed: () {},
               ),
               const SizedBox(width: 12),

@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:waste2taste/core/utils/app_routes.dart';
-import '../../../../../core/constants/app_colors.dart';
-import '../../../../../core/extensions/app_localization_extention.dart';
-import '../../../../../core/widgets/custom_elevated_button.dart';
-import 'package:waste2taste/Features/home/data/models/product_model.dart';
 import 'package:waste2taste/Features/home/presentation/views/widgets/image_header_widget_for_product_details.dart';
 import 'package:waste2taste/Features/products/presentation/views/widgets/product_details_widget.dart';
-
 import '../../../../home/domain/entities/product_entity.dart';
+import 'reserve_button_bloc_consumer.dart';
 
 class ProductDetailsViewBody extends StatelessWidget {
   const ProductDetailsViewBody({super.key});
@@ -33,13 +28,7 @@ class ProductDetailsViewBody extends StatelessWidget {
           bottom: 16,
           left: 16,
           right: 16,
-          child: CustomElevatedButton(
-            bgColor: AppColors.secondary,
-            onPressed: () =>
-                GoRouter.of(context).push(AppRoutes.orderConfirmationView),
-            text: context.loc.reserveNow,
-          ),
-        ),
+          child: ReserveButtonBlocConsumer(product: product)),
       ],
     );
   }

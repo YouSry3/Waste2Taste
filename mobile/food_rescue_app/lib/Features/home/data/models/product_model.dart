@@ -17,6 +17,7 @@ class ProductModel extends ProductEntity {
     required super.longitude,
     required super.vendorId,
     required super.description,
+    required super.isFavorite,
     super.category,
   });
 
@@ -36,6 +37,7 @@ class ProductModel extends ProductEntity {
       longitude: (json['longitude'] ?? 0).toDouble(),
       vendorId: json['vendorId'] ?? '',
       description: json['descripcion'] ?? 'No description',
+      isFavorite: json['isFavorite'] ?? false,
       category: json['category'] ?? '',
     );
   }
@@ -53,6 +55,8 @@ class ProductModel extends ProductEntity {
       'vendorName': vendorName,
       'latitude': latitude,
       'longitude': longitude,
+      'isFavorite': isFavorite,
+      'category': category,
     };
   }
 }

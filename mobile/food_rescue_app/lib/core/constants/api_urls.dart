@@ -18,4 +18,5 @@ abstract class ApiUrls {
   static const addReview = "$baseUrl${ApiEndPoints.addReviewEndPoint}";
   static const deleteReview = "$baseUrl${ApiEndPoints.deleteReviewEndPoint}";
   static const reportUrl = "$baseUrl${ApiEndPoints.reportEndPoint}";
+  static const reserveOrderUrl = "$baseUrl${ApiEndPoints.reserveOrderEndPoint}";
 }

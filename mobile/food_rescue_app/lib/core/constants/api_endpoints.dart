@@ -14,4 +14,5 @@ abstract class ApiEndPoints {
   static const addReviewEndPoint = "/Reviews/Add";
   static const deleteReviewEndPoint = "/Reviews";
   static const reportEndPoint = "/Reports";
+  static const reserveOrderEndPoint = "/orders";
 }

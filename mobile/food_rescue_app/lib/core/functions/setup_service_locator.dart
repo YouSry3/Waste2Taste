@@ -37,6 +37,11 @@ import 'package:waste2taste/Features/report/data/repos/report_repo_impl.dart';
 import 'package:waste2taste/Features/report/domain/use_cases/report_vendor_usecase.dart';
 import 'package:waste2taste/Features/report/presentation/manager/report_vendor_cubit/report_vendor_cubit.dart';
 
+import 'package:waste2taste/Features/orders/data/data_sources/order_remote_data_source.dart';
+import 'package:waste2taste/Features/orders/data/repos/order_repo_impl.dart';
+import 'package:waste2taste/Features/orders/domain/use_cases/reserve_order_usecase.dart';
+import 'package:waste2taste/Features/orders/presentation/manager/reserve_order_cubit/reserve_order_cubit.dart';
+
 GetIt getIt = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
@@ -150,5 +155,18 @@ Future<void> setupServiceLocator() async {
   );
   getIt.registerFactory<ReportVendorCubit>(
     () => ReportVendorCubit(getIt.get<ReportVendorUsecase>()),
+  );
+
+  getIt.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl(getIt.get<ApiService>()),
+  );
+  getIt.registerLazySingleton<OrderRepoImpl>(
+    () => OrderRepoImpl(orderRemoteDataSource: getIt.get<OrderRemoteDataSource>()),
+  );
+  getIt.registerLazySingleton<ReserveOrderUseCase>(
+    () => ReserveOrderUseCase(orderRepo: getIt.get<OrderRepoImpl>()),
+  );
+  getIt.registerFactory<ReserveOrderCubit>(
+    () => ReserveOrderCubit(reserveOrderUseCase: getIt.get<ReserveOrderUseCase>()),
   );
 }

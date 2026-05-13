@@ -116,7 +116,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.orderConfirmationView,
-        builder: (context, state) => const OrderConfirmationView(),
+        builder: (context, state) => OrderConfirmationView(),
       ),
       GoRoute(
         path: AppRoutes.homeNavigationBar,
