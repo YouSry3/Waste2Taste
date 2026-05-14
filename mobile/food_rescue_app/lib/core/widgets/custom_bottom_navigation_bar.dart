@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../functions/setup_service_locator.dart';
-import '../../Features/home/presentation/manager/get_products_cubit/get_products_cubit.dart';
 import '../../Features/home/presentation/views/home_view.dart';
 import '../../Features/map/presentation/views/map_view.dart';
 import '../../Features/orders/presentation/views/orders_view.dart';
