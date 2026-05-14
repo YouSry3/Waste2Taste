@@ -86,6 +86,16 @@ public class ProductRepository : IProductRepository
 
     public async Task DeleteAsync(Product product)
     {
+        // Remove related records first to avoid FK violations
+        var favorites = _context.Favorites.Where(f => f.ProductId == product.Id);
+        _context.Favorites.RemoveRange(favorites);
+
+        var reviews = _context.Reviews.Where(r => r.ProductId == product.Id);
+        _context.Reviews.RemoveRange(reviews);
+
+        var orders = _context.Orders.Where(o => o.ProductId == product.Id);
+        _context.Orders.RemoveRange(orders);
+
         _context.Products.Remove(product);
         await _context.SaveChangesAsync();
     }
@@ -95,5 +105,16 @@ public class ProductRepository : IProductRepository
         return await _context.Products
             .AsNoTracking()
             .AnyAsync(p => p.Id == id);
+    }
+
+
+    public async Task<IEnumerable<Product>> GetAllByVendorAsync(Guid vendorId)
+    {
+        return await _context.Products
+            .AsNoTracking()
+            .Include(p => p.Vendor)
+            .Where(p => p.VendorId == vendorId)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
     }
 }

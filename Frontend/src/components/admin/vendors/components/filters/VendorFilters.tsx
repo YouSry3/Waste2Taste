@@ -120,7 +120,12 @@ export function VendorFilters({
           <SelectContent className="bg-background border border-border rounded-md shadow-lg z-50">
             <SelectItem value="all">All Types</SelectItem>
             <SelectItem value="Vendor">Vendors</SelectItem>
-            <SelectItem value="NGO Partner">NGO Partners</SelectItem>
+            <SelectItem value="NGO Partner" disabled className="text-gray-400">
+              NGO Partners{" "}
+              <span className="ml-2 text-xs text-purple-500 font-medium">
+                Coming Soon
+              </span>
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>

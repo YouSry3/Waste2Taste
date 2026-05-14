@@ -355,4 +355,36 @@ public class ProductService : IProductService
 
         return Result.Success();
     }
+
+
+    public async Task<Result<IEnumerable<ProductListResponse>>> GetAllByVendorAsync(Guid vendorId)
+    {
+        var products = await _productRepository.GetAllByVendorAsync(vendorId);
+        var response = new List<ProductListResponse>();
+
+        foreach (var product in products)
+        {
+            var reviews = await GetReviewsByProductIdAsync(product.Id);
+            var avgRating = reviews.Any() ? reviews.Average(r => (double)r.Rating) : 0.0;
+
+            response.Add(new ProductListResponse
+            {
+                Id = product.Id,
+                Name = product.Name,
+                ImageUrl = product.ImageUrl,
+                Price = product.Price,
+                OriginalPrice = product.OriginalPrice,
+                DiscountPercentage = CalculateDiscountPercentage(product.OriginalPrice, product.Price),
+                ExpiresIn = CalculateExpiresIn(product.ExpiryDate),
+                Rating = Math.Round(avgRating, 1),
+                VendorName = product.Vendor.Name,
+                Status = product.Status.ToString(),   // ← important
+                Category = product.Category,
+                VendorId = product.VendorId,
+                Location = product.Vendor.Address
+            });
+        }
+
+        return Result.Success(response.AsEnumerable());
+    }
 }

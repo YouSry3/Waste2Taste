@@ -34,14 +34,19 @@ export function VendorStats({ stats }: VendorStatsProps) {
           </h3>
         </CardContent>
       </Card>
-      <Card className="hover:shadow-lg transition-shadow">
-        <CardContent className="p-6">
-          <p className="text-sm text-gray-500 mb-1">NGO Partners</p>
-          <h3 className="text-3xl font-bold text-gray-900">
-            {renderStatValue(stats.ngoPartners)}
-          </h3>
-        </CardContent>
-      </Card>
+      <Card className="hover:shadow-lg transition-shadow border-dashed border-purple-200 bg-purple-50/30">
+  <CardContent className="p-6">
+    <div className="flex items-center justify-between mb-1">
+      <p className="text-sm text-gray-500">NGO Partners</p>
+      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 border border-purple-200">
+        Coming Soon
+      </span>
+    </div>
+    <h3 className="text-3xl font-bold text-gray-400">
+      {renderStatValue(stats.ngoPartners)}
+    </h3>
+  </CardContent>
+</Card>
       <Card className="hover:shadow-lg transition-shadow">
         <CardContent className="p-6">
           <p className="text-sm text-gray-500 mb-1">Active Listings</p>

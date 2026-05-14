@@ -148,18 +148,7 @@ export function OrderDetailsDialog({
               </div>
 
               <div className="flex gap-3 pt-4 border-t">
-                <Button variant="outline" onClick={onSendReceipt} className="flex-1">
-                  <Mail className="h-4 w-4 mr-2" />
-                  Send Receipt
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={onContactCustomer}
-                  className="flex-1"
-                >
-                  <Phone className="h-4 w-4 mr-2" />
-                  Contact Customer
-                </Button>
+                
                 <Button onClick={onClose} className="flex-1">
                   Close
                 </Button>

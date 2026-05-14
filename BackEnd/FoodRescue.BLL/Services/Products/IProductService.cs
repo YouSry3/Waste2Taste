@@ -1,6 +1,4 @@
-﻿using FoodRescue.BLL.ResultPattern;
-using FoodRescue.BLL.Contract.Products;
-using Microsoft.AspNetCore.Http;
+﻿using FoodRescue.BLL.Contract.Products;
 
 namespace FoodRescue.BLL.Services.Products;
 
@@ -15,4 +13,5 @@ public interface IProductService
     Task<Result> DeleteAsync(Guid id);
     Task<Result> UpdateStockAsync(Guid id, int quantity);
     Task<Result> MarkAsExpiredAsync(Guid id);
+    Task<Result<IEnumerable<ProductListResponse>>> GetAllByVendorAsync(Guid vendorId);
 }

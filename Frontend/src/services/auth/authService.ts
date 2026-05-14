@@ -180,13 +180,9 @@ export class AuthService {
     }
   }
 
-  // Normalize API login response
   private normalizeLoginResponse(data: any): LoginResponse {
-    // Debug: Log the raw response to see what structure we're getting
     console.log("🔍 Raw API Response:", JSON.stringify(data, null, 2));
 
-    // Many backends wrap responses like: { success: true, data: { token, user, ... } }
-    // Some may even wrap twice; unwrap defensively.
     const unwrap = (value: any) => {
       if (
         value &&
@@ -249,7 +245,6 @@ export class AuthService {
       data?.ExpireAt ??
       new Date().toISOString();
 
-    // ASP.NET Core typically returns flat structure or nested user object
     const sourceUser =
       payload?.user ?? level1?.user ?? data?.user ?? payload ?? level1 ?? data ?? {};
 
@@ -262,10 +257,8 @@ export class AuthService {
     console.log("🔍 User object:", sourceUser);
     console.log("🔍 Data keys:", Object.keys(data));
 
-    // The backend uses 'type' field based on the register endpoint
     let panelType: PanelType | undefined;
 
-    // Use role field from backend as fallback
     const typeValue =
       sourceUser?.type ??
       sourceUser?.Type ??
@@ -293,7 +286,6 @@ export class AuthService {
       }
     }
 
-    // Fallback: check roles array
     if (
       !panelType &&
       (sourceUser?.roles ||
@@ -329,7 +321,6 @@ export class AuthService {
 
     console.log("✅ Final panelType:", panelType);
 
-    // Extract roles array
     let roles =
       sourceUser?.roles ??
       sourceUser?.Roles ??
@@ -343,7 +334,6 @@ export class AuthService {
     if (!Array.isArray(roles)) {
       roles = [roles];
     }
-    // Filter out null/undefined values
     roles = roles
       .filter((value: any) => value != null && value !== "")
       .map((value: any) => String(value).toLowerCase());
@@ -361,7 +351,6 @@ export class AuthService {
       );
     }
 
-    // If roles is empty but we have panelType, use it
     if (roles.length === 0 && panelType) {
       roles = [panelType];
     }
@@ -455,14 +444,14 @@ export class AuthService {
     localStorage.setItem("user", JSON.stringify(normalizedLogin.user));
     localStorage.setItem("panelType", normalizedLogin.user.panelType);
 
-    // Store vendorId for vendor API calls (e.g. reviews)
-const rawData = loginResponse as any;
-const vendorId = rawData?.vendorId ?? rawData?.VendorId ?? null;
-if (vendorId) {
-  localStorage.setItem("vendorId", vendorId);
-} else {
-  localStorage.removeItem("vendorId");
-}
+    const rawData = loginResponse as any;
+    const vendorId = rawData?.vendorId ?? rawData?.VendorId ?? null;
+    if (vendorId) {
+      localStorage.setItem("vendorId", vendorId);
+    } else {
+      localStorage.removeItem("vendorId");
+    }
+
     return normalizedLogin;
   }
 
@@ -497,47 +486,8 @@ if (vendorId) {
     this.updateCurrentUser(patch);
   }
 
-  getVendorAccessState(userArg?: AuthUser | null): VendorAccessState {
-    const user = userArg ?? this.getCurrentUser();
-
-    if (!user || user.panelType !== "vendor") {
-      return "approved";
-    }
-
-    const storedStatus = this.getStoredVendorRequestStatusByEmail(user.email);
-    const effectiveStatus = user.vendorApprovalStatus ?? storedStatus;
-    const hasVendorRequest = user.vendorRequestCompleted || !!effectiveStatus;
-
-    if (effectiveStatus && userArg == null) {
-      const shouldSync =
-        user.vendorRequestCompleted !== true ||
-        user.vendorApprovalStatus !== effectiveStatus;
-
-      if (shouldSync) {
-        this.updateCurrentUser({
-          vendorRequestCompleted: true,
-          vendorApprovalStatus: effectiveStatus,
-        });
-      }
-    }
-
-    if (effectiveStatus === "approved") {
-      return "approved";
-    }
-
-    if (effectiveStatus === "rejected") {
-      return "rejected";
-    }
-
-    if (effectiveStatus === "pending") {
-      return "pending";
-    }
-
-    if (!hasVendorRequest) {
-      return "needs_request";
-    }
-
-    return "pending";
+  getVendorAccessState(_userArg?: AuthUser | null): VendorAccessState {
+    return "approved";
   }
 
   // CLIENT-SIDE ONLY LOGOUT (no API call)
@@ -598,4 +548,4 @@ if (vendorId) {
   }
 }
 
-export const authService = new AuthService();
+export const authService = new AuthService(); 

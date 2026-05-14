@@ -26,11 +26,8 @@ export function CustomPieTooltip({ active, payload }: CustomPieTooltipProps) {
           />
           <p className="font-semibold text-gray-900">{data?.name}</p>
         </div>
-        <p className="text-sm text-gray-600">{data?.value}% of listings</p>
+        <p className="text-sm text-gray-600">{data?.value.toFixed(1)}% of listings</p>
         <p className="text-sm text-gray-600">{data?.listings} active listings</p>
-        <p className="text-sm font-semibold text-green-600">
-          {data?.revenue} revenue
-        </p>
       </div>
     );
   }

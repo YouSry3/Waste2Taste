@@ -70,4 +70,14 @@ public class VendorRepository : IVendorRepository
             .AsNoTracking()
             .FirstOrDefaultAsync(v => v.OwnerId == ownerId);
     }
+
+
+    public async Task<double> GetAverageRatingAsync(Guid vendorId)
+    {
+        var avg = await _context.Reviews
+            .AsNoTracking()
+            .Where(r => r.Product.VendorId == vendorId)
+            .AverageAsync(r => (double?)r.Rating);
+        return avg ?? 0;
+    }
 }

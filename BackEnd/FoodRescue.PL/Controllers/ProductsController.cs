@@ -179,4 +179,17 @@ public class ProductsController : ControllerBase
         if (result.IsFailure) return BadRequest(result.Error);
         return Ok(result.Value);
     }
+
+
+
+
+
+    [HttpGet("vendor/{vendorId:guid}/all")]
+    [Authorize(Roles = "vendor")]
+    public async Task<IActionResult> GetAllByVendor(Guid vendorId)
+    {
+        var result = await _service.GetAllByVendorAsync(vendorId);
+        if (result.IsFailure) return BadRequest(result.Error);
+        return Ok(result.Value);
+    }
 }

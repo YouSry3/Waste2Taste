@@ -19,9 +19,7 @@ export function ImageUploadSection({
         <div>
           <h3 className="text-lg font-semibold flex items-center gap-2 mb-2">
             Listing Photos
-            <span className="text-xs font-normal text-gray-500">
-              (Optional but recommended)
-            </span>
+            
           </h3>
         </div>
 

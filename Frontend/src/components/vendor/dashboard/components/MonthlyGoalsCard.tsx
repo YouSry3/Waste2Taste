@@ -23,15 +23,7 @@ export function MonthlyGoalsCard({ goals, onSetGoal }: MonthlyGoalsCardProps) {
             <Target className="h-5 w-5 text-emerald-600" />
             <CardTitle className="text-emerald-900">Monthly Goals</CardTitle>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onSetGoal}
-            className="border-emerald-300 text-emerald-700 hover:bg-emerald-50"
-          >
-            <Target className="h-4 w-4 mr-2" />
-            Set Monthly Goal
-          </Button>
+    
         </div>
         <p className="text-sm text-emerald-600">Track your progress</p>
       </CardHeader>

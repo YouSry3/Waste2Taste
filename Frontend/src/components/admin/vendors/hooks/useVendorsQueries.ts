@@ -108,8 +108,9 @@ const parseVendorType = (value: unknown): Vendor["type"] => {
   return "Vendor";
 };
 
-const parseVendorStatus = (value: unknown): Vendor["status"] => {
-  const raw = String(value ?? "").toLowerCase();
+const parseVendorStatus = (item: Record<string, unknown>): Vendor["status"] => {
+  if (item.isActive === false || item.isBlocked === true) return "Inactive";
+  const raw = String(item.status ?? item.vendorStatus ?? "").toLowerCase();
   return raw === "inactive" ? "Inactive" : "Active";
 };
 
@@ -167,7 +168,7 @@ const mapApiVendorToVendor = (payload: unknown, index: number): Vendor => {
     ),
     revenue: toMoneyString(revenueNumber),
     rating: toNumber(item.rating ?? item.averageRating ?? item.vendorRating ?? 5, 5),
-    status: parseVendorStatus(item.status ?? item.vendorStatus ?? item.isActive ?? "Active"),
+    status: parseVendorStatus(item),
     isBlocked: item.isActive === false || item.isBlocked === true,
   };
 };

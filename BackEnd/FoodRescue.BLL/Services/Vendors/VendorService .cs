@@ -11,15 +11,34 @@ public class VendorService(IVendorRepository vendorRepository, IUserRepository u
     private readonly IVendorRepository _vendorRepository = vendorRepository;
     private readonly IUserRepository _userRepository = userRepository;
 
+    //public async Task<Result<List<VendorListResponse>>> GetVendorsAsync(string? name, string? status)
+    //{
+    //    var vendors = await _vendorRepository.GetVendorsAsync(name, status);
+    //    var response = vendors.Select(v =>
+    //    {
+    //        var dto = v.Adapt<VendorListResponse>();
+    //        dto.IsBlocked = v.Owner != null && !v.Owner.IsActive;
+    //        return dto;
+    //    }).ToList();
+    //    return Result.Success(response);
+    //}
     public async Task<Result<List<VendorListResponse>>> GetVendorsAsync(string? name, string? status)
     {
         var vendors = await _vendorRepository.GetVendorsAsync(name, status);
-        var response = vendors.Select(v =>
+        var response = new List<VendorListResponse>();
+
+        foreach (var v in vendors)
         {
             var dto = v.Adapt<VendorListResponse>();
             dto.IsBlocked = v.Owner != null && !v.Owner.IsActive;
-            return dto;
-        }).ToList();
+
+            // Calculate average rating from all product reviews
+            var avgRating = await _vendorRepository.GetAverageRatingAsync(v.Id);
+            dto.Rating = Math.Round(avgRating, 1);
+
+            response.Add(dto);
+        }
+
         return Result.Success(response);
     }
 
