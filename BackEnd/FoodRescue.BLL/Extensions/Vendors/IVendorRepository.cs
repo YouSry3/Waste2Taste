@@ -13,7 +13,7 @@ public interface IVendorRepository
     Task<Vendor?> GetByOwnerIdAsync(Guid ownerId);
 
 
-
+    Task<double> GetAverageRatingAsync(Guid vendorId);
     Task AddAsync(Vendor vendor);
     Task UpdateAsync(Vendor vendor);
     Task DeleteAsync(Vendor vendor);

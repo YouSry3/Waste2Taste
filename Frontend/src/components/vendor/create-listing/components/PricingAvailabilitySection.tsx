@@ -118,7 +118,7 @@ export function PricingAvailabilitySection({
           <Input
             type="number"
             min="1"
-            placeholder="How many bags available?"
+            placeholder="How many units of this listing are in stock?"
             className={`h-11 ${formErrors.quantity ? "border-red-500" : ""}`}
             value={formData.quantity}
             onChange={(e) => onChange("quantity", e.target.value)}
@@ -134,7 +134,7 @@ export function PricingAvailabilitySection({
             </p>
           ) : (
             <p className="text-xs text-gray-500">
-              Number of surprise bags customers can purchase
+              
             </p>
           )}
         </div>

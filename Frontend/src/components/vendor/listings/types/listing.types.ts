@@ -81,7 +81,7 @@ export interface Listing {
   price?: number;
   quantity: number;
   pickupTime: string;
-  status: "Active" | "Sold Out" | "Pending" | "Approved" | "Rejected";
+  status: "Active" | "Sold Out" | "Pending" | "Approved" | "Rejected" | "Discontinued";
   location: string;
   rating: number;
   description: string;

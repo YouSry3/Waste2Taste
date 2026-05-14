@@ -54,7 +54,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
                   paddingAngle={2}
                   dataKey="value"
                   label={({ name, percent }) =>
-                    `${name}: ${(percent * 100).toFixed(0)}%`
+                    `${name}: ${(percent * 100).toFixed(1)}%`
                   }
                   labelLine={false}
                 >
@@ -82,7 +82,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
                     {category.name}
                   </span>
                   <span className="text-sm text-gray-500 ml-auto flex-shrink-0">
-                    {category.value}%
+                    {category.value.toFixed(1)}%
                   </span>
                 </div>
               ))}

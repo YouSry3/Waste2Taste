@@ -107,8 +107,8 @@ const resolveVendorAccessState = async (
     console.warn("Could not fetch vendor status from backend:", err);
   }
 
-  // Backend returned null — fall back to localStorage
-  return authService.getVendorAccessState();
+  // Backend returned nothing — vendor logged in successfully, so treat as approved.
+  return "approved";
 };
 
   // ✅ React Query Mutation for real backend login

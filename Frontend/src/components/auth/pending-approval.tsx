@@ -11,7 +11,7 @@ import {
 } from "../../services/vendorApproval/vendorApprovalStore";
 import { getVendorRequestStatus } from "../../services/vendorApproval/vendorRequestService";
 
-type ApprovalViewState = "missing" | "pending" | "approved" | "rejected";
+type ApprovalViewState = "missing" | "pending" | "approved" | "rejected";   
 
 export default function PendingApprovalPage() {
   const navigate = useNavigate();

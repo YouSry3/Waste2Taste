@@ -153,7 +153,7 @@ import { useDeleteListing } from "./api/listing.mutations";
 import { ListingCard } from "./components/ListingCard";
 import { ListingFilters } from "./components/ListingFilters";
 import { Badge } from "../../ui/badge";
-
+import {  useUpdateStock } from "./api/listing.mutations";
 export function MyListings() {
   const navigate = useNavigate();
 
@@ -166,7 +166,7 @@ export function MyListings() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
-
+const { mutateAsync: updateStock } = useUpdateStock();
   const filteredListings = useMemo(() => {
     return listings.filter((listing) => {
       const matchesSearch =
@@ -261,10 +261,11 @@ export function MyListings() {
             <ListingCard
               key={listing.id}
               listing={listing}
-              onEdit={(item) => navigate(`/panel/vendor/listings/edit/${item.id}`)}
+              // onEdit={(item) => navigate(`/panel/vendor/listings`)}
               onView={(item) => navigate(`/panel/vendor/listings/${item.id}`)}
               onDelete={(id) => deleteListing(id)}
               isLoading={isDeleting}
+              updateStock={(id, quantity) => updateStock({ id, quantity })} 
             />
           ))}
         </div>

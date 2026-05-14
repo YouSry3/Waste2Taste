@@ -10,6 +10,7 @@ public class ProductListResponse
     public decimal OriginalPrice { get; set; }
     public int DiscountPercentage { get; set; }
     public string ExpiresIn { get; set; } = null!;
+    public string Status { get; set; }
     public double Rating { get; set; }
     public int TotalReviews { get; set; }
     public Guid VendorId { get; set; }
@@ -18,4 +19,5 @@ public class ProductListResponse
     public double Longitude { get; set; }
     public string? Category { get; set; }
     public bool IsFavorite { get; set; } = false;
+    public string Location { get; set; }
 }

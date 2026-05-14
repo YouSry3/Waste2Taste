@@ -18,6 +18,7 @@ public class VendorsController : ControllerBase
 
     // GET /vendors
     [HttpGet]
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> GetAll([FromQuery] string? name, [FromQuery] string? status)
     {
         var result = await _vendorService.GetVendorsAsync(name, status);

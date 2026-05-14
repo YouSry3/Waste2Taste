@@ -126,10 +126,7 @@ export function UserDropdown({ onLogout }: UserDropdownProps) {
             <span>My Profile</span>
           </DropdownMenuItem>
 
-          <DropdownMenuItem className="cursor-pointer">
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-          </DropdownMenuItem>
+     
 
           <DropdownMenuSeparator />
 

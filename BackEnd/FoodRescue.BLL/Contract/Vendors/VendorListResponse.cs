@@ -9,5 +9,6 @@ public class VendorListResponse
     public string PhoneNumber { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
+    public double Rating { get; set; }
     public bool IsBlocked { get; set; } // = !owner.IsActive
 }
