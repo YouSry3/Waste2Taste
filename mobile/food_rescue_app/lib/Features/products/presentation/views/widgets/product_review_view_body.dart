@@ -11,6 +11,8 @@ import 'package:waste2taste/Features/products/presentation/manager/delete_review
 import 'package:waste2taste/Features/products/presentation/manager/delete_review_cubit/delete_review_state.dart';
 import 'package:waste2taste/Features/products/presentation/views/widgets/review_item.dart';
 import 'package:waste2taste/Features/products/presentation/views/widgets/reviews_header.dart';
+import 'package:waste2taste/core/constants/app_colors.dart';
+import 'package:waste2taste/core/constants/app_text_styles.dart';
 import 'package:waste2taste/core/utils/custom_snack_bar.dart';
 
 import '../../../../../core/extensions/app_localization_extention.dart';
@@ -72,15 +74,18 @@ class ProductReviewsViewBody extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 60, color: Colors.red),
+                  const Icon(
+                    Icons.reviews_outlined,
+                    size: 60,
+                    color: AppColors.textGrayDark,
+                  ),
                   const SizedBox(height: 12),
-                  Text(state.errorMessage, textAlign: TextAlign.center),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      _refreshReviews(context);
-                    },
-                    child: const Text('Retry'),
+                  Text(
+                    state.errorMessage,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.subtitle(
+                      context,
+                    ).copyWith(fontSize: 15),
                   ),
                 ],
               ),

@@ -21,11 +21,11 @@ class ProductsSliverListBuilder extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
           child: GestureDetector(
-            onTap: () {
-              GoRouter.of(context).push(
-                AppRoutes.productDetails,
-                extra: products[index],
-              );
+            onTap: () async {
+              await GoRouter.of(
+                context,
+              ).push(AppRoutes.productDetails, extra: products[index]);
+              onChanged?.call();
             },
             child: CustomProductItem(product: products[index]),
           ),

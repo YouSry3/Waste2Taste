@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:waste2taste/Features/orders/presentation/manager/get_my_orders_cubit/get_my_orders_cubit.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../../core/widgets/custom_sliver_app_bar.dart';
@@ -13,22 +15,25 @@ class OrdersViewBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
-      child: CustomScrollView(
-        slivers: [
-          CustomSliverAppBar(
-            widget: Text(
-              context.loc.myOrders,
-              style: AppTextStyles.title(context),
+      child: RefreshIndicator(
+        onRefresh: () async => await context.read<GetMyOrdersCubit>().getMyOrders(),
+        child: CustomScrollView(
+          slivers: [
+            CustomSliverAppBar(
+              widget: Text(
+                context.loc.myOrders,
+                style: AppTextStyles.title(context),
+              ),
+              tabBar: const CustomTabBar(),
             ),
-            tabBar: const CustomTabBar(),
-          ),
-          const SliverFillRemaining(
-            child: TabBarView(
-              physics: NeverScrollableScrollPhysics(),
-              children: [ActiveTab(), HistoryTab()],
+            const SliverFillRemaining(
+              child: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
+                children: [ActiveTab(), HistoryTab()],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

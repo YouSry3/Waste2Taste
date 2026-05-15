@@ -21,79 +21,86 @@ class HomeViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      physics: const BouncingScrollPhysics(),
-      slivers: [
-        CustomSliverAppBar(
-          toolbarHeight: 90,
-          widget: const CustomerCardBlocBuilder(),
+    return RefreshIndicator(
+      onRefresh: () async =>
+          await context.read<GetProductsCubit>().getProducts(),
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
         ),
-        SliverToBoxAdapter(
-          child: SectionHeader(
-            title: context.loc.nearbyDeals,
-            onTap: () async {
-              final result = await GoRouter.of(
-                context,
-              ).push(AppRoutes.allProducts);
-              if (result == true && context.mounted) {
-                context.read<GetProductsCubit>().getProducts();
-              }
-            },
+        slivers: [
+          CustomSliverAppBar(
+            toolbarHeight: 90,
+            widget: const CustomerCardBlocBuilder(),
           ),
-        ),
-        BlocBuilder<GetUserLocationCubit, GetUserLocationState>(
-          builder: (context, locationState) {
-            return BlocBuilder<GetProductsCubit, GetProductsState>(
-              builder: (context, state) {
-                List<ProductEntity> products = state is GetProductsSuccessState
-                    ? state.data
-                    : skeletonProducts;
-
-                final isProductsLoading =
-                    state is GetProductsInitialState ||
-                    state is GetProductsLoadingState;
-
-                if (!isProductsLoading &&
-                    locationState is GetUserLocationSuccessState) {
-                  products = products.where((product) {
-                    final distance = calculateDistance(
-                      locationState.locationEntity.latitude,
-                      locationState.locationEntity.longitude,
-                      product.latitude,
-                      product.longitude,
-                    );
-                    return distance <= 30;
-                  }).toList();
+          SliverToBoxAdapter(
+            child: SectionHeader(
+              title: context.loc.nearbyDeals,
+              onTap: () async {
+                final result = await GoRouter.of(
+                  context,
+                ).push(AppRoutes.allProducts);
+                if (result == true && context.mounted) {
+                  context.read<GetProductsCubit>().getProducts();
                 }
+              },
+            ),
+          ),
+          BlocBuilder<GetUserLocationCubit, GetUserLocationState>(
+            builder: (context, locationState) {
+              return BlocBuilder<GetProductsCubit, GetProductsState>(
+                builder: (context, state) {
+                  List<ProductEntity> products =
+                      state is GetProductsSuccessState
+                      ? state.data
+                      : skeletonProducts;
 
-                if (!isProductsLoading && products.isEmpty) {
-                  return SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 40),
-                      child: Center(
-                        child: Text(
-                          context.loc.noOffersNearby,
-                          style: AppTextStyles.body(
-                            context,
-                          ).copyWith(color: AppColors.textGray),
+                  final isProductsLoading =
+                      state is GetProductsInitialState ||
+                      state is GetProductsLoadingState;
+
+                  if (!isProductsLoading &&
+                      locationState is GetUserLocationSuccessState) {
+                    products = products.where((product) {
+                      final distance = calculateDistance(
+                        locationState.locationEntity.latitude,
+                        locationState.locationEntity.longitude,
+                        product.latitude,
+                        product.longitude,
+                      );
+                      return distance <= 30;
+                    }).toList();
+                  }
+
+                  if (!isProductsLoading && products.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 40),
+                        child: Center(
+                          child: Text(
+                            context.loc.noOffersNearby,
+                            style: AppTextStyles.body(
+                              context,
+                            ).copyWith(color: AppColors.textGray),
+                          ),
                         ),
                       ),
+                    );
+                  }
+
+                  return Skeletonizer.sliver(
+                    enabled: isProductsLoading,
+                    child: ProductsSliverListBuilder(
+                      products: products,
+                      onChanged: () {},
                     ),
                   );
-                }
-
-                return Skeletonizer.sliver(
-                  enabled: isProductsLoading,
-                  child: ProductsSliverListBuilder(
-                    products: products,
-                    onChanged: () {},
-                  ),
-                );
-              },
-            );
-          },
-        ),
-      ],
+                },
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
