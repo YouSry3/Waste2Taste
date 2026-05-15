@@ -73,6 +73,8 @@ public class ProductsController : ControllerBase
     [HttpPost]
     [Authorize(Roles = "vendor")]
     [ProducesResponseType(typeof(IEnumerable<ProductListResponse>), StatusCodes.Status200OK)]
+    [RequestSizeLimit(50 * 1024 * 1024)]
+    [RequestFormLimits(MultipartBodyLengthLimit = 50 * 1024 * 1024)]
     public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
     {
         var result = await _service.CreateAsync(request);

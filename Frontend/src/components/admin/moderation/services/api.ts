@@ -44,68 +44,80 @@ API.interceptors.response.use(
 
 // Listings API
 export const listingsAPI = {
-  // Get all listings with filters
-  getListings: (params?: {
-    status?: string;
-    category?: string;
-    search?: string;
-    page?: number;
-    limit?: number;
-    sortBy?: string;
-  }) =>
-    API.get<PaginatedResponse<Listing>>("/moderation/listings", {
-      params,
-    }).then((res) => res.data),
+  getListings: async () => {
+    const token = localStorage.getItem("authToken");
+    const res = await API.get("/Listing/pending", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    // Backend returns array directly
+    const raw: any[] = Array.isArray(res.data)
+      ? res.data
+      : res.data?.value ?? res.data?.data ?? [];
+    return raw.map((item: any): Listing => ({
+      id: String(item.id),
+      vendor: item.vendorId ?? "",
+      vendorName: item.vendorName ?? "",
+      title: item.name ?? "",
+      name: item.name ?? "",
+      description: item.descripcion ?? item.description ?? "",
+      category: item.category ?? "",
+      price: Number(item.price ?? 0),
+      originalPrice: Number(item.originalPrice ?? 0),
+      quantity: Number(item.quantity ?? 0),
+      pickupTime: "",
+      submitted: item.createdAt ?? "",
+      createdAt: item.createdAt ?? "",
+      image: item.imageUrl ?? "",
+      imageUrl: item.imageUrl ?? "",
+      expiryDate: item.expiryDate ?? "",
+      expiresIn: item.expiresIn ?? "",
+      flagged: item.aiIsSpoiled === true,
+      aiFlag: item.aiIsSpoiled != null
+        ? {
+            type: item.aiPrediction ?? "Spoilage Check",
+            confidence: Number(item.aiConfidence ?? 0),
+            reason: item.aiIsSpoiled
+              ? `AI detected spoilage (${item.aiSpoiledPercentage ?? 0}% spoiled)`
+              : "AI found no spoilage",
+          }
+        : null,
+      status: "pending",
+      aiIsSpoiled: item.aiIsSpoiled ?? null,
+      aiConfidence: item.aiConfidence != null ? Number(item.aiConfidence) : null,
+      aiSpoiledPercentage: item.aiSpoiledPercentage ?? null,
+      aiPrediction: item.aiPrediction ?? null,
+    }));
+  },
 
-  // Get single listing
-  getListing: (id: number) =>
-    API.get<ApiResponse<Listing>>(`/moderation/listings/${id}`).then(
-      (res) => res.data,
-    ),
+  approveListing: async (id: string) => {
+    const token = localStorage.getItem("authToken");
+    await API.post(
+      "/Listing/approve",
+      { productId: id },
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+  },
 
-  // Approve listing
-  approveListing: (id: number) =>
-    API.post<ApiResponse<Listing>>(`/moderation/listings/${id}/approve`).then(
-      (res) => res.data,
-    ),
+  rejectListing: async (id: string, data: { reason: string; notes?: string }) => {
+    const token = localStorage.getItem("authToken");
+    await API.post(
+      "/Listing/reject",
+      { productId: id, reason: data.reason, notes: data.notes ?? "" },
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+  },
 
-  // Reject listing
-  rejectListing: (id: number, data: RejectRequest) =>
-    API.post<ApiResponse<Listing>>(
-      `/moderation/listings/${id}/reject`,
-      data,
-    ).then((res) => res.data),
+  bulkApproveListings: async (ids: string[]) => {
+    for (const id of ids) {
+      await listingsAPI.approveListing(id);
+    }
+  },
 
-  // Request changes for listing
-  requestChanges: (id: number, data: ChangeRequest) =>
-    API.post<ApiResponse<Listing>>(
-      `/moderation/listings/${id}/request-changes`,
-      data,
-    ).then((res) => res.data),
-
-  // Bulk approve listings
-  bulkApproveListings: (ids: number[]) =>
-    API.post<ApiResponse<{ approved: number }>>(
-      "/moderation/listings/bulk-approve",
-      { ids },
-    ).then((res) => res.data),
-
-  // Bulk reject listings
-  bulkRejectListings: (ids: number[], data: RejectRequest) =>
-    API.post<ApiResponse<{ rejected: number }>>(
-      "/moderation/listings/bulk-reject",
-      { ids, ...data },
-    ).then((res) => res.data),
-
-  // AI feedback for flagged listings
-  submitAIFeedback: (
-    listingId: number,
-    feedback: { correct: boolean; comment?: string },
-  ) =>
-    API.post<ApiResponse<void>>(
-      `/moderation/listings/${listingId}/ai-feedback`,
-      feedback,
-    ).then((res) => res.data),
+  bulkRejectListings: async (ids: string[], data: { reason: string }) => {
+    for (const id of ids) {
+      await listingsAPI.rejectListing(id, data);
+    }
+  },
 };
 
 // Vendors API

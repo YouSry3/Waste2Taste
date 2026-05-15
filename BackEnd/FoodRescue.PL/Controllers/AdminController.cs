@@ -3,6 +3,7 @@ using FoodRescue.BLL.Contract.AdminDashbord.Moderation;
 using FoodRescue.BLL.Contract.AdminDashbord.Users.Response;
 using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Request;
 using FoodRescue.BLL.Contract.AdminDashbord.Vendors.Response;
+using FoodRescue.BLL.Contract.Products;
 using FoodRescue.BLL.Services.AnalyticsDashboardTab;
 using FoodRescue.BLL.ServicesWeb.Admin;
 using FoodRescue.BLL.ServicesWeb.Admin.Moderation;
@@ -184,7 +185,15 @@ namespace FoodRescue.PL.Controllers
             }
         }
 
-
+        [HttpGet("moderation/listings")]
+        [Authorize(Roles = "admin")]
+        [ProducesResponseType(typeof(List<PendingListingDto>), StatusCodes.Status200OK)]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetPendingListings()
+        {
+            var listings = await _moderationService.GetPendingListingsAsync();
+            return Ok(listings);
+        }
 
     }
 }

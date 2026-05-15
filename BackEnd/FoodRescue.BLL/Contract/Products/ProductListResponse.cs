@@ -17,7 +17,12 @@ public class ProductListResponse
     public string VendorName { get; set; } = null!;
     public double Latitude { get; set; }
     public double Longitude { get; set; }
+    public int Quantity { get; set; }
     public string? Category { get; set; }
     public bool IsFavorite { get; set; } = false;
     public string Location { get; set; }
+    public string? AIPrediction { get; set; }
+    public decimal? AIConfidence { get; set; }
+    public int? AISpoiledPercentage { get; set; }
+    public bool? AIIsSpoiled { get; set; }
 }

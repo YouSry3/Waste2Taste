@@ -29,9 +29,9 @@ export type ListingsResponse = {
   activeCount: number;
   listings: any[];
 };
-let vendorId =localStorage.getItem("vendorId")
 export const listingApi = {
   getVendorListings: async (): Promise<ListingsResponse> => {
+    const vendorId = localStorage.getItem("vendorId");
     const res = await vendorApiClient.get(`/products/vendor/${vendorId}/all`);
     const raw = res.data;
     const items =
@@ -46,7 +46,8 @@ export const listingApi = {
   },
 
   createListing: async (dto: CreateListingDto) => {
-    const formData = new FormData();
+    try{
+      const formData = new FormData();
     formData.append("VendorId", dto.VendorId);
     formData.append("Name", dto.Name);
     formData.append("Description", dto.Description);
@@ -57,10 +58,16 @@ export const listingApi = {
     formData.append("ExpiryDate", dto.ExpiryDate);
     if (dto.ImageFile) formData.append("ImageFile", dto.ImageFile);
 
-    const res = await vendorApiClient.post("/products", formData, {
+    const res = await vendorApiClient.post("/products",  formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return res.data;
+    }
+    catch (err: any) {
+    // This logs the actual server validation errors
+    console.error("Server error detail:", err.response?.data);
+    throw err;
+  }
   },
 
   updateListing: async (

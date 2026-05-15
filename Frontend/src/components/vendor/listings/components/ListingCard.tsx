@@ -136,10 +136,6 @@ const isRejected = listing.status === "Discontinued";
               <MapPin className="h-4 w-4 flex-shrink-0" />
               <span className="truncate">{listing.location}</span>
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <Clock className="h-4 w-4 flex-shrink-0" />
-              <span>Pickup: {listing.pickupTime}</span>
-            </div>
           </div>
 
           {/* ── Price & Stock Display ───────────────────────────────── */}
@@ -167,9 +163,13 @@ const isRejected = listing.status === "Discontinued";
 
           {/* ── Action Buttons ──────────────────────────────────────── */}
 <div className="flex gap-2">
-  {isRejected ? (
+  {listing.status === "Discontinued" ? (
     <div className="w-full text-center text-sm text-red-500 font-medium py-2 bg-red-50 rounded-md border border-red-200">
       ✕ Rejected by admin — no actions available
+    </div>
+  ) : listing.status === "Pending" ? (
+    <div className="w-full text-center text-sm text-yellow-600 font-medium py-2 bg-yellow-50 rounded-md border border-yellow-200">
+      ⏳ Pending admin approval — no actions available
     </div>
   ) : (
     <>
@@ -191,7 +191,7 @@ const isRejected = listing.status === "Discontinued";
       </Button>
     </>
   )}
-</div>    
+</div>
         </CardContent>
       </Card>
 

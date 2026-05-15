@@ -112,6 +112,40 @@ export function ListingCard({
             </div>
           </div>
 
+
+          {/* AI SPOILAGE RESULT */}
+{listing.aiIsSpoiled != null ? (
+  <div
+    className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium mt-2 ${
+      listing.aiIsSpoiled
+        ? "bg-red-50 border-red-200 text-red-700"
+        : "bg-green-50 border-green-200 text-green-700"
+    }`}
+  >
+    {listing.aiIsSpoiled ? (
+      <ThumbsDown className="w-4 h-4 shrink-0" />
+    ) : (
+      <ThumbsUp className="w-4 h-4 shrink-0" />
+    )}
+    <span>
+      AI:{" "}
+      <strong>
+        {listing.aiIsSpoiled ? "Likely Spoiled" : "Looks Fresh"}
+      </strong>
+      {listing.aiConfidence != null &&
+        ` — ${(Number(listing.aiConfidence) * 100).toFixed(1)}% confidence`}
+      {listing.aiSpoiledPercentage != null &&
+        `, ${listing.aiSpoiledPercentage}% spoiled`}
+    </span>
+  </div>
+) : (
+  <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-gray-400 text-sm mt-2">
+    <AlertTriangle className="w-4 h-4 shrink-0" />
+    AI analysis not available
+  </div>
+)}
+
+
           {/* ACTIONS */}
           <div className="flex flex-col gap-2">
             <Button
@@ -135,10 +169,10 @@ export function ListingCard({
               Reject
             </Button>
 
-            <Button onClick={() => onRequestChanges(listing.id)}>
+            {/* <Button onClick={() => onRequestChanges(listing.id)}>
               <Flag />
               Request Changes
-            </Button>
+            </Button> */}
           </div>
         </div>
       </CardContent>

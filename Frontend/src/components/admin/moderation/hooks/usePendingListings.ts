@@ -3,47 +3,66 @@
 // import toast from "react-hot-toast";
 // import { Listing } from "../types";
 
-// // --------------- API response shape ---------------
-// interface ListingDTO {
-//   productId: string;
-//   vendorId: string;
-//   name: string;
-//   description: string;
-//   category: string | null;
-//   imageUrl: string;
-//   price: number;
-//   originalPrice: number;
-//   quantity: number;
-//   expiryDate: string;
-//   createdAt: string;
-//   ai: any;
-// }
+// // --------------- Robust Mapper ---------------
+// // Handles PascalCase, camelCase, and nested response shapes
+// const mapToListing = (item: any): Listing => {
+//   const id = item.productId ?? item.ProductId ?? item.id ?? item.Id ?? "";
+//   const vendorId = item.vendorId ?? item.VendorId ?? "";
+//   const name = item.name ?? item.Name ?? item.title ?? item.Title ?? "Untitled";
+//   const category = item.category ?? item.Category ?? "Uncategorized";
+//   const imageUrl = item.imageUrl ?? item.ImageUrl ?? item.image ?? item.Image ?? "";
+//   const priceNum = Number(item.price ?? item.Price ?? 0);
+//   const originalPriceNum = Number(item.originalPrice ?? item.OriginalPrice ?? 0);
+//   const quantity = Number(item.quantity ?? item.Quantity ?? 0);
+//   const createdAt = item.createdAt ?? item.CreatedAt ?? new Date().toISOString();
+//   const expiryDate = item.expiryDate ?? item.ExpiryDate ?? item.expiresAt ?? "";
+//   const ai = item.ai ?? item.AI ?? null;
 
-// // --------------- Mapper ---------------
-// const mapToListing = (item: ListingDTO): Listing => ({
-//   id: item.productId, // we treat productId as the UI's id
-//   vendor: item.vendorId, // will be replaced with vendor name if needed
-//   vendorName: item.vendorId, // placeholder
-//   title: item.name,
-//   category: item.category ?? "Uncategorized",
-//   price: `$${item.price.toFixed(2)}`,
-//   originalPrice: `$${item.originalPrice.toFixed(2)}`,
-//   quantity: item.quantity,
-//   pickupTime: "Not specified", // API doesn't provide this yet; adjust if needed
-//   submitted: item.createdAt,
-//   image: item.imageUrl?.startsWith("http")
-//     ? item.imageUrl
-//     : `${apiClient.defaults.baseURL}${item.imageUrl}`,
-//   flagged: item.ai != null, // simple flag if AI indicates an issue
-//   aiFlag: item.ai
-//     ? {
-//         type: item.ai.type ?? "unknown",
-//         confidence: item.ai.confidence ?? 0,
-//         reason: item.ai.reason ?? "",
-//       }
-//     : null,
-//   status: "pending", // all pending listings are exactly that
-// });
+//   return {
+//     id: String(id),
+    
+//     // Vendor: use vendorId as fallback since backend doesn't send vendor name
+//     vendor: vendorId ? `Vendor ${String(vendorId).substring(0, 8)}...` : "Unknown Vendor",
+//     vendorName: vendorId ? `Vendor ${String(vendorId).substring(0, 8)}...` : "Unknown Vendor",
+    
+//     title: name,
+//     name: name, // alias for compatibility
+//     category,
+    
+//     // Keep BOTH number (for calculations) and string (for display)
+//     price: priceNum,                    // number: 10.5
+//     priceFormatted: `$${priceNum.toFixed(2)}`,
+//     originalPrice: originalPriceNum,    // number: 15
+//     originalPriceFormatted: `$${originalPriceNum.toFixed(2)}`,
+    
+//     quantity,
+//     pickupTime: item.pickupTime ?? item.PickupTime ?? "Not specified",
+//     submitted: createdAt,
+//     createdAt: createdAt,
+    
+//     // Image: both formats
+//     image: imageUrl?.startsWith("http") 
+//       ? imageUrl 
+//       : `${apiClient.defaults.baseURL}${imageUrl}`,
+//     imageUrl: imageUrl?.startsWith("http") 
+//       ? imageUrl 
+//       : `${apiClient.defaults.baseURL}${imageUrl}`,
+    
+//     // Expiry
+//     expiryDate: expiryDate,
+//     expiresIn: expiryDate ? new Date(expiryDate).toLocaleDateString() : "N/A",
+    
+//     flagged: !!ai,
+//     aiFlag: ai
+//       ? {
+//           type: ai.prediction ?? ai.type ?? "unknown",
+//           confidence: ai.confidence ?? 0,
+//           reason: ai.reason ?? "",
+//         }
+//       : null,
+//     status: "pending",
+//   };
+// };
 
 // // --------------- Hook: fetch pending listings ---------------
 // export const usePendingListings = () => {
@@ -51,8 +70,29 @@
 //     queryKey: ["pendingListings"],
 //     queryFn: async () => {
 //       const response = await apiClient.get("/Listing/pending");
-//       const data = response.data?.data ?? response.data ?? [];
-//       return (Array.isArray(data) ? data : []).map(mapToListing);
+
+//       // Debug: log raw response so you can see what backend sends
+//       console.log("RAW /Listing/pending response:", response.data);
+
+//       // Handle multiple response shapes:
+//       // { items: [...] }, { data: [...] }, { data: { items: [...] } }, or just [...]
+//       const payload = response.data;
+//       let rawData: any[] = [];
+
+//       if (Array.isArray(payload)) {
+//         rawData = payload;
+//       } else if (Array.isArray(payload?.items)) {
+//         rawData = payload.items;
+//       } else if (Array.isArray(payload?.data)) {
+//         rawData = payload.data;
+//       } else if (Array.isArray(payload?.data?.items)) {
+//         rawData = payload.data.items;
+//       } else {
+//         console.warn("Unexpected /Listing/pending response shape:", payload);
+//         rawData = [];
+//       }
+
+//       return rawData.map(mapToListing);
 //     },
 //   });
 // };
@@ -70,7 +110,7 @@
 //           headers: {
 //             productId,
 //           },
-//         },
+//         }
 //       );
 //     },
 //     onMutate: async (productId) => {
@@ -80,7 +120,7 @@
 
 //       queryClient.setQueryData<Listing[]>(
 //         ["pendingListings"],
-//         (old) => old?.filter((listing) => listing.id !== productId) ?? [],
+//         (old) => old?.filter((listing) => String(listing.id) !== String(productId)) ?? []
 //       );
 
 //       return { previous };
@@ -91,7 +131,6 @@
 //     },
 //     onSuccess: () => {
 //       toast.success("Listing approved successfully!");
-//       // re‑fetch in background to ensure consistency
 //       queryClient.invalidateQueries({ queryKey: ["pendingListings"] });
 //     },
 //   });
@@ -121,7 +160,7 @@
 
 //       queryClient.setQueryData<Listing[]>(
 //         ["pendingListings"],
-//         (old) => old?.filter((listing) => listing.id !== productId) ?? [],
+//         (old) => old?.filter((listing) => String(listing.id) !== String(productId)) ?? []
 //       );
 
 //       return { previous };
@@ -144,8 +183,6 @@ import { apiClient } from "../../../../services/api/apiClient";
 import toast from "react-hot-toast";
 import { Listing } from "../types";
 
-// --------------- Robust Mapper ---------------
-// Handles PascalCase, camelCase, and nested response shapes
 const mapToListing = (item: any): Listing => {
   const id = item.productId ?? item.ProductId ?? item.id ?? item.Id ?? "";
   const vendorId = item.vendorId ?? item.VendorId ?? "";
@@ -157,66 +194,76 @@ const mapToListing = (item: any): Listing => {
   const quantity = Number(item.quantity ?? item.Quantity ?? 0);
   const createdAt = item.createdAt ?? item.CreatedAt ?? new Date().toISOString();
   const expiryDate = item.expiryDate ?? item.ExpiryDate ?? item.expiresAt ?? "";
-  const ai = item.ai ?? item.AI ?? null;
+
+  // ── AI Spoilage fields ──────────────────────────────────────────────
+  const aiIsSpoiled: boolean | null =
+    item.aiIsSpoiled ?? item.AIIsSpoiled ?? item.ai?.isSpoiled ?? null;
+  const aiConfidence: number | null =
+    item.aiConfidence != null
+      ? Number(item.aiConfidence)
+      : item.AIConfidence != null
+        ? Number(item.AIConfidence)
+        : item.ai?.confidence != null
+          ? Number(item.ai.confidence)
+          : null;
+  const aiSpoiledPercentage: number | null =
+    item.aiSpoiledPercentage ?? item.AISpoiledPercentage ?? item.ai?.spoiledPercentage ?? null;
+  const aiPrediction: string | null =
+    item.aiPrediction ?? item.AIPrediction ?? item.ai?.prediction ?? null;
+
+  const resolvedImageUrl = imageUrl?.startsWith("http")
+    ? imageUrl
+    : `${apiClient.defaults.baseURL}${imageUrl}`;
 
   return {
     id: String(id),
-    
-    // Vendor: use vendorId as fallback since backend doesn't send vendor name
     vendor: vendorId ? `Vendor ${String(vendorId).substring(0, 8)}...` : "Unknown Vendor",
-    vendorName: vendorId ? `Vendor ${String(vendorId).substring(0, 8)}...` : "Unknown Vendor",
-    
+    vendorName: item.vendorName ?? item.VendorName ?? (vendorId ? `Vendor ${String(vendorId).substring(0, 8)}...` : "Unknown Vendor"),
     title: name,
-    name: name, // alias for compatibility
+    name,
+    description: item.descripcion ?? item.description ?? item.Description ?? "",
     category,
-    
-    // Keep BOTH number (for calculations) and string (for display)
-    price: priceNum,                    // number: 10.5
+    price: priceNum,
     priceFormatted: `$${priceNum.toFixed(2)}`,
-    originalPrice: originalPriceNum,    // number: 15
+    originalPrice: originalPriceNum,
     originalPriceFormatted: `$${originalPriceNum.toFixed(2)}`,
-    
     quantity,
     pickupTime: item.pickupTime ?? item.PickupTime ?? "Not specified",
     submitted: createdAt,
-    createdAt: createdAt,
-    
-    // Image: both formats
-    image: imageUrl?.startsWith("http") 
-      ? imageUrl 
-      : `${apiClient.defaults.baseURL}${imageUrl}`,
-    imageUrl: imageUrl?.startsWith("http") 
-      ? imageUrl 
-      : `${apiClient.defaults.baseURL}${imageUrl}`,
-    
-    // Expiry
-    expiryDate: expiryDate,
+    createdAt,
+    image: resolvedImageUrl,
+    imageUrl: resolvedImageUrl,
+    expiryDate,
     expiresIn: expiryDate ? new Date(expiryDate).toLocaleDateString() : "N/A",
-    
-    flagged: !!ai,
-    aiFlag: ai
-      ? {
-          type: ai.prediction ?? ai.type ?? "unknown",
-          confidence: ai.confidence ?? 0,
-          reason: ai.reason ?? "",
-        }
-      : null,
+    // Flag the card if AI says it's spoiled
+    flagged: aiIsSpoiled === true,
+    aiFlag:
+      aiIsSpoiled != null
+        ? {
+            type: aiPrediction ?? "Spoilage Check",
+            confidence: aiConfidence ?? 0,
+            reason:
+              aiIsSpoiled
+                ? `AI detected spoilage (${aiSpoiledPercentage ?? 0}% spoiled)`
+                : "AI found no spoilage",
+          }
+        : null,
     status: "pending",
+    // ── AI fields for ListingCard display ──
+    aiIsSpoiled,
+    aiConfidence,
+    aiSpoiledPercentage,
+    aiPrediction,
   };
 };
 
-// --------------- Hook: fetch pending listings ---------------
 export const usePendingListings = () => {
   return useQuery<Listing[]>({
     queryKey: ["pendingListings"],
     queryFn: async () => {
       const response = await apiClient.get("/Listing/pending");
-
-      // Debug: log raw response so you can see what backend sends
       console.log("RAW /Listing/pending response:", response.data);
 
-      // Handle multiple response shapes:
-      // { items: [...] }, { data: [...] }, { data: { items: [...] } }, or just [...]
       const payload = response.data;
       let rawData: any[] = [];
 
@@ -230,7 +277,6 @@ export const usePendingListings = () => {
         rawData = payload.data.items;
       } else {
         console.warn("Unexpected /Listing/pending response shape:", payload);
-        rawData = [];
       }
 
       return rawData.map(mapToListing);
@@ -238,7 +284,6 @@ export const usePendingListings = () => {
   });
 };
 
-// --------------- Hook: approve a listing ---------------
 export const useApproveListing = () => {
   const queryClient = useQueryClient();
 
@@ -247,23 +292,16 @@ export const useApproveListing = () => {
       await apiClient.post(
         "/Listing/approve",
         {},
-        {
-          headers: {
-            productId,
-          },
-        }
+        { headers: { productId } },
       );
     },
     onMutate: async (productId) => {
       await queryClient.cancelQueries({ queryKey: ["pendingListings"] });
-
       const previous = queryClient.getQueryData<Listing[]>(["pendingListings"]);
-
       queryClient.setQueryData<Listing[]>(
         ["pendingListings"],
-        (old) => old?.filter((listing) => String(listing.id) !== String(productId)) ?? []
+        (old) => old?.filter((l) => String(l.id) !== String(productId)) ?? [],
       );
-
       return { previous };
     },
     onError: (_err, _vars, context: any) => {
@@ -277,7 +315,6 @@ export const useApproveListing = () => {
   });
 };
 
-// --------------- Hook: reject a listing ---------------
 export const useRejectListing = () => {
   const queryClient = useQueryClient();
 
@@ -296,14 +333,11 @@ export const useRejectListing = () => {
     },
     onMutate: async ({ productId }) => {
       await queryClient.cancelQueries({ queryKey: ["pendingListings"] });
-
       const previous = queryClient.getQueryData<Listing[]>(["pendingListings"]);
-
       queryClient.setQueryData<Listing[]>(
         ["pendingListings"],
-        (old) => old?.filter((listing) => String(listing.id) !== String(productId)) ?? []
+        (old) => old?.filter((l) => String(l.id) !== String(productId)) ?? [],
       );
-
       return { previous };
     },
     onError: (_err, _vars, context: any) => {

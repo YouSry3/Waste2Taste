@@ -1,4 +1,5 @@
 using FoodRescue.BLL.Contract.AdminDashbord.Moderation;
+using FoodRescue.BLL.Contract.Products;
 
 namespace FoodRescue.BLL.ServicesWeb.Admin.Moderation;
 
@@ -53,4 +54,7 @@ public interface IModerationService
     /// <returns>A task that represents the asynchronous operation. 
     /// The task result contains the count of open customer reports.</returns>
     Task<int> GetOpenCustomerReportsCountAsync();
+
+
+    Task<List<PendingListingDto>> GetPendingListingsAsync();
 }

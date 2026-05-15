@@ -1,4 +1,5 @@
 using FoodRescue.BLL.Contract.AdminDashbord.Moderation;
+using FoodRescue.BLL.Contract.Products;
 using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.BLL.Services.Reports;
 using FoodRescue.DAL.Consts;
@@ -85,5 +86,38 @@ public class ModerationService : IModerationService
 
         return allReports
             .Count(r => r.Status == "Open");
+    }
+
+
+
+    public async Task<List<PendingListingDto>> GetPendingListingsAsync()
+    {
+        var pendingProducts = await _context.Products
+            .AsNoTracking()
+            .Include(p => p.Vendor)
+            .Include(p => p.AISpoileRequest)
+            .Where(p => p.Status == ProductStatus.Pending)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
+
+        return pendingProducts.Select(p => new PendingListingDto
+        {
+            Id = p.Id,
+            Name = p.Name,
+            Description = p.Description,
+            ImageUrl = p.ImageUrl,
+            Price = p.Price,
+            OriginalPrice = p.OriginalPrice,
+            Quantity = p.Quantity,
+            ExpiryDate = p.ExpiryDate,
+            Category = p.Category,
+            VendorId = p.VendorId,
+            VendorName = p.Vendor.Name,
+            CreatedAt = p.CreatedAt,
+            AIPrediction = p.AISpoileRequest?.Prediction,
+            AIConfidence = p.AISpoileRequest?.Confidence,
+            AISpoiledPercentage = p.AISpoileRequest?.SpoiledPercentage,
+            AIIsSpoiled = p.AISpoileRequest?.IsSpoiled,
+        }).ToList();
     }
 }

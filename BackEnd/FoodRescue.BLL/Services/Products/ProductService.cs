@@ -381,7 +381,8 @@ public class ProductService : IProductService
                 Status = product.Status.ToString(),   // ← important
                 Category = product.Category,
                 VendorId = product.VendorId,
-                Location = product.Vendor.Address
+                Location = product.Vendor.Address,
+                Quantity = product.Quantity  // ← add this
             });
         }
 

@@ -38,23 +38,29 @@ export interface Listing {
   vendor: string;
   vendorName: string;
   title: string;
-  name?: string;           // alias
+  name?: string;
+  description?: string;
   category: string;
-  price: number;           // raw number for calculations
-  priceFormatted?: string; // "$10.50"
-  originalPrice: number;   // raw number
-  originalPriceFormatted?: string; // "$15.00"
+  price: number;
+  priceFormatted?: string;
+  originalPrice: number;
+  originalPriceFormatted?: string;
   quantity: number;
   pickupTime: string;
   submitted: string;
   createdAt?: string;
   image: string;
-  imageUrl?: string;       // alias
+  imageUrl?: string;
   expiryDate?: string;
   expiresIn?: string;
   flagged: boolean;
   aiFlag: { type: string; confidence: number; reason: string } | null;
   status: ListingStatus;
+  // AI Spoilage Detection
+  aiIsSpoiled?: boolean | null;
+  aiConfidence?: number | null;
+  aiSpoiledPercentage?: number | null;
+  aiPrediction?: string | null;
 }
 
 export interface VendorRequest {
