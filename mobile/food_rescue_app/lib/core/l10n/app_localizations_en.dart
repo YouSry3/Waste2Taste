@@ -598,4 +598,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noReviewsYet => 'No reviews yet';
+
+  @override
+  String get searchfoodOrVendor => 'Search foods or vendors';
 }

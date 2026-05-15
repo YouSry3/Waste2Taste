@@ -27,9 +27,11 @@ class FilterBottomSheet extends StatelessWidget {
           final cubit = context.read<FilterCubit>();
           return Container(
             padding: const EdgeInsets.all(24),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(32),
+              ),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -61,8 +63,11 @@ class FilterBottomSheet extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('0 \$'),
-                    Text('${state.maxPrice.round()} \$'),
+                    Text('0 \$', style: AppTextStyles.body(context)),
+                    Text(
+                      '${state.maxPrice.round()} \$',
+                      style: AppTextStyles.body(context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 32),
@@ -81,8 +86,11 @@ class FilterBottomSheet extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('0 km'),
-                    Text('${state.maxDistance.round()} km'),
+                    Text('0 km', style: AppTextStyles.body(context)),
+                    Text(
+                      '${state.maxDistance.round()} km',
+                      style: AppTextStyles.body(context),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 40),

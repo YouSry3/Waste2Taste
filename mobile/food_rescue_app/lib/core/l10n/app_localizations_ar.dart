@@ -598,4 +598,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noReviewsYet => 'لا يوجد تقييمات';
+
+  @override
+  String get searchfoodOrVendor => 'ابحث عن طعام أو بائع';
 }

@@ -1237,6 +1237,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No reviews yet'**
   String get noReviewsYet;
+
+  /// No description provided for @searchfoodOrVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Search foods or vendors'**
+  String get searchfoodOrVendor;
 }
 
 class _AppLocalizationsDelegate

@@ -188,5 +188,6 @@
     "maxPrice": "أقصى سعر",
     "maxDistance": "أقصى مسافة",
     "apply": "تطبيق",
-    "noReviewsYet": "لا يوجد تقييمات"
+    "noReviewsYet": "لا يوجد تقييمات",
+    "searchfoodOrVendor": "ابحث عن طعام أو بائع"
 }

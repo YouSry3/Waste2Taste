@@ -189,5 +189,6 @@
     "maxPrice": "Maximum Price",
     "maxDistance": "Maximum Distance",
     "apply": "Apply",
-    "noReviewsYet": "No reviews yet"
+    "noReviewsYet": "No reviews yet",
+    "searchfoodOrVendor": "Search foods or vendors"
 }

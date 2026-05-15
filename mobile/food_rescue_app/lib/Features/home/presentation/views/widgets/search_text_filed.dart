@@ -15,7 +15,7 @@ class SearchTextField extends StatelessWidget {
       textInputAction: TextInputAction.search,
       onChanged: onChanged,
       decoration: InputDecoration(
-        hintText: context.loc.searchfood,
+        hintText: context.loc.searchfoodOrVendor,
         hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
         border: InputBorder.none,
         contentPadding: EdgeInsets.zero,
