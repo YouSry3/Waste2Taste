@@ -3,7 +3,7 @@
     public class ReviewErrors
     {
 
-        public static Error ReviewsNotFound(Guid Productid) => new("Reviews.NotFound", $"Not Found Any reviews with Product Id :{Productid}");
+        public static Error ReviewsNotFound() => new("Reviews.NotFound", $"Not Found Any reviews ");
         public static Error OnlyCustomersCanAddReviews(Guid Userid) => new("Reviews.OnlyCustomersCanAddReviews", $"Only Customers Can Add Reviews , User Id :{Userid}");
         public static Error MustPurchaseBeforeReview(Guid userId) =>
     new("REVIEW_NOT_ALLOWED", $"User {userId} must have a completed order for this product before reviewing.");

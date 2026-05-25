@@ -48,7 +48,7 @@ namespace FoodRescue.BLL.Services.Reviews
                 .ToListAsync();
 
             return reviews.Count == 0
-                ? Result.Failure<List<ReviewWithSentimentResponse>>(ReviewErrors.ReviewsNotFound(vendorId))
+                ? Result.Failure<List<ReviewWithSentimentResponse>>(ReviewErrors.ReviewsNotFound())
                 : Result.Success(reviews);
         }
         // 1️⃣ Get all reviews for one product
@@ -71,7 +71,7 @@ namespace FoodRescue.BLL.Services.Reviews
 
 
             return reviews.IsNullOrEmpty() ?
-                Result.Failure<List<ReviewResponse>>(ReviewErrors.ReviewsNotFound(productId)) :
+                Result.Failure<List<ReviewResponse>>(ReviewErrors.ReviewsNotFound()) :
                 Result.Success(reviews);
         }
 
@@ -135,7 +135,7 @@ namespace FoodRescue.BLL.Services.Reviews
              .FirstOrDefaultAsync(r => r.Id == reviewId && r.UserId == userId);
 
             if (review == null)
-                return Result.Failure(ReviewErrors.ReviewsNotFound(userId));
+                return Result.Failure(ReviewErrors.ReviewsNotFound());
 
             _context.Reviews.Remove(review);
             await _context.SaveChangesAsync();

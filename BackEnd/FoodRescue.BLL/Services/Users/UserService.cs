@@ -47,8 +47,8 @@ namespace FoodRescue.BLL.Services.UserServices
 
 
             response.OrderCount = orders?.Count ?? 0;
-            response.MoneySpent = totalPaid > 0 ? totalPaid : 1;//write "1" to show the money saved if the user didn't buy any thing
-            response.moneySaved = (totalOriginal - totalPaid) > 0 ? (totalOriginal - totalPaid) : 1;//write "1" to show the money saved if the user didn't buy any thing
+            response.MoneySpent = totalPaid > 0 ? totalPaid : 0;//write "1" to show the money saved if the user didn't buy any thing
+            response.moneySaved = (totalOriginal - totalPaid) > 0 ? (totalOriginal - totalPaid) : 0;//write "1" to show the money saved if the user didn't buy any thing
           
 
 

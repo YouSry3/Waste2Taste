@@ -24,7 +24,7 @@ namespace FoodRescue.PL.Controllers
 
             return result.IsSuccess
                 ? Ok(result.Value)
-                : NotFound(result.Error);
+                : Ok(result.Error);
         }
 
 
