@@ -1,8 +1,4 @@
-﻿using FoodRescue.BLL.ResultPattern;
-using Microsoft.AspNetCore.Http;
-using Org.BouncyCastle.Tls;
-
-namespace FoodRescue.BLL.ResultPattern.TypeErrors
+﻿namespace FoodRescue.BLL.ResultPattern.TypeErrors
 {
     public class UserErrors
     {
@@ -21,16 +17,16 @@ namespace FoodRescue.BLL.ResultPattern.TypeErrors
 
         public static Error OnlyCustomersCanChangePassword(Guid userId) =>
             new("User.OnlyCustomersCanChangePassword", $"Only customers can change their password. UserId: {userId}");
-        public static Error OnlyCustomersCanAccessProfile(Guid userId)=>
+        public static Error OnlyCustomersCanAccessProfile(Guid userId) =>
             new("User.OnlyCustomersCanAccessProfile", $"Only customers can access their profile. UserId: {userId}");
         public static Error InvalidAccessToken =>
             new("User.InvalidAccessToken", "The access token provided is invalid or expired.");
         public static Error InvalidTokenData =>
             new("User.InvalidTokenData", "The token data is invalid or missing required information.");
-        public static Error InvalidRequest=>
+        public static Error InvalidRequest =>
             new("User.InvalidRequest", "The request is invalid or missing required parameters.");
-       public static Error InvalidRefreshToken=>
-                        new("User.InvalidRefreshToken", "The refresh token provided is invalid or expired.");
+        public static Error InvalidRefreshToken =>
+                         new("User.InvalidRefreshToken", "The refresh token provided is invalid or expired.");
 
     }
 }

@@ -1,14 +1,10 @@
-﻿using FoodRescue.BLL.ResultPattern;
-using FoodRescue.BLL.Contract.DTOs;
+﻿using FoodRescue.BLL.Contract.DTOs;
 using FoodRescue.BLL.Contract.Users;
-using FoodRescue.BLL.Extensions.Users;
-using FoodRescue.BLL.Extensions.Vendors;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Mapster;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace FoodRescue.BLL.Services.UserServices
@@ -23,7 +19,7 @@ namespace FoodRescue.BLL.Services.UserServices
         {
             var IsExited = await _userRepo.GetByIdAsync(id);
             // Handeling Error If User Not Existed
-            return IsExited == null 
+            return IsExited == null
                 ? Result.Failure<User>(UserErrors.EmailUndefinded)
                 : Result.Success<User>(IsExited);
 
@@ -32,13 +28,13 @@ namespace FoodRescue.BLL.Services.UserServices
 
         public async Task<Result<UserInfoResponse>> GetProfileAsync(Guid userId)
         {
-            if(!await _userRepo.IsCustomer(userId))
+            if (!await _userRepo.IsCustomer(userId))
                 return Result.Failure<UserInfoResponse>(UserErrors.OnlyCustomersCanAccessProfile(userId));
 
             var IsExited = await _userRepo.GetByIdAsync(userId);
             if (IsExited == null)
                 return Result.Failure<UserInfoResponse>(UserErrors.EmailUndefinded);
-                
+
             var orders = await _userRepo.GetUserOrdersAsync(userId);
             Decimal totalPaid = orders.Sum(o => o.TotalPrice);
             Decimal totalOriginal = orders.Sum(o => o.Product.OriginalPrice);
@@ -49,7 +45,7 @@ namespace FoodRescue.BLL.Services.UserServices
             response.OrderCount = orders?.Count ?? 0;
             response.MoneySpent = totalPaid > 0 ? totalPaid : 0;//write "1" to show the money saved if the user didn't buy any thing
             response.moneySaved = (totalOriginal - totalPaid) > 0 ? (totalOriginal - totalPaid) : 0;//write "1" to show the money saved if the user didn't buy any thing
-          
+
 
 
             // Handeling Error If User Not Existed
@@ -88,23 +84,24 @@ namespace FoodRescue.BLL.Services.UserServices
 
 
 
-       
+
         public async Task<Result> ChangePasswordAsync(Guid userId, ChangePassword dto)
         {
-            if(!await _userRepo.IsCustomer(userId))
-                return Result.Failure(UserErrors.OnlyCustomersCanChangePassword(userId));
             var user = await _userRepo.GetByIdAsync(userId);
             if (user == null)
                 return Result.Failure(UserErrors.EmailUndefinded);
 
-            if (!_userRepo.CheckDuplication(user, dto.OldPassword))
+            // Verify old password matches current password
+            if (user.Password != dto.OldPassword)
+                return Result.Failure(UserErrors.InValidCredentials);
+
+            // Prevent using same password
+            if (dto.OldPassword == dto.NewPassword)
                 return Result.Failure(UserErrors.DuplicationPassword);
 
             user.Password = dto.NewPassword;
-
             await _userRepo.UpdateAsync(user);
             await _userRepo.SaveChangesAsync();
-
             return Result.Success();
         }
 
@@ -120,7 +117,7 @@ namespace FoodRescue.BLL.Services.UserServices
             var user = await _userRepo.GetByIdAsync(userId);
             if (user == null)
                 return Result.Failure(UserErrors.EmailUndefinded);
-            
+
             await _userRepo.DeleteAsync(user);
 
 

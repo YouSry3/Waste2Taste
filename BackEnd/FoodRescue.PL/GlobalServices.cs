@@ -63,13 +63,19 @@ namespace FoodRescue.PL
                     else
                     {
                         builder
-                            .WithOrigins(configuration["AllowedOrigins"] ?? "")
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .AllowCredentials();
+    .WithOrigins(
+        (configuration["AllowedOrigins"] ?? "")
+        .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    )
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials();
                     }
                 });
             });
+
+
+
 
             // DbContext
 

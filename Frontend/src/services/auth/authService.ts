@@ -487,8 +487,22 @@ export class AuthService {
   }
 
   getVendorAccessState(_userArg?: AuthUser | null): VendorAccessState {
-    return "approved";
+  const user = _userArg ?? this.getCurrentUser();
+  if (!user || user.panelType !== "vendor") return "approved";
+
+  const status = user.vendorApprovalStatus as string | undefined;
+
+  if (status === "needs_request" || user.vendorRequestCompleted === false) {
+    return "needs_request";
   }
+
+  if (status === "pending") return "pending";
+  if (status === "rejected") return "rejected";
+  if (status === "approved") return "approved";
+
+  // Nothing set — treat as needs_request
+  return "needs_request";
+}
 
   // CLIENT-SIDE ONLY LOGOUT (no API call)
   clearLocalAuth(): void {

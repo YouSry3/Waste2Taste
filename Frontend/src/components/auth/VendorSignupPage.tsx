@@ -29,33 +29,36 @@ export default function VendorSignupPage() {
 
   const registerMutation = useMutation({
     mutationFn: async (values: {
-      ownerName: string;
-      email: string;
-      phoneNumber: string;
-      password: string;
-    }) => {
-      await vendorSignupSchema.validate(values, { abortEarly: false });
+  ownerName: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+}) => {
+  await vendorSignupSchema.validate(values, { abortEarly: false });
 
-      await authService.register({
-        email: values.email,
-        password: values.password,
-        name: values.ownerName,
-        phoneNumber: values.phoneNumber,
-        role: "vendor",
-      });
+  await authService.register({
+    email: values.email,
+    password: values.password,
+    name: values.ownerName,
+    phoneNumber: values.phoneNumber,
+    role: "vendor",
+  });
 
-      saveVendorSignupDraft({
-        ownerName: values.ownerName,
-        email: values.email,
-        phoneNumber: values.phoneNumber,
-      });
+  await authService.login({
+    email: values.email,
+    password: values.password,
+  });
 
-    },
-    onSuccess: () => {
-      authService.clearLocalAuth();
-      toast.success("Account created. Please sign in to continue.");
-      navigate("/?panel=vendor");
-    },
+  saveVendorSignupDraft({
+    ownerName: values.ownerName,
+    email: values.email,
+    phoneNumber: values.phoneNumber,
+  });
+},
+onSuccess: () => {
+  toast.success("Account created! Complete your vendor details.");
+  navigate("/vendor-request");
+},
     onError: (error: any) => {
       if (error?.name === "ValidationError" && Array.isArray(error.inner)) {
         toast.error(error.inner[0]?.message || "Please complete the form.");

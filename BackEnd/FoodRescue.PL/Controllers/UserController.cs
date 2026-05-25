@@ -1,11 +1,8 @@
 ﻿using FoodRescue.BLL.Contract.DTOs;
-using FoodRescue.BLL.Extensions.Users;
-using FoodRescue.BLL.ResultPattern;
 using FoodRescue.BLL.Services.UserServices;
 using FoodRescue.BLL.Services.Vendors;
 using FoodRescue.Hubs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -37,7 +34,7 @@ namespace FoodRescue.PL.Controllers
         }
         // GET /user/profile
         [HttpGet("profile")]
-        [Authorize(Roles ="customer")]
+        [Authorize(Roles = "customer")]
         public async Task<IActionResult> GetProfile()
         {
 
@@ -55,7 +52,7 @@ namespace FoodRescue.PL.Controllers
         ////in case of image upload ( img from front => URL or Base64)
         // PUT /users/profile
         [HttpPut("profile")]
-        
+
         public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileDTO request)
         {
             var result = await _service.UpdateProfileAsync(Guid.Parse(
@@ -141,10 +138,11 @@ namespace FoodRescue.PL.Controllers
         //}
 
         [HttpPut("profile/change-password")]
-        public async Task<IActionResult> ChangePassword( [FromBody] ChangePassword dto)
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePassword dto)
         {
             // temporary (later JWT)
-            
+
 
 
             var result = await _service.ChangePasswordAsync(Guid.Parse(
@@ -153,7 +151,7 @@ namespace FoodRescue.PL.Controllers
             return result.IsSuccess ?
                  Ok(new { message = "Password changed successfully" })
                 : BadRequest(new { Errors = result.Error });
-          
+
         }
 
         [HttpDelete("delete")]

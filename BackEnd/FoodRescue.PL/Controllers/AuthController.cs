@@ -7,7 +7,6 @@ using FoodRescue.BLL.Contract.Authentication.Register;
 using FoodRescue.BLL.Services.Authentication.AuthServices;
 using FoodRescue.BLL.Services.Authentication.Email_Service;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -29,7 +28,7 @@ namespace FoodRescue.PL.Controllers
         {
             var result = await AuthService.RegisterAsync(request, cancellationToken);
             return result.IsSuccess ?
-                 Ok(result.Value):
+                 Ok(result.Value) :
                  BadRequest(result.Error);
         }
 
@@ -39,7 +38,7 @@ namespace FoodRescue.PL.Controllers
         {
             var result = await AuthService.LoginAsync(request, cancellationToken);
             return result.IsSuccess ?
-                 Ok(result.Value):
+                 Ok(result.Value) :
                  BadRequest(result.Error);
         }
 
@@ -82,7 +81,7 @@ namespace FoodRescue.PL.Controllers
 
         [HttpPost("refresh-token")]
         [Authorize]
-        
+
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
         {
             // give id from the token to make sure the user is the same as the one who logged in
@@ -95,7 +94,12 @@ namespace FoodRescue.PL.Controllers
             return Ok(result.Value);
         }
 
-
+        [HttpGet("admin-exists")]
+        public async Task<IActionResult> AdminExists(CancellationToken cancellationToken)
+        {
+            var adminExists = await authService.AdminExistsAsync(cancellationToken);
+            return Ok(new { exists = adminExists });
+        }
     }
 }
 

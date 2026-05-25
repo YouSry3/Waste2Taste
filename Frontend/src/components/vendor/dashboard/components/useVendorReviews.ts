@@ -35,14 +35,24 @@ const getVendorId = (): string | null => {
 
 const fetchVendorReviews = async (vendorId: string): Promise<VendorReview[]> => {
   const response = await apiClient.get<VendorReview[]>(
-  "/Reviews/vendor/GetReviewsWithSentiment",
-    {
-      headers: { vendorId },
-    },
+    "/Reviews/vendor/GetReviewsWithSentiment",
+    { headers: { vendorId } },
   );
-  return response.data;
-};
 
+  const baseUrl = apiClient.defaults.baseURL?.replace(/\/api\/?$/i, "") ?? "";
+
+  return response.data.map((review) => ({
+    ...review,
+    user: {
+      ...review.user,
+      imageUrl: review.user.imageUrl
+        ? review.user.imageUrl.startsWith("http")
+          ? review.user.imageUrl
+          : `${baseUrl}${review.user.imageUrl}`
+        : null,
+    },
+  }));
+};
 export const useVendorReviews = () => {
   const vendorId = getVendorId();
 

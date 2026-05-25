@@ -530,37 +530,108 @@ export const createVendorRequest = async (
 
 // ─── Get vendor request status ────────────────────────────────────────────────
 
+// export const getVendorRequestStatus = async (): Promise<VendorApprovalStatus | null> => {
+//   try {
+//     const user = JSON.parse(localStorage.getItem("user") || "{}");
+//     const email = user?.email?.toLowerCase();
+//     if (!email) return null;
+
+//     // Check pending requests first — pending vendors aren't in /vendors yet
+//     const pendingRes = await apiClient.get("/VendorRequests/pending/all");
+//     const pendingList: any[] =
+//       Array.isArray(pendingRes.data) ? pendingRes.data :
+//       Array.isArray(pendingRes.data?.data) ? pendingRes.data.data :
+//       Array.isArray(pendingRes.data?.value) ? pendingRes.data.value : [];
+
+//     const pendingMatch = pendingList.find(
+//       (v: any) => (v.email ?? "").toLowerCase() === email
+//     );
+
+//     if (pendingMatch) {
+//       console.log("🔍 Found in pending requests:", pendingMatch);
+//       return normalizeStatus(pendingMatch.status) ?? "pending";
+//     }
+
+//     // Check all vendor requests by stored requestId
+//     const storedRequestId = localStorage.getItem("vendorRequestId");
+//     if (storedRequestId) {
+//       const res = await apiClient.get(`/VendorRequests/${storedRequestId}`);
+//       const payload = res.data?.value ?? res.data?.data ?? res.data;
+//       const status = normalizeStatus(
+//         payload?.status ?? payload?.approvalStatus ?? payload?.requestStatus
+//       );
+//       if (status) return status;
+//     }
+
+//     // Check all requests and match by email
+//     const allRes = await apiClient.get("/VendorRequests/all");
+//     const allList: any[] =
+//       Array.isArray(allRes.data) ? allRes.data :
+//       Array.isArray(allRes.data?.data) ? allRes.data.data :
+//       Array.isArray(allRes.data?.value) ? allRes.data.value : [];
+
+//     const myRequest = allList.find(
+//       (v: any) => (v.email ?? "").toLowerCase() === email
+//     );
+
+//     if (myRequest) {
+//       console.log("🔍 Found in all requests:", myRequest);
+//       return normalizeStatus(myRequest.status) ?? "pending";
+//     }
+
+//     // Only check /vendors if nothing found above — means they're approved
+//     const vendorsRes = await apiClient.get("/vendors");
+//     const vendorsList: any[] =
+//       Array.isArray(vendorsRes.data) ? vendorsRes.data :
+//       Array.isArray(vendorsRes.data?.data) ? vendorsRes.data.data :
+//       Array.isArray(vendorsRes.data?.value) ? vendorsRes.data.value : [];
+
+//     const approvedVendor = vendorsList.find(
+//       (v: any) => (v.email ?? "").toLowerCase() === email
+//     );
+
+//     if (approvedVendor) {
+//       console.log("🔍 Found in approved vendors:", approvedVendor);
+//       return "approved";
+//     }
+
+//     return null;
+//   } catch (error: any) {
+//     console.warn("getVendorRequestStatus failed:", error?.message);
+//     return null;
+//   }
+// };
+
 export const getVendorRequestStatus = async (): Promise<VendorApprovalStatus | null> => {
   try {
-    // Check /vendors list — match by email — "Active" status means approved
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     const email = user?.email?.toLowerCase();
+    if (!email) return null;
 
-    const res = await apiClient.get("/vendors");
-    const list: any[] =
-      res.data?.value ?? res.data?.data ?? res.data?.items ??
-      (Array.isArray(res.data) ? res.data : []);
+    // Check vendorApprovalRequests saved locally after form submission
+    const stored = localStorage.getItem("vendorApprovalRequests");
+    if (stored) {
+      const requests = JSON.parse(stored) as Array<{ email?: string; status?: string }>;
+      const match = requests.find(
+        (r) => (r.email ?? "").trim().toLowerCase() === email
+      );
+      if (match?.status === "pending") return "pending";
+      if (match?.status === "rejected") return "rejected";
+      if (match?.status === "approved") return "approved";
+    }
 
-    const myVendor = list.find(
+    // Check /vendors to see if they're approved on the backend
+    const vendorsRes = await apiClient.get("/vendors");
+    const vendorsList: any[] =
+      Array.isArray(vendorsRes.data) ? vendorsRes.data :
+      Array.isArray(vendorsRes.data?.data) ? vendorsRes.data.data :
+      Array.isArray(vendorsRes.data?.value) ? vendorsRes.data.value : [];
+
+    const approvedVendor = vendorsList.find(
       (v: any) => (v.email ?? "").toLowerCase() === email
     );
 
-    console.log("🔍 Found vendor in /vendors list:", myVendor);
-
-    if (myVendor) {
-      return normalizeStatus(myVendor.status);
-    }
-
-    // Fallback: try by stored requestId
-    const storedRequestId = localStorage.getItem("vendorRequestId");
-    if (storedRequestId) {
-      const response = await apiClient.get(`/VendorRequests/${storedRequestId}`);
-      const payload = response.data?.value ?? response.data?.data ?? response.data;
-      const status = normalizeStatus(
-        payload?.status ?? payload?.approvalStatus ?? payload?.requestStatus
-      );
-      if (status) return status;
-    }
+    if (approvedVendor) return "approved";
 
     return null;
   } catch (error: any) {

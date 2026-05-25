@@ -405,14 +405,7 @@ export function ReportCard({
 
           {/* Actions */}
           <div className="flex flex-wrap gap-2">
-            {/* Respond — always visible */}
-            <button
-              onClick={() => setRespondOpen(true)}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
-            >
-              <MessageSquare className="h-4 w-4" />
-              Respond
-            </button>
+           
 
             {report.status === "under_review" && (
               <>

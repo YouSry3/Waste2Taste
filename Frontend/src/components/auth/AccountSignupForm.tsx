@@ -402,7 +402,7 @@ export function AccountSignupForm({ role }: AccountSignupFormProps) {
                       as={Input}
                       id="phoneNumber"
                       name="phoneNumber"
-                      placeholder="e.g. +201234567890"
+                      placeholder="e.g. 01234567890"
                       className={`pl-10 text-sm sm:text-base ${touched.phoneNumber && errors.phoneNumber ? "border-red-500" : "border-gray-300"}`}
                     />
                   </div>

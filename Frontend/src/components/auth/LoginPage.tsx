@@ -97,6 +97,7 @@ const resolveVendorAccessState = async (
 
     if (backendStatus) {
       const normalized = backendStatus.toLowerCase() as VendorAccessState;
+      console.log("🔍 Normalized status:", normalized);
       authService.setVendorRequestState({
         vendorRequestCompleted: true,
         vendorApprovalStatus: normalized,
@@ -107,8 +108,12 @@ const resolveVendorAccessState = async (
     console.warn("Could not fetch vendor status from backend:", err);
   }
 
-  // Backend returned nothing — vendor logged in successfully, so treat as approved.
-  return "approved";
+ console.log("🔍 No status found, returning needs_request");
+authService.setVendorRequestState({
+  vendorRequestCompleted: false,
+  vendorApprovalStatus: "needs_request" as any,
+});
+  return "needs_request";
 };
 
   // ✅ React Query Mutation for real backend login
@@ -180,10 +185,14 @@ const resolveVendorAccessState = async (
         const vendorAccessState = await resolveVendorAccessState(res.user);
 
         if (vendorAccessState === "needs_request") {
-          toast("Complete your vendor request to continue.");
-          onLogin(res.user.panelType);
-          return;
-        }
+  authService.setVendorRequestState({
+    vendorRequestCompleted: false,
+    vendorApprovalStatus: "needs_request" as any,
+  });
+  toast("Complete your vendor request to continue.");
+  navigate("/vendor-request");
+  return;
+}
 
         if (vendorAccessState === "pending") {
           setPendingVendorApprovalEmail(res.user.email);

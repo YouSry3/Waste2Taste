@@ -573,7 +573,7 @@ export function ModerationView() {
             vendorsPage={filters.vendorsPage}
             onSelectVendor={handleSelectVendor}
             onApproveVendor={handleApproveVendor}
-            onRejectVendor={(id) => actions.setRejectionDialog({ open: true, id, type: "vendor" })}
+            onRejectVendor={(id) => handleRejectVendor(id, "Rejected by admin", "")}
             onBulkApproveVendors={handleBulkApproveVendors}
             onBulkRejectVendors={handleBulkRejectVendors}
             onClearSelection={() => setSelectedVendors([])}

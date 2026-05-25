@@ -6,6 +6,7 @@ type TopCustomer = {
   orders: number;
   spent: string;
   rating: number;
+  imageUrl?: string | null;
 };
 
 interface TopCustomersCardProps {
@@ -35,9 +36,19 @@ export function TopCustomersCard({ customers }: TopCustomersCardProps) {
               className="flex items-center justify-between p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
-                  {idx + 1}
-                </div>
+                <div className="w-10 h-10 rounded-full flex-shrink-0 overflow-hidden">
+  {customer.imageUrl ? (
+    <img
+      src={customer.imageUrl}
+      alt={customer.name}
+      className="w-full h-full object-cover rounded-full"
+    />
+  ) : (
+    <div className="w-full h-full rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center text-white font-semibold text-sm">
+      {idx + 1}
+    </div>
+  )}
+</div>
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-sm truncate">
                     {customer.name}
@@ -47,10 +58,7 @@ export function TopCustomersCard({ customers }: TopCustomersCardProps) {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-medium">{customer.rating}</span>
-              </div>
+             
             </div>
           ))}
         </div>

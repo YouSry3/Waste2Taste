@@ -84,9 +84,7 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
             await _Context.Users.AddAsync(request.Adapt<User>(), cancellationToken);
             await _Context.SaveChangesAsync(cancellationToken);
 
-
             return Result.Success(request.Adapt<RegisterResponse>());
-
         }
 
 
@@ -281,6 +279,11 @@ namespace FoodRescue.BLL.Services.Authentication.AuthServices
             };
 
             return Result.Success(response);
+        }
+
+        public async Task<bool> AdminExistsAsync(CancellationToken cancellationToken = default)
+        {
+            return await _Context.Users.AnyAsync(u => u.Role.ToLower() == "admin", cancellationToken);
         }
     }
 }

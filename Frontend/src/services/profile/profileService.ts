@@ -291,10 +291,10 @@ async changePassword(data: {
   newPassword: string;
 }): Promise<void> {
   try {
-    await apiClient.put("/User/profile/change-password", {
-      currentPassword: data.currentPassword,
-      newPassword: data.newPassword,
-    });
+   await apiClient.put("/User/profile/change-password", {
+  OldPassword: data.currentPassword,
+  NewPassword: data.newPassword,
+});
     console.log("✅ Password changed successfully");
   } catch (error: any) {
     console.error("❌ Failed to change password:", error);
