@@ -932,7 +932,11 @@ useEffect(() => {
       if (s === "dismissed") return "dismissed";
       return "under_review";
     })() as "under_review" | "resolved" | "dismissed",
-    priority: (r.priority?.charAt(0).toUpperCase() + r.priority?.slice(1) ?? "Low") as "High" | "Medium" | "Low",
+    priority: (
+  r.priority
+    ? (r.priority.charAt(0).toUpperCase() + r.priority.slice(1))
+    : "Low"
+) as "High" | "Medium" | "Low",
     submitted: r.date,
     refundAmount: r.refund,
   }));
