@@ -50,28 +50,17 @@ namespace FoodRescue.PL
             // CORS Configuration
             services.AddCors(options =>
             {
-                options.AddPolicy("FoodRescueCors", builder =>
+                options.AddPolicy("FoodRescueCors", policy =>
                 {
-                    if (environment.IsDevelopment())
-                    {
-                        builder
-                            .SetIsOriginAllowed(_ => true)  // ✅ Allow any origin in dev
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .AllowCredentials();            // ✅ Required for SignalR
-                    }
-                    else
-                    {
-                        builder
-                    .WithOrigins(
-                        (configuration["AllowedOrigins"] ?? "")
-                        .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                    )
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials();
-                                    }
-                                });
+                    policy
+                        .WithOrigins(
+                            "https://waste2-taste.vercel.app",
+                            "http://localhost:3000"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
             });
 
 
