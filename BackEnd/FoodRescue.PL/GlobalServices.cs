@@ -63,15 +63,15 @@ namespace FoodRescue.PL
                     else
                     {
                         builder
-    .WithOrigins(
-        (configuration["AllowedOrigins"] ?? "")
-        .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-    )
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials();
-                    }
-                });
+                    .WithOrigins(
+                        (configuration["AllowedOrigins"] ?? "")
+                        .Split(",", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    )
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+                                    }
+                                });
             });
 
 
