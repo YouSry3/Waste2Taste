@@ -105,7 +105,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ActivityLogs");
+                    b.ToTable("ActivityLogs", (string)null);
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Donation", b =>
@@ -161,7 +161,7 @@ namespace FoodRescue.DAL.Migrations
                     b.HasIndex("UserId", "ProductId")
                         .IsUnique();
 
-                    b.ToTable("Favorites");
+                    b.ToTable("Favorites", (string)null);
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Order", b =>
@@ -196,7 +196,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.PasswordResetToken", b =>
@@ -316,7 +316,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Report", b =>
@@ -433,7 +433,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("ResponderId");
 
-                    b.ToTable("ReportResponses");
+                    b.ToTable("ReportResponses", (string)null);
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Review", b =>
