@@ -56,3 +56,15 @@ Thumbs.db
 *.db
 *.sqlite
 *.bak
+
+## Python & AI Ignores ##
+__pycache__/
+*.py[cod]
+venv/
+.env
+AI/data/
+AI/venv/
+AI/kaggle.json
+*.keras
+*.h5
+
