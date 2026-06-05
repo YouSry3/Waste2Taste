@@ -15,6 +15,9 @@ import '/core/utils/app_routes.dart';
 import 'products_sliver_list_builder.dart';
 import 'package:waste2taste/Features/home/presentation/manager/get_user_location_cubit/get_user_location_cubit.dart';
 import 'package:waste2taste/core/functions/calculate_distance.dart';
+import 'package:waste2taste/core/constants/keys.dart';
+import 'package:waste2taste/core/database/pref_service.dart';
+import 'package:waste2taste/core/functions/setup_service_locator.dart';
 
 class HomeViewBody extends StatelessWidget {
   const HomeViewBody({super.key});
@@ -61,15 +64,18 @@ class HomeViewBody extends StatelessWidget {
 
                   if (!isProductsLoading &&
                       locationState is GetUserLocationSuccessState) {
-                    products = products.where((product) {
-                      final distance = calculateDistance(
-                        locationState.locationEntity.latitude,
-                        locationState.locationEntity.longitude,
-                        product.latitude,
-                        product.longitude,
-                      );
-                      return distance <= 30;
-                    }).toList();
+                    final maxDistance = getIt.get<PrefsService>().getDouble(kDistanceOffersKey) ?? 30.0;
+                    if (maxDistance < 100.0) {
+                      products = products.where((product) {
+                        final distance = calculateDistance(
+                          locationState.locationEntity.latitude,
+                          locationState.locationEntity.longitude,
+                          product.latitude,
+                          product.longitude,
+                        );
+                        return distance <= maxDistance;
+                      }).toList();
+                    }
                   }
 
                   if (!isProductsLoading && products.isEmpty) {

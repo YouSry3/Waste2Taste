@@ -210,7 +210,7 @@ Future<void> setupServiceLocator() async {
   getIt.registerFactory<ReserveOrderCubit>(
     () => ReserveOrderCubit(reserveOrderUseCase: getIt.get<ReserveOrderUseCase>()),
   );
-  getIt.registerFactory<GetMyOrdersCubit>(
+  getIt.registerLazySingleton<GetMyOrdersCubit>(
     () => GetMyOrdersCubit(getIt.get<GetMyOrdersUseCase>()),
   );
 }

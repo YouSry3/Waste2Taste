@@ -9,7 +9,7 @@ import 'package:waste2taste/Features/products/data/models/add_review_response_mo
 import 'package:waste2taste/Features/products/data/models/review_model.dart';
 
 abstract class ProductRemoteDataSource {
-  Future<List<ReviewModel>> getProductReviews(String vendorId);
+  Future<List<ReviewModel>> getProductReviews(String productId);
   Future<AddReviewResponseModel> addReview(AddReviewModel review);
   Future<void> deleteReview(int reviewId);
   Future<void> toggleFavorite(String productId);
@@ -23,21 +23,26 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
   ProductRemoteDataSourceImpl(this.apiService);
 
   @override
-  Future<List<ReviewModel>> getProductReviews(String vendorId) async {
+  Future<List<ReviewModel>> getProductReviews(String productId) async {
     var tokens = await getIt<FlutterSecureStorageService>().getAuthToken();
     final response = await apiService.get(
-      ApiUrls.getReviews,
+      ApiUrls.getReviews(productId),
       options: Options(
         headers: {
-          'vendorId': vendorId,
+          // 'vendorId': vendorId,
           "Authorization": "Bearer ${tokens!.token}",
         },
       ),
     );
 
+    if (response.data is Map) {
+      return [];
+    }
     List<ReviewModel> reviews = [];
-    for (var item in response.data) {
-      reviews.add(ReviewModel.fromJson(item));
+    if (response.data is List) {
+      for (var item in response.data) {
+        reviews.add(ReviewModel.fromJson(item));
+      }
     }
     return reviews;
   }

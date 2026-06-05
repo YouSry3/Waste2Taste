@@ -46,7 +46,7 @@ class VendorCard extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              context.loc.viewOffer,
+              context.loc.viewRestaurant,
               style: AppTextStyles.body(
                 context,
               ).copyWith(color: AppColors.primary, fontSize: 12),

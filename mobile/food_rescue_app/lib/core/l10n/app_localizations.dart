@@ -1243,6 +1243,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search foods or vendors'**
   String get searchfoodOrVendor;
+
+  /// No description provided for @viewRestaurant.
+  ///
+  /// In en, this message translates to:
+  /// **'view restaurant'**
+  String get viewRestaurant;
+
+  /// No description provided for @noProductsMatchYourFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No products match your filters'**
+  String get noProductsMatchYourFilters;
 }
 
 class _AppLocalizationsDelegate

@@ -189,5 +189,7 @@
     "maxDistance": "أقصى مسافة",
     "apply": "تطبيق",
     "noReviewsYet": "لا يوجد تقييمات",
-    "searchfoodOrVendor": "ابحث عن طعام أو بائع"
+    "searchfoodOrVendor": "ابحث عن طعام أو بائع",
+    "viewRestaurant": "عرض المطعم",
+    "noProductMatchYourFilters": "لا توجد منتجات تطابق معايير البحث"
 }

@@ -10,11 +10,15 @@ class CustomBottomNavigationBar extends StatefulWidget {
 
   @override
   State<CustomBottomNavigationBar> createState() =>
-      _CustomBottomNavigationBarState();
+      CustomBottomNavigationBarState();
 }
 
-class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
+class CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   int _currentIndex = 0;
+
+  void changeIndex(int index) {
+    setState(() => _currentIndex = index);
+  }
 
   final List<Widget> _pages = const [
     HomeView(),

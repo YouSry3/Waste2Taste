@@ -6,6 +6,7 @@ import '../../../../../core/constants/api_urls.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
+import '../../../../../core/widgets/custom_bottom_navigation_bar.dart';
 import '../../manager/get_user_location_cubit/get_user_location_cubit.dart';
 
 class CustomerCard extends StatelessWidget {
@@ -49,19 +50,27 @@ class CustomerCard extends StatelessWidget {
           ),
         ],
       ),
-      trailing: CircleAvatar(
-        radius: 24,
+      trailing: GestureDetector(
+        onTap: () {
+          final navBarState = context.findAncestorStateOfType<CustomBottomNavigationBarState>();
+          if (navBarState != null) {
+            navBarState.changeIndex(3);
+          }
+        },
         child: CircleAvatar(
-          radius: 22,
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          child: ClipOval(
-            child: CachedNetworkImage(
-              width: 44,
-              height: 44,
-              fit: BoxFit.cover,
-              imageUrl: ApiUrls.baseUrl + profileImageUrl,
-              errorWidget: (context, url, error) =>
-                  const Icon(Icons.person, color: AppColors.primary),
+          radius: 24,
+          child: CircleAvatar(
+            radius: 22,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            child: ClipOval(
+              child: CachedNetworkImage(
+                width: 44,
+                height: 44,
+                fit: BoxFit.cover,
+                imageUrl: ApiUrls.baseUrl + profileImageUrl,
+                errorWidget: (context, url, error) =>
+                    const Icon(Icons.person, color: AppColors.primary),
+              ),
             ),
           ),
         ),

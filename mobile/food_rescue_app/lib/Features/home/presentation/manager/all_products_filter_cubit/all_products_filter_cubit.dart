@@ -1,4 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:waste2taste/core/constants/keys.dart';
+import 'package:waste2taste/core/database/pref_service.dart';
+import 'package:waste2taste/core/functions/setup_service_locator.dart';
 
 class AllProductsFilterState {
   final String searchQuery;
@@ -33,7 +36,7 @@ class AllProductsFilterCubit extends Cubit<AllProductsFilterState> {
       : super(AllProductsFilterState(
           searchQuery: '',
           maxPrice: 100,
-          maxDistance: 100,
+          maxDistance: getIt.get<PrefsService>().getDouble(kDistanceOffersKey) ?? 30.0,
           anyDataChanged: false,
         ));
 

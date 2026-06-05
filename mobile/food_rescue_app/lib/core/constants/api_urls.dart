@@ -13,8 +13,8 @@ abstract class ApiUrls {
   static const editProfile = "$baseUrl${ApiEndPoints.editProfileEndPoint}";
   static const changePassword = "$baseUrl${ApiEndPoints.changePasswordEndPoint}";
   static const deleteAccount = "$baseUrl${ApiEndPoints.deleteAccountEndPoint}";
-  static const getReviews =
-      "$baseUrl${ApiEndPoints.getReviewsEndPoint}";
+  static String getReviews(String productId) =>
+      "$baseUrl${ApiEndPoints.getReviewsEndPoint}$productId";
   static const addReview = "$baseUrl${ApiEndPoints.addReviewEndPoint}";
   static const deleteReview = "$baseUrl${ApiEndPoints.deleteReviewEndPoint}";
   static const reportUrl = "$baseUrl${ApiEndPoints.reportEndPoint}";

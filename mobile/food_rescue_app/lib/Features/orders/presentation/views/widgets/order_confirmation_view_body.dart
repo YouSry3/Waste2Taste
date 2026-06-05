@@ -3,11 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
+import '../../../../../core/functions/format_pickup_time.dart';
 import 'order_actions_buttons.dart';
 import 'order_info_card_for_confirmation.dart';
 import 'status_message.dart';
 import 'success_badge.dart';
-import 'package:intl/intl.dart';
 import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import 'package:waste2taste/Features/orders/data/models/reserve_order_response_model.dart';
 
@@ -44,8 +44,7 @@ class OrderConfirmationViewBody extends StatelessWidget {
                     OrderInfoCardForConfirmation(
                       icon: LucideIcons.mapPin,
                       title: context.loc.pickupLocation,
-                      subtitle: product
-                          .vendorName, // Assuming vendor name is the location for now
+                      subtitle: product.vendorName,
                       iconColor: AppColors.primary,
                       delayMs: 500,
                       onTap: () {},
@@ -54,7 +53,7 @@ class OrderConfirmationViewBody extends StatelessWidget {
                     OrderInfoCardForConfirmation(
                       icon: LucideIcons.clock,
                       title: context.loc.pickupTime,
-                      subtitle: _formatPickupTime(response.pickupTime),
+                      subtitle: formatPickupTime(response.pickupTime),
                       iconColor: AppColors.secondary,
                       delayMs: 600,
                     ),
@@ -73,14 +72,5 @@ class OrderConfirmationViewBody extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _formatPickupTime(String timeIso) {
-    try {
-      final dateTime = DateTime.parse(timeIso).toLocal();
-      return DateFormat('MMM d, h:mm a').format(dateTime);
-    } catch (e) {
-      return timeIso;
-    }
   }
 }

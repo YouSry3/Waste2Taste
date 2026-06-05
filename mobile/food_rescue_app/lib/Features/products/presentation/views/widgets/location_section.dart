@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:waste2taste/Features/home/domain/entities/product_entity.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_text_styles.dart';
 import '../../../../../core/extensions/app_localization_extention.dart';
 import '../../../../home/presentation/views/widgets/custom_card_widget.dart';
-import '../../../../../core/utils/app_routes.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:waste2taste/core/utils/map_utils.dart';
 
 class LocationSection extends StatelessWidget {
   const LocationSection({super.key, required this.product});
@@ -37,14 +37,9 @@ class LocationSection extends StatelessWidget {
   }
 
   void _navigateToMap(BuildContext context) {
-    // Navigate to the vendor products view which will show the vendor's
-    // products and from there they can navigate to the map
-    GoRouter.of(context).push(
-      AppRoutes.vendorProductsView,
-      extra: {
-        'vendorId': product.vendorId,
-        'vendorName': product.vendorName,
-      },
+    MapUtils.openMaps(
+      context,
+      LatLng(product.latitude, product.longitude),
     );
   }
 }

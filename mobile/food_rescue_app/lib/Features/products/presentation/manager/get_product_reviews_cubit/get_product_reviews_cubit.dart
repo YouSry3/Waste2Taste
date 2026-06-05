@@ -8,9 +8,9 @@ class GetProductReviewsCubit extends Cubit<GetProductReviewsState> {
 
   GetProductReviewsCubit(this.getProductReviewsUsecase) : super(GetProductReviewsInitial());
 
-  Future<void> getProductReviews(String vendorId) async {
+  Future<void> getProductReviews(String productId) async {
     emit(GetProductReviewsLoading());
-    final result = await getProductReviewsUsecase.call(vendorId);
+    final result = await getProductReviewsUsecase.call(productId);
     result.fold(
       (failure) => emit(GetProductReviewsFailure(failure.errorMessage)),
       (reviews) => emit(GetProductReviewsSuccess(reviews)),

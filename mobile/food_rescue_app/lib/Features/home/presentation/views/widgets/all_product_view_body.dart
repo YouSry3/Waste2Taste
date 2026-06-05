@@ -30,10 +30,10 @@ class AllProductsViewBody extends StatelessWidget {
       final matchesSearch =
           product.name.toLowerCase().contains(searchQuery.toLowerCase()) ||
           product.vendorName.toLowerCase().contains(searchQuery.toLowerCase());
-      final matchesPrice = product.price <= maxPrice;
+      final matchesPrice = maxPrice >= 100.0 ? true : product.price <= maxPrice;
 
       bool matchesDistance = true;
-      if (locationState is GetUserLocationSuccessState) {
+      if (maxDistance < 100.0 && locationState is GetUserLocationSuccessState) {
         final distance = calculateDistance(
           locationState.locationEntity.latitude,
           locationState.locationEntity.longitude,
@@ -120,7 +120,7 @@ class AllProductsViewBody extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(vertical: 60),
                             child: Center(
                               child: Text(
-                                context.loc.noOffersNearby,
+                                context.loc.noProductsMatchYourFilters,
                                 style: AppTextStyles.body(context).copyWith(
                                   color: AppColors.textGray,
                                 ),

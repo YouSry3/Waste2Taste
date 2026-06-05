@@ -601,4 +601,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get searchfoodOrVendor => 'ابحث عن طعام أو بائع';
+
+  @override
+  String get viewRestaurant => 'عرض المطعم';
+
+  @override
+  String get noProductsMatchYourFilters => 'No products match your filters';
 }

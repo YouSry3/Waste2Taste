@@ -12,6 +12,8 @@ import '../../../../home/domain/entities/product_entity.dart';
 import '../../../../orders/data/models/reserve_order_request_model.dart';
 import '../../../../orders/presentation/manager/reserve_order_cubit/reserve_order_cubit.dart';
 import '../../../../orders/presentation/manager/reserve_order_cubit/reserve_order_state.dart';
+import '../../../../../../core/functions/setup_service_locator.dart';
+import '../../../../orders/presentation/manager/get_my_orders_cubit/get_my_orders_cubit.dart';
 
 class ReserveButtonBlocConsumer extends StatelessWidget {
   const ReserveButtonBlocConsumer({super.key, required this.product});
@@ -23,6 +25,7 @@ class ReserveButtonBlocConsumer extends StatelessWidget {
     return BlocConsumer<ReserveOrderCubit, ReserveOrderState>(
       listener: (context, state) {
         if (state is ReserveOrderSuccess) {
+          getIt.get<GetMyOrdersCubit>().getMyOrders();
           GoRouter.of(context).push(
             AppRoutes.orderConfirmationView,
             extra: {

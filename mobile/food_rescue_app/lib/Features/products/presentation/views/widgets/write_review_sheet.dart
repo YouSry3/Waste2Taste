@@ -18,7 +18,8 @@ import '../../../../../core/utils/custom_material_banner.dart';
 
 class WriteReviewSheet extends StatefulWidget {
   final String productId;
-  const WriteReviewSheet({super.key, required this.productId});
+  final VoidCallback? onSuccess;
+  const WriteReviewSheet({super.key, required this.productId, this.onSuccess});
 
   @override
   State<WriteReviewSheet> createState() => _WriteReviewSheetState();
@@ -61,6 +62,7 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
 
           if (context.mounted) {
             Navigator.pop(context);
+            widget.onSuccess?.call();
           }
         }
       },

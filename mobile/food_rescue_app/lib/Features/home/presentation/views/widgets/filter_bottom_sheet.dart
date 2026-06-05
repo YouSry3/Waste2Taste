@@ -57,7 +57,7 @@ class FilterBottomSheet extends StatelessWidget {
                   max: 100,
                   divisions: 20,
                   activeColor: AppColors.primary,
-                  label: '${state.maxPrice.round()} \$',
+                  label: state.maxPrice >= 100 ? 'None' : '${state.maxPrice.round()} \$',
                   onChanged: (value) => cubit.updateMaxPrice(value),
                 ),
                 Row(
@@ -65,9 +65,13 @@ class FilterBottomSheet extends StatelessWidget {
                   children: [
                     Text('0 \$', style: AppTextStyles.body(context)),
                     Text(
-                      '${state.maxPrice.round()} \$',
-                      style: AppTextStyles.body(context),
+                      state.maxPrice >= 100 ? 'None' : '${state.maxPrice.round()} \$',
+                      style: AppTextStyles.body(context).copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
                     ),
+                    Text('None', style: AppTextStyles.body(context)),
                   ],
                 ),
                 const SizedBox(height: 32),
@@ -80,7 +84,7 @@ class FilterBottomSheet extends StatelessWidget {
                   max: 100,
                   divisions: 20,
                   activeColor: AppColors.primary,
-                  label: '${state.maxDistance.round()} km',
+                  label: state.maxDistance >= 100 ? 'None' : '${state.maxDistance.round()} km',
                   onChanged: (value) => cubit.updateMaxDistance(value),
                 ),
                 Row(
@@ -88,9 +92,13 @@ class FilterBottomSheet extends StatelessWidget {
                   children: [
                     Text('0 km', style: AppTextStyles.body(context)),
                     Text(
-                      '${state.maxDistance.round()} km',
-                      style: AppTextStyles.body(context),
+                      state.maxDistance >= 100 ? 'None' : '${state.maxDistance.round()} km',
+                      style: AppTextStyles.body(context).copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
                     ),
+                    Text('None', style: AppTextStyles.body(context)),
                   ],
                 ),
                 const SizedBox(height: 40),

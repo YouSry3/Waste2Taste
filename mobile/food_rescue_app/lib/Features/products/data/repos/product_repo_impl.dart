@@ -15,11 +15,11 @@ class ProductRepoImpl implements ProductRepo {
 
   @override
   Future<Either<Failure, List<ReviewEntity>>> getProductReviews(
-    String vendorId,
+    String productId,
   ) async {
     try {
       final reviews = await productRemoteDataSource.getProductReviews(
-        vendorId,
+        productId,
       );
       return Right(reviews);
     } catch (e) {
