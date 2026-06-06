@@ -34,13 +34,14 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         },
       ),
     );
-
-    if (response.data is Map) {
+    if (response.data is Map &&
+        (response.data as Map)['code'] == 'Reviews.NotFound') {
       return [];
     }
     List<ReviewModel> reviews = [];
+
     if (response.data is List) {
-      for (var item in response.data) {
+      for (var item in (response.data as List)) {
         reviews.add(ReviewModel.fromJson(item));
       }
     }

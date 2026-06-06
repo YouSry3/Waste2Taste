@@ -4,6 +4,7 @@ import '../../Features/map/presentation/views/map_view.dart';
 import '../../Features/orders/presentation/views/orders_view.dart';
 import '../../Features/profile/presentation/views/profile_view.dart';
 import 'custom_nav_bar.dart';
+import 'fade_indexed_stack.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   const CustomBottomNavigationBar({super.key});
@@ -30,7 +31,7 @@ class CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _pages),
+      body: FadeIndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 500),
         child: CustomNavBar(

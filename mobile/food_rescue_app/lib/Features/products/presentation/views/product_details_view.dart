@@ -22,7 +22,7 @@ class ProductDetailsView extends StatelessWidget {
         BlocProvider(
           create: (context) => GetProductReviewsCubit(
             getIt.get<GetProductReviewsUsecase>(),
-          )..getProductReviews(product.vendorId),
+          )..getProductReviews(product.id),
         ),
         BlocProvider(
           create: (context) => getIt.get<ReserveOrderCubit>(),
