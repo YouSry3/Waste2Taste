@@ -51,10 +51,10 @@ export function ReportDialog({ open, onOpenChange, report }: ReportDialogProps) 
               <Label className="text-gray-500 text-xs font-medium">Listing</Label>
               <p className="text-gray-900 font-medium mt-1">{report.listing}</p>
             </div>
-            <div>
+            {/* <div>
               <Label className="text-gray-500 text-xs font-medium">Refund Amount</Label>
               <p className="text-gray-900 font-medium mt-1">EGP {report.refund}</p>
-            </div>
+            </div> */}
             <div className="col-span-2">
               <Label className="text-gray-500 text-xs font-medium">Report Date</Label>
               <p className="text-gray-900 font-medium mt-1">{report.date}</p>
@@ -92,7 +92,7 @@ export function ReportDialog({ open, onOpenChange, report }: ReportDialogProps) 
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
             <MessageSquare className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
             <p className="text-sm text-blue-800">
-              This report is being reviewed by our admin team. You will be notified once a resolution is reached.
+              This report is being reviewed by our admin team.
             </p>
           </div>
 

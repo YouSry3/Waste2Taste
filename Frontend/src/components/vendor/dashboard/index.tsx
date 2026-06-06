@@ -30,7 +30,6 @@ import { Card, CardContent } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { Skeleton } from "../../ui/skeleton";
 import { useWeeklyPerformance } from "../dashboard/components/useWeeklyPerformance";
-import { ReviewsTab } from "./components/ReviewsTab";
 const isApiModeEnabled = () => {
   const mockFlag = import.meta.env.VITE_ENABLE_MOCK_DATA;
   if (typeof mockFlag === "string" && mockFlag.toLowerCase() === "true") {
@@ -142,7 +141,6 @@ function ApiErrorState({
 }
 
 export function VendorDashboard() {
-  const [activeTab, setActiveTab] = useState<"overview" | "reviews">("overview");
   const navigate = useNavigate();
 const { data: weeklyData, isLoading: isWeeklyLoading } = useWeeklyPerformance();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -448,94 +446,62 @@ return (
   <div className="p-6 space-y-6 relative">
     <DashboardHeader />
 
-    {/* Tab switcher */}
-    <div className="flex gap-2 border-b pb-0">
-      <button
-        onClick={() => setActiveTab("overview")}
-        className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-          activeTab === "overview"
-            ? "border-green-600 text-green-600"
-            : "border-transparent text-gray-500 hover:text-gray-700"
-        }`}
-      >
-        Overview
-      </button>
-      <button
-        onClick={() => setActiveTab("reviews")}
-        className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
-          activeTab === "reviews"
-            ? "border-green-600 text-green-600"
-            : "border-transparent text-gray-500 hover:text-gray-700"
-        }`}
-      >
-        Reviews
-      </button>
+    <StatsGrid stats={statsData} />
+
+    <MonthlyGoalsCard
+      goals={monthlyGoals}
+      onSetGoal={() => navigate("/panel/vendor/profile")}
+    />
+
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <WeeklyPerformanceCard data={weeklyData || []} isLoading={isWeeklyLoading} />
+      <InventoryStatusCard
+        items={inventoryData}
+        onCreateListing={navigateToCreateWithPrefilled}
+      />
     </div>
 
-    {/* Reviews tab */}
-    {activeTab === "reviews" && <ReviewsTab />}
-
-    {/* Overview tab — everything that was already here */}
-    {activeTab === "overview" && (
-      <>
-        <StatsGrid stats={statsData} />
-
-        <MonthlyGoalsCard
-          goals={monthlyGoals}
-          onSetGoal={() => navigate("/panel/vendor/profile")}
-        />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <WeeklyPerformanceCard data={weeklyData || []} isLoading={isWeeklyLoading} />
-          <InventoryStatusCard
-            items={inventoryData}
-            onCreateListing={navigateToCreateWithPrefilled}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <TopCustomersCard customers={topCustomersData} />
-          <div className="lg:col-span-1 flex flex-col gap-6">
-            <EnvironmentalImpactCard data={environmentalImpactData} />
-            <QuickActionsCard
-              onCreateListing={handleCreateListing}
-              onViewAllOrders={handleViewAllOrders}
-              onViewAnalytics={handleViewAnalytics}
-              onPrintPickupList={handlePrintPickupList}
-            />
-          </div>
-        </div>
-
-        <RecentOrdersTable
-          orders={recentOrders}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <TopCustomersCard customers={topCustomersData} />
+      <div className="lg:col-span-1 flex flex-col gap-6">
+        <EnvironmentalImpactCard data={environmentalImpactData} />
+        <QuickActionsCard
+          onCreateListing={handleCreateListing}
           onViewAllOrders={handleViewAllOrders}
-          onViewOrderDetails={handleViewOrderDetails}
-          onMarkAsPickedUp={handleMarkAsPickedUp}
-          onMarkAsReady={handleMarkAsReady}
-          onCancelOrder={handleCancelOrder}
-          onPrintOrder={handlePrintOrder}
-          onCopyOrderId={handleCopyOrderId}
-          getInitials={getInitials}
-          getStatusColor={getStatusColor}
+          onViewAnalytics={handleViewAnalytics}
+          onPrintPickupList={handlePrintPickupList}
         />
+      </div>
+    </div>
 
-        <OrderDetailsDialog
-          open={showOrderDetails}
-          onOpenChange={setShowOrderDetails}
-          selectedOrder={selectedOrder}
-          getStatusColor={getStatusColor}
-          onSendReceipt={() => {
-            toast.success("Order receipt sent to customer");
-            setShowOrderDetails(false);
-          }}
-          onContactCustomer={() => {
-            toast.success("Customer contacted");
-            setShowOrderDetails(false);
-          }}
-          onClose={() => setShowOrderDetails(false)}
-        />
-      </>
-    )}
+    <RecentOrdersTable
+      orders={recentOrders}
+      onViewAllOrders={handleViewAllOrders}
+      onViewOrderDetails={handleViewOrderDetails}
+      onMarkAsPickedUp={handleMarkAsPickedUp}
+      onMarkAsReady={handleMarkAsReady}
+      onCancelOrder={handleCancelOrder}
+      onPrintOrder={handlePrintOrder}
+      onCopyOrderId={handleCopyOrderId}
+      getInitials={getInitials}
+      getStatusColor={getStatusColor}
+    />
+
+    <OrderDetailsDialog
+      open={showOrderDetails}
+      onOpenChange={setShowOrderDetails}
+      selectedOrder={selectedOrder}
+      getStatusColor={getStatusColor}
+      onSendReceipt={() => {
+        toast.success("Order receipt sent to customer");
+        setShowOrderDetails(false);
+      }}
+      onContactCustomer={() => {
+        toast.success("Customer contacted");
+        setShowOrderDetails(false);
+      }}
+      onClose={() => setShowOrderDetails(false)}
+    />
   </div>
 );
   // return (

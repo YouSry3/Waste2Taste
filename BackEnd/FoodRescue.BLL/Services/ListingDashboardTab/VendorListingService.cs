@@ -21,17 +21,20 @@ public class VendorListingService : IVendorListingService
         //var activeCount = await _repository.GetActiveListingsCountAsync(vendorId);
 
 
-        var approvedProducts = products.Where(p => p.Status == ProductStatus.Approved).ToList();
+        //var approvedProducts = products.Where(p => p.Status == ProductStatus.Approved).ToList();
 
 
+        ////var listings = approvedProducts.Select(p => MapToDto(p)).ToList();
         //var listings = approvedProducts.Select(p => MapToDto(p)).ToList();
-        var listings = approvedProducts.Select(p => MapToDto(p)).ToList();
+        //var activeCount = products.Count(p => p.Status == ProductStatus.Approved);
+        var listings = products.Select(p => MapToDto(p)).ToList();
         var activeCount = products.Count(p => p.Status == ProductStatus.Approved);
 
         return Result.Success(new VendorListingListResponse
         {
             ActiveCount = activeCount,
-            Listings = listings
+            Listings = listings,
+
         });
     }
 
@@ -101,7 +104,8 @@ public class VendorListingService : IVendorListingService
             Rating = rating,
             VendorName = p.Vendor?.Name ?? "Unknown",
             Location = p.Vendor?.Address ?? "Unknown",
-            PickupTime = pickupTime
+            PickupTime = pickupTime,
+            ExpiryDate = p.ExpiryDate
         };
     }
 }

@@ -4,12 +4,12 @@
     {
 
         public static Error ReviewsNotFound() => new("Reviews.NotFound", $"Not Found Any reviews ");
-        public static Error OnlyCustomersCanAddReviews(Guid Userid) => new("Reviews.OnlyCustomersCanAddReviews", $"Only Customers Can Add Reviews , User Id :{Userid}");
-        public static Error MustPurchaseBeforeReview(Guid userId) =>
-    new("REVIEW_NOT_ALLOWED", $"User {userId} must have a completed order for this product before reviewing.");
+        public static Error OnlyCustomersCanAddReviews() => new("Reviews.OnlyCustomersCanAddReviews", $"Only Customers Can Add Reviews ");
+        public static Error MustPurchaseBeforeReview() =>
+    new("REVIEW_NOT_ALLOWED", $"You must have a completed order for this product before reviewing.");
 
-        public static Error AlreadyReviewed(Guid userId) =>
-            new("ALREADY_REVIEWED", $"User {userId} has already reviewed this product.");
+        public static Error AlreadyReviewed() =>
+            new("ALREADY_REVIEWED", $"You have already reviewed this product.");
 
     }
 }

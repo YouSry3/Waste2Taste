@@ -207,13 +207,7 @@ const { mutateAsync: updateStock } = useUpdateStock();
         <div>
           <h1 className="text-2xl font-semibold">Food Listings</h1>
           <p className="text-gray-500">
-            Manage surplus food listings • {activeCount} active
-            {pendingCount > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                <Clock className="h-3 w-3 mr-1" />
-                {pendingCount} pending approval
-              </Badge>
-            )}
+            Manage surplus food listings 
           </p>
         </div>
         <Button

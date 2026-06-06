@@ -71,23 +71,6 @@ export function TopItemsCard({ items }: TopItemsCardProps) {
                 <p className="text-sm font-semibold text-gray-900">
                   ${item.revenue.toFixed(2)}
                 </p>
-                <div className="flex items-center gap-1 justify-end mt-1">
-                  {item.trend >= 0 ? (
-                    <>
-                      <TrendingUp className="w-3 h-3 text-green-600" />
-                      <span className="text-xs text-green-600">
-                        +{item.trend}%
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <TrendingDown className="w-3 h-3 text-red-600" />
-                      <span className="text-xs text-red-600">
-                        {item.trend}%
-                      </span>
-                    </>
-                  )}
-                </div>
               </div>
             </div>
           ))}

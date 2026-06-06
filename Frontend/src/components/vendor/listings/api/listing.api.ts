@@ -32,7 +32,7 @@ export type ListingsResponse = {
 export const listingApi = {
   getVendorListings: async (): Promise<ListingsResponse> => {
     const vendorId = localStorage.getItem("vendorId");
-    const res = await vendorApiClient.get(`/products/vendor/${vendorId}/all`);
+    const res = await vendorApiClient.get(`/api/dashboard/listings`);
     const raw = res.data;
     const items =
       raw.listings ?? raw.items ?? raw.data ?? raw.value ??

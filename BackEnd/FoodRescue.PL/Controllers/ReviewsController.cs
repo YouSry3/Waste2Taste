@@ -24,7 +24,7 @@ namespace FoodRescue.PL.Controllers
 
             return result.IsSuccess
                 ? Ok(result.Value)
-                : Ok(result.Error);
+                : Ok(result.Error!.description);
         }
 
 
@@ -39,7 +39,7 @@ namespace FoodRescue.PL.Controllers
 
             return result.IsSuccess ?
                 Ok(result.Value) :
-                NotFound(result.Error);
+                NotFound(result.Error!.description);
         }
 
 
@@ -57,7 +57,7 @@ namespace FoodRescue.PL.Controllers
 
             return result.IsSuccess ?
                 Ok(new { message = "Review added successfully" })
-                : NotFound(result.Error);
+                : NotFound(result.Error!.description);
         }
 
         // Delete review
@@ -71,7 +71,7 @@ namespace FoodRescue.PL.Controllers
 
             return result.IsSuccess ?
                 NoContent()
-               : NotFound(result.Error);
+               : NotFound(result.Error!.description);
 
         }
 

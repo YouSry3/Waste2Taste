@@ -30,7 +30,7 @@ export function ImageUploadSection({
               Click to upload or drag & drop
             </p>
             <p className="text-xs text-gray-500">
-              PNG, JPG up to 10MB â€¢ {3 - images.length} remaining
+              PNG, JPG 
             </p>
             <input
               type="file"
