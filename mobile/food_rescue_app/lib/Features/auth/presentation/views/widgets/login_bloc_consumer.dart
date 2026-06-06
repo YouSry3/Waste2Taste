@@ -11,6 +11,8 @@ import '../../../../../core/utils/custom_snack_bar.dart';
 import '../../../../../core/utils/translator.dart';
 import '../../../../../core/widgets/custom_elevated_button.dart';
 import '../../../../home/presentation/manager/get_user_location_cubit/get_user_location_cubit.dart';
+import '../../../../home/presentation/manager/get_profile_cubit/get_profile_cubit.dart';
+import '../../../../home/presentation/manager/get_products_cubit/get_products_cubit.dart';
 
 class LoginBlocConsumer extends StatelessWidget {
   const LoginBlocConsumer({
@@ -28,7 +30,7 @@ class LoginBlocConsumer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
-      listener: (context, state) async {
+      listener: (context, state) {
         var currentLocal = Localizations.localeOf(context);
         if (state is LoginFailureState) {
           translateMessage(state.errMessage, currentLocal.languageCode).then((
@@ -43,7 +45,10 @@ class LoginBlocConsumer extends StatelessWidget {
             }
           });
         } else if (state is LoginSuccessState) {
-          await context.read<GetUserLocationCubit>().getUserLocation();
+          context.read<GetUserLocationCubit>().getUserLocation();
+          context.read<GetProfileCubit>().getProfile();
+          context.read<GetProductsCubit>().getProducts();
+
           if (context.mounted) {
             CustomSnackBar.show(
               context: context,

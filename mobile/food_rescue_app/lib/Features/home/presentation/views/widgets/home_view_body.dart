@@ -13,6 +13,7 @@ import '../../../../../core/widgets/custom_sliver_app_bar.dart';
 import '../../../../../core/widgets/section_header.dart';
 import '/core/utils/app_routes.dart';
 import 'products_sliver_list_builder.dart';
+import 'package:waste2taste/Features/home/presentation/manager/get_profile_cubit/get_profile_cubit.dart';
 import 'package:waste2taste/Features/home/presentation/manager/get_user_location_cubit/get_user_location_cubit.dart';
 import 'package:waste2taste/core/functions/calculate_distance.dart';
 import 'package:waste2taste/core/constants/keys.dart';
@@ -49,57 +50,65 @@ class HomeViewBody extends StatelessWidget {
               },
             ),
           ),
-          BlocBuilder<GetUserLocationCubit, GetUserLocationState>(
-            builder: (context, locationState) {
-              return BlocBuilder<GetProductsCubit, GetProductsState>(
-                builder: (context, state) {
-                  List<ProductEntity> products =
-                      state is GetProductsSuccessState
-                      ? state.data
-                      : skeletonProducts;
+          BlocBuilder<GetProfileCubit, GetProfileState>(
+            builder: (context, profileState) {
+              return BlocBuilder<GetUserLocationCubit, GetUserLocationState>(
+                builder: (context, locationState) {
+                  return BlocBuilder<GetProductsCubit, GetProductsState>(
+                    builder: (context, state) {
+                      List<ProductEntity> products =
+                          state is GetProductsSuccessState
+                          ? state.data
+                          : skeletonProducts;
 
-                  final isProductsLoading =
-                      state is GetProductsInitialState ||
-                      state is GetProductsLoadingState;
+                      final isProductsLoading =
+                          state is GetProductsInitialState ||
+                          state is GetProductsLoadingState ||
+                          locationState is GetUserLocationInitialState ||
+                          locationState is GetUserLocationLoadingState ||
+                          profileState is GetProfileInitialState ||
+                          profileState is GetProfileLoadingState;
 
-                  if (!isProductsLoading &&
-                      locationState is GetUserLocationSuccessState) {
-                    final maxDistance = getIt.get<PrefsService>().getDouble(kDistanceOffersKey) ?? 30.0;
-                    if (maxDistance < 100.0) {
-                      products = products.where((product) {
-                        final distance = calculateDistance(
-                          locationState.locationEntity.latitude,
-                          locationState.locationEntity.longitude,
-                          product.latitude,
-                          product.longitude,
-                        );
-                        return distance <= maxDistance;
-                      }).toList();
-                    }
-                  }
+                      if (!isProductsLoading &&
+                          locationState is GetUserLocationSuccessState) {
+                        final maxDistance = getIt.get<PrefsService>().getDouble(kDistanceOffersKey) ?? 30.0;
+                        if (maxDistance < 100.0) {
+                          products = products.where((product) {
+                            final distance = calculateDistance(
+                              locationState.locationEntity.latitude,
+                              locationState.locationEntity.longitude,
+                              product.latitude,
+                              product.longitude,
+                            );
+                            return distance <= maxDistance;
+                          }).toList();
+                        }
+                      }
 
-                  if (!isProductsLoading && products.isEmpty) {
-                    return SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 40),
-                        child: Center(
-                          child: Text(
-                            context.loc.noOffersNearby,
-                            style: AppTextStyles.body(
-                              context,
-                            ).copyWith(color: AppColors.textGray),
+                      if (!isProductsLoading && products.isEmpty) {
+                        return SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 40),
+                            child: Center(
+                              child: Text(
+                                context.loc.noOffersNearby,
+                                style: AppTextStyles.body(
+                                  context,
+                                ).copyWith(color: AppColors.textGray),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    );
-                  }
+                        );
+                      }
 
-                  return Skeletonizer.sliver(
-                    enabled: isProductsLoading,
-                    child: ProductsSliverListBuilder(
-                      products: products,
-                      onChanged: () {},
-                    ),
+                      return Skeletonizer.sliver(
+                        enabled: isProductsLoading,
+                        child: ProductsSliverListBuilder(
+                          products: products,
+                          onChanged: () {},
+                        ),
+                      );
+                    },
                   );
                 },
               );
