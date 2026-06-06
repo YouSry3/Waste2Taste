@@ -86,14 +86,14 @@ namespace FoodRescue.BLL.Services.Reviews
                             && o.Status.ToLower() == "completed");
 
             if (!hasCompletedOrder)
-                return Result.Failure(ReviewErrors.MustPurchaseBeforeReview(userId));
+                return Result.Failure(ReviewErrors.MustPurchaseBeforeReview());
 
             // 2. Check if customer already reviewed this product
             var alreadyReviewed = await _context.Reviews
                 .AnyAsync(r => r.UserId == userId && r.ProductId == request.ProductId);
 
             if (alreadyReviewed)
-                return Result.Failure(ReviewErrors.AlreadyReviewed(userId));
+                return Result.Failure(ReviewErrors.AlreadyReviewed());
 
             // 3. Create review
             var review = new Review
@@ -131,7 +131,7 @@ namespace FoodRescue.BLL.Services.Reviews
         {
             var isCustomer = await _userRepository.IsCustomer(userId);
             if (!isCustomer)
-                return Result.Failure(ReviewErrors.OnlyCustomersCanAddReviews(userId));
+                return Result.Failure(ReviewErrors.OnlyCustomersCanAddReviews());
 
             var review = await _context.Reviews
              .FirstOrDefaultAsync(r => r.Id == reviewId && r.UserId == userId);
