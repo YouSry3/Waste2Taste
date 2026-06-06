@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 
 abstract class Failure {
@@ -48,9 +47,13 @@ class ServerFailure extends Failure {
         errorMessage: data['description'] ?? data['errors']['description'],
       );
     } else if (statusCode == 404) {
-      return ServerFailure(
-        errorMessage: data['description'] ?? data['errors']['description'],
-      );
+      if (data is String) {
+        return ServerFailure(errorMessage: data);
+      } else {
+        return ServerFailure(
+          errorMessage: data['description'] ?? data['errors']['description'],
+        );
+      }
     } else if (statusCode == 500) {
       return ServerFailure(
         errorMessage: 'Internal server error, Please try again later.',
