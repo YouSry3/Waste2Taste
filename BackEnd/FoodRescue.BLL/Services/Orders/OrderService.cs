@@ -56,7 +56,8 @@ namespace FoodRescue.BLL.Services.Orders
                 TotalPrice = product.Price,
                 Status = "Pending",
                 CreatedAt = DateTime.UtcNow,
-                PickupTime = request.PickupTime  // 🔴 ADDED: Set pickup time from request
+                //PickupTime = request.PickupTime  // 🔴 ADDED: Set pickup time from request
+                PickupTime = DateTime.UtcNow.AddHours(3)
             };
 
             var response = new OrderResponse

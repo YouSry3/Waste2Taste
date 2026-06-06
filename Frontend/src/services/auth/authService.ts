@@ -22,6 +22,7 @@ export interface AuthUser {
   panelType: PanelType;
   roles: string[];
   phoneNumber?: string;
+  vendorId?: string;
   vendorRequestCompleted?: boolean;
   vendorApprovalStatus?: VendorApprovalStatus;
 }
@@ -54,12 +55,16 @@ const normalizeApprovalStatus = (
   }
 
   const normalized = value.trim().toLowerCase();
-  if (
-    normalized === "pending" ||
-    normalized === "approved" ||
-    normalized === "rejected"
-  ) {
+  if (normalized === "pending" || normalized === "rejected") {
     return normalized;
+  }
+
+  if (
+    normalized === "approved" ||
+    normalized === "accepted" ||
+    normalized === "active"
+  ) {
+    return "approved";
   }
 
   return undefined;
@@ -355,6 +360,16 @@ export class AuthService {
       roles = [panelType];
     }
 
+    const vendorId =
+      sourceUser?.vendorId ??
+      sourceUser?.VendorId ??
+      data?.vendorId ??
+      data?.VendorId ??
+      payload?.vendorId ??
+      payload?.VendorId ??
+      level1?.vendorId ??
+      level1?.VendorId;
+
     const vendorRequestCompleted = normalizeBoolean(
       sourceUser?.vendorRequestCompleted ??
         data?.vendorRequestCompleted ??
@@ -370,6 +385,13 @@ export class AuthService {
         sourceUser?.vendorRequestStatus ??
         data?.vendorRequestStatus,
     );
+
+    const resolvedVendorRequestCompleted =
+      panelType === "vendor" && vendorId ? true : vendorRequestCompleted;
+    const resolvedVendorApprovalStatus =
+      panelType === "vendor" && vendorId
+        ? "approved"
+        : vendorApprovalStatus;
 
     console.log("✅ Final roles:", roles);
 
@@ -422,8 +444,9 @@ export class AuthService {
           data?.PhoneNumber ??
           data?.phone ??
           data?.Phone,
-        vendorRequestCompleted,
-        vendorApprovalStatus,
+        vendorId: vendorId ? String(vendorId) : undefined,
+        vendorRequestCompleted: resolvedVendorRequestCompleted,
+        vendorApprovalStatus: resolvedVendorApprovalStatus,
       },
     };
 
@@ -445,7 +468,13 @@ export class AuthService {
     localStorage.setItem("panelType", normalizedLogin.user.panelType);
 
     const rawData = loginResponse as any;
-    const vendorId = rawData?.vendorId ?? rawData?.VendorId ?? null;
+    const vendorId =
+      normalizedLogin.user.vendorId ??
+      rawData?.vendorId ??
+      rawData?.VendorId ??
+      rawData?.data?.vendorId ??
+      rawData?.data?.VendorId ??
+      null;
     if (vendorId) {
       localStorage.setItem("vendorId", vendorId);
     } else {
@@ -492,13 +521,21 @@ export class AuthService {
 
   const status = user.vendorApprovalStatus as string | undefined;
 
-  if (status === "needs_request" || user.vendorRequestCompleted === false) {
+  if (user.vendorId) {
+    return "approved";
+  }
+
+  if (user.vendorRequestCompleted === false || status === "needs_request") {
     return "needs_request";
   }
 
   if (status === "pending") return "pending";
   if (status === "rejected") return "rejected";
   if (status === "approved") return "approved";
+
+  if (user.vendorRequestCompleted === true) {
+    return "pending";
+  }
 
   // Nothing set — treat as needs_request
   return "needs_request";

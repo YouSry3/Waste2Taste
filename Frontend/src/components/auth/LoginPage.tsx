@@ -19,6 +19,7 @@ import {
   LoginCredentials,
   LoginResponse,
   PanelType,
+  VendorApprovalStatus,
   VendorAccessState,
 } from "../../services/auth/authService";
 import { setPendingVendorApprovalEmail } from "../../services/vendorApproval/vendorApprovalStore";
@@ -91,12 +92,20 @@ const resolveVendorAccessState = async (
 ): Promise<VendorAccessState> => {
   if (user.panelType !== "vendor") return "approved";
 
+  const savedAccessState = authService.getVendorAccessState(
+    authService.getCurrentUser() ?? user,
+  );
+
+  if (savedAccessState === "approved") {
+    return "approved";
+  }
+
   try {
     const backendStatus = await getVendorRequestStatus();
     console.log("🔍 Backend vendor status:", backendStatus);
 
     if (backendStatus) {
-      const normalized = backendStatus.toLowerCase() as VendorAccessState;
+      const normalized = backendStatus.toLowerCase() as VendorApprovalStatus;
       console.log("🔍 Normalized status:", normalized);
       authService.setVendorRequestState({
         vendorRequestCompleted: true,
@@ -108,11 +117,27 @@ const resolveVendorAccessState = async (
     console.warn("Could not fetch vendor status from backend:", err);
   }
 
- console.log("🔍 No status found, returning needs_request");
-authService.setVendorRequestState({
-  vendorRequestCompleted: false,
-  vendorApprovalStatus: "needs_request" as any,
-});
+  const currentAccessState = authService.getVendorAccessState(
+    authService.getCurrentUser() ?? user,
+  );
+
+  if (currentAccessState !== "needs_request") {
+    return currentAccessState;
+  }
+
+  if (user.vendorRequestCompleted === true) {
+    authService.setVendorRequestState({
+      vendorRequestCompleted: true,
+      vendorApprovalStatus: "pending",
+    });
+    return "pending";
+  }
+
+  console.log("🔍 No status found, returning needs_request");
+  authService.setVendorRequestState({
+    vendorRequestCompleted: false,
+    vendorApprovalStatus: "needs_request" as any,
+  });
   return "needs_request";
 };
 

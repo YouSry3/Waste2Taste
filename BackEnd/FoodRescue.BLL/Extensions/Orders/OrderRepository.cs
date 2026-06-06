@@ -41,7 +41,9 @@ namespace FoodRescue.BLL.Extensions.Orders
                     ProductName = o.Product.Name,
                     ImageUrl = o.Product.ImageUrl,
                     Price = o.Product.Price,
-                    PickupTime = o.CreatedAt // or o.PickupTime if you have it
+                    PickupTime = o.PickupTime.Kind == DateTimeKind.Unspecified
+    ? DateTime.SpecifyKind(o.PickupTime, DateTimeKind.Utc)
+    : o.PickupTime
                 })
                 .ToListAsync();
         }

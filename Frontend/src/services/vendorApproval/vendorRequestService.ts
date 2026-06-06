@@ -413,6 +413,7 @@ const normalizeStatus = (value: unknown): VendorApprovalStatus | null => {
   if (typeof value !== "string") return null;
   const normalized = value.trim().toLowerCase();
   if (normalized === "pending") return "pending";
+  if (normalized === "accepted") return "approved";
   if (normalized === "approved" || normalized === "active") return "approved"; // ← ADD "active"
   if (normalized === "rejected") return "rejected";
   return null;
