@@ -16,4 +16,5 @@ public class VendorListingDto
     public string VendorName { get; set; } = null!;
     public string Location { get; set; } = null!;
     public string PickupTime { get; set; } = null!; // Calculated from ExpiryDate
+    public DateTime? ExpiryDate { get; set; }
 }

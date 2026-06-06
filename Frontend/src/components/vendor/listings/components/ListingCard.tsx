@@ -82,13 +82,13 @@ const isRejected = listing.status === "Discontinued";
     onEdit,
     listing,
   ]);
-
+console.log("listing:", listing.title, "expiryDate:", listing.expiryDate, "status:", listing.status);
   return (
     <>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow">
         {/* Photo Section */}
         <div
-          className="relative h-48 bg-gray-100 overflow-hidden cursor-pointer"
+          className="relative h-48 bg-gray-100 overflow-hidden"
           onClick={() => onView(listing)}
         >
           {listing.photos && listing.photos.length > 0 ? (
@@ -163,34 +163,56 @@ const isRejected = listing.status === "Discontinued";
 
           {/* ── Action Buttons ──────────────────────────────────────── */}
 <div className="flex gap-2">
-  {listing.status === "Discontinued" ? (
-    <div className="w-full text-center text-sm text-red-500 font-medium py-2 bg-red-50 rounded-md border border-red-200">
-      ✕ Rejected by admin — no actions available
-    </div>
-  ) : listing.status === "Pending" ? (
-    <div className="w-full text-center text-sm text-yellow-600 font-medium py-2 bg-yellow-50 rounded-md border border-yellow-200">
-      ⏳ Pending admin approval — no actions available
-    </div>
-  ) : (
-    <>
-      <Button
-        className="flex-1 bg-orange-400 hover:bg-orange-500 text-white"
-        size="sm"
-        onClick={openEditModal}
-        disabled={isLoading}
-      >
-        Edit Stock
-      </Button>
-      <Button
-        className="flex-1 bg-red-600 hover:bg-red-700 text-white"
-        size="sm"
-        onClick={() => onDelete(listing.id)}
-        disabled={isLoading}
-      >
-        Delete
-      </Button>
-    </>
-  )}
+  {(() => {
+    const isExpired = listing.expiryDate && listing.expiryDate.trim() !== ""
+  ? new Date(listing.expiryDate) < new Date()
+  : false;
+
+    if (listing.status === "Discontinued") {
+      return (
+        <div className="w-full text-center text-sm text-red-500 font-medium py-2 bg-red-50 rounded-md border border-red-200">
+          ✕ Rejected by admin — no actions available
+        </div>
+      );
+    }
+
+    if (isExpired) {
+      return (
+        <div className="w-full text-center text-sm text-gray-500 font-medium py-2 bg-gray-50 rounded-md border border-gray-200">
+          ⏰ This listing has expired — no actions available
+        </div>
+      );
+    }
+
+    if (listing.status === "Pending") {
+      return (
+        <div className="w-full text-center text-sm text-yellow-600 font-medium py-2 bg-yellow-50 rounded-md border border-yellow-200">
+          ⏳ Pending admin approval — no actions available
+        </div>
+      );
+    }
+
+    return (
+      <>
+        <Button
+          className="flex-1 cursor-pointer bg-orange-400 hover:bg-orange-500 text-white"
+          size="sm"
+          onClick={openEditModal}
+          disabled={isLoading}
+        >
+          Edit Stock
+        </Button>
+        <Button
+          className="flex-1 cursor-pointer bg-red-600 hover:bg-red-700 text-white"
+          size="sm"
+          onClick={() => onDelete(listing.id)}
+          disabled={isLoading}
+        >
+          Delete
+        </Button>
+      </>
+    );
+  })()}
 </div>
         </CardContent>
       </Card>

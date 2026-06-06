@@ -7,6 +7,7 @@ import {
   BarChart3,
   ShoppingBag,
   FileWarning,
+  MessageSquare,
   X,
 } from "lucide-react";
 import {
@@ -51,6 +52,12 @@ const menuItems = [
     label: "Analytics",
     icon: BarChart3,
     path: "/panel/vendor/analytics",
+  },
+  {
+    id: "reviews",
+    label: "Reviews",
+    icon: MessageSquare,
+    path: "/panel/vendor/reviews",
   },
   {
     id: "reports",

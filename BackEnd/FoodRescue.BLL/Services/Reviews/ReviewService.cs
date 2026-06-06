@@ -32,6 +32,8 @@ namespace FoodRescue.BLL.Services.Reviews
                     Comment = r.Comment,
                     Rating = r.Rating,
                     CreatedAt = r.CreatedAt,
+                    ProductName = r.Product.Name,
+                    ProductId = r.ProductId,
 
                     User = r.User.Adapt<InfoUser>(),
 

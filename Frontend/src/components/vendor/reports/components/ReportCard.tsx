@@ -61,10 +61,6 @@ export function ReportCard({ report, onSelectReport }: ReportCardProps) {
             <p className="text-xs text-gray-500 mb-1">Listing</p>
             <p className="text-sm font-medium text-gray-900">{report.listing}</p>
           </div>
-          <div>
-            <p className="text-xs text-gray-500 mb-1">Refund</p>
-            <p className="text-sm font-medium text-gray-900">EGP {report.refund}</p>
-          </div>
         </div>
 
         <div className="pt-4 border-t border-gray-200">

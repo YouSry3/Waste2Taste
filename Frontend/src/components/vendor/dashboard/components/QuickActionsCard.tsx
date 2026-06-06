@@ -15,91 +15,78 @@ export function QuickActionsCard({
   onViewAnalytics,
   onPrintPickupList,
 }: QuickActionsCardProps) {
+  const actions = [
+    {
+      label: "Create New Listing",
+      description: "Add surplus items",
+      icon: Plus,
+      onClick: onCreateListing,
+      iconClassName: "bg-blue-100 text-blue-600",
+      hoverClassName: "hover:bg-blue-50 hover:border-blue-200",
+    },
+    {
+      label: "Manage Orders",
+      description: "View all orders",
+      icon: ShoppingBag,
+      onClick: onViewAllOrders,
+      iconClassName: "bg-purple-100 text-purple-600",
+      hoverClassName: "hover:bg-purple-50 hover:border-purple-200",
+    },
+    {
+      label: "View Analytics",
+      description: "Performance insights",
+      icon: TrendingUp,
+      onClick: onViewAnalytics,
+      iconClassName: "bg-green-100 text-green-600",
+      hoverClassName: "hover:bg-green-50 hover:border-green-200",
+    },
+    {
+      label: "Print Pickup List",
+      description: "Today's schedule",
+      icon: Printer,
+      onClick: onPrintPickupList,
+      iconClassName: "bg-gray-100 text-gray-600",
+      hoverClassName: "hover:bg-gray-100 hover:border-gray-300",
+    },
+  ];
+
   return (
-    <Card className="flex-1">
-      <CardHeader>
+    <Card className="flex-1 pb-10 overflow-hidden">
+      <CardHeader className="pb-3">
         <CardTitle>Quick Actions</CardTitle>
         <p className="text-sm text-gray-500">Frequently used tasks</p>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 h-full">
-          <Button
-            className="h-auto py-4 justify-start hover:bg-blue-50 hover:border-blue-200 transition-colors"
-            variant="outline"
-            onClick={onCreateListing}
-          >
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Plus className="h-5 w-5 text-blue-600" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium">Create New Listing</p>
-                  <p className="text-sm text-gray-500">Add surplus items</p>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-            </div>
-          </Button>
+      <CardContent className="pt-0">
+        <div className="space-y-2">
+          {actions.map((action) => {
+            const Icon = action.icon;
 
-          <Button
-            className="h-auto py-4 justify-start hover:bg-purple-50 hover:border-purple-200 transition-colors"
-            variant="outline"
-            onClick={onViewAllOrders}
-          >
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <ShoppingBag className="h-5 w-5 text-purple-600" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium">Manage Orders</p>
-                  <p className="text-sm text-gray-500">View all orders</p>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-            </div>
-          </Button>
-
-          <Button
-            className="h-auto py-4 justify-start hover:bg-green-50 hover:border-green-200 transition-colors"
-            variant="outline"
-            onClick={onViewAnalytics}
-          >
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <TrendingUp className="h-5 w-5 text-green-600" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium">View Analytics</p>
-                  <p className="text-sm text-gray-500">
-                    Performance insights
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-            </div>
-          </Button>
-
-          <Button
-            className="h-auto py-4 justify-start hover:bg-gray-100 hover:border-gray-300 transition-colors"
-            variant="outline"
-            onClick={onPrintPickupList}
-          >
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-gray-100 rounded-lg">
-                  <Printer className="h-5 w-5 text-gray-600" />
-                </div>
-                <div className="text-left">
-                  <p className="font-medium">Print Pickup List</p>
-                  <p className="text-sm text-gray-500">Today's schedule</p>
-                </div>
-              </div>
-              <ChevronRight className="h-4 w-4 text-gray-400" />
-            </div>
-          </Button>
+            return (
+              <Button
+                key={action.label}
+                className={`h-16  w-full justify-start px-3 py-2 transition-colors ${action.hoverClassName}`}
+                variant="outline"
+                onClick={action.onClick}
+              >
+                <span className="flex min-w-0 flex-1 items-center gap-3">
+                  <span
+                    className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md ${action.iconClassName}`}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="min-w-0 text-left">
+                    <span className="block truncate text-sm font-medium text-gray-900">
+                      {action.label}
+                    </span>
+                    <span className="block truncate text-xs font-normal text-gray-500">
+                      {action.description}
+                    </span>
+                  </span>
+                </span>
+                <ChevronRight className="ml-2 h-4 w-4 flex-shrink-0 text-gray-400" />
+              </Button>
+            );
+          })}
         </div>
       </CardContent>
     </Card>

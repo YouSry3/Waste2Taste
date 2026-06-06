@@ -23,6 +23,8 @@ export interface VendorReview {
   user: ReviewUser;
   createdAt: string;
   sentiment: ReviewSentiment | null;  // ← add | null
+    productName: string | null;   // ← add
+  productId: string | null;     // ← add
 }
 
 const getVendorId = (): string | null => {

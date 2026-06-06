@@ -67,7 +67,7 @@ function ReviewsSummary({ reviews }: { reviews: VendorReview[] }) {
   }));
 
   return (
-    <Card className="mb-6 border-yellow-200 bg-yellow-50/30">
+    <Card className="mb-6  border-yellow-200 bg-yellow-50/30">
       <CardContent className="p-6">
         <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
           {/* Average score */}
@@ -149,6 +149,12 @@ function ReviewCard({ review }: { review: VendorReview }) {
 
       <StarRating rating={review.rating} />
 
+{review.productName && (
+  <p className="mt-1 text-xs text-gray-400">
+    Product: <span className="font-medium text-gray-600">{review.productName}</span>
+  </p>
+)}
+
       {review.comment && (
         <p className="mt-2 text-sm text-gray-600 leading-relaxed">
           {review.comment}
@@ -185,7 +191,7 @@ export function ReviewsTab() {
   const { data: reviews = [], isLoading, isError } = useVendorReviews();
 
   return (
-    <div className="space-y-4">
+    <div className=" mt-15 space-y-4">
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">

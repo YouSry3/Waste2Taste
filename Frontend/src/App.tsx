@@ -26,6 +26,7 @@ import { CreateListing } from "./components/vendor/create-listing";
 import { VendorOrders } from "./components/vendor/orders/VendorOrders";
 import { VendorAnalytics } from "./components/vendor/analytics";
 import { Reports } from "./components/vendor/reports";
+import { ReviewsTab } from "./components/vendor/dashboard/components/ReviewsTab";
 
 import { CharityPanel } from "./components/charity/CharityPanel";
 // Import charity components from your file structure
@@ -195,6 +196,7 @@ export default function App() {
           <Route path="listings" element={<MyListings />} />
           <Route path="create-listing" element={<CreateListing />} />
           <Route path="analytics" element={<VendorAnalytics />} />
+          <Route path="reviews" element={<ReviewsTab />} />
           <Route path="reports" element={<Reports />} />
         </Route>
 
