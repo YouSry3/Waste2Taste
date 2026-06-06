@@ -25,14 +25,7 @@ class CustomFloatingActionButtom extends StatelessWidget {
           backgroundColor: Colors.transparent,
           builder: (bottomSheetContext) => BlocProvider.value(
             value: addReviewCubit,
-            child: WriteReviewSheet(
-              productId: productId,
-              onSuccess: () {
-                if (context.mounted) {
-                  GoRouter.of(context).pop();
-                }
-              },
-            ),
+            child: WriteReviewSheet(productId: productId),
           ),
         );
       },

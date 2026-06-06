@@ -607,4 +607,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noProductsMatchYourFilters => 'No products match your filters';
+
+  @override
+  String quantityLeft(Object count) {
+    return 'متبقي $count وجبات فقط';
+  }
+
+  @override
+  String get soldOut => 'نفدت الكمية';
 }

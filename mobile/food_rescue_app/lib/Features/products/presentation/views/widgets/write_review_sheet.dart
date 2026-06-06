@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:load_it/load_it.dart';
 import 'package:waste2taste/core/constants/app_colors.dart';
 import 'package:waste2taste/core/constants/app_text_styles.dart';
@@ -18,8 +19,7 @@ import '../../../../../core/utils/custom_material_banner.dart';
 
 class WriteReviewSheet extends StatefulWidget {
   final String productId;
-  final VoidCallback? onSuccess;
-  const WriteReviewSheet({super.key, required this.productId, this.onSuccess});
+  const WriteReviewSheet({super.key, required this.productId});
 
   @override
   State<WriteReviewSheet> createState() => _WriteReviewSheetState();
@@ -59,11 +59,7 @@ class _WriteReviewSheetState extends State<WriteReviewSheet> {
             message: state.response.message,
             type: MaterialBannerType.success,
           );
-
-          if (context.mounted) {
-            Navigator.pop(context);
-            widget.onSuccess?.call();
-          }
+          GoRouter.of(context).pop();
         }
       },
       builder: (context, state) {

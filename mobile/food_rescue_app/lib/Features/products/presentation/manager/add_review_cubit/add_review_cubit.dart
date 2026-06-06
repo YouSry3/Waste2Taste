@@ -11,6 +11,7 @@ class AddReviewCubit extends Cubit<AddReviewState> {
   Future<void> addReview(AddReviewModel review) async {
     emit(AddReviewLoading());
     final result = await addReviewUseCase.call(review);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(AddReviewFailure(failure.errorMessage)),
       (response) => emit(AddReviewSuccess(response)),

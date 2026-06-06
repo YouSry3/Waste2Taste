@@ -1255,6 +1255,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No products match your filters'**
   String get noProductsMatchYourFilters;
+
+  /// No description provided for @quantityLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Only {count} meals left'**
+  String quantityLeft(Object count);
+
+  /// No description provided for @soldOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sold out'**
+  String get soldOut;
 }
 
 class _AppLocalizationsDelegate

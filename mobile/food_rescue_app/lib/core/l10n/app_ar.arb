@@ -191,5 +191,7 @@
     "noReviewsYet": "لا يوجد تقييمات",
     "searchfoodOrVendor": "ابحث عن طعام أو بائع",
     "viewRestaurant": "عرض المطعم",
-    "noProductMatchYourFilters": "لا توجد منتجات تطابق معايير البحث"
+    "noProductMatchYourFilters": "لا توجد منتجات تطابق معايير البحث",
+    "quantityLeft": "متبقي {count} وجبات فقط",
+    "soldOut": "نفدت الكمية"
 }

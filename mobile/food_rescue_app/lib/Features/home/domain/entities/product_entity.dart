@@ -15,6 +15,7 @@ class ProductEntity {
   final String description;
   final bool isFavorite;
   final String? category;
+  final int quantity;
 
   const ProductEntity({
     required this.id,
@@ -33,6 +34,7 @@ class ProductEntity {
     required this.totalReviews,
     required this.isFavorite,
     this.category,
+    required this.quantity,
   });
 
   ProductEntity copyWith({
@@ -52,6 +54,7 @@ class ProductEntity {
     String? description,
     bool? isFavorite,
     String? category,
+    int? quantity,
   }) {
     return ProductEntity(
       id: id ?? this.id,
@@ -70,6 +73,7 @@ class ProductEntity {
       description: description ?? this.description,
       isFavorite: isFavorite ?? this.isFavorite,
       category: category ?? this.category,
+      quantity: quantity ?? this.quantity,
     );
   }
 }
@@ -93,5 +97,6 @@ final skeletonProducts = List.generate(
     category: 'category',
     isFavorite: false,
     totalReviews: 0,
+    quantity: 0,
   ),
 );

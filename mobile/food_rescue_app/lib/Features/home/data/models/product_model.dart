@@ -19,6 +19,7 @@ class ProductModel extends ProductEntity {
     required super.description,
     required super.isFavorite,
     super.category,
+    required super.quantity,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
@@ -36,9 +37,10 @@ class ProductModel extends ProductEntity {
       latitude: (json['latitude'] ?? 0).toDouble(),
       longitude: (json['longitude'] ?? 0).toDouble(),
       vendorId: json['vendorId'] ?? '',
-      description: json['descripcion'] ?? 'No description',
+      description: json['description'] ?? json['descripcion'] ?? 'No description',
       isFavorite: json['isFavorite'] ?? false,
       category: json['category'] ?? '',
+      quantity: json['quantity'] ?? 0,
     );
   }
 
@@ -57,6 +59,8 @@ class ProductModel extends ProductEntity {
       'longitude': longitude,
       'isFavorite': isFavorite,
       'category': category,
+      'description': description,
+      'quantity': quantity,
     };
   }
 }

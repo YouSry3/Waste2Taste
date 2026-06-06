@@ -14,8 +14,7 @@ import 'package:waste2taste/Features/products/presentation/views/widgets/reviews
 import 'package:waste2taste/core/constants/app_colors.dart';
 import 'package:waste2taste/core/constants/app_text_styles.dart';
 import 'package:waste2taste/core/utils/custom_snack_bar.dart';
-
-import '../../../../../core/extensions/app_localization_extention.dart';
+import 'empty_reviews_case_widget.dart';
 
 class ProductReviewsViewBody extends StatelessWidget {
   const ProductReviewsViewBody({super.key});
@@ -135,23 +134,3 @@ class ProductReviewsViewBody extends StatelessWidget {
   }
 }
 
-class EmptyReviewsCaseWidget extends StatelessWidget {
-  const EmptyReviewsCaseWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.reviews_outlined, size: 60, color: Colors.grey),
-          const SizedBox(height: 12),
-          Text(
-            context.loc.noReviewsYet,
-            style: const TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-        ],
-      ),
-    );
-  }
-}

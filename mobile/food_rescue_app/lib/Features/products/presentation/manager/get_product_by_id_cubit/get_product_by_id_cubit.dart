@@ -5,14 +5,22 @@ import 'get_product_by_id_state.dart';
 class GetProductByIdCubit extends Cubit<GetProductByIdState> {
   final GetProductByIdUsecase getProductByIdUsecase;
 
-  GetProductByIdCubit(this.getProductByIdUsecase) : super(GetProductByIdInitial());
+  GetProductByIdCubit(this.getProductByIdUsecase)
+    : super(GetProductByIdInitial());
 
   Future<void> getProductById(String productId) async {
     emit(GetProductByIdLoading());
     var result = await getProductByIdUsecase.call(productId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(GetProductByIdFailure(failure.errorMessage)),
       (product) => emit(GetProductByIdSuccess(product)),
     );
+  }
+
+  @override
+  Future<void> close() {
+    emit(GetProductByIdInitial());
+    return super.close();
   }
 }

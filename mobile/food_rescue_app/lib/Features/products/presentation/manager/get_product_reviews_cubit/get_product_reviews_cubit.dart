@@ -11,6 +11,7 @@ class GetProductReviewsCubit extends Cubit<GetProductReviewsState> {
   Future<void> getProductReviews(String productId) async {
     emit(GetProductReviewsLoading());
     final result = await getProductReviewsUsecase.call(productId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(GetProductReviewsFailure(failure.errorMessage)),
       (reviews) => emit(GetProductReviewsSuccess(reviews)),

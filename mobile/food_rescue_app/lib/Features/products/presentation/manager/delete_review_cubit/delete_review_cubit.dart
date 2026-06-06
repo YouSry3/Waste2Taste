@@ -10,6 +10,7 @@ class DeleteReviewCubit extends Cubit<DeleteReviewState> {
   Future<void> deleteReview(int reviewId) async {
     emit(DeleteReviewLoading());
     final result = await deleteReviewUseCase.call(reviewId);
+    if (isClosed) return;
     result.fold(
       (failure) => emit(DeleteReviewFailure(failure.errorMessage)),
       (_) => emit(DeleteReviewSuccess("Review deleted successfully", reviewId)),

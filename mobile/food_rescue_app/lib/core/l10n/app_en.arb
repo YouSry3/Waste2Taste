@@ -192,5 +192,7 @@
     "noReviewsYet": "No reviews yet",
     "searchfoodOrVendor": "Search foods or vendors",
     "viewRestaurant": "view restaurant",
-    "noProductsMatchYourFilters": "No products match your filters"
+    "noProductsMatchYourFilters": "No products match your filters",
+    "quantityLeft": "Only {count} meals left",
+    "soldOut": "Sold out"
 }
