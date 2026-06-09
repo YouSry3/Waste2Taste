@@ -1,0 +1,12 @@
+# Minimal requirements for ONNX Runtime deployment
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+fastapi
+uvicorn
+python-multipart
+onnxruntime
+pillow
+numpy
+transformers
+torch
+sentencepiece

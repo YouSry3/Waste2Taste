@@ -21,10 +21,9 @@ models/legacy/
 !models/*.onnx
 !models/*.json
 
-!requirements.txt
-!Procfile
-
 # Logs & docs
 *.txt
 !inspect_out.txt
+!requirements.txt
+!Procfile
 analysis.md
