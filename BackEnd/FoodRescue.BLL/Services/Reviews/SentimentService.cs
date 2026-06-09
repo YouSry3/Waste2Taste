@@ -1,4 +1,4 @@
-﻿using FoodRescue.BLL.Contract.Reviews;
+using FoodRescue.BLL.Contract.Reviews;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace FoodRescue.BLL.Services.Reviews
         public async Task<SentimentResponse> AnalyzeText(string text)
         {
             var response = await _httpClient.PostAsJsonAsync(
-                "https://web-production-ab0306.up.railway.app/sentiment",
+                "https://waste2taste-production.up.railway.app/sentiment",
                 new { text }
             );
 
