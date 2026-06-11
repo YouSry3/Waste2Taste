@@ -1,5 +1,4 @@
-// src/components/vendor/dashboard/components/ReviewsTab.tsx
-import { Star, MessageSquare, TrendingUp, Heart, Zap, Minus } from "lucide-react";
+import { Star, MessageSquare, TrendingUp, Heart, Zap, Minus, Frown, ThumbsDown, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../ui/card";
 import { Badge } from "../../../ui/badge";
 import { Skeleton } from "../../../ui/skeleton";
@@ -16,24 +15,60 @@ function SentimentBadge({ sentiment }: { sentiment: VendorReview["sentiment"] | 
     );
   }
 
-  const dominant = (
-    [
-      { key: "gratitude", label: "Grateful", icon: Heart, color: "text-pink-600 border-pink-300 bg-pink-50" },
-      { key: "excitement", label: "Excited", icon: Zap, color: "text-yellow-600 border-yellow-300 bg-yellow-50" },
-      { key: "urgency", label: "Urgent", icon: TrendingUp, color: "text-red-600 border-red-300 bg-red-50" },
-    ] as const
-  ).reduce(
-    (best, item) =>
-      (sentiment[item.key] ?? 0) > (sentiment[best.key] ?? 0) ? item : best,
-  );
+  const EMOTIONS_CONFIG = [
+    { key: "gratitude", label: "Grateful", icon: Heart, color: "text-pink-600 border-pink-300 bg-pink-50" },
+    { key: "excitement", label: "Excited", icon: Zap, color: "text-yellow-600 border-yellow-300 bg-yellow-50" },
+    { key: "urgency", label: "Urgent", icon: TrendingUp, color: "text-red-600 border-red-300 bg-red-50" },
+    { key: "disgust", label: "Disgust", icon: ThumbsDown, color: "text-purple-600 border-purple-300 bg-purple-50" },
+    { key: "frustration", label: "Frustrated", icon: AlertTriangle, color: "text-orange-600 border-orange-300 bg-orange-50" },
+    { key: "disappointment", label: "Disappointed", icon: Frown, color: "text-blue-600 border-blue-300 bg-blue-50" },
+  ] as const;
 
-  const Icon = dominant.icon;
+  // Filter out any emotions with score < 0.5 (high confidence) and sort descending by score
+  const activeEmotions = EMOTIONS_CONFIG
+    .map(item => ({ ...item, score: sentiment[item.key] ?? 0 }))
+    .filter(item => item.score >= 0.5)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
 
+  // If no emotion has a high-confidence score, fall back to the single highest-scoring emotion
+  if (activeEmotions.length === 0) {
+    const fallback = EMOTIONS_CONFIG
+      .map(item => ({ ...item, score: sentiment[item.key] ?? 0 }))
+      .reduce((best, item) => item.score > best.score ? item : best);
+
+    // If even the fallback is 0 (neutral-like review), show Neutral
+    if (fallback.score === 0) {
+      return (
+        <Badge variant="outline" className="text-gray-500 border-gray-300 flex items-center gap-1">
+          <Minus className="h-3 w-3" />
+          Neutral
+        </Badge>
+      );
+    }
+
+    const Icon = fallback.icon;
+    return (
+      <Badge variant="outline" className={`flex items-center gap-1 ${fallback.color}`}>
+        <Icon className="h-3 w-3" />
+        {fallback.label}
+      </Badge>
+    );
+  }
+
+  // Render the list of active badges (up to 3)
   return (
-    <Badge variant="outline" className={`flex items-center gap-1 ${dominant.color}`}>
-      <Icon className="h-3 w-3" />
-      {dominant.label}
-    </Badge>
+    <div className="flex flex-wrap gap-1 justify-end">
+      {activeEmotions.map(item => {
+        const Icon = item.icon;
+        return (
+          <Badge key={item.key} variant="outline" className={`flex items-center gap-1 ${item.color}`}>
+            <Icon className="h-3 w-3" />
+            {item.label}
+          </Badge>
+        );
+      })}
+    </div>
   );
 }
 

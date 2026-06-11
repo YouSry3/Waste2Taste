@@ -13,6 +13,9 @@ export interface ReviewSentiment {
   gratitude: number;
   excitement: number;
   urgency: number;
+  disgust: number;
+  frustration: number;
+  disappointment: number;
   neutral: boolean;
 }
 

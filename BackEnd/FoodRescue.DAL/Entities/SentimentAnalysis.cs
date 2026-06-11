@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -17,6 +17,9 @@ namespace FoodRescue.DAL.Entities
         public double Gratitude { get; set; }
         public double Excitement { get; set; }
         public double Urgency { get; set; }
+        public double Disgust { get; set; }
+        public double Frustration { get; set; }
+        public double Disappointment { get; set; }
 
         public bool Neutral { get; set; }
 

@@ -1,4 +1,4 @@
-﻿using FoodRescue.BLL.Contract.Reviews;
+using FoodRescue.BLL.Contract.Reviews;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
@@ -44,6 +44,9 @@ namespace FoodRescue.BLL.Services.Reviews
                             Gratitude = r.SentimentAnalysis.Gratitude,
                             Excitement = r.SentimentAnalysis.Excitement,
                             Urgency = r.SentimentAnalysis.Urgency,
+                            Disgust = r.SentimentAnalysis.Disgust,
+                            Frustration = r.SentimentAnalysis.Frustration,
+                            Disappointment = r.SentimentAnalysis.Disappointment,
                             Neutral = r.SentimentAnalysis.Neutral
                         }
                 })
@@ -118,6 +121,9 @@ namespace FoodRescue.BLL.Services.Reviews
                 Gratitude = sentiment.Tags.GetValueOrDefault("gratitude"),
                 Excitement = sentiment.Tags.GetValueOrDefault("excitement"),
                 Urgency = sentiment.Tags.GetValueOrDefault("urgency"),
+                Disgust = sentiment.Tags.GetValueOrDefault("disgust"),
+                Frustration = sentiment.Tags.GetValueOrDefault("frustration"),
+                Disappointment = sentiment.Tags.GetValueOrDefault("disappointment"),
                 Neutral = sentiment.Neutral,
                 CreatedAt = DateTime.UtcNow
             };

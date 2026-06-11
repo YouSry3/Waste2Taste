@@ -1,4 +1,4 @@
-﻿namespace FoodRescue.BLL.Contract.Reviews
+namespace FoodRescue.BLL.Contract.Reviews
 {
     public class ReviewWithSentimentResponse
     {
@@ -16,6 +16,9 @@
         public double Gratitude { get; set; }
         public double Excitement { get; set; }
         public double Urgency { get; set; }
+        public double Disgust { get; set; }
+        public double Frustration { get; set; }
+        public double Disappointment { get; set; }
         public bool Neutral { get; set; }
     }
 }
