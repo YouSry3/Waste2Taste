@@ -10,6 +10,9 @@ from PIL import Image
 import numpy as np
 from fastapi.staticfiles import StaticFiles
 
+# Disable Hugging Face tokenizers parallelism warning and resource contention
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -87,26 +90,30 @@ def load_spoilage_models():
                 logger.error(f"Load error {cat}: {e}")
 
 def load_sentiment_classifier():
-    """Load the accelerated sentiment classifier."""
+    """Load the accelerated sentiment classifier with CPU optimizations."""
     global sentiment_model
     try:
+        import torch
+        # Disable multi-threading inside PyTorch to prevent CPU thread contention in single-core containers
+        torch.set_num_threads(1)
+        torch.set_num_interop_threads(1)
+        
         from transformers import pipeline
         # Switched to mDeBERTa for multilingual support (including Arabic)
         model_name = "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
         sentiment_model = pipeline("zero-shot-classification", model=model_name)
-        logger.info(f"Sentiment engine loaded: {model_name}")
+        logger.info(f"Sentiment engine loaded with optimized thread settings: {model_name}")
     except Exception as e:
         logger.error(f"Sentiment load error: {e}")
 
 @app.on_event("startup")
 async def startup_event():
     load_spoilage_models()
+    load_sentiment_classifier()
 
 def get_sentiment_classifier():
-    """Lazy initialization of the sentiment model to save cold-boot RAM."""
+    """Returns the pre-loaded sentiment model."""
     global sentiment_model
-    if sentiment_model is None:
-        load_sentiment_classifier()
     return sentiment_model
 
 def preprocess_image(image_bytes):
@@ -205,13 +212,18 @@ class SentimentRequest(BaseModel):
     text: str
 
 @app.post("/sentiment", tags=["Analysis"])
-async def sentiment(request: SentimentRequest):
-    """Fast moderation tagging. Detects disgust, frustration, and success signals."""
+def sentiment(request: SentimentRequest):
+    """Fast moderation tagging. Detects disgust, frustration, and success signals.
+    Defined as synchronous (non-async) so FastAPI runs it in a worker thread,
+    preventing the main event loop from blocking for other incoming requests.
+    """
     classifier = get_sentiment_classifier()
     if not classifier:
         raise HTTPException(status_code=503, detail="Sentiment engine starting...")
 
-    result = classifier(request.text, candidate_labels=CANDIDATE_LABELS, multi_label=True)
+    import torch
+    with torch.inference_mode():
+        result = classifier(request.text, candidate_labels=CANDIDATE_LABELS, multi_label=True)
     tags = {LABEL_TO_ID[l]: round(s, 4) for l, s in zip(result["labels"], result["scores"]) if s > 0.3}
     
     return {

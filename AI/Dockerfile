@@ -19,6 +19,11 @@ COPY requirements.txt .
 # Use cpu version of torch if still in requirements
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Pre-download the transformers model to bake it into the Docker image,
+# preventing request-time downloads and timeouts.
+ENV HF_HOME=/app/.cache/huggingface
+RUN python -c "from transformers import pipeline; pipeline('zero-shot-classification', model='MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7')"
+
 # Copy all application files
 # honors .dockerignore to EXPLICITLY skip data/, dataset/, and venv/
 COPY . .
