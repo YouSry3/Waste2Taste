@@ -50,7 +50,11 @@ wwwroot/images/*.jpg
 wwwroot/images/*.png
 wwwroot/images/*.jpeg
 
-
+# ignore file Setting Cloud of firebase 
+# Firebase
+serviceAccountKey.json
+Firebase/*.json
+**/serviceAccountKey.json
 ## Other ##
 Thumbs.db
 *.db

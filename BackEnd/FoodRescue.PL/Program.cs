@@ -1,5 +1,7 @@
+using FirebaseAdmin;
 using FoodRescue.BLL.Settings;
 using FoodRescue.Hubs;
+using Google.Apis.Auth.OAuth2;
 
 
 namespace FoodRescue.PL
@@ -45,7 +47,10 @@ namespace FoodRescue.PL
                 options.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50MB
             });
 
-
+            FirebaseApp.Create(new AppOptions()
+            {
+                Credential = GoogleCredential.FromFile("Firebase/serviceAccountKey.json")
+            });
 
             var emailSettings = builder.Configuration
                 .GetSection("EmailSettings")

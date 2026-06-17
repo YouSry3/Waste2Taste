@@ -12,10 +12,13 @@ namespace FoodRescue.PL.Controllers
     public class OrdersController : ControllerBase
     {
         private readonly IOrderService _orderservice;
+        private readonly IUserRepository _userRepository;
 
-        public OrdersController(IOrderService service, IUserRepository userRepository)
+
+        public OrdersController(IOrderService service, IUserRepository userRepository,IUserRepository userRepository1)
         {
             _orderservice = service;
+            _userRepository = userRepository1;
         }
 
         [HttpPost]
@@ -91,56 +94,37 @@ namespace FoodRescue.PL.Controllers
             }
         }
 
-        // FIXED: Changed int to Guid, added :guid constraint
         [HttpPut("{id:guid}/status")]
         [Authorize(Roles = "admin,vendor")]
         public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] UpdateStatusRequest request)
         {
-            try
+            if (string.IsNullOrEmpty(request?.Status))
+                return BadRequest(new { message = "Status is required." });
+
+            // vendor check stays here (OK)
+            //if (User.IsInRole("Vendor") && !User.IsInRole("Admin"))
             {
-                if (string.IsNullOrEmpty(request?.Status))
-                {
-                    return BadRequest(new { message = "Status is required." });
-                }
+                var orderCheck = await _orderservice.GetOrderByIdAsync(id);
 
-                // Optional: Check if vendor owns the product in the order
-                if (User.IsInRole("Vendor") && !User.IsInRole("Admin"))
-                {
-                    var order = await _orderservice.GetOrderByIdAsync(id);
+                if (orderCheck == null)
+                    return NotFound();
 
-                    if (order == null)
-                    {
-                        return NotFound(new { message = "Order not found." });
-                    }
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                    var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!Guid.TryParse(userIdClaim, out Guid vendorId))
+                    return Unauthorized();
 
-                    if (!Guid.TryParse(userIdClaim, out Guid vendorId))
-                    {
-                        return Unauthorized("Invalid user ID.");
-                    }
-
-                    if (order.Product?.VendorId != vendorId)
-                    {
-                        return Forbid();
-                    }
-                }
-
-                var updatedOrder = await _orderservice.UpdateOrderStatusAsync(id, request.Status);
-
-                if (updatedOrder == null)
-                {
-                    return NotFound(new { message = "Order not found." });
-                }
-
-                return Ok(updatedOrder);
+                if (orderCheck.Product?.VendorId != vendorId)
+                    return Forbid();
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+
+            var updatedOrder = await _orderservice.UpdateOrderStatusAsync(id, request.Status);
+
+            if (updatedOrder == null)
+                return NotFound();
+
+            return Ok(updatedOrder);
         }
-
         [HttpGet("vendor/orders")]
         [Authorize(Roles = "vendor")]
         public async Task<IActionResult> GetVendorOrders()

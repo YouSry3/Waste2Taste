@@ -105,7 +105,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ActivityLogs", (string)null);
+                    b.ToTable("ActivityLogs");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Donation", b =>
@@ -161,7 +161,7 @@ namespace FoodRescue.DAL.Migrations
                     b.HasIndex("UserId", "ProductId")
                         .IsUnique();
 
-                    b.ToTable("Favorites", (string)null);
+                    b.ToTable("Favorites");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Order", b =>
@@ -196,7 +196,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.PasswordResetToken", b =>
@@ -316,7 +316,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Report", b =>
@@ -433,7 +433,7 @@ namespace FoodRescue.DAL.Migrations
 
                     b.HasIndex("ResponderId");
 
-                    b.ToTable("ReportResponses", (string)null);
+                    b.ToTable("ReportResponses");
                 });
 
             modelBuilder.Entity("FoodRescue.DAL.Entities.Review", b =>
@@ -482,7 +482,16 @@ namespace FoodRescue.DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<double>("Disappointment")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Disgust")
+                        .HasColumnType("float");
+
                     b.Property<double>("Excitement")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Frustration")
                         .HasColumnType("float");
 
                     b.Property<double>("Gratitude")
@@ -520,6 +529,9 @@ namespace FoodRescue.DAL.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FcmToken")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");

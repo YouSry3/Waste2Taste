@@ -17,6 +17,7 @@ namespace FoodRescue.BLL.Services.UserServices
         //Task GetUserStatsAsync(string email);
         Task<Result> UpdateProfileAsync(Guid userId, UpdateProfileDTO dto);
         Task<Result> ChangePasswordAsync(Guid userId, ChangePassword dto);
+        Task<Result> SaveTokenAsync(Guid userId, string token);
         Task<Result> DeleteUserAsync(Guid userId);
 
     }

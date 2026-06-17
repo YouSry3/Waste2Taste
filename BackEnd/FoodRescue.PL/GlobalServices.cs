@@ -19,6 +19,7 @@ using FoodRescue.BLL.Services.FileStorage;
 using FoodRescue.BLL.Services.JWT;
 using FoodRescue.BLL.Services.ListingDashboardTab;
 using FoodRescue.BLL.Services.Logs;
+using FoodRescue.BLL.Services.Notification;
 using FoodRescue.BLL.Services.OrderDashboardTab;
 using FoodRescue.BLL.Services.Orders;
 using FoodRescue.BLL.Services.Products;
@@ -166,6 +167,7 @@ namespace FoodRescue.PL
             services.AddScoped<IFavoriteService, FavoriteService>();
             services.AddScoped<IActivityLogService, ActivityLogService>();
             services.AddHttpClient<ISentimentService, SentimentService>();
+            services.AddScoped<INotificationService, NotificationService>();
 
             VendorMapsterConfig.RegisterVendorMappings();
 

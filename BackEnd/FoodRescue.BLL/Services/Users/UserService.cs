@@ -123,6 +123,18 @@ namespace FoodRescue.BLL.Services.UserServices
 
             return Result.Success();
         }
+
+        public async Task<Result> SaveTokenAsync(Guid userId, string token)
+        {
+            var user = await _userRepo.GetByIdAsync(userId);
+
+
+            user!.FcmToken = token;
+            await _userRepo.SaveChangesAsync();
+            return Result.Success();
+
+            //await _context.SaveChangesAsync();
+        }
     }
 }
 

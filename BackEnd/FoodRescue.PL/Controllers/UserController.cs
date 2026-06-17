@@ -136,6 +136,25 @@ namespace FoodRescue.PL.Controllers
 
         //    return Ok(new { message = "User stats retrieved successfully", stats = result.Value });
         //}
+        [HttpPost("save-token")]
+        [Authorize(Roles ="customer")]
+            public async Task<IActionResult> SaveToken([FromHeader] string token)
+
+        {
+            var result = await _service.SaveTokenAsync(Guid.Parse(
+                User.FindFirst(ClaimTypes.NameIdentifier)!.Value),
+                token);
+            //var user = await _context.Users.FindAsync();
+
+            //user.FcmToken = dto.Token;
+
+            //await _context.SaveChangesAsync();
+            if (result.IsSuccess)
+                 return Ok("Token saved");
+
+            else
+                 return BadRequest( "there habben error when send message to firebase ");
+        }
 
         [HttpPut("profile/change-password")]
         [Authorize]

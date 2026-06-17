@@ -6,6 +6,7 @@ using FoodRescue.BLL.Contract.Orders;
 using FoodRescue.BLL.Contract.Orders.Create;
 using FoodRescue.BLL.Contract.Orders.info;
 using FoodRescue.BLL.ResultPattern.TypeErrors;
+using FoodRescue.BLL.Services.Notification;
 using FoodRescue.DAL.Entities;
 
 namespace FoodRescue.BLL.Services.Orders
@@ -15,12 +16,13 @@ namespace FoodRescue.BLL.Services.Orders
         private readonly IOrderRepository _orderRepo;
         private readonly IProductRepository _productRepo;
         private readonly IUserRepository _userRepository;
-
-        public OrderService(IOrderRepository repo, IProductRepository productRepo, IUserRepository userRepository)
+        private readonly INotificationService _notificationService;
+        public OrderService(IOrderRepository repo, IProductRepository productRepo, IUserRepository userRepository, INotificationService notificationService)
         {
             _orderRepo = repo;
             _productRepo = productRepo;
             _userRepository = userRepository;
+            _notificationService = notificationService;
         }
 
         public async Task<Result<OrderResponse>> CreateOrderAsync(OrderRequest request, Guid userId)
@@ -105,7 +107,24 @@ namespace FoodRescue.BLL.Services.Orders
             if (string.IsNullOrEmpty(status))
                 throw new ArgumentException("Status cannot be empty.");
 
-            return await _orderRepo.UpdateOrderStatusAsync(id, status);
+            var order = await _orderRepo.UpdateOrderStatusAsync(id, status);
+
+            if (order == null)
+                return null;
+
+            // send notification to CUSTOMER (order owner)
+            await _notificationService.SendPushAsync(
+                order.Customer.FcmToken!,
+                "Order Updated",
+                $"Order #{order.Id} status changed to {status}",
+                new Dictionary<string, string>
+                {
+            { "orderId", order.Id.ToString() },
+            { "status", status }
+                }
+            );
+
+            return order;
         }
         public async Task<List<AdminOrderDto>> GetAllOrdersAsync()
         {

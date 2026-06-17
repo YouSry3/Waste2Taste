@@ -1,5 +1,6 @@
 ﻿using FoodRescue.BLL.Contract.Orders;
 using FoodRescue.BLL.Contract.Orders.info;
+using FoodRescue.BLL.Services.Notification;
 using FoodRescue.DAL.Context;
 using FoodRescue.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +10,12 @@ namespace FoodRescue.BLL.Extensions.Orders
     public class OrderRepository : IOrderRepository
     {
         private readonly CompanyDbContext _context;
+        private readonly INotificationService _notificationService;
 
-        public OrderRepository(CompanyDbContext context)
+        public OrderRepository(CompanyDbContext context,INotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         public async Task<Order> AddOrderAsync(Order order)
@@ -74,6 +77,7 @@ namespace FoodRescue.BLL.Extensions.Orders
         public async Task<Order?> UpdateOrderStatusAsync(Guid id, string status)
         {
             var order = await _context.Orders
+                .Include(o => o.Customer) // IMPORTANT
                 .AsTracking()
                 .FirstOrDefaultAsync(o => o.Id == id);
 
@@ -81,11 +85,11 @@ namespace FoodRescue.BLL.Extensions.Orders
                 return null;
 
             order.Status = status;
+
             await _context.SaveChangesAsync();
 
-            return await GetOrderByIdAsync(id);
+            return order;
         }
-
         public async Task<List<AdminOrderDto>> GetAllOrdersAsync()
         {
             return await _context.Orders
