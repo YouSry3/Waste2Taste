@@ -21,13 +21,13 @@ To start working locally, you need to clone the project repository. Follow these
 ## Important Links
 
 - **Notion Tasks Board:**  
-  [Tasks for Backend Team](https://www.notion.so/Tasks-for-Backend-Team-2b79c8485bbb8010bd1bccc7a75fde4c?source=copy_link)  
+  [Tasks for Backend Team]()  
   (This board organizes all tasks )
 
 - **Database Schema Diagram:**  
-  [DB Diagram](https://dbdiagram.io/d/692327b4228c5bbc1a1bdd7b)  
+  [DB Diagram]
   (Simplified diagram of the database schema)
 
 - **API Endpoints Documentation:**  
-  [Endpoints Documentation GitHub](https://github.com/YouSry3/GraduationProject/blob/master/Docs/Endpoints%20Decomentations.md)  
+  [Endpoints Documentation GitHub]()  
   (Documentation for all backend API endpoints)
